@@ -18,4 +18,4 @@ install:
   - pip install pytest pytest-cov matplotlib pandas
   - cd pyspace
 script:
-  - py.test-3.5 pyspace/ --cov=pyspace/
+  - py.test pyspace/ --cov=pyspace/
