@@ -1,0 +1,21 @@
+language: python
+python:
+  - "3.5"
+
+# Download and set up conda
+before_install:
+  - wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
+  - chmod +x miniconda.sh
+  - ./miniconda.sh -b -p $HOME/miniconda
+  - export PATH="$HOME/miniconda/bin:$PATH"
+  # Update conda itself
+  - conda update --yes conda
+install:
+  # - conda install --yes libgfortran
+  - conda create --yes -n testenv python=$TRAVIS_PYTHON_VERSION scipy
+  - source activate testenv
+  # Install other dependancies
+  - pip install pytest pytest-cov matplotlib pandas
+  - cd pyspace
+script:
+  - py.test-3.5 pyspace/ --cov=pyspace/
