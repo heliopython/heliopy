@@ -11,10 +11,9 @@ before_install:
   # Update conda itself
   - conda update --yes conda
 install:
-  # - conda install --yes libgfortran
   - conda create --yes -n testenv python=$TRAVIS_PYTHON_VERSION scipy
   - source activate testenv
   # Install other dependancies
-  - pip install pytest pytest-cov matplotlib pandas
+  - pip install pytest pytest-cov pandas
 script:
   - py.test pyspace/ --cov=pyspace/
