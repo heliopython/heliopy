@@ -1,19 +1,19 @@
 import matplotlib.pyplot as plt
 
 
-# Plots power spectral density on a log log scale
-# data[:, 0] should be frequencies
-# data[:, 1:] should be power
-def plotloglog(data, title='', xlabel=r'$f /Hz$', ylabel='', legend=None):
-    l = plt.plot(data[:, 0], data[:, 1:], alpha=0.8, label=legend)
+def loglog(fs, power, title='', xlabel=r'$f /Hz$', ylabel='', legend=None):
+    '''
+    A method to plot power spectra on log-log axes
+    '''
+    fig = plt.figure()
+    ax = plt.subplot()
+    l = ax.plot(f, power, alpha=0.8, label=legend)
 
     # Figure formatting
     plt.title(title)
     if legend is not None:
         plt.legend()
-    if data.shape[1] == 4:
-        plt.legend(l, (r'$x$', r'$y$', r'$z$'))
-    plt.gca().set_xlabel(xlabel)
-    plt.gca().set_ylabel(ylabel)
-    plt.gca().set_xscale('log')
-    plt.gca().set_yscale('log')
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+    ax.set_xscale('log')
+    ax.set_yscale('log')
