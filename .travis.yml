@@ -11,9 +11,12 @@ before_install:
   # Update conda itself
   - conda update --yes conda
 install:
+  - pip install coveralls
   - conda create --yes -n testenv python=$TRAVIS_PYTHON_VERSION scipy
   - source activate testenv
   # Install other dependancies
   - pip install pytest pytest-cov pandas
 script:
   - py.test pyspace/ --cov=pyspace/
+after_success:
+  - coveralls
