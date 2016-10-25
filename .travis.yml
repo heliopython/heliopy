@@ -16,6 +16,5 @@ install:
   - source activate testenv
   # Install other dependancies
   - pip install pytest pytest-cov matplotlib pandas
-  - cd pyspace
 script:
   - py.test pyspace/ --cov=pyspace/
