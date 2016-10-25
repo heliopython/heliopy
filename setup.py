@@ -6,5 +6,5 @@ setup(name='pyspace',
       url='https://github.com/dstansby/pyspace',
       author='David Stansby',
       author_email='dstansby@gmail.com',
-      license='GPL3',
+      license='GPL-3.0',
       packages=['pyspace', 'pyspace.plot', 'pyspace.fitting', 'pyspace.vector'])
