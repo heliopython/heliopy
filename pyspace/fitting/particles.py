@@ -6,7 +6,7 @@ def maxwellian(x, A, mu, sigma):
     '''
     1-D Maxwellian distribution
     '''
-    return A * np.exp(-((v - v0)**2) / (2 * sigma**2))
+    return A * np.exp(-((x - mu)**2) / (2 * sigma**2))
 
 
 def bimaxwellian(x, A, mu_1, mu_2, sigma_1, sigma_2):
