@@ -7,4 +7,4 @@ setup(name='pyspace',
       author='David Stansby',
       author_email='dstansby@gmail.com',
       license='GPL-3.0',
-      packages=['pyspace', 'pyspace.plot', 'pyspace.fitting', 'pyspace.vector'])
+      packages=['pyspace', 'pyspace.plot', 'pyspace.vector'])
