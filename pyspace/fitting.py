@@ -20,6 +20,13 @@ def bimaxwellian(x, A, mu_1, mu_2, sigma_1, sigma_2):
     return A * np.exp(-exponent)
 
 
+def maxwellianfit(x, f, p0=None):
+    '''
+    Perform a Maxwellian fit to data
+    '''
+    return opt.curve_fit(maxwellian, x, f, p0)
+
+
 def bimaxwellianfit(x_1, x_2, f, p0=None):
     '''
     Perform a Bi-Maxwellian fit to data
