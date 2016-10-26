@@ -1,4 +1,5 @@
 from pyspace.vector.transformations import *
+import numpy as np
 
 
 def test_cart2sph():
@@ -12,5 +13,18 @@ def test_cart2sph():
     print('Hi')
 
 
-def test_dummy():
-    assert 1 == 1
+def test_rotationmatrix():
+    v = np.array([0, 0, 1])
+    Rout = rotationmatrix(v)
+    expected = np.array([[1, 0, 0],
+                         [0, 1, 0],
+                         [0, 0, 1]])
+
+    np.testing.assert_almost_equal(Rout, expected)
+
+    # Vector with random components in range [-0.5, 0.5]
+    v = np.random.rand(3) - 0.5
+    Rout = rotationmatrix(v)
+    vz = np.dot(Rout, v) / np.linalg.norm(v)
+    expected = np.array([0, 0, 1])
+    np.testing.assert_almost_equal(vz, expected)
