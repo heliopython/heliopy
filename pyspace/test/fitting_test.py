@@ -1,4 +1,4 @@
-from pyspace.fitting.particles import *
+from pyspace.fitting import *
 import numpy as np
 
 
