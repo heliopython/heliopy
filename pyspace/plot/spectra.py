@@ -5,9 +5,8 @@ def loglog(fs, power, title='', xlabel=r'$f /Hz$', ylabel='', legend=None):
     '''
     A method to plot power spectra on log-log axes
     '''
-    fig = plt.figure()
-    ax = plt.subplot()
-    l = ax.plot(f, power, alpha=0.8, label=legend)
+    ax = plt.gca()
+    l = ax.plot(fs, power, alpha=0.8, label=legend)
 
     # Figure formatting
     plt.title(title)
