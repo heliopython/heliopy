@@ -1,5 +1,4 @@
 from pyspace.plasma import *
-from pyspace.constants import *
 import numpy as np
 
 
