@@ -1,7 +1,7 @@
 '''
 Methods for working out various quanties of interest to plasmas
 '''
-import constants
+from pyspace import constants
 
 
 def magneticpressure(B):
