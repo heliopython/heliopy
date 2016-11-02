@@ -50,7 +50,7 @@ def cdf2df(cdf):
 
     Otherwise, if data is n x m where m isn't 1 or 3, skip completely
     '''
-    df = pd.DataFrame(data={'Date': cdf['Epoch'][...]},
+    df = pd.DataFrame(data={'Time': cdf['Epoch'][...]},
                       index=cdf['Epoch'][...])
     components = ['x', 'y', 'z']
     for key in cdf.keys():
