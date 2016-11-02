@@ -1,1 +1,5 @@
+recursive-include pyspace *.py
+
+include setup.py
 include README.md
+include pyspace/data/pyspacerc

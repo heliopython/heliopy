@@ -7,4 +7,11 @@ setup(name='pyspace',
       author='David Stansby',
       author_email='dstansby@gmail.com',
       license='GPL-3.0',
-      packages=['pyspace', 'pyspace.plot', 'pyspace.vector'])
+      include_package_data=True,
+      packages=['pyspace',
+                'pyspace.data',
+                'pyspace.plot',
+                'pyspace.vector',
+                'pyspace.util'],
+      data_files=[('pyspace/data', ['pyspace/data/pyspacerc']),
+                  ('pyspace', ['README.md'])])

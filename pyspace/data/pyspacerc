@@ -1,0 +1,10 @@
+;
+; PySpace configuration
+;
+; The working directory is the parent directory in which all downloaded
+; data will be stored.
+;
+; Default value: ~/pyspace
+;
+[default]
+download_dir = /home/$USER/pyspace
