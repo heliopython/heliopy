@@ -1,3 +1,6 @@
+'''
+Methods for fitting distributions to data
+'''
 import numpy as np
 import scipy.optimize as opt
 
@@ -5,6 +8,17 @@ import scipy.optimize as opt
 def maxwellian(x, A, mu, sigma):
     '''
     1-D Maxwellian distribution
+
+    Parameters
+    ----------
+        x : array_like
+            x values
+        A : float
+            Amplitude
+        mu : float
+            Mean of distribution
+        sigma : float
+            Standard deviation of distribution
     '''
     return A * np.exp(-((x - mu)**2) / (2 * sigma**2))
 
@@ -23,6 +37,13 @@ def bimaxwellian(x, A, mu_1, mu_2, sigma_1, sigma_2):
 def poisson(x, rate):
     '''
     Poisson distribution
+
+    Parameters
+    ----------
+        x : array_like
+            x values
+        rate : float
+            Lambda parmeter for Poisson distribution
     '''
     return rate * np.exp(-rate * x)
 
@@ -30,6 +51,16 @@ def poisson(x, rate):
 def maxwellianfit(x, f, p0=None):
     '''
     Perform a Maxwellian fit to data
+
+    Parameters
+    ----------
+        x : array_like
+            x values
+        f : array_like
+            Data points to fit to at corresponding x points
+        p0 : list
+            Initial guess of fitting parameters. p0[0] is amplitude,
+            p0[1] is mean, and p0[2] is standard deviation.
     '''
     return opt.curve_fit(maxwellian, x, f, p0)
 
