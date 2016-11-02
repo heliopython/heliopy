@@ -4,6 +4,7 @@ Helper methods for importing data
 import os
 from spacepy import pycdf
 from urllib.request import urlretrieve
+import pandas as pd
 
 
 def checkdir(directory):
@@ -38,3 +39,32 @@ def load(filename, local_dir, remote_url):
     elif filetype == 'ascii':
         # TODO: Read in ascii files
         print('Ascii importing not working yet')
+
+
+def cdf2df(cdf):
+    '''
+    Converts a cdf file to a pandas dataframe
+
+    If data in CDF file is n x 3 dimensional, assume it is vector data and
+    assign subscripts _x, _y, _z
+
+    Otherwise, if data is n x m where m isn't 1 or 3, skip completely
+    '''
+    df = pd.DataFrame(data={'Date': cdf['Epoch'][...]},
+                      index=cdf['Epoch'][...])
+    components = ['x', 'y', 'z']
+    for key in cdf.keys():
+        if key == 'Epoch':
+            continue
+        # If we only have 1D data
+        if len(cdf[key].shape) == 1:
+            df[key] = cdf[key][...]
+        # If we have more than 1D of data
+        if len(cdf[key].shape) == 2:
+            # If we have a vector
+            if cdf[key].shape[1] == 3:
+                for i in range(0, 3):
+                    df[key + '_' + components[i]] = cdf[key][...][:, i]
+            else:
+                continue
+    return df
