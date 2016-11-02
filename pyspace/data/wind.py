@@ -1,6 +1,7 @@
 import pyspace.time as spacetime
 from pyspace.data import helper
 from pyspace import config
+import pandas as pd
 import os
 
 '''
@@ -33,6 +34,7 @@ def threedp_pm(startTime, endTime):
         remote_url = remote_wind_dir + this_relative_dir
 
         cdf = helper.load(filename, local_dir, remote_url)
-        data.append(cdf)
+        df = helper.cdf2df(cdf)
+        data.append(df)
 
-    return data
+    return pd.concat(data)
