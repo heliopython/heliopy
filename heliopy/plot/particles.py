@@ -26,5 +26,6 @@ def surf2D(x, y, pdf):
     '''
     3D surf plot of 2D distribution function
     '''
+    fig = plt.gcf()
     ax = fig.add_subplot(111, projection='3d')
     ax.plot_trisurf(x, y, np.log10(pdf), cmap='viridis', linewidths=0, alpha=0.5)
