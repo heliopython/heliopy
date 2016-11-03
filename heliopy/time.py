@@ -7,6 +7,13 @@ Methods for processing times and dates
 def daysplitinterval(startTime, endTime):
     '''
     Splits an interval into a list of dates, start times and end times
+
+    Parameters
+    ----------
+        startTime : datetime
+            Start date/time of interval
+        endTime : datetime
+            End date/time of interval
     '''
     assert startTime < endTime, 'Start datetime must be before end datetime'
     out = []
@@ -32,6 +39,11 @@ def daysplitintervalhelper(startTime, endTime, out):
 def isLeap(y):
     '''
     Returns true if year is a leap year, false otherwise
+
+    Parameters
+    ----------
+        y : int
+            Year
     '''
     rem1 = (y % 4) == 0
     rem2 = (y % 100) == 0
@@ -42,6 +54,13 @@ def isLeap(y):
 def doy2ymd(y, doy):
     '''
     Converts day of year and year to year, month, day
+
+    Parameters
+    ----------
+        y : int
+            Year
+        doy : int
+            Day of year
     '''
     assert isinstance(y, int) and isinstance(doy, int),\
         'Input year and day of year must be integers'
