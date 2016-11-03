@@ -2,7 +2,6 @@ import heliopy.time as spacetime
 from heliopy.data import helper
 from heliopy import config
 import pandas as pd
-import os
 
 '''
 Methods for importing data from the WIND spacecraft
