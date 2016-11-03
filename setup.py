@@ -3,7 +3,7 @@ from setuptools import setup
 setup(name='heliopy',
       version='0.1',
       description='Python for Space Physics',
-      url='https://github.com/dstansby/pyspace',
+      url='https://github.com/dstansby/heliopy',
       author='David Stansby',
       author_email='dstansby@gmail.com',
       license='GPL-3.0',
