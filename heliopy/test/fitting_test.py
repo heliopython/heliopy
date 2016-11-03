@@ -1,4 +1,4 @@
-from pyspace.fitting import *
+from heliopy.fitting import *
 import numpy as np
 
 

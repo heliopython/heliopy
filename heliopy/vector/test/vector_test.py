@@ -1,4 +1,4 @@
-from pyspace.vector.transformations import *
+from heliopy.vector.transformations import *
 import numpy as np
 
 

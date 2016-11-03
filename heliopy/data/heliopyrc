@@ -1,10 +1,10 @@
 ;
-; PySpace configuration
+; heliopy configuration
 ;
 ; The working directory is the parent directory in which all downloaded
 ; data will be stored.
 ;
-; Default value: ~/pyspace
+; Default value: ~/heliopy
 ;
 [default]
-download_dir = /home/$USER/pyspace
+download_dir = /home/$USER/heliopy

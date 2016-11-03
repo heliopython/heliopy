@@ -1,4 +1,4 @@
-from pyspace.time import *
+from heliopy.time import *
 from datetime import datetime, time, date
 import pytest
 

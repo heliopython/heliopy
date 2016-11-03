@@ -1,6 +1,6 @@
-import pyspace.time as spacetime
-from pyspace.data import helper
-from pyspace import config
+import heliopy.time as spacetime
+from heliopy.data import helper
+from heliopy import config
 import pandas as pd
 import os
 

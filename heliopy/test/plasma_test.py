@@ -1,4 +1,4 @@
-from pyspace.plasma import *
+from heliopy.plasma import *
 import numpy as np
 
 
