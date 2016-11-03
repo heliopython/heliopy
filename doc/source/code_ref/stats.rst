@@ -1,5 +1,5 @@
-pyspace.stats package
+heliopy.stats package
 ---------------------
 
-.. automodule:: pyspace.stats
+.. automodule:: heliopy.stats
    :members:

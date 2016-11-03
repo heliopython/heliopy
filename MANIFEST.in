@@ -1,5 +1,5 @@
-recursive-include pyspace *.py
+recursive-include heliopy *.py
 
 include setup.py
 include README.md
-include pyspace/data/pyspacerc
+include heliopy/data/heliopyrc

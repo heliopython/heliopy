@@ -1,5 +1,5 @@
-pyspace.time package
+heliopy.time package
 --------------------
 
-.. automodule:: pyspace.time
+.. automodule:: heliopy.time
    :members:

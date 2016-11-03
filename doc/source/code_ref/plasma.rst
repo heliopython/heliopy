@@ -1,5 +1,5 @@
-pyspace.plasma package
+heliopy.plasma package
 ----------------------
 
-.. automodule:: pyspace.plasma
+.. automodule:: heliopy.plasma
    :members:

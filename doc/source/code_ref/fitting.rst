@@ -1,5 +1,5 @@
-pyspace.fitting package
+heliopy.fitting package
 -----------------------
 
-.. automodule:: pyspace.fitting
+.. automodule:: heliopy.fitting
    :members:
