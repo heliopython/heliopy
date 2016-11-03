@@ -17,6 +17,6 @@ install:
   # Install other dependancies
   - pip install pytest pytest-cov pandas
 script:
-  - py.test pyspace/ --cov=pyspace/
+  - py.test heliopy/ --cov=heliopy/
 after_success:
   - coveralls
