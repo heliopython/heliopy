@@ -292,27 +292,27 @@ def merged(probe, starttime, endtime, verbose=True):
     if isinstance(starttime, datetime.datetime):
         assert isinstance(endtime, datetime.datetime),\
             'Start time and end time must have same datatype'
-        startDate = starttime.date()
-        endDate = endtime.date()
+        startdate = starttime.date()
+        enddate = endtime.date()
     elif isinstance(starttime, datetime.date):
         assert isinstance(endtime, datetime.date),\
             'Start time and end time must have same datatype'
-        startDate = starttime
-        endDate = endtime
+        startdate = starttime
+        enddate = endtime
 
     data = []
     # Loop through years
-    for year in range(startDate.year, endDate.year + 1):
+    for year in range(startdate.year, enddate.year + 1):
         floc = helios_dir + '/helios' + probe + '/merged/he' + probe + '_40sec/'
         # Calculate start day
         startdoy = 1
-        if year == startDate.year:
-            startdoy = int(startDate.strftime('%j'))
+        if year == startdate.year:
+            startdoy = int(startdate.strftime('%j'))
 
         # Calculate end day
         enddoy = 366
-        if year == endDate.year:
-            enddoy = int(endDate.strftime('%j'))
+        if year == enddate.year:
+            enddoy = int(enddate.strftime('%j'))
 
         # Loop through days of year
         for doy in range(startdoy, enddoy + 1):
@@ -337,8 +337,8 @@ def merged(probe, starttime, endtime, verbose=True):
     if data == []:
         fmt = '%d-%m-%Y'
         raise ValueError('No data to import for probe ' + probe +
-                         ' between ' + startDate.strftime(fmt) + ' and ' +
-                         endDate.strftime(fmt))
+                         ' between ' + startdate.strftime(fmt) + ' and ' +
+                         enddate.strftime(fmt))
 
     data = pd.concat(data, ignore_index=True)
     # If given datetimes, filter data
@@ -389,26 +389,26 @@ def mag_4hz(probe, starttime, endtime, verbose=True):
     if isinstance(starttime, datetime.datetime):
         assert isinstance(endtime, datetime.datetime),\
             'Start time and end time must have same datatype'
-        startDate = starttime.date()
-        endDate = endtime.date()
+        startdate = starttime.date()
+        enddate = endtime.date()
     elif isinstance(starttime, datetime.date):
         assert isinstance(endtime, datetime.date),\
             'Start time and end time must have same datatype'
-        startDate = starttime
-        endDate = endtime
+        startdate = starttime
+        enddate = endtime
 
     data = []
     # Loop through years
-    for year in range(startDate.year, endDate.year + 1):
+    for year in range(startdate.year, enddate.year + 1):
         floc = helios_dir + '/helios' + probe + '/mag/4hz/'
         # Calculate start day
         startdoy = 1
-        if year == startDate.year:
-            startdoy = int(startDate.strftime('%j'))
+        if year == startdate.year:
+            startdoy = int(startdate.strftime('%j'))
         # Calculate end day
         enddoy = 366
-        if year == endDate.year:
-            enddoy = int(endDate.strftime('%j'))
+        if year == enddate.year:
+            enddoy = int(enddate.strftime('%j'))
 
         # Loop through days of year
         for doy in range(startdoy, enddoy + 1):
@@ -483,26 +483,26 @@ def mag_ness(probe, starttime, endtime):
     if isinstance(starttime, datetime.datetime):
         assert isinstance(endtime, datetime.datetime),\
             'Start time and end time must have same datatype'
-        startDate = starttime.date()
-        endDate = endtime.date()
+        startdate = starttime.date()
+        enddate = endtime.date()
     elif isinstance(starttime, datetime.date):
         assert isinstance(endtime, datetime.date),\
             'Start time and end time must have same datatype'
-        startDate = starttime
-        endDate = endtime
+        startdate = starttime
+        enddate = endtime
 
     data = []
     # Loop through years
-    for year in range(startDate.year, endDate.year + 1):
+    for year in range(startdate.year, enddate.year + 1):
         floc = helios_dir + '/helios' + probe + '/mag/6sec_ness/' + str(year) + '/'
         # Calculate start day
         startdoy = 1
-        if year == startDate.year:
-            startdoy = int(startDate.strftime('%j'))
+        if year == startdate.year:
+            startdoy = int(startdate.strftime('%j'))
         # Calculate end day
         enddoy = 366
-        if year == endDate.year:
-            enddoy = int(endDate.strftime('%j'))
+        if year == enddate.year:
+            enddoy = int(enddate.strftime('%j'))
 
         # Loop through days of year
         for doy in range(startdoy, enddoy + 1):
@@ -568,7 +568,7 @@ def mag_ness_fromascii(probe, year, doy):
     return(data)
 
 
-def trajectory(probe, startDate, endDate):
+def trajectory(probe, startdate, enddate):
     """
     Read in trajectory data
     """
@@ -578,7 +578,7 @@ def trajectory(probe, startDate, endDate):
     colspecs = [(0, 3), (4, 7), (8, 10), (11, 15), (16, 22), (23, 30), (31, 37),
                 (38, 44), (45, 51), (52, 58), (59, 65), (66, 67)]
     # Loop through years
-    for i in range(startDate.year, endDate.year + 1):
+    for i in range(startdate.year, enddate.year + 1):
         floc = helios_dir + '/helios' + probe + '/traj/'
         fname = 'he' + probe + 'trj' + str(i - 1900) + '.asc'
 
@@ -606,6 +606,6 @@ def trajectory(probe, startDate, endDate):
         data.append(thisdata)
 
     data = pd.concat(data)
-    data = data[data['Date'] > startDate]
-    data = data[data['Date'] < endDate]
+    data = data[data['Date'] > startdate]
+    data = data[data['Date'] < enddate]
     return(data)
