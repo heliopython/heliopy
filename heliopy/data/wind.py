@@ -4,7 +4,7 @@ from heliopy import config
 import pandas as pd
 
 """
-Methods for importing data from the WIND spacecraft
+Methods for importing data from the WIND spacecraft.
 All data is publically available at ftp://spdf.gsfc.nasa.gov/pub/data/wind
 """
 data_dir = config['default']['download_dir']
