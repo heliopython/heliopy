@@ -13,6 +13,17 @@ def cart2sph(x, y, z):
     return r, theta, phi
 
 
+def sph2cart(r, theta, phi):
+    """
+    Given spherical r, theta, phi co-orinates, returns cartesian x, y, z
+    coordiantes.
+    """
+    x = r * np.cos(theta) * np.cos(phi)
+    y = r * np.cos(theta) * np.sin(phi)
+    z = r * np.sin(theta)
+    return x, y, z
+
+
 def angle(v1, v2):
     """
     Return angle between v1 and v2 in radians
