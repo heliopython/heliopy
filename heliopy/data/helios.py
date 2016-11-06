@@ -26,10 +26,23 @@ def dtime2ordinal(dtime):
 
 def loaddistfile(probe, year, doy, hour, minute, second):
     """
-    Method to load a Helios distribution file
+    Method to load a Helios distribution file Returns opened file and location
+    of file if file exists. If file doesn't exist raises a FileNotFoundError.
 
-    Returns opened file and location of file if file exists. If file doesn't
-    exits raises a FileNotFoundError
+    Parameters
+    ----------
+        probe : int
+            Helios probe to import data from. Must be 1 or 2.
+        year : int
+            Year
+        doy : int
+            Day of year.
+        hour : int
+            Hour.
+        minute : int
+            Minute.
+        second : int
+            Second.
     """
     assert probe == '1' or probe == '2', 'Probe must be 1 or 2'
     # Work out location of file
