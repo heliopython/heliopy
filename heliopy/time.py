@@ -38,12 +38,17 @@ def daysplitintervalhelper(starttime, endtime, out):
 
 def isleap(y):
     """
-    Returns true if year is a leap year, false otherwise
+    Returns true if year is a leap year, false otherwise.
 
     Parameters
     ----------
         y : int
-            Year
+            Year.
+
+    Returns
+    -------
+        leap : bool
+            True if y is a leap year, false otherwise.
     """
     rem1 = (y % 4) == 0
     rem2 = (y % 100) == 0
@@ -58,9 +63,18 @@ def doy2ymd(y, doy):
     Parameters
     ----------
         y : int
-            Year
+            Year.
         doy : int
-            Day of year
+            Day of year.
+
+    Returns
+    -------
+        year : int
+            Year.
+        month : int
+            Month
+        day : int
+            Day of month.
     """
     assert isinstance(y, int) and isinstance(doy, int),\
         'Input year and day of year must be integers'

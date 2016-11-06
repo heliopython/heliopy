@@ -6,9 +6,17 @@ from heliopy import constants
 
 def magneticpressure(B):
     """
-    Returns magnetic pressure given magnetic field magnitude
+    Returns magnetic pressure given magnetic field magnitude.
 
-    B must be in nT
+    Parameters
+    ----------
+        B : array_like
+            Magnetic field magnitude in nT.
+
+    Returns
+    -------
+        p : array_like
+            Pressure in Pascals.
     """
     # Convert to Tesla
     B *= 1e-9
