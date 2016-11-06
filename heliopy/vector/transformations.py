@@ -3,8 +3,27 @@ import numpy as np
 
 def cart2sph(x, y, z):
     """
-    Given cartesian x, y, z co-ordinates, returns
-    shperical r, theta, phi co-ordinates
+    Given cartesian x, y, z co-ordinates, returns shperical r, theta, phi
+    co-ordinates.
+
+    Parameters
+    ----------
+        x : array_like
+            x values
+        y : array_like
+            y values
+        z : array_like
+            z values
+
+    Returns
+    -------
+        r : array_like
+            r values
+        theta : array_like
+            Elevation angles defined from the x-y plane towards the z-axis
+        phi : array_like
+            Azimuthal angles defined in the x-y plane, clockwise about the
+            z-axis, from the x-axis.
     """
     xy = x**2 + y**2
     r = np.sqrt(xy + z**2)
@@ -17,6 +36,26 @@ def sph2cart(r, theta, phi):
     """
     Given spherical r, theta, phi co-orinates, returns cartesian x, y, z
     coordiantes.
+
+    Parameters
+    ----------
+        r : array_like
+            r values
+        theta : array_like
+            Elevation angles defined from the x-y plane towards the z-axis
+        phi : array_like
+            Azimuthal angles defined in the x-y plane, clockwise about the
+            z-axis, from the x-axis.
+
+    Returns
+    -------
+        x : array_like
+            x values
+        y : array_like
+            y values
+        z : array_like
+            z values
+
     """
     x = r * np.cos(theta) * np.cos(phi)
     y = r * np.cos(theta) * np.sin(phi)
@@ -26,8 +65,19 @@ def sph2cart(r, theta, phi):
 
 def angle(v1, v2):
     """
-    Return angle between v1 and v2 in radians
-    Angle lies between 0 and pi
+    Return angle between vectors v1 and v2 in radians.
+
+    Parameters
+    ----------
+        v1 : array_like
+            Vector 1.
+        v2: array_like
+            Vector 2.
+
+    Returns
+    -------
+        phi : float
+            Angle between two vectors in radians.
     """
     assert v1.shape == v2.shape, 'Input vectors must be the same shape'
     v1mag = np.linalg.norm(v1)
@@ -41,8 +91,19 @@ def angle(v1, v2):
 def rotationmatrixangle(axis, theta):
     """
     Return the rotation matrix associated with counterclockwise rotation about
-    the given axis by theta radians.
-    Uses Euler-Rodrigues formula
+    the given axis by theta. Uses Euler-Rodrigues formula.
+
+    Parameters
+    ----------
+        axis : array_like
+            Axis to rotate about.
+        theta : float
+            Angle through which to rotate in radians.
+
+    Returns
+    -------
+        R : array_like
+            Rotation matrix resulting from rotation about given axis.
     """
     assert axis.shape == (3, ), 'Axis must be a single 3 vector'
     assert np.dot(axis, axis) != 0, 'Axis has zero length'
@@ -60,7 +121,17 @@ def rotationmatrixangle(axis, theta):
 
 def rotationmatrix(v):
     """
-    Returns the rotation matrix that rotates v onto [0, 0, 1]
+    Returns the rotation matrix that maps the input vector on to the z-axis.
+
+    Parameters
+    ----------
+        v : array_like
+            Input vector.
+
+    Returns
+    -------
+        R : array_like
+            Rotation matrix.
     """
     assert v.shape == (3, ), "Input must be a 3 component vector"
     v = np.float64(v)
@@ -88,7 +159,25 @@ def rotationmatrix(v):
 
 def changezaxis(x, y, z, newzaxis):
     """
-    Rotate 3D cartesian data into a new frame defined by newzaxis
+    Rotate 3D cartesian data into a new frame where newzaxis is the z-axis.
+
+    Parameters
+    ----------
+        x : array_like
+            x values.
+        y : array_like
+            y values.
+        z : array_like
+            z values.
+
+    Returns
+    -------
+        newx : array_like
+            Rotated x values.
+        newy : array_like
+            Rotated y values.
+        newz : array_like
+            Rotated values.
     """
     R = rotationmatrix(newzaxis)
     v = np.row_stack((x, y, z))

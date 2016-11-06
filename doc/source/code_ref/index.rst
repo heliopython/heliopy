@@ -8,3 +8,4 @@ API reference
    plasma
    stats
    time
+   vector
