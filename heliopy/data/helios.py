@@ -1,6 +1,4 @@
-"""
-Methods for importing Helios data
-"""
+"""Methods for importing Helios data."""
 import pandas as pd
 import numpy as np
 import datetime
@@ -26,8 +24,10 @@ def dtime2ordinal(dtime):
 
 def loaddistfile(probe, year, doy, hour, minute, second):
     """
-    Method to load a Helios distribution file Returns opened file and location
-    of file if file exists. If file doesn't exist raises a FileNotFoundError.
+    Method to load a Helios distribution file.
+
+    Returns opened file and location of file if file exists. If file doesn't
+    exist raises a FileNotFoundError.
 
     Parameters
     ----------

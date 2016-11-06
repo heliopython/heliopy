@@ -1,3 +1,4 @@
+"""Methods for plotting different types of spectra."""
 import matplotlib.pyplot as plt
 
 

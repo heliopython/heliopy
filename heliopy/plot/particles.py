@@ -1,3 +1,4 @@
+"""Methods for plotting particle distribution functions."""
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
