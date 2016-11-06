@@ -24,39 +24,6 @@ def dtime2ordinal(dtime):
     return pd.DatetimeIndex(dtime).astype(np.int64)
 
 
-#############################################################################
-
-#############################################################################
-def distparams(probe, starttime, endtime):
-    """
-    Read in distribution parameters found in the header of distribution files.
-    Data must have been processed by save_dist_params.py first.
-    """
-    days = spacetime.daysplitinterval(starttime, endtime)
-    paramlists = [[], [], []]
-    for day in days:
-        date = day[0]
-        doy = date.timetuple().tm_yday
-        # Import each in turn
-        for i, param in enumerate(['distinfo', 'electron_fitinfo', 'ion_fitinfo']):
-            if param == 'distinfo':
-                fileloc = helios_dir + '/helios' + probe +\
-                    '/plasma/distparams/h' + probe +\
-                    str(date.year) + '_' + str(doy) + '_distinfo.csv'
-            else:
-                fileloc = helios_dir + '/helios' + probe +\
-                    '/plasma/fitparams/h' + probe +\
-                    str(date.year) + '_' + str(doy) + param + '.csv'
-            paramlists[i].append(pd.read_csv(fileloc, parse_dates=[1]))
-
-    returnlist = []
-    for l in paramlists:
-        returnlist.append(pd.concat(l, ignore_index=True))
-        returnlist[-1] = returnlist[-1].set_index('Time', drop=False)
-
-    return returnlist[0], returnlist[1], returnlist[2]
-
-
 def loaddistfile(probe, year, doy, hour, minute, second):
     """
     Method to load a Helios distribution file
