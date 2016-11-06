@@ -1,6 +1,6 @@
-'''
+"""
 Helper methods for importing data
-'''
+"""
 import os
 from spacepy import pycdf
 from urllib.request import urlretrieve
@@ -8,18 +8,18 @@ import pandas as pd
 
 
 def checkdir(directory):
-    '''
+    """
     Checks if directory exists, if not creates directory
-    '''
+    """
     if not os.path.exists(directory):
         os.makedirs(directory)
 
 
 def load(filename, local_dir, remote_url):
-    '''
+    """
     Try to load a file from local_dir
     If file doesn't exist, try to download from remtote_url
-    '''
+    """
     # Check if file is cdf
     if filename[-4:] == '.cdf':
         filetype = 'cdf'
@@ -42,14 +42,14 @@ def load(filename, local_dir, remote_url):
 
 
 def cdf2df(cdf):
-    '''
+    """
     Converts a cdf file to a pandas dataframe
 
     If data in CDF file is n x 3 dimensional, assume it is vector data and
     assign subscripts _x, _y, _z
 
     Otherwise, if data is n x m where m isn't 1 or 3, skip completely
-    '''
+    """
     df = pd.DataFrame(data={'Time': cdf['Epoch'][...]},
                       index=cdf['Epoch'][...])
     components = ['x', 'y', 'z']

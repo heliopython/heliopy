@@ -2,10 +2,10 @@ import numpy as np
 
 
 def cart2sph(x, y, z):
-    '''
+    """
     Given cartesian x, y, z co-ordinates, returns
     shperical r, theta, phi co-ordinates
-    '''
+    """
     xy = x**2 + y**2
     r = np.sqrt(xy + z**2)
     theta = np.arctan2(z, np.sqrt(xy))  # for elevation angle defined from XY-plane up
@@ -14,10 +14,10 @@ def cart2sph(x, y, z):
 
 
 def angle(v1, v2):
-    '''
+    """
     Return angle between v1 and v2 in radians
     Angle lies between 0 and pi
-    '''
+    """
     assert v1.shape == v2.shape, 'Input vectors must be the same shape'
     v1mag = np.linalg.norm(v1)
     v2mag = np.linalg.norm(v2)
@@ -28,11 +28,11 @@ def angle(v1, v2):
 
 
 def rotationmatrixangle(axis, theta):
-    '''
+    """
     Return the rotation matrix associated with counterclockwise rotation about
     the given axis by theta radians.
     Uses Euler-Rodrigues formula
-    '''
+    """
     assert axis.shape == (3, ), 'Axis must be a single 3 vector'
     assert np.dot(axis, axis) != 0, 'Axis has zero length'
 
@@ -48,9 +48,9 @@ def rotationmatrixangle(axis, theta):
 
 
 def rotationmatrix(v):
-    '''
+    """
     Returns the rotation matrix that rotates v onto [0, 0, 1]
-    '''
+    """
     assert v.shape == (3, ), "Input must be a 3 component vector"
     v = np.float64(v)
     zaxis = np.array([0, 0, 1])
@@ -76,9 +76,9 @@ def rotationmatrix(v):
 
 
 def changezaxis(x, y, z, newzaxis):
-    '''
+    """
     Rotate 3D cartesian data into a new frame defined by newzaxis
-    '''
+    """
     R = rotationmatrix(newzaxis)
     v = np.row_stack((x, y, z))
     vrot = np.dot(R, v)

@@ -1,6 +1,6 @@
-'''
+"""
 Contains a number of useful constants
-'''
+"""
 from numpy import pi
 
 c = 299792e3        # Speed of light in m/s

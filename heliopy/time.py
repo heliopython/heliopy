@@ -1,11 +1,11 @@
 from datetime import datetime, time, timedelta
-'''
+"""
 Methods for processing times and dates
-'''
+"""
 
 
 def daysplitinterval(starttime, endtime):
-    '''
+    """
     Splits an interval into a list of dates, start times and end times
 
     Parameters
@@ -14,7 +14,7 @@ def daysplitinterval(starttime, endtime):
             Start date/time of interval
         endtime : datetime
             End date/time of interval
-    '''
+    """
     assert starttime < endtime, 'Start datetime must be before end datetime'
     out = []
     return daysplitintervalhelper(starttime, endtime, out)
@@ -37,14 +37,14 @@ def daysplitintervalhelper(starttime, endtime, out):
 
 
 def isleap(y):
-    '''
+    """
     Returns true if year is a leap year, false otherwise
 
     Parameters
     ----------
         y : int
             Year
-    '''
+    """
     rem1 = (y % 4) == 0
     rem2 = (y % 100) == 0
     rem3 = (y % 400) == 0
@@ -52,7 +52,7 @@ def isleap(y):
 
 
 def doy2ymd(y, doy):
-    '''
+    """
     Converts day of year and year to year, month, day
 
     Parameters
@@ -61,7 +61,7 @@ def doy2ymd(y, doy):
             Year
         doy : int
             Day of year
-    '''
+    """
     assert isinstance(y, int) and isinstance(doy, int),\
         'Input year and day of year must be integers'
     # Days in each month
