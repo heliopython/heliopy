@@ -4,39 +4,39 @@ Methods for processing times and dates
 '''
 
 
-def daysplitinterval(startTime, endTime):
+def daysplitinterval(starttime, endtime):
     '''
     Splits an interval into a list of dates, start times and end times
 
     Parameters
     ----------
-        startTime : datetime
+        starttime : datetime
             Start date/time of interval
-        endTime : datetime
+        endtime : datetime
             End date/time of interval
     '''
-    assert startTime < endTime, 'Start datetime must be before end datetime'
+    assert starttime < endtime, 'Start datetime must be before end datetime'
     out = []
-    return daysplitintervalhelper(startTime, endTime, out)
+    return daysplitintervalhelper(starttime, endtime, out)
 
 
-def daysplitintervalhelper(startTime, endTime, out):
+def daysplitintervalhelper(starttime, endtime, out):
     # If two datetimes are on the same day, append current date and
     # start/end times
-    if startTime.date() == endTime.date():
-        out.append([startTime.date(), startTime.time(), endTime.time()])
+    if starttime.date() == endtime.date():
+        out.append([starttime.date(), starttime.time(), endtime.time()])
         return out
 
     # Append current date, start time, and maximum time
-    out.append([startTime.date(), startTime.time(), time.max])
+    out.append([starttime.date(), starttime.time(), time.max])
     # Set new start time to 00:00 on the next day
-    newstartTime = datetime.combine(startTime.date(), time.min) +\
+    newstarttime = datetime.combine(starttime.date(), time.min) +\
         timedelta(days=1)
     # Recurse
-    return daysplitintervalhelper(newstartTime, endTime, out)
+    return daysplitintervalhelper(newstarttime, endtime, out)
 
 
-def isLeap(y):
+def isleap(y):
     '''
     Returns true if year is a leap year, false otherwise
 
@@ -69,7 +69,7 @@ def doy2ymd(y, doy):
     leap = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 
     # Select the right days
-    if isLeap(y):
+    if isleap(y):
         if doy > 366:
             raise ValueError('Day of year cannot be greater than 366')
         days = leap

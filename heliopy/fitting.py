@@ -5,7 +5,7 @@ import numpy as np
 import scipy.optimize as opt
 
 
-def maxwellian(x, A, mu, sigma):
+def maxwellian(x, a, mu, sigma):
     '''
     1-D Maxwellian distribution
 
@@ -13,17 +13,17 @@ def maxwellian(x, A, mu, sigma):
     ----------
         x : array_like
             x values
-        A : float
+        a : float
             Amplitude
         mu : float
             Mean of distribution
         sigma : float
             Standard deviation of distribution
     '''
-    return A * np.exp(-((x - mu)**2) / (2 * sigma**2))
+    return a * np.exp(-((x - mu)**2) / (2 * sigma**2))
 
 
-def bimaxwellian(x, A, mu_1, mu_2, sigma_1, sigma_2):
+def bimaxwellian(x, a, mu_1, mu_2, sigma_1, sigma_2):
     '''
     2-D Maxwellian distribution
     '''
@@ -31,7 +31,7 @@ def bimaxwellian(x, A, mu_1, mu_2, sigma_1, sigma_2):
     x_2 = x[1]
     exponent = (((x_1 - mu_1)**2) / (2 * sigma_1**2)) +\
                (((x_2 - mu_2)**2) / (2 * sigma_2**2))
-    return A * np.exp(-exponent)
+    return a * np.exp(-exponent)
 
 
 def poisson(x, rate):

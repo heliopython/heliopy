@@ -3,7 +3,7 @@ from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
 
 
-def scatter3D(x, y, z, pdf):
+def scatter3d(x, y, z, pdf):
     '''
     Perform 3D scatter plot of distribution function data
     '''
@@ -12,7 +12,7 @@ def scatter3D(x, y, z, pdf):
     ax.scatter(x, y, z, c=np.log10(pdf), s=40)
 
 
-def contour2D(x, y, pdf, showbins=True):
+def contour2d(x, y, pdf, showbins=True):
     '''
     Do a countour plot of 2D distribution function data
     '''
@@ -22,7 +22,7 @@ def contour2D(x, y, pdf, showbins=True):
         ax.scatter(x, y, c=np.log10(pdf), cmap='viridis', s=40)
 
 
-def surf2D(x, y, pdf):
+def surf2d(x, y, pdf):
     '''
     3D surf plot of 2D distribution function
     '''

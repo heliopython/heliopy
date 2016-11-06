@@ -12,11 +12,11 @@ wind_dir = data_dir + '/wind'
 remote_wind_dir = 'ftp://spdf.gsfc.nasa.gov/pub/data/wind'
 
 
-def threedp_pm(startTime, endTime):
+def threedp_pm(starttime, endtime):
     # Directory relative to main WIND data directory
     relative_dir = '/3dp/3dp_pm'
 
-    daylist = spacetime.daysplitinterval(startTime, endTime)
+    daylist = spacetime.daysplitinterval(starttime, endtime)
     data = []
     for day in daylist:
         date = day[0]
