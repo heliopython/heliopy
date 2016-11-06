@@ -1,5 +1,4 @@
-python-targets:
-    -3
+python-targets: 3
 doc-warnings: true
 pep8:
   full: true
