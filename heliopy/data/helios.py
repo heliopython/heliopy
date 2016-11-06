@@ -70,26 +70,26 @@ def loaddistfile(probe, year, doy, hour, minute, second):
 
 def integrateddists(probe, year, doy, hour, minute, second):
     """
-    Returns the integrated distributions from experiments I1a and I1b in Helios
+    Returns the integrated distributions from experiments i1a and i1b in Helios
     distribution function files.
     """
     f, _ = loaddistfile(probe, year, doy, hour, minute, second)
-    for i, line in enumerate(f):
+    for line in f:
         if line[0:19] == ' 1-D i1a integrated':
             break
-    # I1a distribution function
-    I1adf = f.readline().split()
+    # i1a distribution function
+    i1adf = f.readline().split()
     f.readline()
-    I1avs = f.readline().split()
+    i1avs = f.readline().split()
     f.readline()
-    # I1b distribution file
-    I1bdf = f.readline().split()
+    # i1b distribution file
+    i1bdf = f.readline().split()
     f.readline()
-    I1bvs = f.readline().split()
+    i1bvs = f.readline().split()
 
-    I1a = pd.DataFrame({'v': I1avs, 'df': I1adf}, dtype=float)
-    I1b = pd.DataFrame({'v': I1bvs, 'df': I1bdf}, dtype=float)
-    return I1a, I1b
+    i1a = pd.DataFrame({'v': i1avs, 'df': i1adf}, dtype=float)
+    i1b = pd.DataFrame({'v': i1bvs, 'df': i1bdf}, dtype=float)
+    return i1a, i1b
 
 
 def distribution(probe, year, doy, hour, minute, second):
@@ -110,7 +110,7 @@ def distribution(probe, year, doy, hour, minute, second):
     distparams['ishift'] = bool(flags[1])     # Alternating energy/azimuth shift on?
     distparams['iperihelion_shift'] = bool(flags[2])    # Possibly H2 abberation shift?
     distparams['minus'] = int(flags[3])  # Indicates a HDM file which contained bad data (frames), but could be handled as NDM file
-    distparams['ion_instrument'] = int(flags[4])  # 0 = no instrument, 1 = I1a, 2 = I3
+    distparams['ion_instrument'] = int(flags[4])  # 0 = no instrument, 1 = i1a, 2 = I3
 
     # 2 lines of Helios location information
     location = f.readline().split()
@@ -133,27 +133,27 @@ def distribution(probe, year, doy, hour, minute, second):
     distparams['helios_vr'] = float(helios_v[0]) * 1731  # Helios radial velocity (km/s)
     distparams['helios_v'] = float(helios_v[1]) * 1731   # Helios tangential velocity (km/s)
 
-    # I1a integrated ion parameters
-    I1a_proton_params = f.readline().split()
-    distparams['np_I1a'] = float(I1a_proton_params[0])   # Proton number density (cm^-3)
-    distparams['vp_I1a'] = float(I1a_proton_params[1])   # Proton velocity (km/s)
-    distparams['Tp_I1a'] = float(I1a_proton_params[2])   # Proton temperature (K)
-    I1a_proton_params = f.readline().split()
-    distparams['v_az_I1a'] = float(I1a_proton_params[0])     # Proton azimuth flow angle (deg)
-    distparams['v_el_I1a'] = float(I1a_proton_params[1])     # Proton elevation flow angle (deg)
-    assert distparams['v_az_I1a'] < 360, 'Flow azimuth must be less than 360 degrees'
+    # i1a integrated ion parameters
+    i1a_proton_params = f.readline().split()
+    distparams['np_i1a'] = float(i1a_proton_params[0])   # Proton number density (cm^-3)
+    distparams['vp_i1a'] = float(i1a_proton_params[1])   # Proton velocity (km/s)
+    distparams['Tp_i1a'] = float(i1a_proton_params[2])   # Proton temperature (K)
+    i1a_proton_params = f.readline().split()
+    distparams['v_az_i1a'] = float(i1a_proton_params[0])     # Proton azimuth flow angle (deg)
+    distparams['v_el_i1a'] = float(i1a_proton_params[1])     # Proton elevation flow angle (deg)
+    assert distparams['v_az_i1a'] < 360, 'Flow azimuth must be less than 360 degrees'
 
-    # I1a integrated alpha parameters (possibly all zero?)
-    I1a_alpha_params = f.readline().split()
-    distparams['na_I1a'] = float(I1a_alpha_params[0])     # Alpha number density (cm^-3)
-    distparams['va_I1a'] = float(I1a_alpha_params[1])     # Alpha velocity (km/s)
-    distparams['Ta_I1a'] = float(I1a_alpha_params[2])     # Alpha temperature (K)
+    # i1a integrated alpha parameters (possibly all zero?)
+    i1a_alpha_params = f.readline().split()
+    distparams['na_i1a'] = float(i1a_alpha_params[0])     # Alpha number density (cm^-3)
+    distparams['va_i1a'] = float(i1a_alpha_params[1])     # Alpha velocity (km/s)
+    distparams['Ta_i1a'] = float(i1a_alpha_params[2])     # Alpha temperature (K)
 
-    # I1b integrated ion parameters
-    I1b_proton_params = f.readline().split()
-    distparams['np_I1b'] = float(I1b_proton_params[0])   # Proton number density (cm^-3)
-    distparams['vp_I1b'] = float(I1b_proton_params[1])   # Proton velocity (km/s)
-    distparams['Tp_I1b'] = float(I1b_proton_params[2])   # Proton temperature (K)
+    # i1b integrated ion parameters
+    i1b_proton_params = f.readline().split()
+    distparams['np_i1b'] = float(i1b_proton_params[0])   # Proton number density (cm^-3)
+    distparams['vp_i1b'] = float(i1b_proton_params[1])   # Proton velocity (km/s)
+    distparams['Tp_i1b'] = float(i1b_proton_params[2])   # Proton temperature (K)
 
     # Magnetic field (out by a factor of 10 in data files for some reason)
     B = f.readline().split()
@@ -166,12 +166,12 @@ def distribution(probe, year, doy, hour, minute, second):
     distparams['sigmaBz'] = float(sigmaB[2]) / 10
 
     # Replace bad values with nans
-    to_replace = {'Tp_I1a': [-1.0, 0], 'np_I1a': [-1.0, 0], 'vp_I1a': [-1.0, 0],
-                  'Tp_I1b': [-1.0, 0], 'np_I1b': [-1.0, 0], 'vp_I1b': [-1.0, 0],
+    to_replace = {'Tp_i1a': [-1.0, 0], 'np_i1a': [-1.0, 0], 'vp_i1a': [-1.0, 0],
+                  'Tp_i1b': [-1.0, 0], 'np_i1b': [-1.0, 0], 'vp_i1b': [-1.0, 0],
                   'sigmaBx': -0.01, 'sigmaBy': -0.01, 'sigmaBz': -0.01,
                   'Bx': 0.0, 'By': 0.0, 'Bz': 0.0,
-                  'v_az_I1a': [-1, 0], 'v_el_I1a': [-1, 0],
-                  'na_I1a': [-1, 0], 'va_I1a': [-1, 0], 'Ta_I1a': [-1, 0]}
+                  'v_az_i1a': [-1, 0], 'v_el_i1a': [-1, 0],
+                  'na_i1a': [-1, 0], 'va_i1a': [-1, 0], 'Ta_i1a': [-1, 0]}
     distparams = distparams.replace(to_replace, np.nan)
 
     nionlines = None   # Stores number of lines in ion distribution function
@@ -575,7 +575,6 @@ def trajectory(probe, startDate, endDate):
     data = []
     headings = ['Year', 'doy', 'Hour', 'Carrrot', 'r', 'selat', 'selon',
                 'hellat', 'hellon', 'hilon', 'escang', 'code']
-    widths = [3, 3, 2, 4, 6, 7, 6, 6, 6, 6, 6, 1]
     colspecs = [(0, 3), (4, 7), (8, 10), (11, 15), (16, 22), (23, 30), (31, 37),
                 (38, 44), (45, 51), (52, 58), (59, 65), (66, 67)]
     # Loop through years
@@ -587,7 +586,7 @@ def trajectory(probe, startDate, endDate):
         try:
             thisdata = pd.read_fwf(floc + fname, names=headings, header=None,
                                    colspecs=colspecs)
-        except FileNotFoundError as err:
+        except FileNotFoundError:
             continue
 
         thisdata['Year'] += 1900
