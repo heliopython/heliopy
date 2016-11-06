@@ -27,7 +27,7 @@ def loaddistfile(probe, year, doy, hour, minute, second):
     Method to load a Helios distribution file.
 
     Returns opened file and location of file if file exists. If file doesn't
-    exist raises a FileNotFoundError.
+    exist raises an OSError.
 
     Parameters
     ----------
@@ -58,11 +58,11 @@ def loaddistfile(probe, year, doy, hour, minute, second):
         try:
             f = open(filename + extension)
             filename += extension
-        except FileNotFoundError:
+        except OSError:
             continue
 
     if 'f' not in locals():
-        raise FileNotFoundError('Could not find file with name ' +
+        raise OSError('Could not find file with name ' +
                                 filename[:-1])
     else:
         return f, filename
@@ -574,7 +574,7 @@ def trajectory(probe, startdate, enddate):
         try:
             thisdata = pd.read_fwf(floc + fname, names=headings, header=None,
                                    colspecs=colspecs)
-        except FileNotFoundError:
+        except OSError:
             continue
 
         thisdata['Year'] += 1900
