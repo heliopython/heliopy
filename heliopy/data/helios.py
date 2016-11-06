@@ -93,9 +93,7 @@ def integrateddists(probe, year, doy, hour, minute, second):
 
 
 def distribution(probe, year, doy, hour, minute, second):
-    """
-    Read in full distribution functions and associated paraemters
-    """
+    """Read in full distribution functions and associated paraemters."""
     f, filename = loaddistfile(probe, year, doy, hour, minute, second)
 
     _, month, day = spacetime.doy2ymd(year, doy)
@@ -349,9 +347,7 @@ def merged(probe, starttime, endtime, verbose=True):
 
 
 def merged_fromascii(probe, year, doy):
-    """
-    Read in a single day of merged data
-    """
+    """Read in a single day of merged data."""
     floc = helios_dir + '/helios' + probe + '/merged/he' + probe + '_40sec/'
     fname = 'H' + probe + str(year - 1900) + '_' + str(doy).zfill(3)
     asciiloc = floc + fname + '.dat'
@@ -383,9 +379,7 @@ def merged_fromascii(probe, year, doy):
 
 
 def mag_4hz(probe, starttime, endtime, verbose=True):
-    """
-    Read in 4Hz magnetic field data
-    """
+    """Read in 4Hz magnetic field data."""
     if isinstance(starttime, datetime.datetime):
         assert isinstance(endtime, datetime.datetime),\
             'Start time and end time must have same datatype'
@@ -442,9 +436,7 @@ def mag_4hz(probe, starttime, endtime, verbose=True):
 
 
 def fourHz_fromascii(probe, year, doy):
-    """
-    Read in a single day of 4Hz magnetic field data
-    """
+    """Read in a single day of 4Hz magnetic field data."""
     floc = helios_dir + '/helios' + probe + '/mag/4hz/'
     fname = 'he' + probe + '1s' + str(year - 1900) + str(doy).zfill(3)
     # For some reason the last number in the filename is the hour at which
@@ -532,9 +524,7 @@ def mag_ness(probe, starttime, endtime):
 
 
 def mag_ness_fromascii(probe, year, doy):
-    """
-    Read in a single day of 6 second magnetic field data
-    """
+    """Read in a single day of 6 second magnetic field data.s"""
     floc = helios_dir + '/helios' + probe + '/mag/6sec_ness/' + str(year) + '/'
     fname = 'h' + probe + str(year - 1900) + str(doy).zfill(3)
     asciiloc = floc + fname + '.asc'
@@ -569,9 +559,7 @@ def mag_ness_fromascii(probe, year, doy):
 
 
 def trajectory(probe, startdate, enddate):
-    """
-    Read in trajectory data
-    """
+    """Read in trajectory data."""
     data = []
     headings = ['Year', 'doy', 'Hour', 'Carrrot', 'r', 'selat', 'selon',
                 'hellat', 'hellon', 'hilon', 'escang', 'code']

@@ -3,7 +3,24 @@ import matplotlib.pyplot as plt
 
 def loglog(fs, power, title='', xlabel=r'$f /Hz$', ylabel='', legend=None):
     """
-    A method to plot power spectra on log-log axes
+    Plot power spectra on log-log axes.
+
+    Gets current axis and adds plot. Can also label plot.
+
+    Parameters
+    ----------
+        fs : array_like
+            Frequencies
+        power : array_like
+            Power at given frequencies
+        title : string
+            Plot title
+        xlabel : string
+            x-axis label
+        ylabel : string
+            y-axis label
+        legend : string
+            Legend entry
     """
     ax = plt.gca()
     ax.plot(fs, power, alpha=0.8, label=legend)

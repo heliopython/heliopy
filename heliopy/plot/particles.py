@@ -4,18 +4,14 @@ import numpy as np
 
 
 def scatter3d(x, y, z, pdf):
-    """
-    Perform 3D scatter plot of distribution function data
-    """
+    """Perform 3D scatter plot of distribution function data."""
     fig = plt.gcf()
     ax = fig.add_subplot(111, projection='3d')
     ax.scatter(x, y, z, c=np.log10(pdf), s=40)
 
 
 def contour2d(x, y, pdf, showbins=True):
-    """
-    Do a countour plot of 2D distribution function data
-    """
+    """Perform a countour plot of 2D distribution function data."""
     ax = plt.subplot()
     ax.tricontourf(x, y, np.log10(pdf), cmap='viridis', linewidths='1')
     if showbins:
@@ -23,9 +19,7 @@ def contour2d(x, y, pdf, showbins=True):
 
 
 def surf2d(x, y, pdf):
-    """
-    3D surf plot of 2D distribution function
-    """
+    """3D surf plot of 2D distribution function."""
     fig = plt.gcf()
     ax = fig.add_subplot(111, projection='3d')
     ax.plot_trisurf(x, y, np.log10(pdf), cmap='viridis', linewidths=0, alpha=0.5)
