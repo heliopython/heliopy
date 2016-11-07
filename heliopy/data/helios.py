@@ -63,7 +63,7 @@ def loaddistfile(probe, year, doy, hour, minute, second):
 
     if 'f' not in locals():
         raise OSError('Could not find file with name ' +
-                                filename[:-1])
+                      filename[:-1])
     else:
         return f, filename
 
