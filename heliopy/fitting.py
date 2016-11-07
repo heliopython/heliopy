@@ -3,6 +3,7 @@ Methods for fitting distributions to data
 """
 import numpy as np
 import scipy.optimize as opt
+import scipy.special as special
 
 
 def maxwellian(x, a, mu, sigma):
@@ -48,6 +49,36 @@ def poisson(x, rate):
     return rate * np.exp(-rate * x)
 
 
+def vonmises(phi, c, alpha, kappa):
+    """
+    von Mises distribution.
+
+    A symmetric uni-modal distribution used for points
+    on the closed interval [0, 2pi].
+
+    Parameters
+    ----------
+        phi : array_like
+            phi values
+        c : float
+            Amplitude of distribution
+        alpha : float
+            Mode of distribution
+        kappa : float
+            Kappa parameter. For large kappa this is
+            approximately 1/sigma^2, where sigma is
+            the tradditional variance of a normal
+            distribution.
+
+    Returns
+    -------
+        pdf : array_like
+            Probability desnity function at corresponding
+            phi values.
+    """
+    return c * np.exp(kappa * np.cos(phi - alpha))
+
+
 def maxwellianfit(x, f, p0=None):
     """
     Perform a Maxwellian fit to data
@@ -66,14 +97,15 @@ def maxwellianfit(x, f, p0=None):
 
 
 def bimaxwellianfit(x_1, x_2, f, p0=None):
-    """
-    Perform a Bi-Maxwellian fit to data
-    """
+    """Perform a Bi-Maxwellian fit to data"""
     return opt.curve_fit(bimaxwellian, [x_1, x_2], f, p0)
 
 
 def poissonfit(x, f, p0=None):
-    """
-    Perform a Poisson distribution fit to data
-    """
+    """Perform a Poisson distribution fit to data"""
     return opt.curve_fit(poisson, x, f, p0)
+
+
+def vonmisesfit(phi, f, p0=None):
+    """Perform a Von mises fit to data"""
+    return opt.curve_fit(vonmises, phi, f, p0)
