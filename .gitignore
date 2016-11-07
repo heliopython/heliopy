@@ -3,3 +3,4 @@
 .coverage
 doc/build*
 doc/Makefile
+heliopy.egg-info*
