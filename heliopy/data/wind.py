@@ -1,12 +1,11 @@
-import heliopy.time as spacetime
-from heliopy.data import helper
-from heliopy import config
-import pandas as pd
-
 """
 Methods for importing data from the WIND spacecraft. All data is publically
 available at ftp://spdf.gsfc.nasa.gov/pub/data/wind.
 """
+import heliopy.time as spacetime
+from heliopy.data import helper
+from heliopy import config
+import pandas as pd
 data_dir = config['default']['download_dir']
 wind_dir = data_dir + '/wind'
 remote_wind_dir = 'ftp://spdf.gsfc.nasa.gov/pub/data/wind'
