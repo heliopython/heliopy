@@ -3,7 +3,6 @@ Methods for fitting distributions to data
 """
 import numpy as np
 import scipy.optimize as opt
-import scipy.special as special
 
 
 def maxwellian(x, a, mu, sigma):
