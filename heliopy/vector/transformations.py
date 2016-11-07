@@ -1,6 +1,53 @@
 import numpy as np
 
 
+def pol2cart(r, phi):
+    """
+    Given polar r, phi co-ordinates, returns cartesian x, y co-ordinates.
+
+    Parameters
+    ----------
+        r : array_like
+            r values
+        phi : array_like
+            Azimuthal angle values.
+
+    Returns
+    -------
+        x : array_like
+            x values
+        y : array_like
+            y values
+
+    """
+    x = r * np.cos(phi)
+    y = r * np.sin(phi)
+    return x, y
+
+
+def cart2pol(x, y):
+    """
+    Given cartesian x, y co-ordinates, returns polar r, phi co-ordinates.
+
+    Parameters
+    ----------
+        x : array_like
+            x values
+        y : array_like
+            y values
+
+    Returns
+    -------
+        r : array_like
+            r values
+        phi : array_like
+            Azimuthal angle values.
+    """
+    r = np.sqrt(x**2 + y**2)
+    phi = np.arctan2(y, x)
+    return r, phi
+
+
 def cart2sph(x, y, z):
     """
     Given cartesian x, y, z co-ordinates, returns shperical r, theta, phi

@@ -2,6 +2,33 @@ from heliopy.vector.transformations import *
 import numpy as np
 
 
+def test_cart2pol():
+    x = 1
+    y = 0
+    r, phi = cart2pol(x, y)
+    np.testing.assert_almost_equal(r, 1)
+    np.testing.assert_almost_equal(phi, 0)
+
+    y = 1
+    r, phi = cart2pol(x, y)
+    np.testing.assert_almost_equal(r, np.sqrt(2))
+    np.testing.assert_almost_equal(phi, np.pi / 4)
+
+
+def test_pol2cart():
+    r = np.random.rand()
+    phi = 0
+    x, y = pol2cart(r, phi)
+    np.testing.assert_almost_equal(x, r)
+    np.testing.assert_almost_equal(y, 0)
+
+    r = np.random.rand()
+    phi = np.pi / 2
+    x, y = pol2cart(r, phi)
+    np.testing.assert_almost_equal(x, 0)
+    np.testing.assert_almost_equal(y, r)
+
+
 def test_cartsph():
     x = np.random.rand()
     y = np.random.rand()
