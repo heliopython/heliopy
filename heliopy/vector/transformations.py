@@ -41,7 +41,7 @@ def cart2pol(x, y):
         r : array_like
             r values
         phi : array_like
-            Azimuthal angle values.
+            Azimuthal angle values. Angles are in the range [-pi, pi]
     """
     r = np.sqrt(x**2 + y**2)
     phi = np.arctan2(y, x)
@@ -67,10 +67,11 @@ def cart2sph(x, y, z):
         r : array_like
             r values
         theta : array_like
-            Elevation angles defined from the x-y plane towards the z-axis
+            Elevation angles defined from the x-y plane towards the z-axis.
+            Angles are in the range [-pi/2, pi/2].
         phi : array_like
             Azimuthal angles defined in the x-y plane, clockwise about the
-            z-axis, from the x-axis.
+            z-axis, from the x-axis. Angles are in the range [-pi, pi].
     """
     xy = x**2 + y**2
     r = np.sqrt(xy + z**2)
