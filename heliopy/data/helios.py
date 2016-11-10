@@ -1,14 +1,12 @@
 """
 Methods for importing Helios data. In general the data are available form a
 number of sources (replace 'helios1' with 'helios2' in url to change probe):
-    Distribution functions
-        In general not publically available (as far as I know)
-    Merged plasma/mangetic field
-        ftp://cdaweb.gsfc.nasa.gov/pub/data/helios/helios1/merged/
-    6 second cadence magnetic field
-        ftp://cdaweb.gsfc.nasa.gov/pub/data/helios/helios1/mag/6sec_ness/
-    Trajectory
-        ftp://cdaweb.gsfc.nasa.gov/pub/data/helios/helios1/traj/
+
+* Distribution functions - In general not publically available (as far as I know)
+* Merged plasma/mangetic field - ftp://cdaweb.gsfc.nasa.gov/pub/data/helios/helios1/merged/
+* 6 second cadence magnetic field - ftp://cdaweb.gsfc.nasa.gov/pub/data/helios/helios1/mag/6sec_ness/
+* Trajectory - ftp://cdaweb.gsfc.nasa.gov/pub/data/helios/helios1/traj/
+
 """
 import pandas as pd
 import numpy as np
