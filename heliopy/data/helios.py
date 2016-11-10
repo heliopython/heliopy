@@ -1,4 +1,15 @@
-"""Methods for importing Helios data."""
+"""
+Methods for importing Helios data. In general the data are available form a
+number of sources (replace 'helios1' with 'helios2' in url to change probe):
+    Distribution functions
+        In general not publically available (as far as I know)
+    Merged plasma/mangetic field
+        ftp://cdaweb.gsfc.nasa.gov/pub/data/helios/helios1/merged/
+    6 second cadence magnetic field
+        ftp://cdaweb.gsfc.nasa.gov/pub/data/helios/helios1/mag/6sec_ness/
+    Trajectory
+        ftp://cdaweb.gsfc.nasa.gov/pub/data/helios/helios1/traj/
+"""
 import pandas as pd
 import numpy as np
 import datetime
@@ -417,7 +428,7 @@ def mag_4hz(probe, starttime, endtime, verbose=True):
                 except ValueError as err:
                     if str(err)[0:15] == 'No raw mag data':
                         if verbose:
-                            print(year, doy, 'No raw mag data')
+                            print(year, doy, 'No 4Hz raw mag data available for this day')
                     else:
                         raise
             else:
@@ -431,7 +442,7 @@ def mag_4hz(probe, starttime, endtime, verbose=True):
         data = data[(data['Time'] > starttime) & (data['Time'] < endtime)]
 
     if data.empty:
-        raise ValueError('No raw mag data available')
+        raise ValueError('No 4Hz raw mag data available for entire interval')
     return(data)
 
 
