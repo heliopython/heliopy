@@ -388,30 +388,37 @@ def merged_fromascii(probe, year, doy):
 
 
 def mag_4hz(probe, starttime, endtime, verbose=True):
-    """Read in 4Hz magnetic field data."""
-    if isinstance(starttime, datetime.datetime):
-        assert isinstance(endtime, datetime.datetime),\
-            'Start time and end time must have same datatype'
-        startdate = starttime.date()
-        enddate = endtime.date()
-    elif isinstance(starttime, datetime.date):
-        assert isinstance(endtime, datetime.date),\
-            'Start time and end time must have same datatype'
-        startdate = starttime
-        enddate = endtime
+    """
+    Read in 4Hz magnetic field data.
+
+    Parameters
+    ----------
+        probe : string
+            Helios probe to import data from. Must be '1' or '2'.
+        starttime : datetime
+            Interval start time.
+        endtime : datetime
+            Interval end time.
+        verbose : bool
+            If True, print more information as data is loading.
+    """
+    startdate = starttime.date()
+    enddate = endtime.date()
 
     data = []
     # Loop through years
     for year in range(startdate.year, enddate.year + 1):
         floc = helios_dir + '/helios' + probe + '/mag/4hz/'
-        # Calculate start day
-        startdoy = 1
+        # Calculate start day of year
         if year == startdate.year:
             startdoy = int(startdate.strftime('%j'))
-        # Calculate end day
-        enddoy = 366
+        else:
+            startdoy = 1
+        # Calculate end day of year
         if year == enddate.year:
             enddoy = int(enddate.strftime('%j'))
+        else:
+            enddoy = 366
 
         # Loop through days of year
         for doy in range(startdoy, enddoy + 1):
@@ -435,9 +442,8 @@ def mag_4hz(probe, starttime, endtime, verbose=True):
     if data == []:
         raise ValueError('No raw mag data available')
     data = pd.concat(data, ignore_index=True)
-    # If given datetimes, filter data
-    if isinstance(starttime, datetime.datetime):
-        data = data[(data['Time'] > starttime) & (data['Time'] < endtime)]
+    # Filter data between start and end times
+    data = data[(data['Time'] > starttime) & (data['Time'] < endtime)]
 
     if data.empty:
         raise ValueError('No 4Hz raw mag data available for entire interval')
