@@ -417,8 +417,10 @@ def merged(probe, starttime, endtime, verbose=True):
 
 def merged_fromascii(probe, year, doy):
     """
-    Read in a single day of merged data from orignal ascii files, and save to
-    a hdf file for faster access after first read in.
+    Read in a single day of merged data.
+
+    Data is loaded from orignal ascii files. and saved to a hdf file for faster
+    access after first read in.
 
     Parameters
     ----------
@@ -534,8 +536,10 @@ def mag_4hz(probe, starttime, endtime, verbose=True):
 
 def fourHz_fromascii(probe, year, doy):
     """
-    Read in a single day of 4Hz magnetic field data from orignal ascii files,
-    and save to hdf file for faster access after first read.
+    Read in a single day of 4Hz magnetic field data.
+
+    Data is read in from orignal ascii files, and saved to a hdf file for faster
+    access after the first read.
 
     Parameters
     ----------
@@ -643,8 +647,10 @@ def mag_ness(probe, starttime, endtime):
 
 def mag_ness_fromascii(probe, year, doy):
     """
-    Read in a single day of 6 second magnetic field data from orignal ascii
-    files, and save to hdf file for faster access after first read.
+    Read in a single day of 6 second magnetic field data.
+
+    Data is read from orignal ascii files, and saved to a hdf file for faster
+    access after the first read.
 
     Parameters
     ----------
