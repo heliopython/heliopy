@@ -14,7 +14,7 @@ def hist(x, bins='auto', normed=True, return_centres=True):
             Number of bins in output.
         normed : bool
             If true, return a normalised histogram such that the sum of values
-            in each bin is 1.
+            in each bin times the bin width is 1.
         return_centres : bool
             If True, returns the co-ordinates of the bin centres. If False,
             returns the co-ordinates of the bin edges.
