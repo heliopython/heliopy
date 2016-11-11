@@ -52,6 +52,13 @@ def loaddistfile(probe, year, doy, hour, minute, second):
             Minute.
         second : int
             Second.
+
+    Returns
+    -------
+        f : file
+            Opened distribution function file.
+        filename : string
+            Filename of opened file.
     """
     assert probe == '1' or probe == '2', 'Probe must be 1 or 2'
     # Work out location of file
@@ -80,7 +87,30 @@ def loaddistfile(probe, year, doy, hour, minute, second):
 def integrateddists(probe, year, doy, hour, minute, second):
     """
     Returns the integrated distributions from experiments i1a and i1b in Helios
-    distribution function files.
+    distribution function files. The distributions are integrated over all
+    angles and given as a function of proton velocity.
+
+    Parameters
+    ----------
+        probe : int
+            Helios probe to import data from. Must be 1 or 2.
+        year : int
+            Year
+        doy : int
+            Day of year.
+        hour : int
+            Hour.
+        minute : int
+            Minute.
+        second : int
+            Second.
+
+    Returns
+    -------
+            i1a : DataFrame
+                i1a integrated distribution function.
+            i1b : DataFrame
+                i1b integrated distribution function.
     """
     f, _ = loaddistfile(probe, year, doy, hour, minute, second)
     for line in f:
@@ -102,7 +132,33 @@ def integrateddists(probe, year, doy, hour, minute, second):
 
 
 def distribution(probe, year, doy, hour, minute, second):
-    """Read in full distribution functions and associated paraemters."""
+    """
+    Read in full distribution functions and associated paraemters.
+
+    Parameters
+    ----------
+        probe : int
+            Helios probe to import data from. Must be 1 or 2.
+        year : int
+            Year
+        doy : int
+            Day of year.
+        hour : int
+            Hour.
+        minute : int
+            Minute.
+        second : int
+            Second.
+
+    Returns
+    -------
+        electrondist : DataFrame
+            2D electron distribution function.
+        iondist : DataFrame
+            3D ion distribution function.
+        distparams : Series
+            Distribution parameters from top of distribution function files.
+    """
     f, filename = loaddistfile(probe, year, doy, hour, minute, second)
 
     _, month, day = spacetime.doy2ymd(year, doy)
@@ -293,19 +349,24 @@ def merged(probe, starttime, endtime, verbose=True):
     """
     Read in merged data set
 
-    starttime and endtime can either be datetime.date or datetime.datetime
-    If they are datetime.date, load whole days inclusive of dates given
+    Parameters
+    ----------
+        probe : int
+            Helios probe to import data from. Must be '1' or '2'.
+        starttime : datetime
+            Interval start time.
+        endtime : datetime
+            Interval end time.
+        verbose : bool
+            If True, print more information as data is loading.
+
+    Returns
+    -------
+        data : DataFrame
+            Merged data set.
     """
-    if isinstance(starttime, datetime.datetime):
-        assert isinstance(endtime, datetime.datetime),\
-            'Start time and end time must have same datatype'
-        startdate = starttime.date()
-        enddate = endtime.date()
-    elif isinstance(starttime, datetime.date):
-        assert isinstance(endtime, datetime.date),\
-            'Start time and end time must have same datatype'
-        startdate = starttime
-        enddate = endtime
+    startdate = starttime.date()
+    enddate = endtime.date()
 
     data = []
     # Loop through years
@@ -348,15 +409,31 @@ def merged(probe, starttime, endtime, verbose=True):
                          enddate.strftime(fmt))
 
     data = pd.concat(data, ignore_index=True)
-    # If given datetimes, filter data
-    if isinstance(starttime, datetime.datetime):
-        data = data[(data['Time'] > starttime) & (data['Time'] < endtime)]
+    # Filter data between start and end times
+    data = data[(data['Time'] > starttime) & (data['Time'] < endtime)]
 
     return data
 
 
 def merged_fromascii(probe, year, doy):
-    """Read in a single day of merged data."""
+    """
+    Read in a single day of merged data from orignal ascii files, and save to
+    a hdf file for faster access after first read in.
+
+    Parameters
+    ----------
+        probe : int
+            Helios probe to import data from. Must be 1 or 2.
+        year : int
+            Year.
+        doy : int
+            Day of year.
+
+    Returns
+    -------
+        data : DataFrame
+            Merged data set.
+    """
     floc = helios_dir + '/helios' + probe + '/merged/he' + probe + '_40sec/'
     fname = 'H' + probe + str(year - 1900) + '_' + str(doy).zfill(3)
     asciiloc = floc + fname + '.dat'
@@ -401,6 +478,11 @@ def mag_4hz(probe, starttime, endtime, verbose=True):
             Interval end time.
         verbose : bool
             If True, print more information as data is loading.
+
+    Returns
+    -------
+        data : DataFrame
+            4Hz magnetic field data set
     """
     startdate = starttime.date()
     enddate = endtime.date()
@@ -451,7 +533,24 @@ def mag_4hz(probe, starttime, endtime, verbose=True):
 
 
 def fourHz_fromascii(probe, year, doy):
-    """Read in a single day of 4Hz magnetic field data."""
+    """
+    Read in a single day of 4Hz magnetic field data from orignal ascii files,
+    and save to hdf file for faster access after first read.
+
+    Parameters
+    ----------
+        probe : int
+            Helios probe to import data from. Must be 1 or 2.
+        year : int
+            Year.
+        doy : int
+            Day of year.
+
+    Returns
+    -------
+        data : DataFrame
+            4Hz magnetic field data set.
+    """
     floc = helios_dir + '/helios' + probe + '/mag/4hz/'
     fname = 'he' + probe + '1s' + str(year - 1900) + str(doy).zfill(3)
     # For some reason the last number in the filename is the hour at which
@@ -482,21 +581,26 @@ def fourHz_fromascii(probe, year, doy):
 
 def mag_ness(probe, starttime, endtime):
     """
-    Read in 6 second magnetic field data
+    Read in 6 second magnetic field data.
 
-    starttime and endtime can either be datetime.date or datetime.datetime
-    If they are datetime.date, load whole days inclusive of dates given
+    Parameters
+    ----------
+        probe : int
+            Helios probe to import data from. Must be '1' or '2'.
+        starttime : datetime
+            Interval start time.
+        endtime : datetime
+            Interval end time.
+        verbose : bool
+            If True, print more information as data is loading.
+
+    Returns
+    -------
+        data : DataFrame
+            6 second magnetic field data set
     """
-    if isinstance(starttime, datetime.datetime):
-        assert isinstance(endtime, datetime.datetime),\
-            'Start time and end time must have same datatype'
-        startdate = starttime.date()
-        enddate = endtime.date()
-    elif isinstance(starttime, datetime.date):
-        assert isinstance(endtime, datetime.date),\
-            'Start time and end time must have same datatype'
-        startdate = starttime
-        enddate = endtime
+    startdate = starttime.date()
+    enddate = endtime.date()
 
     data = []
     # Loop through years
@@ -529,9 +633,8 @@ def mag_ness(probe, starttime, endtime):
     if data == []:
         raise ValueError('No raw mag data available')
     data = pd.concat(data)
-    # If given datetimes, filter data
-    if isinstance(starttime, datetime.datetime):
-        data = data[(data['Time'] > starttime) & (data['Time'] < endtime)]
+    # Filter data between start and end times
+    data = data[(data['Time'] > starttime) & (data['Time'] < endtime)]
 
     if data.empty:
         raise ValueError('No raw mag data available')
@@ -539,7 +642,24 @@ def mag_ness(probe, starttime, endtime):
 
 
 def mag_ness_fromascii(probe, year, doy):
-    """Read in a single day of 6 second magnetic field data.s"""
+    """
+    Read in a single day of 6 second magnetic field data from orignal ascii
+    files, and save to hdf file for faster access after first read.
+
+    Parameters
+    ----------
+        probe : int
+            Helios probe to import data from. Must be 1 or 2.
+        year : int
+            Year.
+        doy : int
+            Day of year.
+
+    Returns
+    -------
+        data : DataFrame
+            6 second magnetic field data set.
+    """
     floc = helios_dir + '/helios' + probe + '/mag/6sec_ness/' + str(year) + '/'
     fname = 'h' + probe + str(year - 1900) + str(doy).zfill(3)
     asciiloc = floc + fname + '.asc'
@@ -574,7 +694,23 @@ def mag_ness_fromascii(probe, year, doy):
 
 
 def trajectory(probe, startdate, enddate):
-    """Read in trajectory data."""
+    """
+    Read in trajectory data.
+
+    Parameters
+    ----------
+        probe : int
+            Helios probe to import data from. Must be 1 or 2.
+        startdate : date
+            Interval start date.
+        enddate : date
+            Interval end date.
+
+    Returns
+    -------
+        data : DataFrame
+            Trajectory data set.
+    """
     data = []
     headings = ['Year', 'doy', 'Hour', 'Carrrot', 'r', 'selat', 'selon',
                 'hellat', 'hellon', 'hilon', 'escang', 'code']
