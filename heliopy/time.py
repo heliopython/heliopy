@@ -15,10 +15,10 @@ def daysplitinterval(starttime, endtime):
     """
     assert starttime < endtime, 'Start datetime must be before end datetime'
     out = []
-    return daysplitintervalhelper(starttime, endtime, out)
+    return _daysplitintervalhelper(starttime, endtime, out)
 
 
-def daysplitintervalhelper(starttime, endtime, out):
+def _daysplitintervalhelper(starttime, endtime, out):
     # If two datetimes are on the same day, append current date and
     # start/end times
     if starttime.date() == endtime.date():
@@ -31,7 +31,7 @@ def daysplitintervalhelper(starttime, endtime, out):
     newstarttime = datetime.combine(starttime.date(), time.min) +\
         timedelta(days=1)
     # Recurse
-    return daysplitintervalhelper(newstarttime, endtime, out)
+    return _daysplitintervalhelper(newstarttime, endtime, out)
 
 
 def isleap(y):
