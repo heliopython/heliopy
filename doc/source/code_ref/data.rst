@@ -5,4 +5,5 @@ heliopy.data package
    :maxdepth: 2
 
    data/helios
+   data/mms
    data/wind
