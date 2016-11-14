@@ -60,5 +60,5 @@ def binmean(x, y, bins):
         left = bins[i]
         right = bins[i + 1]
         tokeep = np.logical_and(x > left, x < right)
-        means[i] = np.mean(x[tokeep])
+        means[i] = np.mean(y[tokeep])
     return means
