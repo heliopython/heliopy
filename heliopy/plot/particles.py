@@ -13,7 +13,7 @@ def scatter3d(x, y, z, pdf):
 
 def contour2d(x, y, pdf, showbins=True, nlevels=10):
     """Perform a countour plot of 2D distribution function data."""
-    ax = plt.subplot()
+    ax = plt.gca()
     ax.tricontourf(x, y, np.log10(pdf), nlevels, cmap='viridis')
     if showbins:
         ax.scatter(x, y, c=np.log10(pdf), cmap='viridis', s=40)
