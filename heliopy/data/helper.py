@@ -12,6 +12,7 @@ def checkdir(directory):
     Checks if directory exists, if not creates directory
     """
     if not os.path.exists(directory):
+        print('Creating new directory', directory)
         os.makedirs(directory)
 
 
