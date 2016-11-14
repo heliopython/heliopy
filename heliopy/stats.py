@@ -15,3 +15,31 @@ def hist(x, bins='auto', normed=True, return_centres=True):
         return hist, bin_centres
     else:
         return hist, bin_edges
+
+
+def binmean(x, y, bins):
+    """
+    Returns the mean of data points lying in given bins.
+
+    Parameters
+    ----------
+        x : array_like
+            x co-ordinates of data points.
+        y : array_like
+            data points
+        bins : array_like
+            Bin edges.
+
+    Returns
+    -------
+        means : array_like
+            The mean of y values in each bin. If no data points are present in
+            a bin, the mean value is set to nan. Size is bins.size - 1.
+    """
+    means = np.zeros(bins.size - 1) * np.nan
+    for i in range(0, bins.size):
+        left = bins[i]
+        right = bins[i + 1]
+        tokeep = np.logical_and(x > left, x < right)
+        means[i] = np.mean(x[tokeep])
+    return means
