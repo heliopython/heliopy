@@ -49,4 +49,6 @@ def threedp_pm(starttime, endtime):
         df = helper.cdf2df(cdf)
         data.append(df)
 
-    return pd.concat(data)
+    data = pd.concat(data)
+    data = data[(data['Time'] > starttime) & (data['Time'] < endtime)]
+    return data
