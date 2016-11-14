@@ -1,3 +1,4 @@
+"""Methods for transforming vectors"""
 import numpy as np
 
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-#
+"""
 # heliopy documentation build configuration file, created by
 # sphinx-quickstart
 #
@@ -16,7 +16,7 @@
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-#
+"""
 import os
 import sys
 import sphinx_rtd_theme
