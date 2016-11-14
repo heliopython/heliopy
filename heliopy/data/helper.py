@@ -2,9 +2,25 @@
 Helper methods for importing data
 """
 import os
+import sys
 from spacepy import pycdf
 from urllib.request import urlretrieve
 import pandas as pd
+
+
+def _reporthook(blocknum, blocksize, totalsize):
+    readsofar = blocknum * blocksize
+    if totalsize > 0:
+        percent = readsofar * 1e2 / totalsize
+        s = "\r%5.1f%% %*d / %d" % (
+            percent, len(str(totalsize)), readsofar, totalsize)
+        sys.stderr.write(s)
+        # Near the end
+        if readsofar >= totalsize:
+            sys.stderr.write("\n")
+    # Total size is unknown
+    else:
+        sys.stderr.write("read %d\n" % (readsofar,))
 
 
 def checkdir(directory):
@@ -32,7 +48,8 @@ def load(filename, local_dir, remote_url):
     if not os.path.isfile(local_dir + '/' + filename):
         print('Downloading', remote_url + '/' + filename)
         urlretrieve(remote_url + '/' + filename,
-                    filename=local_dir + '/' + filename)
+                    filename=local_dir + '/' + filename,
+                    reporthook=_reporthook)
 
     # Import local file
     if filetype == 'cdf':
