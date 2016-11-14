@@ -29,6 +29,7 @@ def load(filename, local_dir, remote_url):
 
     # If file doesn't exist locally, attempt to download file
     if not os.path.isfile(local_dir + '/' + filename):
+        print('Downloading', remote_url + '/' + filename)
         urlretrieve(remote_url + '/' + filename,
                     filename=local_dir + '/' + filename)
 
