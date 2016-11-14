@@ -75,8 +75,8 @@ def cart2sph(x, y, z):
     """
     xy = x**2 + y**2
     r = np.sqrt(xy + z**2)
-    theta = np.arctan2(z, np.sqrt(xy))  # for elevation angle defined from XY-plane up
-    phi = np.arctan2(y, x)         # for azimuthal angle defined from x axis counterclockwise
+    theta = np.arctan2(z, np.sqrt(xy))
+    phi = np.arctan2(y, x)
     return r, theta, phi
 
 
@@ -195,12 +195,6 @@ def rotationmatrix(v):
 
     newzaxis = np.dot(R, v)
     newzaxis = newzaxis / np.linalg.norm(newzaxis)
-
-    # Check that z axis is [0, 0, 1]
-    assert np.abs(newzaxis[0]) < 1e-10, 'Rotation failed, new z axis is: %r' % newzaxis
-    assert np.abs(newzaxis[1]) < 1e-10, 'Rotation failed, new z axis is: %r' % newzaxis
-    assert newzaxis[2] > 1 - (1e-10), 'Rotation failed, new z axis is: %r' % newzaxis
-    assert newzaxis[2] < 1 + (1e-10), 'Rotation failed, new z axis is: %r' % newzaxis
 
     return R
 
