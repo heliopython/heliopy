@@ -1,7 +1,5 @@
+"""Methods for processing times and dates"""
 from datetime import datetime, time, timedelta
-"""
-Methods for processing times and dates
-"""
 
 
 def daysplitinterval(starttime, endtime):
