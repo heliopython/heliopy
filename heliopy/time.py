@@ -12,6 +12,12 @@ def daysplitinterval(starttime, endtime):
             Start date/time of interval
         endtime : datetime
             End date/time of interval
+
+    Returns
+    -------
+        intervals : list
+            A list of lists. Each item in the sublists consists of the date,
+            start time, and end time for the particular date.
     """
     assert starttime < endtime, 'Start datetime must be before end datetime'
     out = []
