@@ -56,7 +56,7 @@ def binmean(x, y, bins):
             a bin, the mean value is set to nan. Size is bins.size - 1.
     """
     means = np.zeros(bins.size - 1) * np.nan
-    for i in range(0, bins.size):
+    for i in range(0, bins.size - 1):
         left = bins[i]
         right = bins[i + 1]
         tokeep = np.logical_and(x > left, x < right)
