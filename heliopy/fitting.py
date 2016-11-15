@@ -138,7 +138,6 @@ def maxwellianfit(x, f, p0=None):
 def bimaxwellianfit(x_1, x_2, f, p0=None):
     """
     Perform a Bi-Maxwellian fit to data.
-    Perform a Maxwellian fit to data
 
     Parameters
     ----------
