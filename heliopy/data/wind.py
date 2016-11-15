@@ -46,7 +46,15 @@ def threedp_pm(starttime, endtime):
         remote_url = remote_wind_dir + this_relative_dir
 
         cdf = helper.load(filename, local_dir, remote_url)
-        df = helper.cdf2df(cdf)
+
+        keys = {'A_DENS': 'n_a',
+                'A_TEMP': 'T_a',
+                'A_VELS': ['va_x', 'va_y', 'va_z'],
+                'P_DENS': 'n_p',
+                'P_TEMP': 'T_p',
+                'P_VELS': ['vp_x', 'vp_y', 'vp_z'],
+                'Epoch': 'Time'}
+        df = helper.cdf2df(cdf, index_key='Epoch', keys=keys)
         data.append(df)
 
     data = pd.concat(data)
