@@ -1,15 +1,11 @@
-"""
-heliopy configuration utility
-"""
+"""heliopy configuration utility"""
 import configparser
 import os
 import heliopy
 
 
 def load_config():
-    """
-    Read in configuration file
-    """
+    """Read in configuration file"""
     config_filename = 'heliopyrc'
     config = configparser.ConfigParser()
 

@@ -1,6 +1,4 @@
-"""
-Helper methods for importing data
-"""
+"""Helper methods for importing data"""
 import os
 import sys
 from spacepy import pycdf
@@ -24,9 +22,7 @@ def _reporthook(blocknum, blocksize, totalsize):
 
 
 def checkdir(directory):
-    """
-    Checks if directory exists, if not creates directory
-    """
+    """Checks if directory exists, if not creates directory"""
     if not os.path.exists(directory):
         print('Creating new directory', directory)
         os.makedirs(directory)
@@ -34,8 +30,9 @@ def checkdir(directory):
 
 def load(filename, local_dir, remote_url):
     """
-    Try to load a file from local_dir
-    If file doesn't exist, try to download from remtote_url
+    Try to load a file from local_dir.
+
+    If file doesn't exist locally, try to download from remtote_url instead.
     """
     # Check if file is cdf
     if filename[-4:] == '.cdf':

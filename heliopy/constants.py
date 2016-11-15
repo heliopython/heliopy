@@ -1,6 +1,4 @@
-"""
-Contains a number of useful constants
-"""
+"""Contains a number of useful physical constants"""
 from numpy import pi
 
 c = 299792e3        # Speed of light in m/s
