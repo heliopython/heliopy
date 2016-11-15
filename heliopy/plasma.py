@@ -2,12 +2,37 @@
 Methods for working out various quanties of interest to plasmas. Note that units
 are in general not SI. The following units are used throughout:
 
-* Velocity: km/s
-* Mass: kg
+* Number density: cm^-3
 * Mangetic field: nT
+* Mass: kg
 * Pressure: Pa
+* Velocity: km/s
 """
+import numpy as np
 from heliopy import constants
+
+
+def alfvenspeed(n, B):
+    """
+    Given number density and magnetic field strength, return Alfven speed.
+
+    Parameters
+    ----------
+        n : array_like
+            Number density in cm^-3.
+        B : array_like
+            Magnetic field magnitude in nT.
+
+    Returns
+    -------
+        v_a : array_like
+            Alfven speed in km/s.
+    """
+    n *= 1e6
+    B *= 1e-9
+    v_a = B / np.sqrt(constants.mu_0 * constants.m_p * n)
+    v_a *= 1e-3
+    return v_a
 
 
 def vth2temp(v, m):
