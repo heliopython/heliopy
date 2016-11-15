@@ -1,5 +1,11 @@
 """
-Methods for working out various quanties of interest to plasmas
+Methods for working out various quanties of interest to plasmas. Note that units
+are in general not SI. The following units are used throughout:
+
+* Velocity: km/s
+* Mass: kg
+* Mangetic field: nT
+* Pressure: Pa
 """
 from heliopy import constants
 
