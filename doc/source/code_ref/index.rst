@@ -9,4 +9,5 @@ API reference
    plasma
    stats
    time
+   timeseries
    vector
