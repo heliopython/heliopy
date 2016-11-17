@@ -16,7 +16,7 @@ def contour2d(x, y, pdf, showbins=True, nlevels=10):
     ax = plt.gca()
     ax.tricontourf(x, y, np.log10(pdf), nlevels, cmap='viridis')
     if showbins:
-        ax.scatter(x, y, c=np.log10(pdf), cmap='viridis', s=40)
+        ax.scatter(x, y, c=np.log10(pdf), cmap='viridis', edgecolors='k', s=30)
 
 
 def surf2d(x, y, pdf):
