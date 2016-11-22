@@ -4,7 +4,7 @@
 ; The working directory is the parent directory in which all downloaded
 ; data will be stored.
 ;
-; Default value: ~/heliopy
+; Should be specified relative to home directory
 ;
 [default]
-download_dir = /home/$USER/heliopy
+download_dir = heliopy/data

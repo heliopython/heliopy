@@ -20,4 +20,6 @@ def load_config():
     module_dir = os.path.dirname(heliopy.__file__)
     config_file = os.path.join(module_dir, 'data', config_filename)
     config.read(config_file)
+    config['default']['download_dir'] = os.path.join(home_dir,
+                                                     config['default']['download_dir'])
     return config
