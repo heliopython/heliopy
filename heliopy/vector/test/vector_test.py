@@ -2,6 +2,17 @@ from heliopy.vector.transformations import *
 import numpy as np
 
 
+def test_cart2pitchangles():
+    v = np.array([0, 1, 0])
+    x = np.array([0, 0, 0])
+    y = np.array([1, -1, 0])
+    z = np.array([0, 0, 1])
+
+    out = cart2pitchangles(x, y, z, v)
+    expected = np.array([0, np.pi, np.pi / 2])
+    np.testing.assert_almost_equal(out, expected)
+
+
 def test_cart2pol():
     x = 1
     y = 0

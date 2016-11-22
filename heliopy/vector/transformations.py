@@ -2,6 +2,32 @@
 import numpy as np
 
 
+def cart2pitchangles(x, y, z, v):
+    """
+    Return pitch angles about a given vector.
+
+    Parameters
+    ----------
+        x : array_like
+            x data values.
+        y : array_like
+            y data values.
+        z : array_like
+            z data values.
+        v : array_like
+            Vector to return pitch angles about.
+
+    Returns
+    -------
+        theta : array_like
+            Pitch angles. Angles are in range [0, pi].
+    """
+    assert all((x.shape == y.shape, x.shape == z.shape)), 'Input vector shapes must match'
+    rotx, roty, rotz = changezaxis(x, y, z, v)
+    _, theta, _ = cart2sph(rotx, roty, rotz)
+    return -(theta - (np.pi / 2))
+
+
 def pol2cart(r, phi):
     """
     Given polar r, phi co-ordinates, returns cartesian x, y co-ordinates.
