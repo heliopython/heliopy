@@ -15,7 +15,7 @@ install:
   - conda create --yes -n testenv python=$TRAVIS_PYTHON_VERSION scipy
   - source activate testenv
   # Install other dependancies
-  - pip install pytest pytest-cov pandas
+  - pip install pytest pytest-cov pandas spacepy
 script:
   - py.test heliopy/ --cov=heliopy/
 after_success:
