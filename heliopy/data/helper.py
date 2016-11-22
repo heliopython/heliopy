@@ -57,7 +57,7 @@ def load(filename, local_dir, remote_url):
         print('Ascii importing not working yet')
 
 
-def cdf2df(cdf, index_key, keys):
+def cdf2df(cdf, index_key, keys, dtimeindex=True):
     """
     Converts a cdf file to a pandas dataframe.
 
@@ -71,13 +71,19 @@ def cdf2df(cdf, index_key, keys):
             A dictionary that maps keys in the cdf file to the corresponding
             desired keys in the ouput dataframe. If a particular cdf key has
             multiple columns, the mapped keys must be in a list.
+        dtimeindex : bool
+            If True, dataframe index is parsed as a datetime.
 
     Returns
     -------
         df : DataFrame
             Data frame with read in data.
     """
-    df = pd.DataFrame(index=cdf[index_key][...])
+    index = cdf[index_key][...][:, 0]
+    if dtimeindex:
+        index = pd.DatetimeIndex(index)
+    df = pd.DataFrame(index=index)
+
     for key in keys:
         df_key = keys[key]
         if isinstance(df_key, list):
