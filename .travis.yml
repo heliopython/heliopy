@@ -5,8 +5,10 @@ python:
 
 # Download and set up conda
 before_install:
+  # Fortran compiler
   - sudo apt-get -qq update
   - sudo apt-get install -y gfortran
+  # Miniconda (needed for scipy)
   - wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
   - chmod +x miniconda.sh
   - ./miniconda.sh -b -p $HOME/miniconda
@@ -15,6 +17,12 @@ before_install:
   - conda update --yes conda
   - conda create --yes -n testenv python=$TRAVIS_PYTHON_VERSION scipy
   - source activate testenv
+  # CDF Library
+  - wget http://cdaweb.gsfc.nasa.gov/pub/software/cdf/dist/cdf36_3/linux/cdf36_3-dist-all.tar.gz
+  - tar -zxvf cdf36_3-dist-all.tar.gz
+  - cd cdf36_3-dist
+  - sudo make install
+  - cd ../
   # Install other dependancies
   - pip install pytest pytest-cov coveralls pandas
   - pip install spacepy
