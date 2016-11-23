@@ -21,7 +21,8 @@ before_install:
   - wget http://cdaweb.gsfc.nasa.gov/pub/software/cdf/dist/cdf36_3/linux/cdf36_3-dist-all.tar.gz
   - tar -zxvf cdf36_3-dist-all.tar.gz
   - cd cdf36_3-dist
-  - sudo make install
+  - make OS=linux ENV=gnu all
+  - sudo make INSTALLDIR=/usr/local/cdf install
   - cd ../
   # Install other dependancies
   - pip install pytest pytest-cov coveralls pandas
