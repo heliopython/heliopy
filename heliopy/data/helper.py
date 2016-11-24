@@ -3,6 +3,7 @@ import os
 import sys
 from spacepy import pycdf
 from urllib.request import urlretrieve
+import ftplib
 import pandas as pd
 
 
@@ -28,7 +29,25 @@ def checkdir(directory):
         os.makedirs(directory)
 
 
-def load(filename, local_dir, remote_url):
+def _load_local(local_dir, filename, filetype):
+    # Import local file
+    if filetype == 'cdf':
+        cdf = pycdf.CDF(local_dir + '/' + filename)
+        return cdf
+    elif filetype == 'ascii':
+        # TODO: Read in ascii files
+        raise RuntimeError('Ascii importing not working yet')
+
+
+def _load_remote(remote_url, filename, local_dir, filetype):
+        print('Downloading', remote_url + '/' + filename)
+        urlretrieve(remote_url + '/' + filename,
+                    filename=local_dir + '/' + filename,
+                    reporthook=_reporthook)
+        return _load_local(local_dir, filename, filetype)
+
+
+def load(filename, local_dir, remote_url, guessversion=False):
     """
     Try to load a file from local_dir.
 
@@ -40,21 +59,33 @@ def load(filename, local_dir, remote_url):
     # If not a cdf file assume ascii file
     else:
         filetype = 'ascii'
+        if guessversion:
+            raise RuntimeError('Cannot guess version for ascii files')
 
-    # If file doesn't exist locally, attempt to download file
-    if not os.path.isfile(local_dir + '/' + filename):
-        print('Downloading', remote_url + '/' + filename)
-        urlretrieve(remote_url + '/' + filename,
-                    filename=local_dir + '/' + filename,
-                    reporthook=_reporthook)
+    # Try to load locally
+    for f in os.listdir(local_dir):
+        if f[:-6] == filename[:-6]:
+            filename = f
+            return _load_local(local_dir, f, filetype)
 
-    # Import local file
-    if filetype == 'cdf':
-        cdf = pycdf.CDF(local_dir + '/' + filename)
-        return cdf
-    elif filetype == 'ascii':
-        # TODO: Read in ascii files
-        print('Ascii importing not working yet')
+    if guessversion:
+        # Split remote url into a server name and directory
+        for i, c in enumerate(remote_url[6:]):
+            if c == '/':
+                server = remote_url[6:6 + i]
+                server_dir = remote_url[7 + i:]
+                break
+        # Login to remote server
+        ftp = ftplib.FTP(server)
+        ftp.login()
+        # List files in directory
+        files = ftp.nlst(server_dir)
+        # Loop through and find files
+        for f in files:
+            if f[-len(filename):-8] == filename[:-8]:
+                filename = f[-len(filename):]
+
+    return _load_remote(remote_url, filename, local_dir, filetype)
 
 
 def cdf2df(cdf, index_key, keys, dtimeindex=True):
