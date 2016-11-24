@@ -110,7 +110,10 @@ def cdf2df(cdf, index_key, keys, dtimeindex=True):
         df : DataFrame
             Data frame with read in data.
     """
-    index = cdf[index_key][...][:, 0]
+    try:
+        index = cdf[index_key][...][:, 0]
+    except IndexError:
+        index = cdf[index_key][...]
     if dtimeindex:
         index = pd.DatetimeIndex(index)
     df = pd.DataFrame(index=index)
