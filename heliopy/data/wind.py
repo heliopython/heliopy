@@ -91,7 +91,7 @@ def threedp_pm(starttime, endtime):
 
         remote_url = remote_wind_dir + this_relative_dir
 
-        cdf = helper.load(filename, local_dir, remote_url)
+        cdf = helper.load(filename, local_dir, remote_url, guessversion=True)
 
         keys = {'A_DENS': 'n_a',
                 'A_TEMP': 'T_a',
