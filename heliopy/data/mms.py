@@ -20,7 +20,7 @@ def fgm_survey(probe, starttime, endtime):
 
     Parameters
     ----------
-        probe : int
+        probe : string
             Probe number, must be 1, 2, 3, or 4
         starttime : datetime
             Interval start time.
@@ -33,7 +33,7 @@ def fgm_survey(probe, starttime, endtime):
             Imported data.
     """
     # Directory relative to main MMS data directory
-    relative_dir = 'mms' + str(probe) + '/fgm/srvy/l2/'
+    relative_dir = 'mms' + probe + '/fgm/srvy/l2/'
 
     daylist = spacetime.daysplitinterval(starttime, endtime)
     data = []
@@ -41,7 +41,7 @@ def fgm_survey(probe, starttime, endtime):
         date = day[0]
         this_relative_dir = relative_dir + str(date.year) + '/' +\
             str(date.month).zfill(2)
-        filename = 'mms' + str(probe) + '_fgm_srvy_l2_' +\
+        filename = 'mms' + probe + '_fgm_srvy_l2_' +\
             str(date.year) +\
             str(date.month).zfill(2) +\
             str(date.day).zfill(2) +\
@@ -56,7 +56,7 @@ def fgm_survey(probe, starttime, endtime):
         cdf = helper.load(filename, local_dir, remote_url)
 
         # Convert cdf to dataframe
-        keys = {'mms2_fgm_b_gsm_srvy_l2': ['Bx', 'By', 'Bz', 'Br'],
+        keys = {'mms' + probe + '_fgm_b_gsm_srvy_l2': ['Bx', 'By', 'Bz', 'Br'],
                 'Epoch': 'Time'}
         df = helper.cdf2df(cdf, 'Epoch', keys)
         data.append(df)
