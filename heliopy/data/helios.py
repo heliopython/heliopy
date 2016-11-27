@@ -2,7 +2,7 @@
 Methods for importing Helios data. In general the data are available form a
 number of sources (replace 'helios1' with 'helios2' in url to change probe):
 
-* Distribution functions - In general not publically available (as far as I know)
+* Distribution functions - In general not publically available
 * Merged plasma/mangetic field - ftp://cdaweb.gsfc.nasa.gov/pub/data/helios/helios1/merged/
 * 6 second cadence magnetic field - ftp://cdaweb.gsfc.nasa.gov/pub/data/helios/helios1/mag/6sec_ness/
 * Trajectory - ftp://cdaweb.gsfc.nasa.gov/pub/data/helios/helios1/traj/
@@ -15,6 +15,7 @@ import os
 import warnings
 
 from heliopy import config
+from heliopy.data import helper
 import heliopy.vector.transformations as spacetrans
 import heliopy.time as spacetime
 import heliopy.constants as constants
@@ -436,12 +437,14 @@ def merged_fromascii(probe, year, doy):
         data : DataFrame
             Merged data set.
     """
-    floc = helios_dir + '/helios' + probe + '/merged/he' + probe + '_40sec/'
-    fname = 'H' + probe + str(year - 1900) + '_' + str(doy).zfill(3)
-    asciiloc = floc + fname + '.dat'
-    if not os.path.isfile(asciiloc):
-        raise ValueError('No raw merged data available for probe ' + probe +
-                         ', Year: ' + str(year) + ' DOY: ' + str(doy))
+    local_dir = helios_dir + '/helios' + probe + '/merged/he' + probe +\
+        '_40sec/'
+    remote_url = 'ftp://cdaweb.gsfc.nasa.gov/pub/data/helios/helios1/' + \
+        'merged/he' + probe + '_40sec/'
+    filename = 'H' + probe + str(year - 1900) + '_' + str(doy).zfill(3) + '.dat'
+    asciiloc = local_dir + filename
+
+    helper.load(filename, local_dir, remote_url)
 
     # Load data
     data = pd.read_table(asciiloc, delim_whitespace=True)
@@ -461,7 +464,7 @@ def merged_fromascii(probe, year, doy):
     data.replace(0.0, np.nan, inplace=True)
 
     # Save data to a hdf store
-    saveloc = floc + fname + '.h5'
+    saveloc = local_dir + filename[:-4] + '.h5'
     data.to_hdf(saveloc, 'table', format='fixed', mode='w')
     return(data)
 

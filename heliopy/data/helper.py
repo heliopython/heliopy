@@ -34,9 +34,6 @@ def _load_local(local_dir, filename, filetype):
     if filetype == 'cdf':
         cdf = pycdf.CDF(local_dir + '/' + filename)
         return cdf
-    elif filetype == 'ascii':
-        # TODO: Read in ascii files
-        raise RuntimeError('Ascii importing not working yet')
 
 
 def _load_remote(remote_url, filename, local_dir, filetype):
