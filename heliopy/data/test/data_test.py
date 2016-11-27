@@ -1,5 +1,6 @@
 import heliopy.data.wind as wind
 import heliopy.data.mms as mms
+import heliopy.data.helios as helios
 from datetime import datetime
 import urllib
 
@@ -29,5 +30,13 @@ def test_mms():
     for i in range(1, 5):
         mms.fgm_survey(str(i), starttime, endtime)
 
-if __name__ == '__main__':
-    test_mms()
+
+def test_helios():
+    """
+    Tests for importing Helios data.
+
+    Try and import a single days' worth of data for each data product.
+    """
+    starttime = datetime(1976, 1, 1, 0, 0, 0)
+    endtime = datetime(1976, 1, 1, 23, 59, 59)
+    helios.merged('1', starttime, endtime)
