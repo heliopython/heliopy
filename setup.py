@@ -11,7 +11,7 @@ setup(name='heliopy',
       install_requires=['numpy',
                         'scipy',
                         'pandas',
-                        'spacepy']
+                        'spacepy'],
       packages=['heliopy',
                 'heliopy.data',
                 'heliopy.plot',
