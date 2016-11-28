@@ -1,6 +1,6 @@
 """Contains a number of useful physical constants"""
-from numpy import pi
 
+pi = 3.1415926535897932384626433    # Pi
 c = 299792e3        # Speed of light in m/s
 m_e = 9.10938e-31   # Electron mass in kg
 m_p = 1.672622e-27  # Proton mass in kg
