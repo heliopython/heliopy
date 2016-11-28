@@ -392,7 +392,7 @@ def merged(probe, starttime, endtime, verbose=True):
             if not os.path.isfile(hdfloc):
                 # Data not processed yet, try to process and load it
                 try:
-                    data.append(merged_fromascii(probe, year, doy))
+                    data.append(_merged_fromascii(probe, year, doy))
                     if verbose:
                         print(year, doy, 'Processed ascii file')
                 except ValueError as err:
@@ -418,7 +418,7 @@ def merged(probe, starttime, endtime, verbose=True):
     return data
 
 
-def merged_fromascii(probe, year, doy):
+def _merged_fromascii(probe, year, doy):
     """
     Read in a single day of merged data.
 
@@ -516,7 +516,7 @@ def mag_4hz(probe, starttime, endtime, verbose=True):
             if not os.path.isfile(hdfloc):
                 # Data not processed yet, try to process and load it
                 try:
-                    data.append(fourHz_fromascii(probe, year, doy))
+                    data.append(_fourHz_fromascii(probe, year, doy))
                     if verbose:
                         print(year, doy, '4Hz data processed')
                 except ValueError as err:
@@ -539,7 +539,7 @@ def mag_4hz(probe, starttime, endtime, verbose=True):
     return(data)
 
 
-def fourHz_fromascii(probe, year, doy):
+def _fourHz_fromascii(probe, year, doy):
     """
     Read in a single day of 4Hz magnetic field data.
 
@@ -631,7 +631,7 @@ def mag_ness(probe, starttime, endtime):
             if not os.path.isfile(hdfloc):
                 # Data not processed yet, try to process and load it
                 try:
-                    data.append(mag_ness_fromascii(probe, year, doy))
+                    data.append(_mag_ness_fromascii(probe, year, doy))
                     print(year, doy, 'Ness data processed')
                 except ValueError:
                     print(year, doy, 'No raw mag data')
@@ -650,7 +650,7 @@ def mag_ness(probe, starttime, endtime):
     return(data)
 
 
-def mag_ness_fromascii(probe, year, doy):
+def _mag_ness_fromascii(probe, year, doy):
     """
     Read in a single day of 6 second magnetic field data.
 
