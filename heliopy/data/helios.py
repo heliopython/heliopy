@@ -387,13 +387,13 @@ def merged(probe, starttime, endtime, verbose=True):
         for doy in range(startdoy, enddoy + 1):
             hdfloc = floc + 'H' + probe + str(year - 1900) + '_' +\
                 str(doy).zfill(3) + '.h5'
+            # Data not processed yet, try to process and load it
             if not os.path.isfile(hdfloc):
-                # Data not processed yet, try to process and load it
                 try:
                     data.append(merged_fromascii(probe, year, doy))
                     if verbose:
                         print(year, doy, 'Processed ascii file')
-                except ValueError as err:
+                except FileNotFoundError as err:
                     if verbose:
                         print(str(err))
                         print(year, doy, 'No raw merged data')
