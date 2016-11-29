@@ -1,6 +1,13 @@
 from heliopy.time import *
 from datetime import datetime, time, date
 import pytest
+import numpy as np
+
+
+def test_nptimedelta2seconds():
+    t = np.timedelta64(1, 's')
+    s = nptimedelta2seconds(t)
+    assert s == 1
 
 
 def test_daysplitinterval():
