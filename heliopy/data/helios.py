@@ -387,13 +387,13 @@ def merged(probe, starttime, endtime, verbose=True):
         for doy in range(startdoy, enddoy + 1):
             hdfloc = floc + 'H' + probe + str(year - 1900) + '_' +\
                 str(doy).zfill(3) + '.h5'
+            # Data not processed yet, try to process and load it
             if not os.path.isfile(hdfloc):
-                # Data not processed yet, try to process and load it
                 try:
                     data.append(merged_fromascii(probe, year, doy))
                     if verbose:
                         print(year, doy, 'Processed ascii file')
-                except ValueError as err:
+                except FileNotFoundError as err:
                     if verbose:
                         print(str(err))
                         print(year, doy, 'No raw merged data')
@@ -439,11 +439,12 @@ def merged_fromascii(probe, year, doy):
     """
     local_dir = helios_dir + '/helios' + probe + '/merged/he' + probe +\
         '_40sec/'
-    remote_url = 'ftp://cdaweb.gsfc.nasa.gov/pub/data/helios/helios1/' + \
-        'merged/he' + probe + '_40sec/'
+    remote_url = 'ftp://cdaweb.gsfc.nasa.gov/pub/data/helios/helios' + probe + \
+        '/' + 'merged/he' + probe + '_40sec/'
     filename = 'H' + probe + str(year - 1900) + '_' + str(doy).zfill(3) + '.dat'
     asciiloc = local_dir + filename
 
+    # Make sure file is downloaded
     helper.load(filename, local_dir, remote_url)
 
     # Load data
