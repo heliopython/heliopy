@@ -5,13 +5,15 @@ from datetime import datetime
 import heliopy.time as heliotime
 
 
-def advectedfield(t, x, y, z, vx, vy, vz):
+def advectedfield(t, x, y, z, vx, vy, vz, **kwargs):
     """
     Plots time series measurements of a vector field spatially.
 
     `x`, `y`, `z` are the vector field components, and `vx`, `vy`, `vz` are the
     advected velocities of the field. The conversion from time to spatial
     co-ordinates is done using r = t * v.
+
+    kwargs are passed to `plt.quiver()`.
 
     Parameters
     ----------
@@ -41,4 +43,4 @@ def advectedfield(t, x, y, z, vx, vy, vz):
     rz = vz * t
 
     ax = plt.gca()
-    ax.quiver(rx, ry, rz, x, y, z)
+    ax.quiver(rx, ry, rz, x, y, z, pivot='tail', **kwargs)
