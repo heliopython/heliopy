@@ -15,11 +15,8 @@ cda_cookie = config['cluster']['user_cookie']
 cluster_dir = data_dir + '/cluster'
 # Create request dictionary to which the data product, start time and end times
 # can be added to later.
-generic_dict = {'RETRIEVALTYPE': 'PRODUCT',
-                'DELIVERY_FORMAT': 'CDF',
-                'DELIVERY_INTERVAL': 'daily',
+generic_dict = {'DELIVERY_FORMAT': 'CDF',
                 'REF_DOC': '0',
-                'NON_BROWSER': '',
                 'CSACOOKIE': cda_cookie,
                 'INCLUDE_EMPTY': '0'
                 }
@@ -48,14 +45,20 @@ def fgm(probe, starttime, endtime):
     # Add start and end time to request dictionary
     request_dict = generic_dict
     request_dict['START_DATE'] = starttime.strftime(cda_time_fmt)
-    request_dict['START_DATE'] = endtime.strftime(cda_time_fmt)
+    request_dict['END_DATE'] = endtime.strftime(cda_time_fmt)
 
+    # Work out dataset ID
     request_str = ''
+    request_str += 'DATASET_ID' + '='
+    request_str += 'C' + probe + '_CP_FGM_FULL'
     for item in request_dict:
-        request_str += '?'
+        request_str += '&'
         request_str += item
         request_str += '='
         request_str += request_dict[item]
 
+    url = 'https://csa.esac.esa.int/csa/aio/product-action?'
+    request_str += '&NON_BROWSER'
+
 if __name__ == '__main__':
-    fgm(datetime(2001, 1, 1, 0, 0, 0), datetime(2001, 1, 2, 0, 0, 0))
+    fgm('2', datetime(2004, 6, 18, 11, 35, 0), datetime(2004, 6, 19, 18, 35, 0))
