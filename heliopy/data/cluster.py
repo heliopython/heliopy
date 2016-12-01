@@ -27,7 +27,24 @@ generic_dict = {'RETRIEVALTYPE': 'PRODUCT',
 cda_time_fmt = '%Y-%m-%dT%H:%M:%SZ'
 
 
-def fgm(starttime, endtime):
+def fgm(probe, starttime, endtime):
+    """
+    Download fluxgate magnetometer data.
+
+    Parameters
+    ----------
+        probe : string
+            Probe number. Must be '1', '2', '3', or '4'.
+        starttime : datetime
+            Interval start.
+        endtime : datetime
+            Interval end.
+
+    Returns
+    -------
+        data : DataFrame
+            Requested data.
+    """
     # Add start and end time to request dictionary
     request_dict = generic_dict
     request_dict['START_DATE'] = starttime.strftime(cda_time_fmt)
