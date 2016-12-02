@@ -19,7 +19,7 @@ def reporthook(blocknum, blocksize, totalsize):
             sys.stderr.write("\n")
     # Total size is unknown
     else:
-        sys.stderr.write("read %d\n" % (readsofar,))
+        sys.stderr.write("\rRead %d" % (readsofar,))
 
 
 def checkdir(directory):
