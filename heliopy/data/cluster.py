@@ -115,9 +115,6 @@ def fgm(probe, starttime, endtime):
             Requested data.
     """
     _download(probe, starttime, endtime, 'fgm', 'CP_FGM_FULL')
-    daylist = daysplitinterval(starttime, endtime)
-    for day in daylist:
-        _download(probe, day[1], day[2], 'fgm', 'CP_FGM_FULL')
 
 
 if __name__ == '__main__':
