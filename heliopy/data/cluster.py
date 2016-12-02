@@ -2,7 +2,9 @@
 Methods for importing data from the four Cluster spacecraft.
 
 To download data you will need to be registered at the cluster science archive
-(http://www.cosmos.esa.int/web/csa/register-now).
+(http://www.cosmos.esa.int/web/csa/register-now), and have set either the
+environment variable CLUSTERCOOKIE to your cookie, or set your cookie in
+the `heliopyrc` file.
 
 The data download method is described at
 https://csa.esac.esa.int/csa/aio/html/wget.shtml.
@@ -126,7 +128,8 @@ def fgm(probe, starttime, endtime):
     """
     Download fluxgate magnetometer data.
 
-    https://caa.estec.esa.int/documents/UG/CAA_EST_UG_FGM_v60.pdf
+    See https://caa.estec.esa.int/documents/UG/CAA_EST_UG_FGM_v60.pdf for more
+    information on the FGM data.
 
     Parameters
     ----------
