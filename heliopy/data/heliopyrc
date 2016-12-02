@@ -8,3 +8,7 @@
 ;
 [default]
 download_dir = heliopy/data
+
+; Cluster user cookie
+[cluster]
+user_cookie = none

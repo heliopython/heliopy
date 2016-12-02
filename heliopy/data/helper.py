@@ -7,7 +7,7 @@ import ftplib
 import pandas as pd
 
 
-def _reporthook(blocknum, blocksize, totalsize):
+def reporthook(blocknum, blocksize, totalsize):
     readsofar = blocknum * blocksize
     if totalsize > 0:
         percent = readsofar * 1e2 / totalsize
@@ -19,7 +19,7 @@ def _reporthook(blocknum, blocksize, totalsize):
             sys.stderr.write("\n")
     # Total size is unknown
     else:
-        sys.stderr.write("read %d\n" % (readsofar,))
+        sys.stderr.write("\rRead %d" % (readsofar,))
 
 
 def checkdir(directory):
@@ -59,7 +59,7 @@ def _load_remote(remote_url, filename, local_dir, filetype):
         print('Downloading', remote_url + '/' + filename)
         urlretrieve(remote_url + '/' + filename,
                     filename=local_dir + '/' + filename,
-                    reporthook=_reporthook)
+                    reporthook=reporthook)
         return _load_local(local_dir, filename, filetype)
 
 
