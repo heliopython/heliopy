@@ -113,7 +113,7 @@ def _download(probe, starttime, endtime, instrument, product_id):
                     download_dir = local_dir + '/' + d + '/C' + probe + '_' +\
                         product_id
                     break
-            print(download_dir)
+
             # Remove request times from filename
             dirlist = os.listdir(download_dir)
             # Move to data folder
