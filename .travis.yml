@@ -1,33 +1,29 @@
 sudo: required
 language: python
 python:
-  - "3.5"
-
-# Download and set up conda
+- '3.5'
 before_install:
-  # Fortran compiler
-  - sudo apt-get -qq update
-  - sudo apt-get install -y gfortran
-  # Miniconda (needed for scipy)
-  - wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
-  - chmod +x miniconda.sh
-  - ./miniconda.sh -b -p $HOME/miniconda
-  - export PATH="$HOME/miniconda/bin:$PATH"
-  # Update conda itself
-  - conda update --yes conda
-  - conda create --yes -n testenv python=$TRAVIS_PYTHON_VERSION scipy
-  - source activate testenv
-  # CDF Library
-  - wget http://cdaweb.gsfc.nasa.gov/pub/software/cdf/dist/cdf36_3/linux/cdf36_3-dist-all.tar.gz
-  - tar -zxvf cdf36_3-dist-all.tar.gz
-  - cd cdf36_3-dist
-  - make OS=linux ENV=gnu all
-  - sudo make INSTALLDIR=/usr/local/cdf install
-  - cd ../
-  # Install other dependancies
-  - pip install pytest pytest-cov coveralls pandas tables
-  - pip install spacepy
+- sudo apt-get -qq update
+- sudo apt-get install -y gfortran
+- wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
+- chmod +x miniconda.sh
+- "./miniconda.sh -b -p $HOME/miniconda"
+- export PATH="$HOME/miniconda/bin:$PATH"
+- conda update --yes conda
+- conda create --yes -n testenv python=$TRAVIS_PYTHON_VERSION scipy
+- source activate testenv
+- wget http://cdaweb.gsfc.nasa.gov/pub/software/cdf/dist/cdf36_3/linux/cdf36_3-dist-all.tar.gz
+- tar -zxvf cdf36_3-dist-all.tar.gz
+- cd cdf36_3-dist
+- make OS=linux ENV=gnu all
+- sudo make INSTALLDIR=/usr/local/cdf install
+- cd ../
+- pip install pytest pytest-cov coveralls pandas tables
+- pip install spacepy
 script:
-  - py.test heliopy/ --cov=heliopy/ -v
+- py.test heliopy/ --cov=heliopy/ -v
 after_success:
-  - coveralls
+- coveralls
+env:
+  global:
+    secure: J+DrbHHQG1XNcyJ5ftO+cJGRd08bT0KN+xT2nlEzgSj/zGlWOvjfxwlcYXWtXkHTkIKd6WQYP7t21uGkD8/oqKqJu6MSDg0IXD1Ehk1SlVNgClbq/kEwDBOFkex4qk9ovTMHqiBdilB3bkUlncCPlX6nPgeOoWPGnaD+7jjwovUhwJ5HPmWNCwqXJNWWA32ujYk3iVjgnGop4GWRFpYrTSggj61I83qTwem+iVuzz+8pd1k2uUbm9aykXjWk9UcvnZu5mChgaH7oGuzNUli+/rfKYfBkmYJyFEj+pA6SzWzLE64PSgFDdlTLQvbbpXV7wM6n30EZEm9rIE0+aH91j3jln6gUGfcyOV290laW1Xx9P3PaC39fDOcU3Hho1mEW6B8m81r5tyfJqMzzU8mQIzAvwIyyLcWTmPzMuiY1FTGcrFdyuh3nFYJpnYeSvNYe0Rl8VhJnx/piBbxwjdHXYJd6rLt+7nLctJ1CpIUOwHZDh9GBZtGPzdtmilKfdb3b+obV3nbwN07i5r9BwrUtqtshNMUaGwP5Wf9yFAWU1xWTQgVd4IhcmrCi8NtHfoOuwWXMwEEJ5XYOS44bvnP9cEBdX1w3Nd9KlkbHqRqqL/HOwHEEMDzwZ9Zp5YXS9DcOojl4K0R7KFN8W/uVpxufelmuHm84Bazy5UH+dUyZCww=
