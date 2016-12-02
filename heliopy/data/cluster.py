@@ -9,11 +9,14 @@ https://csa.esac.esa.int/csa/aio/html/wget.shtml.
 """
 import os
 import tarfile
-from heliopy import config
 from datetime import datetime, time
 from urllib.request import urlretrieve
+
+from heliopy import config
 from heliopy.time import daysplitinterval
-from heliopy.data.helper import reporthook, checkdir
+from heliopy.data.helper import reporthook, checkdir, cdf2df
+
+from spacepy import pycdf
 
 data_dir = config['default']['download_dir']
 cda_cookie = config['cluster']['user_cookie']
@@ -28,6 +31,31 @@ generic_dict = {'DELIVERY_FORMAT': 'CDF',
                 }
 # Time string format for cluster data archive.
 cda_time_fmt = '%Y-%m-%dT%H:%M:%SZ'
+
+
+def _load(probe, starttime, endtime, instrument, product_id, cdfkeys):
+    daylist = daysplitinterval(starttime, endtime)
+    for day in daylist:
+        date = day[0]
+        year = str(date.year)
+        month = str(date.month).zfill(2)
+        day = str(date.day).zfill(2)
+
+        local_dir = cluster_dir + '/c' + probe + '/' + instrument +\
+            '/full/' + year
+
+        local_fname = 'C' + probe + '_' + product_id + '__' +\
+            year + month + day + '.cdf'
+        # If we don't have local file download it
+        if not os.path.exists(local_dir + '/' + local_fname):
+            _download(probe, starttime, endtime, instrument, product_id)
+
+        cdf = pycdf.CDF(local_dir + '/' + local_fname)
+        for key, value in cdfkeys.items():
+            if value == 'Time':
+                index_key = key
+                break
+        return cdf2df(cdf, index_key, cdfkeys)
 
 
 def _download(probe, starttime, endtime, instrument, product_id):
@@ -114,7 +142,10 @@ def fgm(probe, starttime, endtime):
         data : DataFrame
             Requested data.
     """
-    _download(probe, starttime, endtime, 'fgm', 'CP_FGM_FULL')
+    cdfkeys = {'B_mag__C' + probe + '_CP_FGM_FULL': 'Bmag',
+               'B_vec_xyz_gse__C' + probe + '_CP_FGM_FULL': ['Bx', 'By', 'Bz'],
+               'time_tags__C' + probe + '_CP_FGM_FULL': 'Time'}
+    return _load(probe, starttime, endtime, 'fgm', 'CP_FGM_FULL', cdfkeys)
 
 
 if __name__ == '__main__':
