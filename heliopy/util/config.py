@@ -23,5 +23,5 @@ def load_config():
     config['default']['download_dir'] = os.path.join(home_dir,
                                                      config['default']['download_dir'])
     if os.environ.get('CLUSTERCOOKIE') is not None:
-        config['cluster']['user_cookie'] = os.environ.get['CLUSTERCOOKIE']
+        config['cluster']['user_cookie'] = os.environ.get('CLUSTERCOOKIE')
     return config
