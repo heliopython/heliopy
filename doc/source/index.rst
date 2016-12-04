@@ -1,11 +1,13 @@
-Heliopy documentation
-===================================
+heliopy documentation
+=====================
 
-Heliopy is a free and open source set of tools for analysing space physics data in python.
+heliopy is a free and open source set of tools for analysing space physics data
+in python.
 
 .. toctree::
    :maxdepth: 2
 
+   installing.rst
    code_ref/index.rst
 
 
