@@ -7,7 +7,7 @@ import ftplib
 import pandas as pd
 
 
-def _reporthook(blocknum, blocksize, totalsize):
+def reporthook(blocknum, blocksize, totalsize):
     readsofar = blocknum * blocksize
     if totalsize > 0:
         percent = readsofar * 1e2 / totalsize
@@ -19,7 +19,7 @@ def _reporthook(blocknum, blocksize, totalsize):
             sys.stderr.write("\n")
     # Total size is unknown
     else:
-        sys.stderr.write("read %d\n" % (readsofar,))
+        sys.stderr.write("\rRead %d" % (readsofar,))
 
 
 def checkdir(directory):
@@ -50,13 +50,16 @@ def _load_local(local_dir, filename, filetype):
     if filetype == 'cdf':
         cdf = pycdf.CDF(local_dir + '/' + filename)
         return cdf
+    elif filetype == 'ascii':
+        f = open(local_dir + '/' + filename)
+        return f
 
 
 def _load_remote(remote_url, filename, local_dir, filetype):
         print('Downloading', remote_url + '/' + filename)
         urlretrieve(remote_url + '/' + filename,
                     filename=local_dir + '/' + filename,
-                    reporthook=_reporthook)
+                    reporthook=reporthook)
         return _load_local(local_dir, filename, filetype)
 
 
@@ -65,6 +68,18 @@ def load(filename, local_dir, remote_url, guessversion=False):
     Try to load a file from local_dir.
 
     If file doesn't exist locally, try to download from remtote_url instead.
+
+    Parameters
+    ----------
+        filename : string
+            Name of file.
+        local_dir : string
+            Local location of file.
+        remote_url : string
+            Remote location of file.
+        guessversion : bool
+            If true, try to guess the version number in the filename. Only works
+            for cdf files.
     """
     # Check if file is cdf
     if filename[-4:] == '.cdf':
@@ -82,6 +97,8 @@ def load(filename, local_dir, remote_url, guessversion=False):
                 filename = f
                 return _load_local(local_dir, f, filetype)
 
+    # Loading locally failed, but directory has been made so try to download
+    # file.
     if guessversion:
         # Split remote url into a server name and directory
         for i, c in enumerate(remote_url[6:]):

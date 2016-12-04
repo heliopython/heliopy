@@ -1,5 +1,25 @@
 """Methods for processing times and dates"""
 from datetime import datetime, time, timedelta
+import numpy as np
+
+
+def nptimedelta2seconds(dt):
+    """
+    Converts a numpy timedelta array into seconds.
+
+    Parameters
+    ----------
+        dt : array_like
+            Input timedelta array.
+
+    Returns
+    -------
+        s : array_like
+            Converted array in seconds.
+    """
+    assert np.issubdtype(dt.dtype, np.timedelta64),\
+        'Input array must be of type "np.timedelta64"'
+    return dt / np.timedelta64(1, 's')
 
 
 def daysplitinterval(starttime, endtime):
