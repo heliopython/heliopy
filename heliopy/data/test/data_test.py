@@ -2,12 +2,18 @@ import heliopy.data.wind as wind
 import heliopy.data.mms as mms
 import heliopy.data.helios as helios
 import heliopy.data.cluster as cluster
+from heliopy import config
+
 from datetime import datetime
 import urllib
 
 
 def test_cluster():
-    cluster.fgm('2', datetime(2004, 6, 18, 11, 35, 0), datetime(2004, 6, 19, 18, 35, 0))
+    if config['cluster']['user_cookie'] != 'none':
+        probe = '2'
+        starttime = datetime(2004, 6, 18, 11, 35, 0)
+        endtime = datetime(2004, 6, 19, 18, 35, 0)
+        cluster.fgm(probe, starttime, endtime)
 
 
 def test_wind():
