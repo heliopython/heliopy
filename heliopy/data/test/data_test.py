@@ -6,8 +6,16 @@ from heliopy import config
 
 from datetime import datetime
 import urllib
+import pytest
 
 
+nodata = pytest.mark.skipif(
+    pytest.config.getoption("--no-data"),
+    reason="Skipped test that involves data download"
+)
+
+
+@nodata
 def test_cluster():
     if config['cluster']['user_cookie'] != 'none':
         probe = '2'
@@ -16,6 +24,7 @@ def test_cluster():
         cluster.fgm(probe, starttime, endtime)
 
 
+@nodata
 def test_wind():
     """
     Tests for imporitng wind data.
@@ -29,6 +38,7 @@ def test_wind():
     wind.threedp_pm(starttime, endtime)
 
 
+@nodata
 def test_mms():
     """
     Tests for importing mms data.
@@ -42,6 +52,7 @@ def test_mms():
         mms.fgm_survey(str(i), starttime, endtime)
 
 
+@nodata
 def test_helios():
     """
     Tests for importing Helios data.
