@@ -442,7 +442,7 @@ def _merged_fromascii(probe, year, doy):
     local_dir = helios_dir + '/helios' + probe + '/merged/he' + probe +\
         '_40sec/'
     remote_url = 'ftp://cdaweb.gsfc.nasa.gov/pub/data/helios/helios' + probe + \
-        '/' + 'merged/he' + probe + '_40sec/'
+        '/' + 'merged/he' + probe + '_40sec'
     filename = 'H' + probe + str(year - 1900) + '_' + str(doy).zfill(3) + '.dat'
     asciiloc = local_dir + filename
 
