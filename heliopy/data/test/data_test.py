@@ -21,6 +21,7 @@ def test_imp():
     starttime = datetime(1976, 1, 1, 0, 0, 0)
     endtime = datetime(1976, 1, 2, 0, 0, 0)
     imp.mag320ms('8', starttime, endtime)
+    imp.mitplasma_h0('8', starttime, endtime)
 
 
 @nodata

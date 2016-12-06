@@ -17,6 +17,47 @@ imp_dir = data_dir + '/imp'
 valid_probes = ['1', '2', '3', '4', '5', '6', '7', '8']
 
 
+def mitplasma_h0(probe, starttime, endtime):
+        data = []
+        dtimes = spacetime.daysplitinterval(starttime, endtime)
+        # Loop through years
+        for dtime in dtimes:
+            date = dtime[0]
+            intervalstring = str(date.year) +\
+                str(date.month).zfill(2) +\
+                str(date.day).zfill(2)
+            filename = 'i' + probe + '_h0_mitplasma_' + intervalstring + '_v01.cdf'
+            # Location of file relative to local directory or remote url
+            relative_loc = 'imp' + probe + '/plasma_mit/mitplasma_h0/' + str(date.year)
+
+            local_dir = os.path.join(imp_dir, relative_loc)
+            remote_url = imp_url + relative_loc
+
+            cdf = helper.load(filename, local_dir, remote_url)
+            keys = {'EW_flowangle_best': 'EW_flowangle_best',
+                    'EW_flowangle_mom': 'EW_flowangle_best',
+                    'Epoch': 'Time',
+                    'Flow_elevation_thresh': 'Flow_elevation_thresh',
+                    'Flow_elevation_threshsp': 'Flow_elevation_threshsp',
+                    'Region': 'Region',
+                    'V_fit': 'V_fit',
+                    'V_mom': 'V_fit',
+                    'mode': 'mode',
+                    'protonV_thermal_fit': 'protonV_thermal_fit',
+                    'protonV_thermal_mom': 'protonV_thermal_fit',
+                    'proton_density_fit': 'proton_density_fit',
+                    'proton_density_mom': 'proton_density_mom',
+                    'xyzgse': ['x_gse', 'y_gse', 'z_gse'],
+                    'ygsm': 'ygsm',
+                    'zgsm': 'zgsm'}
+            thisdata = helper.cdf2df(cdf, 'Epoch', keys)
+            data.append(thisdata)
+
+        data = pd.concat(data)
+        data = data[(data['Time'] > starttime) & (data['Time'] < endtime)]
+        return data
+
+
 def mag320ms(probe, startTime, endTime):
     """
     Import 320ms cadence magnetic field data.
@@ -62,9 +103,3 @@ def mag320ms(probe, startTime, endTime):
     data = pd.concat(data)
     data = data[(data['Time'] > startTime) & (data['Time'] < endTime)]
     return data
-
-if __name__ == '__main__':
-    starttime = datetime(1976, 1, 1, 0, 0, 0)
-    endtime = datetime(1976, 1, 2, 0, 0, 0)
-    out = mag320ms('8', starttime, endtime)
-    print(out)
