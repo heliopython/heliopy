@@ -509,7 +509,7 @@ def mag_4hz(probe, starttime, endtime, verbose=True):
     data = []
     # Loop through years
     for year in range(startdate.year, enddate.year + 1):
-        floc = os.path.join(helios_dir
+        floc = os.path.join(helios_dir,
                             'helios' + probe,
                             'mag',
                             '4hz')
