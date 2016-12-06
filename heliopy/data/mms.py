@@ -7,13 +7,14 @@ is at https://lasp.colorado.edu/mms/sdc/public/.
 """
 from datetime import datetime
 import pandas as pd
+import os
 
 import heliopy.time as spacetime
 from heliopy.data import helper
 from heliopy import config
 
 data_dir = config['default']['download_dir']
-mms_dir = data_dir + '/mms/'
+mms_dir = os.path.join(data_dir, 'mms')
 remote_mms_dir = 'https://lasp.colorado.edu/mms/sdc/public/data/'
 
 
@@ -41,14 +42,19 @@ def fpi_dis_moms(probe, mode, starttime, endtime):
     if mode not in valid_modes:
         raise RuntimeError('Mode must be either fast or brst')
     # Directory relative to main MMS data directory
-    relative_dir = 'mms' + probe + '/fpi/' + mode + '/l2/dis-moms/'
+    relative_dir = os.path.join('mms' + probe,
+                                'fpi',
+                                mode,
+                                'l2',
+                                'dis-moms')
 
     daylist = spacetime.daysplitinterval(starttime, endtime)
     data = []
     for day in daylist:
         date = day[0]
-        this_relative_dir = relative_dir + str(date.year) + '/' +\
-            str(date.month).zfill(2)
+        this_relative_dir = os.path.join(relative_dir,
+                                         str(date.year),
+                                         str(date.month).zfill(2))
         filename = 'mms' + probe + '_fpi_' + mode + '_l2_dis-moms_' +\
             str(date.year) +\
             str(date.month).zfill(2) +\
@@ -57,7 +63,7 @@ def fpi_dis_moms(probe, mode, starttime, endtime):
             '_v3.1.1.cdf'
 
         # Absolute path to local directory for this data file
-        local_dir = mms_dir + this_relative_dir
+        local_dir = os.path.join(mms_dir, this_relative_dir)
         helper.checkdir(local_dir)
 
         remote_url = remote_mms_dir + this_relative_dir
@@ -99,14 +105,18 @@ def fgm_survey(probe, starttime, endtime):
             Imported data.
     """
     # Directory relative to main MMS data directory
-    relative_dir = 'mms' + probe + '/fgm/srvy/l2/'
+    relative_dir = os.path.join('mms' + probe,
+                                'fgm',
+                                'srvy',
+                                'l2')
 
     daylist = spacetime.daysplitinterval(starttime, endtime)
     data = []
     for day in daylist:
         date = day[0]
-        this_relative_dir = relative_dir + str(date.year) + '/' +\
-            str(date.month).zfill(2)
+        this_relative_dir = os.path.join(relative_dir,
+                                         str(date.year),
+                                         str(date.month).zfill(2))
         filename = 'mms' + probe + '_fgm_srvy_l2_' +\
             str(date.year) +\
             str(date.month).zfill(2) +\
@@ -114,7 +124,7 @@ def fgm_survey(probe, starttime, endtime):
             '_v4.18.0.cdf'
 
         # Absolute path to local directory for this data file
-        local_dir = mms_dir + this_relative_dir
+        local_dir = os.path.join(mms_dir, this_relative_dir)
         helper.checkdir(local_dir)
 
         remote_url = remote_mms_dir + this_relative_dir
@@ -133,6 +143,6 @@ def fgm_survey(probe, starttime, endtime):
 
 if __name__ == '__main__':
     starttime = datetime(2016, 1, 1, 0, 0, 0)
-    endtime = datetime(2016, 1, 1, 23, 59, 59)
-    data = fpi_dis_moms('2', 'fast', starttime, endtime)
+    endtime = datetime(2016, 1, 1, 1, 0, 0)
+    data = fgm_survey('2', starttime, endtime)
     print(data)
