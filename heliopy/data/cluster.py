@@ -65,72 +65,72 @@ def _load(probe, starttime, endtime, instrument, product_id, cdfkeys):
 
 
 def _download(probe, starttime, endtime, instrument, product_id):
-        daylist = daysplitinterval(starttime, endtime)
-        for day in daylist:
-            date = day[0]
-            start = datetime.combine(date, time.min)
-            end = datetime.combine(date, time.max)
-            # Add start and end time to request dictionary
-            request_dict = generic_dict
-            request_dict['START_DATE'] = start.strftime(cda_time_fmt)
-            request_dict['END_DATE'] = end.strftime(cda_time_fmt)
+    daylist = daysplitinterval(starttime, endtime)
+    for day in daylist:
+        date = day[0]
+        start = datetime.combine(date, time.min)
+        end = datetime.combine(date, time.max)
+        # Add start and end time to request dictionary
+        request_dict = generic_dict
+        request_dict['START_DATE'] = start.strftime(cda_time_fmt)
+        request_dict['END_DATE'] = end.strftime(cda_time_fmt)
 
-            # Create request string
-            request_str = ''
-            request_str += 'DATASET_ID' + '='
-            request_str += 'C' + probe + '_' + product_id
-            for item in request_dict:
-                request_str += '&'
-                request_str += item
-                request_str += '='
-                request_str += request_dict[item]
+        # Create request string
+        request_str = ''
+        request_str += 'DATASET_ID' + '='
+        request_str += 'C' + probe + '_' + product_id
+        for item in request_dict:
+            request_str += '&'
+            request_str += item
+            request_str += '='
+            request_str += request_dict[item]
 
-            # Create request url
-            request_str += '&NON_BROWSER'
-            request_url = csa_url + request_str
+        # Create request url
+        request_str += '&NON_BROWSER'
+        request_url = csa_url + request_str
 
-            # Work out local directory to download to
-            year = str(starttime.year)
-            month = str(starttime.month).zfill(2)
-            day = str(starttime.day).zfill(2)
-            local_dir = os.path.join(cluster_dir,
-                                     'c' + probe,
-                                     instrument,
-                                     'full',
-                                     year)
-            # Work out local filename to download to
-            filename = 'C' + probe + '_' + product_id + '__' + year + month +\
-                day + '.tar.gz'
-            print(request_url)
-            # Download data
-            checkdir(local_dir)
-            urlretrieve(request_url,
-                        filename=os.path.join(local_dir, filename),
-                        reporthook=reporthook)
-            # Extract tar.gz file
-            tar = tarfile.open(os.path.join(local_dir, filename))
-            tar.extractall(local_dir)
-            # Delete tar.gz file
-            os.remove(os.path.join(local_dir, filename))
-            # The CSA timpstamps the downloaded file by when it is downloaded,
-            # so manually list and retrieve the folder name
-            dirlist = os.listdir(local_dir)
-            for d in dirlist:
-                if d[:13] == 'CSA_Download_':
-                    download_dir = os.path.join(local_dir,
-                                                d,
-                                                'C' + probe + '_' + product_id)
-                    break
+        # Work out local directory to download to
+        year = str(starttime.year)
+        month = str(starttime.month).zfill(2)
+        day = str(starttime.day).zfill(2)
+        local_dir = os.path.join(cluster_dir,
+                                 'c' + probe,
+                                 instrument,
+                                 'full',
+                                 year)
+        # Work out local filename to download to
+        filename = 'C' + probe + '_' + product_id + '__' + year + month +\
+            day + '.tar.gz'
+        print(request_url)
+        # Download data
+        checkdir(local_dir)
+        urlretrieve(request_url,
+                    filename=os.path.join(local_dir, filename),
+                    reporthook=reporthook)
+        # Extract tar.gz file
+        tar = tarfile.open(os.path.join(local_dir, filename))
+        tar.extractall(local_dir)
+        # Delete tar.gz file
+        os.remove(os.path.join(local_dir, filename))
+        # The CSA timpstamps the downloaded file by when it is downloaded,
+        # so manually list and retrieve the folder name
+        dirlist = os.listdir(local_dir)
+        for d in dirlist:
+            if d[:13] == 'CSA_Download_':
+                download_dir = os.path.join(local_dir,
+                                            d,
+                                            'C' + probe + '_' + product_id)
+                break
 
-            # Remove request times from filename
-            dirlist = os.listdir(download_dir)
-            # Move to data folder
-            for f in dirlist:
-                os.rename(os.path.join(download_dir, f),
-                          os.path.join(local_dir, f[:24] + '.cdf'))
-            # Delte extra folders created by tar.gz file
-            os.rmdir(download_dir)
-            os.rmdir(os.path.join(local_dir, d))
+        # Remove request times from filename
+        dirlist = os.listdir(download_dir)
+        # Move to data folder
+        for f in dirlist:
+            os.rename(os.path.join(download_dir, f),
+                      os.path.join(local_dir, f[:24] + '.cdf'))
+        # Delte extra folders created by tar.gz file
+        os.rmdir(download_dir)
+        os.rmdir(os.path.join(local_dir, d))
 
 
 def fgm(probe, starttime, endtime):
