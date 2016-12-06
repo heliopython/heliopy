@@ -2,13 +2,16 @@
 Methods for importing data from the WIND spacecraft. All data is publically
 available at ftp://spdf.gsfc.nasa.gov/pub/data/wind.
 """
+import os
+import pandas as pd
+
 import heliopy.time as spacetime
 from heliopy.data import helper
 from heliopy import config
-import pandas as pd
+
 data_dir = config['default']['download_dir']
 wind_dir = data_dir + '/wind'
-remote_wind_dir = 'ftp://spdf.gsfc.nasa.gov/pub/data/wind'
+remote_wind_dir = 'ftp://spdf.gsfc.nasa.gov/pub/data/wind/'
 
 
 def mfi_h0(starttime, endtime):
@@ -27,7 +30,7 @@ def mfi_h0(starttime, endtime):
         data : DataFrame
     """
     # Directory relative to main WIND data directory
-    relative_dir = '/mfi/mfi_h0'
+    relative_dir = os.path.join('mfi', 'mfi_h0')
 
     daylist = spacetime.daysplitinterval(starttime, endtime)
     data = []
@@ -38,9 +41,9 @@ def mfi_h0(starttime, endtime):
             str(date.month).zfill(2) +\
             str(date.day).zfill(2) +\
             '_v05.cdf'
-        this_relative_dir = relative_dir + '/' + str(day[0].year)
+        this_relative_dir = os.path.join(relative_dir, str(day[0].year))
         # Absolute path to local directory for this data file
-        local_dir = wind_dir + this_relative_dir
+        local_dir = os.path.join(wind_dir, this_relative_dir)
         helper.checkdir(local_dir)
 
         remote_url = remote_wind_dir + this_relative_dir
@@ -73,7 +76,7 @@ def threedp_pm(starttime, endtime):
         data : DataFrame
     """
     # Directory relative to main WIND data directory
-    relative_dir = '/3dp/3dp_pm'
+    relative_dir = os.path.join('3dp', '3dp_pm')
 
     daylist = spacetime.daysplitinterval(starttime, endtime)
     data = []
@@ -84,9 +87,9 @@ def threedp_pm(starttime, endtime):
             str(date.month).zfill(2) +\
             str(date.day).zfill(2) +\
             '_v05.cdf'
-        this_relative_dir = relative_dir + '/' + str(day[0].year)
+        this_relative_dir = os.path.join(relative_dir, str(day[0].year))
         # Absolute path to local directory for this data file
-        local_dir = wind_dir + this_relative_dir
+        local_dir = os.path.join(wind_dir, this_relative_dir)
         helper.checkdir(local_dir)
 
         remote_url = remote_wind_dir + this_relative_dir

@@ -48,17 +48,17 @@ def checkdir(directory):
 def _load_local(local_dir, filename, filetype):
     # Import local file
     if filetype == 'cdf':
-        cdf = pycdf.CDF(local_dir + '/' + filename)
+        cdf = pycdf.CDF(os.path.join(local_dir, filename))
         return cdf
     elif filetype == 'ascii':
-        f = open(local_dir + '/' + filename)
+        f = open(os.path.join(local_dir, filename))
         return f
 
 
 def _load_remote(remote_url, filename, local_dir, filetype):
-        print('Downloading', remote_url + '/' + filename)
+        print('Downloading', os.path.join(remote_url, filename))
         urlretrieve(remote_url + '/' + filename,
-                    filename=local_dir + '/' + filename,
+                    filename=os.path.join(local_dir, filename),
                     reporthook=reporthook)
         return _load_local(local_dir, filename, filetype)
 

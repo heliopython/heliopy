@@ -22,7 +22,7 @@ import heliopy.vector.transformations as spacetrans
 import heliopy.time as spacetime
 import heliopy.constants as constants
 data_dir = config['default']['download_dir']
-helios_dir = data_dir + '/helios'
+helios_dir = os.path.join(data_dir, 'helios')
 
 
 ####################################################
@@ -66,11 +66,16 @@ def loaddistfile(probe, year, doy, hour, minute, second):
     assert probe == '1' or probe == '2', 'Probe must be 1 or 2'
     # Work out location of file
     yearstring = str(year)[-2:]
-    filename = helios_dir + '/helios' + probe + '/dist/h' + probe + yearstring +\
-        '/Y' + yearstring + 'D' + str(doy).zfill(3) + \
-        '/h' + probe + 'y' + yearstring + 'd' + str(doy).zfill(3) + \
-        'h' + str(hour).zfill(2) + 'm' + str(minute).zfill(2) + 's' +\
-        str(second).zfill(2) + '_'
+    filename = os.path.join(helios_dir,
+                            'helios' + probe,
+                            'dist',
+                            'h' + probe + yearstring,
+                            'Y' + yearstring + 'D' + str(doy).zfill(3),
+                            'h' + probe + 'y' + yearstring +
+                            'd' + str(doy).zfill(3) +
+                            'h' + str(hour).zfill(2) +
+                            'm' + str(minute).zfill(2) +
+                            's' + str(second).zfill(2) + '_')
 
     # Try to open distribution file
     for extension in ['hdm.0', 'hdm.1', 'ndm.0', 'ndm.1']:
@@ -374,7 +379,10 @@ def merged(probe, starttime, endtime, verbose=True):
     data = []
     # Loop through years
     for year in range(startdate.year, enddate.year + 1):
-        floc = helios_dir + '/helios' + probe + '/merged/he' + probe + '_40sec/'
+        floc = os.path.join(helios_dir,
+                            'helios' + probe,
+                            'merged',
+                            'he' + probe + '_40sec')
         # Calculate start day
         startdoy = 1
         if year == startdate.year:
@@ -387,8 +395,9 @@ def merged(probe, starttime, endtime, verbose=True):
 
         # Loop through days of year
         for doy in range(startdoy, enddoy + 1):
-            hdfloc = floc + 'H' + probe + str(year - 1900) + '_' +\
-                str(doy).zfill(3) + '.h5'
+            hdfloc = os.path.join(floc,
+                                  'H' + probe + str(year - 1900) + '_' +
+                                  str(doy).zfill(3) + '.h5')
             # Data not processed yet, try to process and load it
             if not os.path.isfile(hdfloc):
                 try:
@@ -439,12 +448,14 @@ def _merged_fromascii(probe, year, doy):
         data : DataFrame
             Merged data set.
     """
-    local_dir = helios_dir + '/helios' + probe + '/merged/he' + probe +\
-        '_40sec/'
+    local_dir = os.path.join(helios_dir,
+                             'helios' + probe,
+                             'merged',
+                             'he' + probe + '_40sec/')
     remote_url = 'ftp://cdaweb.gsfc.nasa.gov/pub/data/helios/helios' + probe + \
         '/' + 'merged/he' + probe + '_40sec'
     filename = 'H' + probe + str(year - 1900) + '_' + str(doy).zfill(3) + '.dat'
-    asciiloc = local_dir + filename
+    asciiloc = os.path.join(local_dir, filename)
 
     # Make sure file is downloaded
     helper.load(filename, local_dir, remote_url)
@@ -467,7 +478,7 @@ def _merged_fromascii(probe, year, doy):
     data.replace(0.0, np.nan, inplace=True)
 
     # Save data to a hdf store
-    saveloc = local_dir + filename[:-4] + '.h5'
+    saveloc = os.path.join(local_dir, filename[:-4] + '.h5')
     data.to_hdf(saveloc, 'table', format='fixed', mode='w')
     return(data)
 
@@ -498,7 +509,10 @@ def mag_4hz(probe, starttime, endtime, verbose=True):
     data = []
     # Loop through years
     for year in range(startdate.year, enddate.year + 1):
-        floc = helios_dir + '/helios' + probe + '/mag/4hz/'
+        floc = os.path.join(helios_dir,
+                            'helios' + probe,
+                            'mag',
+                            '4hz')
         # Calculate start day of year
         if year == startdate.year:
             startdoy = int(startdate.strftime('%j'))
@@ -512,8 +526,9 @@ def mag_4hz(probe, starttime, endtime, verbose=True):
 
         # Loop through days of year
         for doy in range(startdoy, enddoy + 1):
-            hdfloc = floc + 'he' + probe + '1s' + str(year - 1900) +\
-                str(doy).zfill(3) + '.h5'
+            hdfloc = os.path.join(floc,
+                                  'he' + probe + '1s' + str(year - 1900) +
+                                  str(doy).zfill(3) + '.h5')
             if not os.path.isfile(hdfloc):
                 # Data not processed yet, try to process and load it
                 try:
@@ -561,12 +576,15 @@ def _fourHz_fromascii(probe, year, doy):
         data : DataFrame
             4Hz magnetic field data set.
     """
-    floc = helios_dir + '/helios' + probe + '/mag/4hz/'
+    floc = os.path.join(helios_dir,
+                        'helios' + probe,
+                        'mag',
+                        '4hz')
     fname = 'he' + probe + '1s' + str(year - 1900) + str(doy).zfill(3)
     # For some reason the last number in the filename is the hour at which
     # data starts from on that day... this means a loop to check each hour
     for i in range(0, 24):
-        asciiloc = floc + fname + str(i).zfill(2) + '.asc'
+        asciiloc = os.path.join(floc, fname + str(i).zfill(2) + '.asc')
         if os.path.isfile(asciiloc):
             break
         elif i == 23:
@@ -584,7 +602,7 @@ def _fourHz_fromascii(probe, year, doy):
     data['ordinal'] = pd.DatetimeIndex(data['Time']).astype(np.int64)
 
     # Save data to a hdf store
-    saveloc = floc + fname + '.h5'
+    saveloc = os.path.join(floc, fname + '.h5')
     data.to_hdf(saveloc, 'table', format='fixed', mode='w')
     return(data)
 
@@ -615,7 +633,11 @@ def mag_ness(probe, starttime, endtime):
     data = []
     # Loop through years
     for year in range(startdate.year, enddate.year + 1):
-        floc = helios_dir + '/helios' + probe + '/mag/6sec_ness/' + str(year) + '/'
+        floc = os.path.join(helios_dir,
+                            'helios' + probe,
+                            'mag',
+                            '6sec_ness',
+                            str(year))
         # Calculate start day
         startdoy = 1
         if year == startdate.year:
@@ -627,8 +649,8 @@ def mag_ness(probe, starttime, endtime):
 
         # Loop through days of year
         for doy in range(startdoy, enddoy + 1):
-            hdfloc = floc + 'h' + probe + str(year - 1900) +\
-                str(doy).zfill(3) + '.h5'
+            hdfloc = os.path.join(floc, 'h' + probe + str(year - 1900) +
+                                  str(doy).zfill(3) + '.h5')
             if not os.path.isfile(hdfloc):
                 # Data not processed yet, try to process and load it
                 try:
@@ -672,9 +694,13 @@ def _mag_ness_fromascii(probe, year, doy):
         data : DataFrame
             6 second magnetic field data set.
     """
-    floc = helios_dir + '/helios' + probe + '/mag/6sec_ness/' + str(year) + '/'
+    floc = os.path.join(helios_dir,
+                        'helios' + probe,
+                        'mag',
+                        '6sec_ness',
+                        str(year))
     fname = 'h' + probe + str(year - 1900) + str(doy).zfill(3)
-    asciiloc = floc + fname + '.asc'
+    asciiloc = os.path.join(floc, fname + '.asc')
     if not os.path.isfile(asciiloc):
         raise ValueError('No raw mag data available for probe ' + probe +
                          ', Year: ' + str(year) + ' DOY: ' + str(doy))
@@ -700,7 +726,7 @@ def _mag_ness_fromascii(probe, year, doy):
     data = data.drop(['year', 'doy', 'hour', 'minute', 'second'], axis=1)
 
     # Save data to a hdf store
-    saveloc = floc + fname + '.h5'
+    saveloc = os.path.join(floc, fname + '.h5')
     data.to_hdf(saveloc, 'table', format='fixed', mode='w')
     return(data)
 
@@ -730,12 +756,16 @@ def trajectory(probe, startdate, enddate):
                 (38, 44), (45, 51), (52, 58), (59, 65), (66, 67)]
     # Loop through years
     for i in range(startdate.year, enddate.year + 1):
-        floc = helios_dir + '/helios' + probe + '/traj/'
+        floc = os.path.join(helios_dir,
+                            'helios' + probe,
+                            'traj')
         fname = 'he' + probe + 'trj' + str(i - 1900) + '.asc'
 
         # Read in data
         try:
-            thisdata = pd.read_fwf(floc + fname, names=headings, header=None,
+            thisdata = pd.read_fwf(os.path.join(floc, fname),
+                                   names=headings,
+                                   header=None,
                                    colspecs=colspecs)
         except OSError:
             continue
