@@ -50,6 +50,7 @@ def test_mms():
 
     for i in range(1, 5):
         mms.fgm_survey(str(i), starttime, endtime)
+        mms.fpi_dis_moms(str(i), 'fast', starttime, endtime)
 
 
 @nodata
