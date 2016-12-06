@@ -2,6 +2,7 @@ import heliopy.data.wind as wind
 import heliopy.data.mms as mms
 import heliopy.data.helios as helios
 import heliopy.data.cluster as cluster
+import heliopy.data.imp as imp
 from heliopy import config
 
 from datetime import datetime
@@ -13,6 +14,13 @@ nodata = pytest.mark.skipif(
     pytest.config.getoption("--no-data"),
     reason="Skipped test that involves data download"
 )
+
+
+@nodata
+def test_imp():
+    starttime = datetime(1976, 1, 1, 0, 0, 0)
+    endtime = datetime(1976, 1, 2, 0, 0, 0)
+    imp.mag320ms('8', starttime, endtime)
 
 
 @nodata
