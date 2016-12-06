@@ -62,7 +62,7 @@ def fpi_dis_moms(probe, mode, starttime, endtime):
                 str(date.month).zfill(2) +\
                 str(date.day).zfill(2) +\
                 str(h).zfill(2) + '0000' + \
-                '_v3.1.0.cdf'
+                '_v3.1.1.cdf'
 
             # Absolute path to local directory for this data file
             local_dir = os.path.join(mms_dir, this_relative_dir)
