@@ -8,6 +8,7 @@ is at https://lasp.colorado.edu/mms/sdc/public/.
 from datetime import datetime
 import pandas as pd
 import os
+import urllib
 
 import heliopy.time as spacetime
 from heliopy.data import helper
@@ -52,34 +53,43 @@ def fpi_dis_moms(probe, mode, starttime, endtime):
     data = []
     for day in daylist:
         date = day[0]
-        this_relative_dir = os.path.join(relative_dir,
-                                         str(date.year),
-                                         str(date.month).zfill(2))
-        filename = 'mms' + probe + '_fpi_' + mode + '_l2_dis-moms_' +\
-            str(date.year) +\
-            str(date.month).zfill(2) +\
-            str(date.day).zfill(2) +\
-            '000000' + \
-            '_v3.1.1.cdf'
+        for h in range(0, 24, 2):
+            this_relative_dir = os.path.join(relative_dir,
+                                             str(date.year),
+                                             str(date.month).zfill(2))
+            filename = 'mms' + probe + '_fpi_' + mode + '_l2_dis-moms_' +\
+                str(date.year) +\
+                str(date.month).zfill(2) +\
+                str(date.day).zfill(2) +\
+                str(h).zfill(2) + '0000' + \
+                '_v3.1.0.cdf'
 
-        # Absolute path to local directory for this data file
-        local_dir = os.path.join(mms_dir, this_relative_dir)
-        helper.checkdir(local_dir)
+            # Absolute path to local directory for this data file
+            local_dir = os.path.join(mms_dir, this_relative_dir)
+            helper.checkdir(local_dir)
 
-        remote_url = remote_mms_dir + this_relative_dir
-        # Load cdf file
-        cdf = helper.load(filename, local_dir, remote_url)
+            remote_url = remote_mms_dir + this_relative_dir
+            # Load cdf file
+            try:
+                cdf = helper.load(filename, local_dir, remote_url)
+            except urllib.error.HTTPError as e:
+                if str(e) == 'HTTP Error 404: Not Found':
+                    print('No data available for hour', str(h), 'date',
+                          date.strftime('%Y%M%D'))
+                    continue
+                else:
+                    raise
 
-        probestr = 'mms' + probe + '_'
-        # Convert cdf to dataframe
-        keys = {'Epoch': 'Time',
-                probestr + 'dis_bulkv_gse_fast': ['bulkv_x', 'bulkv_y', 'bulkv_z'],
-                probestr + 'dis_heatq_gse_fast': ['heatq_x', 'heatq_y', 'heatq_z'],
-                probestr + 'dis_numberdensity_fast': 'n',
-                probestr + 'dis_temppara_fast': 'T_par',
-                probestr + 'dis_tempperp_fast': 'T_perp'}
-        df = helper.cdf2df(cdf, 'Epoch', keys)
-        data.append(df)
+            probestr = 'mms' + probe + '_'
+            # Convert cdf to dataframe
+            keys = {'Epoch': 'Time',
+                    probestr + 'dis_bulkv_gse_fast': ['bulkv_x', 'bulkv_y', 'bulkv_z'],
+                    probestr + 'dis_heatq_gse_fast': ['heatq_x', 'heatq_y', 'heatq_z'],
+                    probestr + 'dis_numberdensity_fast': 'n',
+                    probestr + 'dis_temppara_fast': 'T_par',
+                    probestr + 'dis_tempperp_fast': 'T_perp'}
+            df = helper.cdf2df(cdf, 'Epoch', keys)
+            data.append(df)
 
     data = pd.concat(data)
     data = data[(data['Time'] > starttime) & (data['Time'] < endtime)]
