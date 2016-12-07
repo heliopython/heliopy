@@ -74,8 +74,8 @@ def fpi_dis_moms(probe, mode, starttime, endtime):
                 cdf = helper.load(filename, local_dir, remote_url)
             except urllib.error.HTTPError as e:
                 if str(e) == 'HTTP Error 404: Not Found':
-                    print('No data available for hour', str(h), 'date',
-                          date.strftime('%Y%M%D'))
+                    print('No data available for hours', str(h) + '-' +
+                          str(h + 2), 'on', date.strftime('%d/%m/%Y'))
                     continue
                 else:
                     raise
