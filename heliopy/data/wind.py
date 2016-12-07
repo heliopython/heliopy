@@ -52,7 +52,13 @@ def mfi_h0(starttime, endtime):
 
         keys = {'B3GSE': ['Bx_gse', 'By_gse', 'Bz_gse'],
                 'Epoch3': 'Time'}
-        df = helper.cdf2df(cdf, index_key='Epoch3', keys=keys)
+        badvalues = {'Bx_gse': -1e+31,
+                     'By_gse': -1e+31,
+                     'Bz_gse': -1e+31}
+        df = helper.cdf2df(cdf,
+                           index_key='Epoch3',
+                           keys=keys,
+                           badvalues=badvalues)
         data.append(df)
 
     data = pd.concat(data)
