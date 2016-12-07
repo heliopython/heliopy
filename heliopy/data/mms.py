@@ -6,6 +6,7 @@ https://lasp.colorado.edu/mms/sdc/public/data/, and the MMS science data centre
 is at https://lasp.colorado.edu/mms/sdc/public/.
 """
 from datetime import datetime
+import numpy as np
 import pandas as pd
 import os
 import urllib
@@ -53,7 +54,13 @@ def fpi_dis_moms(probe, mode, starttime, endtime):
     data = []
     for day in daylist:
         date = day[0]
-        for h in range(0, 24, 2):
+        starthour = day[1].hour
+        endhour = day[2].hour + 1
+        # fips fast data product has files every two hours, so get nearest two
+        # hour stamps
+        starthour -= np.mod(starthour, 2)
+        endhour += np.mod(endhour, 2)
+        for h in range(starthour, endhour, 2):
             this_relative_dir = os.path.join(relative_dir,
                                              str(date.year),
                                              str(date.month).zfill(2))
