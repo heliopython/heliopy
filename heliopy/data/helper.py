@@ -5,6 +5,7 @@ from spacepy import pycdf
 from urllib.request import urlretrieve
 import ftplib
 import pandas as pd
+import numpy as np
 
 
 def reporthook(blocknum, blocksize, totalsize):
@@ -119,7 +120,7 @@ def load(filename, local_dir, remote_url, guessversion=False):
     return _load_remote(remote_url, filename, local_dir, filetype)
 
 
-def cdf2df(cdf, index_key, keys, dtimeindex=True):
+def cdf2df(cdf, index_key, keys, dtimeindex=True, badvalues=None):
     """
     Converts a cdf file to a pandas dataframe.
 
@@ -135,6 +136,9 @@ def cdf2df(cdf, index_key, keys, dtimeindex=True):
             multiple columns, the mapped keys must be in a list.
         dtimeindex : bool
             If True, dataframe index is parsed as a datetime.
+        badvalues : dictionary
+            A dictionary that maps the new DataFrame keys to a list of bad
+            values to replace with nans.
 
     Returns
     -------
@@ -156,4 +160,7 @@ def cdf2df(cdf, index_key, keys, dtimeindex=True):
                 df[subkey] = cdf[key][...][:, i]
         else:
             df[df_key] = cdf[key][...]
+    # Replace bad values with nans
+    if badvalues is not None:
+        df = df.replace(badvalues, np.nan)
     return df
