@@ -48,7 +48,7 @@ def mfi_h0(starttime, endtime):
 
         remote_url = remote_wind_dir + this_relative_dir
 
-        cdf = helper.load(filename, local_dir, remote_url)
+        cdf = helper.load(filename, local_dir, remote_url, guessversion=True)
 
         keys = {'B3GSE': ['Bx_gse', 'By_gse', 'Bz_gse'],
                 'Epoch3': 'Time'}
