@@ -4,6 +4,7 @@ available at ftp://spdf.gsfc.nasa.gov/pub/data/wind.
 """
 import os
 import pandas as pd
+import numpy as np
 
 import heliopy.time as spacetime
 from heliopy.data import helper
@@ -52,14 +53,21 @@ def swe_h3(starttime, endtime):
         distkeys = []
         for i in range(0, 13):
             distkeys.append('f_pitch_E' + str(i).zfill(2))
+        anglelabels = []
+        for i in range(0, 30):
+            anglelabels.append((i + 0.5) * np.pi / 30)
         timekey = 'Epoch'
         energykey = 'Ve'
-        helper.pitchdist_cdf2df(cdf, distkeys, energykey, timekey)
+
+        df = helper.pitchdist_cdf2df(cdf, distkeys, energykey, timekey,
+                                     anglelabels)
 
         data.append(df)
 
     data = pd.concat(data)
-    data = data[(data['Time'] > starttime) & (data['Time'] < endtime)]
+    df.index.get_level_values('Time') > starttime
+    data = data[(df.index.get_level_values('Time') > starttime) &
+                (df.index.get_level_values('Time') < endtime)]
     return data
 
 

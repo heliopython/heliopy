@@ -120,7 +120,7 @@ def load(filename, local_dir, remote_url, guessversion=False):
     return _load_remote(remote_url, filename, local_dir, filetype)
 
 
-def pitchdist_cdf2df(cdf, distkeys, energykey, timekey):
+def pitchdist_cdf2df(cdf, distkeys, energykey, timekey, anglelabels):
     """
     Converts cdf file of a pitch angle distribution to a pandas dataframe.
 
@@ -128,6 +128,9 @@ def pitchdist_cdf2df(cdf, distkeys, energykey, timekey):
     dataset f(time, energy, angle). See
     http://pandas.pydata.org/pandas-docs/stable/advanced.html#multiindex-advanced-indexing
     for more information.
+
+    This has been constructed for importing wind swe pitch angle distributions,
+    and might not generalise very well to other data sets.
 
     Assumes that each energy in the cdf has its own 2D array (time, angle). In
     the below description of the function there are
@@ -150,6 +153,9 @@ def pitchdist_cdf2df(cdf, distkeys, energykey, timekey):
         timekey : string
             The cdf key for the timestamps. The array access by timekey must
             have shape `(n)`
+        anglelabels : list
+            A list of the labels to give each anglular bin (eg. [0, 10, 20] in
+            degrees). Must be of length `l`.
 
     Returns
     -------
@@ -157,19 +163,36 @@ def pitchdist_cdf2df(cdf, distkeys, energykey, timekey):
             Data frame with read in data.
     """
     times = cdf[timekey][...]
+    ntimesteps = times.size
     energies = cdf[energykey][...]
     # If energies is 2D, just take first set of energies
     if len(energies.shape) == 2:
         energies = energies[0, :]
 
-    # Empty lists. data[0] will be times, data[1] will be energies, data[2] will
-    # be angles
-    data = [[], [], []]
+    # Empty lists. index[0] will be times, index[1] will be energies, index[2]
+    # will be angles. data will be the pdf
+    index = [[], [], []]
+    data = []
     # Loop through energies
-    for i, key in enumerate(energykeys):
+    for i, key in enumerate(distkeys):
         thisenergy = energies[i]
-        print(cdf[key][...])
-        exit()
+        thisdata = cdf[key][...]
+        # Loop through angles
+        for j in range(0, thisdata.shape[1]):
+            # Time steps
+            index[0] += list(times)
+            # Current energy
+            index[1] += [thisenergy] * ntimesteps
+            # Current angle
+            index[2] += [anglelabels[j]] * ntimesteps
+
+            data += list(thisdata[:, j])
+
+    tuples = list(zip(*index))
+    index = pd.MultiIndex.from_tuples(tuples, names=['Time', 'Energy', 'Angle'])
+    data = pd.Series(data, index=index)
+    data = data.sort_index()
+    return data
 
 
 def cdf2df(cdf, index_key, keys, dtimeindex=True, badvalues=None):
