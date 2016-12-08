@@ -120,6 +120,58 @@ def load(filename, local_dir, remote_url, guessversion=False):
     return _load_remote(remote_url, filename, local_dir, filetype)
 
 
+def pitchdist_cdf2df(cdf, distkeys, energykey, timekey):
+    """
+    Converts cdf file of a pitch angle distribution to a pandas dataframe.
+
+    MultiIndexing is used as a pitch angle distribution is essentially a 3D
+    dataset f(time, energy, angle). See
+    http://pandas.pydata.org/pandas-docs/stable/advanced.html#multiindex-advanced-indexing
+    for more information.
+
+    Assumes that each energy in the cdf has its own 2D array (time, angle). In
+    the below description of the function there are
+        - `n` time data points
+        - `m` energy data points
+        - `l` anglular data points
+
+    Parameters
+    ----------
+        cdf : cdf
+            Opened cdf file.
+        distkeys : list
+            A list of the cdf keys for a given energies. Each array accessed by
+            distkeys is shape `(n, l)`, and there must be `m` distkeys.
+        energykey : string
+            The cdf key for the energy values. The array accessed by energykey
+            must have shape `(m)` or `(a, m)` where `a` can be anything. If it
+            has shape `(a, m)`, we assume energies measured don't change, and
+            take the first row as the energies for all times.
+        timekey : string
+            The cdf key for the timestamps. The array access by timekey must
+            have shape `(n)`
+
+    Returns
+    -------
+        df : DataFrame
+            Data frame with read in data.
+    """
+    times = cdf[timekey][...]
+    energies = cdf[energykey][...]
+    # If energies is 2D, just take first set of energies
+    if len(energies.shape) == 2:
+        energies = energies[0, :]
+
+    # Empty lists. data[0] will be times, data[1] will be energies, data[2] will
+    # be angles
+    data = [[], [], []]
+    # Loop through energies
+    for i, key in enumerate(energykeys):
+        thisenergy = energies[i]
+        print(cdf[key][...])
+        exit()
+
+
 def cdf2df(cdf, index_key, keys, dtimeindex=True, badvalues=None):
     """
     Converts a cdf file to a pandas dataframe.
