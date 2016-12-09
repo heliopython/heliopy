@@ -4,6 +4,7 @@ available at ftp://spdf.gsfc.nasa.gov/pub/data/wind.
 """
 import os
 import pandas as pd
+import numpy as np
 
 import heliopy.time as spacetime
 from heliopy.data import helper
@@ -12,6 +13,62 @@ from heliopy import config
 data_dir = config['default']['download_dir']
 wind_dir = data_dir + '/wind'
 remote_wind_dir = 'ftp://spdf.gsfc.nasa.gov/pub/data/wind/'
+
+
+def swe_h3(starttime, endtime):
+    """
+    Import 'h3' solar wind electron data product from WIND.
+
+    Parameters
+    ----------
+        starttime : datetime
+            Interval start time.
+        endtime : datetime
+            Interval end time.
+
+    Returns
+    -------
+        data : DataFrame
+    """
+    # Directory relative to main WIND data directory
+    relative_dir = os.path.join('swe', 'swe_h3')
+
+    daylist = spacetime.daysplitinterval(starttime, endtime)
+    data = []
+    for day in daylist:
+        date = day[0]
+        filename = 'wi_h3_swe_' +\
+            str(date.year) +\
+            str(date.month).zfill(2) +\
+            str(date.day).zfill(2) +\
+            '_v01.cdf'
+        this_relative_dir = os.path.join(relative_dir, str(day[0].year))
+        # Absolute path to local directory for this data file
+        local_dir = os.path.join(wind_dir, this_relative_dir)
+        helper.checkdir(local_dir)
+
+        remote_url = remote_wind_dir + this_relative_dir
+
+        cdf = helper.load(filename, local_dir, remote_url)
+        distkeys = []
+        for i in range(0, 13):
+            distkeys.append('f_pitch_E' + str(i).zfill(2))
+        anglelabels = []
+        for i in range(0, 30):
+            anglelabels.append((i + 0.5) * np.pi / 30)
+        timekey = 'Epoch'
+        energykey = 'Ve'
+
+        df = helper.pitchdist_cdf2df(cdf, distkeys, energykey, timekey,
+                                     anglelabels)
+
+        data.append(df)
+
+    data = pd.concat(data)
+    df.index.get_level_values('Time') > starttime
+    data = data[(df.index.get_level_values('Time') > starttime) &
+                (df.index.get_level_values('Time') < endtime)]
+    return data
 
 
 def mfi_h0(starttime, endtime):
@@ -48,11 +105,17 @@ def mfi_h0(starttime, endtime):
 
         remote_url = remote_wind_dir + this_relative_dir
 
-        cdf = helper.load(filename, local_dir, remote_url)
+        cdf = helper.load(filename, local_dir, remote_url, guessversion=True)
 
         keys = {'B3GSE': ['Bx_gse', 'By_gse', 'Bz_gse'],
                 'Epoch3': 'Time'}
-        df = helper.cdf2df(cdf, index_key='Epoch3', keys=keys)
+        badvalues = {'Bx_gse': -1e+31,
+                     'By_gse': -1e+31,
+                     'Bz_gse': -1e+31}
+        df = helper.cdf2df(cdf,
+                           index_key='Epoch3',
+                           keys=keys,
+                           badvalues=badvalues)
         data.append(df)
 
     data = pd.concat(data)

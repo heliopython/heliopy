@@ -36,6 +36,7 @@ def test_wind():
 
     wind.mfi_h0(starttime, endtime)
     wind.threedp_pm(starttime, endtime)
+    wind.swe_h3(starttime, endtime)
 
 
 @nodata
