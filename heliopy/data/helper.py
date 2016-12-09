@@ -176,9 +176,9 @@ def pitchdist_cdf2df(cdf, distkeys, energykey, timekey, anglelabels):
     # Loop through energies
     for i, key in enumerate(distkeys):
         thisenergy = energies[i]
-        thisdata = cdf[key][...]
+        this_e_data = cdf[key][...]
         # Loop through angles
-        for j in range(0, thisdata.shape[1]):
+        for j in range(0, this_e_data.shape[1]):
             # Time steps
             index[0] += list(times)
             # Current energy
@@ -186,7 +186,9 @@ def pitchdist_cdf2df(cdf, distkeys, energykey, timekey, anglelabels):
             # Current angle
             index[2] += [anglelabels[j]] * ntimesteps
 
-            data += list(thisdata[:, j])
+            thisdata = this_e_data[:, j]
+            thisdata[thisdata == -9.99999985e+30] *= np.nan
+            data += list(thisdata)
 
     tuples = list(zip(*index))
     index = pd.MultiIndex.from_tuples(tuples, names=['Time', 'Energy', 'Angle'])
