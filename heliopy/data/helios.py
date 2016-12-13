@@ -1,6 +1,8 @@
 """
-Methods for importing Helios data. In general the data are available form a
-number of sources (replace 'helios1' with 'helios2' in url to change probe):
+Methods for importing Helios data.
+
+In general the data are available form a number of sources (replace 'helios1'
+with 'helios2' in url to change probe):
 
 * Distribution functions - Not publically available
 * Merged plasma/mangetic field - ftp://cdaweb.gsfc.nasa.gov/pub/data/helios/helios1/merged/
