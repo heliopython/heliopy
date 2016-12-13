@@ -1,6 +1,7 @@
 """
-Methods for importing data from the WIND spacecraft. All data is publically
-available at ftp://spdf.gsfc.nasa.gov/pub/data/wind.
+Methods for importing data from the WIND spacecraft.
+
+All data is publically available at ftp://spdf.gsfc.nasa.gov/pub/data/wind.
 """
 import os
 import pandas as pd
@@ -65,7 +66,6 @@ def swe_h3(starttime, endtime):
         data.append(df)
 
     data = pd.concat(data)
-    df.index.get_level_values('Time') > starttime
     data = data[(df.index.get_level_values('Time') > starttime) &
                 (df.index.get_level_values('Time') < endtime)]
     return data

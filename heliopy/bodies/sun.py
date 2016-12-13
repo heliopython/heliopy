@@ -19,7 +19,6 @@ def rotationrate(lat):
         rot_rate : array_like
             Rotation rate in radians / second.
     """
-
     assert np.all(np.abs(lat) <= np.pi / 2)
     # Rotation rate in degrees / day
     rot_rate_days = 14.050 - (1.492 * np.sin(lat)**2) - (2.606 * np.sin(lat)**4)

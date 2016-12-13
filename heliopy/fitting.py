@@ -1,6 +1,4 @@
-"""
-Methods for fitting distributions to data
-"""
+"""Methods for fitting distributions to data."""
 import numpy as np
 import scipy.optimize as opt
 

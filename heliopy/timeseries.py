@@ -1,11 +1,12 @@
 """Methods for processing time series data"""
-from datetime import datetime, time, timedelta
 import numpy as np
 
 
 def removespikes(v, threshold):
     """
-    Replace spikes in data with nans. Spikes are indentified as follows:
+    Replace spikes in data with nans.
+
+    Spikes are indentified as follows:
     * The discrete second derivative is calculated at each point.
     * The standard deviation of all the second derivatives is taken (std).
     * All points whose second derivative magnitude is greater than threshold *

@@ -1,6 +1,7 @@
 """
-Methods for working out various quanties of interest to plasmas. Note that units
-are in general not SI. The following units are used throughout:
+Methods for working out various quanties of interest to plasmas.
+
+Note that units are in general not SI. The following units are used throughout:
 
 * Number density: cm^-3
 * Mangetic field: nT

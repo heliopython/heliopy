@@ -166,7 +166,9 @@ def angle(v1, v2):
 def rotationmatrixangle(axis, theta):
     """
     Return the rotation matrix associated with counterclockwise rotation about
-    the given axis by theta. Uses Euler-Rodrigues formula.
+    the given axis by theta.
+
+    Uses Euler-Rodrigues formula.
 
     Parameters
     ----------

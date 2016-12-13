@@ -1,7 +1,6 @@
 """Methods for plotting vector fields."""
 import matplotlib.pyplot as plt
 import numpy as np
-from datetime import datetime
 import heliopy.time as heliotime
 
 
