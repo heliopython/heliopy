@@ -1,6 +1,29 @@
 """Methods for processing times and dates"""
 from datetime import datetime, time, timedelta
 import numpy as np
+import pandas as pd
+
+
+def dtime2ordinal(dtime):
+    """
+    Converts datetime to ordinal.
+
+    Particularly useful for interpolating different time series on to each
+    other.
+
+    Parameters
+    ----------
+        dtime : array_like or datetime
+            Input datetime array or single datetime value.
+
+    Returns
+    -------
+        ordinal : array_like
+            Converted datetimes as ordinals.
+    """
+    if type(dtime) == datetime:
+        dtime = pd.Series(dtime)
+    return pd.DatetimeIndex(dtime).astype(np.int64)
 
 
 def nptimedelta2seconds(dt):
