@@ -1,6 +1,7 @@
 """Methods for processing times and dates"""
 from datetime import datetime, time, timedelta
 import numpy as np
+import pandas as pd
 
 
 def dtime2ordinal(dtime):
@@ -20,7 +21,7 @@ def dtime2ordinal(dtime):
         ordinal : array_like
             Converted datetimes as ordinals.
     """
-    if type(dtime) == datetime.datetime:
+    if type(dtime) == datetime:
         dtime = pd.Series(dtime)
     return pd.DatetimeIndex(dtime).astype(np.int64)
 
