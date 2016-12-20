@@ -66,8 +66,8 @@ def swe_h3(starttime, endtime):
         data.append(df)
 
     data = pd.concat(data)
-    data = data[(df.index.get_level_values('Time') > starttime) &
-                (df.index.get_level_values('Time') < endtime)]
+    data = data[(data.index.get_level_values('Time') > starttime) &
+                (data.index.get_level_values('Time') < endtime)]
     return data
 
 
