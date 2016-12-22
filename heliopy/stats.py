@@ -36,6 +36,42 @@ def hist(x, bins='auto', normed=True, return_centres=True):
         return hist, bin_edges
 
 
+def binfunc(x, y, bins, f):
+    """
+    Returns a function applied to data lying in given bins.
+
+    The data is partitioned in the x direction, and the function applied to y
+    values.
+
+    Parameters
+    ----------
+        x : array_like
+            x co-ordinates of data points.
+        y : array_like
+            Data points.
+        bins : array_like
+            Bin edges.
+        f : function
+            Function to apply to data points. Must take array_like as its only
+            argument.
+
+    Returns
+    -------
+        out : array_like
+            The function applied to y values in each bin. If no data points are
+            present in a bin, the value in that bin is set to nan. Size is
+            bins.size - 1.
+
+    """
+    out = np.zeros(bins.size - 1) * np.nan
+    for i in range(0, bins.size - 1):
+        left = bins[i]
+        right = bins[i + 1]
+        tokeep = np.logical_and(x > left, x < right)
+        out[i] = f(y[tokeep])
+    return out
+
+
 def binmean(x, y, bins):
     """
     Returns the mean of data points lying in given bins.
@@ -55,10 +91,4 @@ def binmean(x, y, bins):
             The mean of y values in each bin. If no data points are present in
             a bin, the mean value is set to nan. Size is bins.size - 1.
     """
-    means = np.zeros(bins.size - 1) * np.nan
-    for i in range(0, bins.size - 1):
-        left = bins[i]
-        right = bins[i + 1]
-        tokeep = np.logical_and(x > left, x < right)
-        means[i] = np.mean(y[tokeep])
-    return means
+    return binfunc(x, y, bins, np.mean)
