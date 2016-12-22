@@ -7,6 +7,7 @@ own module.
 .. toctree::
    :maxdepth: 2
 
+   ace
    cluster
    helios
    imp
