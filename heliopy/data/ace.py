@@ -6,7 +6,6 @@ ACE spacecraft homepage can be found at http://www.srl.caltech.edu/ACE/.
 """
 import os
 import pandas as pd
-import numpy as np
 
 import heliopy.time as spacetime
 from heliopy.data import helper
