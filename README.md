@@ -18,8 +18,8 @@ data = wind.mfi_h0(starttime, endtime)
 plt.plot(data['Time'], data[['Bx_gse', 'By_gse', 'Bz_gse']])
 ```
 
-If heliopy is missing a method to import a dataset you are interested in, please
-submit a request at https://github.com/heliopython/heliopy/issues.
+**If heliopy is missing a method to import a dataset you are interested in,
+please submit a request at https://github.com/heliopython/heliopy/issues.**
 
 Full documentation can be found [here](http://heliopy.readthedocs.io/en/latest/).
 
