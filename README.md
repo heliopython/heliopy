@@ -1,8 +1,9 @@
 # heliopy
 
 A python library for Space Physics. The primary goal of this python package is
-to make it really easy to import common data sets used in Space Physics. A quick
-example shows how easy it is to import and videw data:
+to make it really easy to import common data sets used in Space Physics.
+
+A quick example shows how easy it is to import and view data:
 
 ```
 from datetime import datetime, timedelta
@@ -23,7 +24,10 @@ plt.plot(data['Time'], data['Bz_gse'])
 plt.show()
 ```
 
-Documentation can be found [here](http://heliopy.readthedocs.io/en/latest/).
+If heliopy is missing a method to import a dataset you are interested in, please
+submit a request at https://github.com/heliopython/heliopy/issues.
+
+Full documentation can be found [here](http://heliopy.readthedocs.io/en/latest/).
 
 [![Build Status](https://travis-ci.org/heliopython/heliopy.svg?branch=master)](https://travis-ci.org/heliopython/heliopy)
 [![Code Health](https://landscape.io/github/heliopython/heliopy/master/landscape.svg?style=flat)](https://landscape.io/github/heliopython/heliopy/master)
