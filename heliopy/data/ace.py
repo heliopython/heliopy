@@ -21,6 +21,8 @@ def mfi_h0(starttime, endtime):
     """
     Import 'mfi_h0' magnetic field data product from ACE.
 
+    This data set has 16 second cadence.
+
     Parameters
     ----------
         starttime : datetime
