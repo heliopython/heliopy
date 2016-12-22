@@ -15,13 +15,7 @@ endtime = starttime + timedelta(hours=2)
 
 data = wind.mfi_h0(starttime, endtime)
 
-print(data.keys())
-# Index(['Bx', 'By', 'Bz', 'Br', 'Time'], dtype='object')
-
-plt.plot(data['Time'], data['Bx_gse'])
-plt.plot(data['Time'], data['By_gse'])
-plt.plot(data['Time'], data['Bz_gse'])
-plt.show()
+plt.plot(data['Time'], data[['Bx_gse', 'By_gse', 'Bz_gse']])
 ```
 
 If heliopy is missing a method to import a dataset you are interested in, please
