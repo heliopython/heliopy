@@ -4,8 +4,8 @@ API reference
 .. toctree::
    :maxdepth: 2
 
-   bodies
-   data
+   bodies/index
+   data/index
    fitting
    plasma
    stats

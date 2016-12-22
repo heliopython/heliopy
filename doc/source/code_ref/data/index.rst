@@ -7,8 +7,8 @@ own module.
 .. toctree::
    :maxdepth: 2
 
-   data/cluster
-   data/helios
-   data/imp
-   data/mms
-   data/wind
+   cluster
+   helios
+   imp
+   mms
+   wind
