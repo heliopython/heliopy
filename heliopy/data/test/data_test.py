@@ -2,6 +2,7 @@ import heliopy.data.wind as wind
 import heliopy.data.mms as mms
 import heliopy.data.helios as helios
 import heliopy.data.cluster as cluster
+import heliopy.data.ace as ace
 import heliopy.data.imp as imp
 from heliopy import config
 
@@ -14,6 +15,13 @@ nodata = pytest.mark.skipif(
     pytest.config.getoption("--no-data"),
     reason="Skipped test that involves data download"
 )
+
+
+@nodata
+def test_ace():
+    starttime = datetime(2016, 1, 1, 0, 0, 0)
+    endtime = datetime(2016, 1, 2, 0, 0, 0)
+    ace.mfi_h0(starttime, endtime)
 
 
 @nodata
