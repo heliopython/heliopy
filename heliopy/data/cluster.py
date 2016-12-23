@@ -127,9 +127,10 @@ def _download(probe, starttime, endtime, instrument, product_id):
         # Remove request times from filename
         dirlist = os.listdir(download_dir)
         # Move to data folder
+        cutoff = 3 + len(product_id) + 10
         for f in dirlist:
             os.rename(os.path.join(download_dir, f),
-                      os.path.join(local_dir, f[:24] + '.cdf'))
+                      os.path.join(local_dir, f[:cutoff] + '.cdf'))
         # Delte extra folders created by tar.gz file
         os.rmdir(download_dir)
         os.rmdir(os.path.join(local_dir, d))
