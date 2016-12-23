@@ -90,8 +90,12 @@ def fpi_dis_moms(probe, mode, starttime, endtime):
             probestr = 'mms' + probe + '_'
             # Convert cdf to dataframe
             keys = {'Epoch': 'Time',
-                    probestr + 'dis_bulkv_gse_fast': ['bulkv_x', 'bulkv_y', 'bulkv_z'],
-                    probestr + 'dis_heatq_gse_fast': ['heatq_x', 'heatq_y', 'heatq_z'],
+                    probestr + 'dis_bulkv_gse_fast': ['bulkv_x',
+                                                      'bulkv_y',
+                                                      'bulkv_z'],
+                    probestr + 'dis_heatq_gse_fast': ['heatq_x',
+                                                      'heatq_y',
+                                                      'heatq_z'],
                     probestr + 'dis_numberdensity_fast': 'n',
                     probestr + 'dis_temppara_fast': 'T_par',
                     probestr + 'dis_tempperp_fast': 'T_perp'}

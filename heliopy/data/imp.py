@@ -45,7 +45,8 @@ def mitplasma_h0(probe, starttime, endtime):
             str(date.day).zfill(2)
         filename = 'i' + probe + '_h0_mitplasma_' + intervalstring + '_v01.cdf'
         # Location of file relative to local directory or remote url
-        relative_loc = 'imp' + probe + '/plasma_mit/mitplasma_h0/' + str(date.year)
+        relative_loc = 'imp' + probe + '/plasma_mit/mitplasma_h0/' +\
+            str(date.year)
 
         local_dir = os.path.join(imp_dir, relative_loc)
         remote_url = imp_url + relative_loc
@@ -103,7 +104,8 @@ def mag320ms(probe, startTime, endTime):
             str(date.day).zfill(2)
         filename = 'i8_320msec_mag_' + intervalstring + '_v01.cdf'
         # Location of file relative to local directory or remote url
-        relative_loc = 'imp' + probe + '/mag/mag_320msec_cdaweb/' + str(date.year)
+        relative_loc = 'imp' + probe + '/mag/mag_320msec_cdaweb/' +\
+            str(date.year)
 
         local_dir = os.path.join(imp_dir, relative_loc)
         remote_url = imp_url + relative_loc

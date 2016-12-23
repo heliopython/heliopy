@@ -180,10 +180,15 @@ def distribution(probe, year, doy, hour, minute, second):
     # Line of flags
     flags = f.readline().split()
     distparams['imode'] = int(flags[0])
-    distparams['ishift'] = bool(flags[1])     # Alternating energy/azimuth shift on?
-    distparams['iperihelion_shift'] = bool(flags[2])    # Possibly H2 abberation shift?
-    distparams['minus'] = int(flags[3])  # Indicates a HDM file which contained bad data (frames), but could be handled as NDM file
-    distparams['ion_instrument'] = int(flags[4])  # 0 = no instrument, 1 = i1a, 2 = I3
+    # Alternating energy/azimuth shift on?
+    distparams['ishift'] = bool(flags[1])
+    # Possibly H2 abberation shift?
+    distparams['iperihelion_shift'] = bool(flags[2])
+    # Indicates a HDM file which contained bad data (frames), but could be
+    # handled as NDM file
+    distparams['minus'] = int(flags[3])
+    # 0 = no instrument, 1 = i1a, 2 = I3
+    distparams['ion_instrument'] = int(flags[4])
 
     # 2 lines of Helios location information
     location = f.readline().split()
@@ -194,39 +199,58 @@ def distribution(probe, year, doy, hour, minute, second):
 
     # 2 lines of Earth location information
     earth_loc = f.readline().split()
-    distparams['earth_rsun'] = float(earth_loc[0])     # Heliospheric distance (AU)
-    distparams['earth_clong'] = float(earth_loc[1])    # Carrington longitude (deg)
-    distparams['earth_clat'] = float(earth_loc[2])     # Carrington lattitude (deg)
+    # Heliospheric distance (AU)
+    distparams['earth_rsun'] = float(earth_loc[0])
+    # Carrington longitude (deg)
+    distparams['earth_clong'] = float(earth_loc[1])
+    # Carrington lattitude (deg)
+    distparams['earth_clat'] = float(earth_loc[2])
     earth_loc = f.readline().split()
-    distparams['earth_he_angle'] = float(earth_loc[0])    # Angle between Earth and Helios (deg)
-    distparams['earth_carrot'] = int(earth_loc[1])        # Carrington rotation
+    # Angle between Earth and Helios (deg)
+    distparams['earth_he_angle'] = float(earth_loc[0])
+    # Carrington rotation
+    distparams['earth_carrot'] = int(earth_loc[1])
 
     # Helios velocity information
     helios_v = f.readline().split()
-    distparams['helios_vr'] = float(helios_v[0]) * 1731  # Helios radial velocity (km/s)
-    distparams['helios_v'] = float(helios_v[1]) * 1731   # Helios tangential velocity (km/s)
+    # Helios radial velocity (km/s)
+    distparams['helios_vr'] = float(helios_v[0]) * 1731
+    # Helios tangential velocity (km/s)
+    distparams['helios_v'] = float(helios_v[1]) * 1731
 
     # i1a integrated ion parameters
     i1a_proton_params = f.readline().split()
-    distparams['np_i1a'] = float(i1a_proton_params[0])   # Proton number density (cm^-3)
-    distparams['vp_i1a'] = float(i1a_proton_params[1])   # Proton velocity (km/s)
-    distparams['Tp_i1a'] = float(i1a_proton_params[2])   # Proton temperature (K)
+    # Proton number density (cm^-3)
+    distparams['np_i1a'] = float(i1a_proton_params[0])
+    # Proton velocity (km/s)
+    distparams['vp_i1a'] = float(i1a_proton_params[1])
+    # Proton temperature (K)
+    distparams['Tp_i1a'] = float(i1a_proton_params[2])
     i1a_proton_params = f.readline().split()
-    distparams['v_az_i1a'] = float(i1a_proton_params[0])     # Proton azimuth flow angle (deg)
-    distparams['v_el_i1a'] = float(i1a_proton_params[1])     # Proton elevation flow angle (deg)
-    assert distparams['v_az_i1a'] < 360, 'Flow azimuth must be less than 360 degrees'
+    # Proton azimuth flow angle (deg)
+    distparams['v_az_i1a'] = float(i1a_proton_params[0])
+    # Proton elevation flow angle (deg)
+    distparams['v_el_i1a'] = float(i1a_proton_params[1])
+    assert distparams['v_az_i1a'] < 360,\
+        'Flow azimuth must be less than 360 degrees'
 
     # i1a integrated alpha parameters (possibly all zero?)
     i1a_alpha_params = f.readline().split()
-    distparams['na_i1a'] = float(i1a_alpha_params[0])     # Alpha number density (cm^-3)
-    distparams['va_i1a'] = float(i1a_alpha_params[1])     # Alpha velocity (km/s)
-    distparams['Ta_i1a'] = float(i1a_alpha_params[2])     # Alpha temperature (K)
+    # Alpha number density (cm^-3)
+    distparams['na_i1a'] = float(i1a_alpha_params[0])
+    # Alpha velocity (km/s)
+    distparams['va_i1a'] = float(i1a_alpha_params[1])
+    # Alpha temperature (K)
+    distparams['Ta_i1a'] = float(i1a_alpha_params[2])
 
     # i1b integrated ion parameters
     i1b_proton_params = f.readline().split()
-    distparams['np_i1b'] = float(i1b_proton_params[0])   # Proton number density (cm^-3)
-    distparams['vp_i1b'] = float(i1b_proton_params[1])   # Proton velocity (km/s)
-    distparams['Tp_i1b'] = float(i1b_proton_params[2])   # Proton temperature (K)
+    # Proton number density (cm^-3)
+    distparams['np_i1b'] = float(i1b_proton_params[0])
+    # Proton velocity (km/s)
+    distparams['vp_i1b'] = float(i1b_proton_params[1])
+    # Proton temperature (K)
+    distparams['Tp_i1b'] = float(i1b_proton_params[2])
 
     # Magnetic field (out by a factor of 10 in data files for some reason)
     B = f.readline().split()
@@ -247,8 +271,8 @@ def distribution(probe, year, doy, hour, minute, second):
                   'na_i1a': [-1, 0], 'va_i1a': [-1, 0], 'Ta_i1a': [-1, 0]}
     distparams = distparams.replace(to_replace, np.nan)
 
-    nionlines = None   # Stores number of lines in ion distribution function
-    electronstartline = None    # Stores number of lines in electron distribution function
+    nionlines = None   # Number of lines in ion distribution
+    electronstartline = None  # Number of lines in electron distribution
     linesread = 16  # Stores the total number of lines read in the file
     # Loop through file to find end of ion distribution function
     for i, line in enumerate(f):
@@ -540,7 +564,8 @@ def mag_4hz(probe, starttime, endtime, verbose=True):
                 except ValueError as err:
                     if str(err)[0:15] == 'No raw mag data':
                         if verbose:
-                            print(year, doy, 'No 4Hz raw mag data available for this day')
+                            print(year, doy, 'No 4Hz raw mag data available'
+                                  'for this day')
                     else:
                         raise
             else:
@@ -778,11 +803,14 @@ def trajectory(probe, startdate, enddate):
         thisdata['Date'] = pd.to_datetime(thisdata['Year'], format='%Y') + \
             pd.to_timedelta(thisdata['doy'] - 1, unit='d') + \
             pd.to_timedelta(thisdata['Hour'], unit='h')
-        thisdata['ordinal'] = pd.DatetimeIndex(thisdata['Date']).astype(np.int64)
+        thisdata['ordinal'] =\
+            pd.DatetimeIndex(thisdata['Date']).astype(np.int64)
 
         # Calculate cartesian positions
-        thisdata['x'] = thisdata['r'] * np.cos(thisdata['selat']) * np.cos(thisdata['selon'])
-        thisdata['y'] = thisdata['r'] * np.cos(thisdata['selat']) * np.sin(thisdata['selon'])
+        thisdata['x'] = thisdata['r'] * np.cos(thisdata['selat']) *\
+            np.cos(thisdata['selon'])
+        thisdata['y'] = thisdata['r'] * np.cos(thisdata['selat']) *\
+            np.sin(thisdata['selon'])
         thisdata['z'] = thisdata['r'] * np.sin(thisdata['selat'])
 
         thisdata = thisdata.drop(['Year', 'doy', 'Hour'], axis=1)
