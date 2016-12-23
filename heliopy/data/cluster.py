@@ -11,7 +11,7 @@ https://csa.esac.esa.int/csa/aio/html/wget.shtml.
 """
 import os
 import tarfile
-from datetime import datetime, time
+from datetime import datetime
 from urllib.request import urlretrieve
 
 from heliopy import config
@@ -163,5 +163,38 @@ def fgm(probe, starttime, endtime):
     return _load(probe, starttime, endtime, 'fgm', 'CP_FGM_FULL', cdfkeys)
 
 
-if __name__ == '__main__':
-    fgm('2', datetime(2004, 6, 18, 11, 35, 0), datetime(2004, 6, 19, 18, 35, 0))
+def peace_moments(probe, starttime, endtime):
+    """
+    Download electron moments from the PEACE instrument.
+
+    See https://caa.estec.esa.int/documents/UG/CAA_EST_UG_PEA_v25.pdf for more
+    information on the PEACE data.
+
+    Parameters
+    ----------
+        probe : string
+            Probe number. Must be '1', '2', '3', or '4'.
+        starttime : datetime
+            Interval start.
+        endtime : datetime
+            Interval end.
+
+    Returns
+    -------
+        data : DataFrame
+            Requested data.
+    """
+    cdfkeys = {'Data_Density__C' + probe + '_CP_PEA_MOMENTS': 'n_e',
+               'Data_HeatFlux_GSE__C' + probe + '_CP_PEA_MOMENTS': ['qe_x',
+                                                                    'qe_y',
+                                                                    'qe_z'],
+               'Data_Temperature_ComponentParallelToMagField__C' +
+               probe + '_CP_PEA_MOMENTS': 'Te_par',
+               'Data_Temperature_ComponentPerpendicularToMagField__C' +
+               probe + '_...MOMENTS': 'Te_perp',
+               'Data_Velocity_GSE__C' + probe + '_CP_PEA_MOMENTS': ['ve_x',
+                                                                    've_y',
+                                                                    've_z'],
+               'time_tags__C' + probe + '_CP_PEA_MOMENTS': 'Time'}
+    return _load(probe, starttime, endtime, 'peace', 'CP_PEA_MOMENTS',
+                 cdfkeys)

@@ -40,6 +40,10 @@ def test_cluster():
         endtime = datetime(2004, 6, 19, 18, 35, 0)
         cluster.fgm(probe, starttime, endtime)
 
+        starttime = datetime(2009, 12, 22, 4, 0, 0)
+        endtime = datetime(2009, 12, 22, 6)
+        cluster.peace_moments(probe, starttime, endtime)
+
 
 @nodata
 def test_wind():
