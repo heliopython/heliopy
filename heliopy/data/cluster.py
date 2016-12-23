@@ -65,6 +65,8 @@ def _load(probe, starttime, endtime, instrument, product_id, cdfkeys):
 
 
 def _download(probe, starttime, endtime, instrument, product_id):
+    if cda_cookie == 'none':
+        raise RuntimeError('Cluster download cookie not set')
     daylist = daysplitinterval(starttime, endtime)
     for day in daylist:
         date = day[0]
