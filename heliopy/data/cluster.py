@@ -11,7 +11,7 @@ https://csa.esac.esa.int/csa/aio/html/wget.shtml.
 """
 import os
 import tarfile
-from datetime import datetime
+from datetime import datetime, time
 from urllib.request import urlretrieve
 
 from heliopy import config
