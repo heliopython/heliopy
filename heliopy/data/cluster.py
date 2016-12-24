@@ -47,7 +47,6 @@ def _load(probe, starttime, endtime, instrument, product_id, cdfkeys):
         local_dir = os.path.join(cluster_dir,
                                  'c' + probe,
                                  instrument,
-                                 'full',
                                  year)
 
         local_fname = 'C' + probe + '_' + product_id + '__' +\
@@ -98,7 +97,6 @@ def _download(probe, starttime, endtime, instrument, product_id):
         local_dir = os.path.join(cluster_dir,
                                  'c' + probe,
                                  instrument,
-                                 'full',
                                  year)
         # Work out local filename to download to
         filename = 'C' + probe + '_' + product_id + '__' + year + month +\
@@ -197,4 +195,42 @@ def peace_moments(probe, starttime, endtime):
                                                                     've_z'],
                'time_tags__C' + probe + '_CP_PEA_MOMENTS': 'Time'}
     return _load(probe, starttime, endtime, 'peace', 'CP_PEA_MOMENTS',
+                 cdfkeys)
+
+
+def cis_hia_onboard_moms(probe, starttime, endtime):
+    """
+    Download onboard ion moments from the CIS instrument.
+
+    See https://caa.estec.esa.int/documents/UG/CAA_EST_UG_CIS_v35.pdf for more
+    information on the CIS data.
+
+    Parameters
+    ----------
+        probe : string
+            Probe number. Must be '1', '2', '3', or '4'.
+        starttime : datetime
+            Interval start.
+        endtime : datetime
+            Interval end.
+
+    Returns
+    -------
+        data : DataFrame
+            Requested data.
+    """
+    cdfkeys = {'density__C' + probe + '_CP_CIS-HIA_ONBOARD_MOMENTS': 'n_i',
+               'pressure__C' + probe + '_CP_CIS-HIA_ONBOARD_MOMENTS': 'p_i',
+               'temperature__C' + probe + '_CP_CIS-HIA_ONBOARD_MOMENTS':
+               'Ti',
+               'temp_par__C' + probe + '_CP_CIS-HIA_ONBOARD_MOMENTS':
+               'Ti_par',
+               'temp_perp__C' + probe + '_CP_CIS-HIA_ONBOARD_MOMENTS':
+               'Ti_perp',
+               'velocity_gse__C' + probe + '_CP_CIS-HIA_ONBOARD_MOMENTS':
+               ['vi_x',
+                'vi_y',
+                'vi_z'],
+               'time_tags__C' + probe + '_CP_CIS-HIA_ONBOARD_MOMENTS': 'Time'}
+    return _load(probe, starttime, endtime, 'cis', 'CP_CIS-HIA_ONBOARD_MOMENTS',
                  cdfkeys)
