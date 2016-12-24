@@ -234,11 +234,3 @@ def cis_hia_onboard_moms(probe, starttime, endtime):
                'time_tags__C' + probe + '_CP_CIS-HIA_ONBOARD_MOMENTS': 'Time'}
     return _load(probe, starttime, endtime, 'cis', 'CP_CIS-HIA_ONBOARD_MOMENTS',
                  cdfkeys)
-
-if __name__ == '__main__':
-    from datetime import datetime
-    probe = '3'
-    starttime = datetime(2009, 1, 1, 0, 0, 0)
-    endtime = datetime(2009, 1, 1, 2, 0, 0)
-    data = cis_hia_onboard_moms(probe, starttime, endtime)
-    print(data)
