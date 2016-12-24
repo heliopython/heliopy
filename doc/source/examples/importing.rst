@@ -34,6 +34,6 @@ magnetic field in a GSE co-ordinate system. Each column can be accessed using
 Now we've imported the data, lets plot it. To do this we can use matplotlib:
 
 .. literalinclude:: scripts/importing_data.py
-   :lines: 13-16
+   :lines: 13-17
 
 This should show a 3-component plot of the magnetic field.
