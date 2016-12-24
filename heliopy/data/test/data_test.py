@@ -44,6 +44,11 @@ def test_cluster():
         endtime = datetime(2009, 12, 22, 6)
         cluster.peace_moments(probe, starttime, endtime)
 
+        probe = '3'
+        starttime = datetime(2009, 1, 1, 0, 0, 0)
+        endtime = datetime(2009, 1, 1, 2, 0, 0)
+        cluster.cis_hia_onboard_moms(probe, starttime, endtime)
+
 
 @nodata
 def test_wind():
