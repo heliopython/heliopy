@@ -47,7 +47,6 @@ def _load(probe, starttime, endtime, instrument, product_id, cdfkeys):
         local_dir = os.path.join(cluster_dir,
                                  'c' + probe,
                                  instrument,
-                                 'full',
                                  year)
 
         local_fname = 'C' + probe + '_' + product_id + '__' +\
@@ -98,7 +97,6 @@ def _download(probe, starttime, endtime, instrument, product_id):
         local_dir = os.path.join(cluster_dir,
                                  'c' + probe,
                                  instrument,
-                                 'full',
                                  year)
         # Work out local filename to download to
         filename = 'C' + probe + '_' + product_id + '__' + year + month +\
