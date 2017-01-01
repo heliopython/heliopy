@@ -1,5 +1,6 @@
 """Statistical methods"""
 import numpy as np
+import inspect
 
 
 def hist(x, bins='auto', normed=True, return_centres=True):
@@ -52,23 +53,40 @@ def binfunc(x, y, bins, f):
         bins : array_like
             Bin edges.
         f : function
-            Function to apply to data points. Must take array_like as its only
-            argument.
+            Function to apply to data points. If f takes only one argument it
+            is passed y. If f takes 2 arguments it is passed x and y in that
+            order.
 
     Returns
     -------
-        out : array_like
-            The function applied to y values in each bin. If no data points are
-            present in a bin, the value in that bin is set to nan. Size is
-            bins.size - 1.
+        out : list
+            The results function applied in each bin. If no data points are
+            present in a bin, the value in that bin is set to an emtpy list.
+            Length is bins.size - 1.
 
     """
-    out = np.zeros(bins.size - 1) * np.nan
+    if isinstance(bins, list):
+        bins = np.array(bins)
+
+    # Check if function takes 1 or 2 arguments
+    sig = inspect.signature(f)
+    nargs = len(sig.parameters)
+    if not (nargs == 1 or nargs == 2):
+        raise RuntimeError('User supplied funciton must take 1 or 2 arguments')
+
+    out = []
     for i in range(0, bins.size - 1):
         left = bins[i]
         right = bins[i + 1]
-        tokeep = np.logical_and(x > left, x < right)
-        out[i] = f(y[tokeep])
+        tokeep = np.logical_and(x >= left, x < right)
+        if tokeep.size == 0:
+            out.append([])
+        else:
+            if nargs == 1:
+                out.append(f(y[tokeep]))
+            if nargs == 2:
+                out.append(f(x[tokeep], y[tokeep]))
+
     return out
 
 
@@ -91,4 +109,6 @@ def binmean(x, y, bins):
             The mean of y values in each bin. If no data points are present in
             a bin, the mean value is set to nan. Size is bins.size - 1.
     """
-    return binfunc(x, y, bins, np.mean)
+    def mean(x):
+        return np.mean(x)
+    return binfunc(x, y, bins, mean)
