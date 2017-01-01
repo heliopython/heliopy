@@ -2,7 +2,8 @@
 import matplotlib.pyplot as plt
 
 
-def loglog(fs, power, title=None, xlabel=r'$f /Hz$', ylabel='', legend=None):
+def loglog(fs, power, title=None, xlabel=r'$f /Hz$', ylabel='', legend=None,
+           ax=None):
     """
     Plot power spectra on log-log axes.
 
@@ -22,8 +23,11 @@ def loglog(fs, power, title=None, xlabel=r'$f /Hz$', ylabel='', legend=None):
             y-axis label
         legend : string
             Legend entry
+        ax : matplotlib axis instance
+            Axis to plot on.
     """
-    ax = plt.gca()
+    if ax is None:
+        ax = plt.gca()
     ax.plot(fs, power, alpha=0.8, label=legend)
 
     # Figure formatting
