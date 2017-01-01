@@ -78,7 +78,7 @@ def binfunc(x, y, bins, f):
     for i in range(0, bins.size - 1):
         left = bins[i]
         right = bins[i + 1]
-        tokeep = np.logical_and(x > left, x < right)
+        tokeep = np.logical_and(x >= left, x < right)
         if tokeep.size == 0:
             out.append([])
         else:
