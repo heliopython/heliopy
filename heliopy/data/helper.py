@@ -192,7 +192,7 @@ def pitchdist_cdf2df(cdf, distkeys, energykey, timekey, anglelabels):
 
     tuples = list(zip(*index))
     index = pd.MultiIndex.from_tuples(tuples, names=['Time', 'Energy', 'Angle'])
-    data = pd.Series(data, index=index)
+    data = pd.DataFrame(data, index=index, columns=['df'])
     data = data.sort_index()
     return data
 
