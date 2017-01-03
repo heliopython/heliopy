@@ -6,12 +6,12 @@ from scipy.stats import linregress
 import heliopy.stats as heliostats
 
 
-def spectral_slopes(fs, power, nbins=10):
+def spectral_slopes(fs, power, nbins=10, spacing='linear'):
     """
     Calculates the slope of a power spectra in bins.
 
-    The bins are spaced linearly from the lowest frequency up. The last bin
-    will contain fewer points than the preceding bins.
+    The bins are equally spaced from the lowest frequency to the highest
+    frequency.
 
 
     Parameters
@@ -22,6 +22,8 @@ def spectral_slopes(fs, power, nbins=10):
             Power at corresponding frequencies.
         nbins : int
             Number of bins to split slope calculation into.
+        spacing : string
+            Either 'linear' or 'log'
     """
     # Sort frequencies
     argsorted = np.argsort(fs)
@@ -29,12 +31,12 @@ def spectral_slopes(fs, power, nbins=10):
     power = power[argsorted]
 
     # Calculate bin size
-    binsize = int(np.floor(fs.size / nbins))
-    # Create list of bins
-    bins = []
-    for i in range(0, nbins):
-        bins.append(fs[i * binsize])
-    bins.append(fs[-1])
+    if spacing == 'linear':
+        bins = np.linspace(fs[0], fs[-1], nbins + 1)
+    elif spacing == 'log':
+        bins = np.logspace(np.log10(fs[0]), np.log10(fs[-1]), nbins + 1)
+    else:
+        raise RuntimeError('spacing argument must be either "linear" or "log"')
 
     # Perform linear regression in logspace
     out = heliostats.binfunc(np.log10(fs),
