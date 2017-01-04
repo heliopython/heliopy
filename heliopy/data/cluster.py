@@ -16,7 +16,7 @@ from urllib.request import urlretrieve
 
 from heliopy import config
 from heliopy.time import daysplitinterval
-from heliopy.data.helper import reporthook, checkdir, cdf2df
+from heliopy.data.helper import reporthook, checkdir, cdf2df, timefilter
 
 from spacepy import pycdf
 
@@ -38,6 +38,7 @@ cda_time_fmt = '%Y-%m-%dT%H:%M:%SZ'
 
 def _load(probe, starttime, endtime, instrument, product_id, cdfkeys):
     daylist = daysplitinterval(starttime, endtime)
+    data = []
     for day in daylist:
         date = day[0]
         year = str(date.year)
@@ -60,7 +61,8 @@ def _load(probe, starttime, endtime, instrument, product_id, cdfkeys):
             if value == 'Time':
                 index_key = key
                 break
-        return cdf2df(cdf, index_key, cdfkeys)
+        data.append(cdf2df(cdf, index_key, cdfkeys))
+    return timefilter(data, starttime, endtime)
 
 
 def _download(probe, starttime, endtime, instrument, product_id):
