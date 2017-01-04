@@ -155,13 +155,41 @@ def angle(v1, v2):
         phi : float
             Angle between two vectors in radians.
     """
-    assert v1.shape == v2.shape, 'Input vectors must be the same shape'
-    v1mag = np.linalg.norm(v1)
-    v2mag = np.linalg.norm(v2)
-    v1dotv2 = np.dot(v1, v2)
+
+    # Work out how many components a vector has
+    def ncomps(v):
+        if len(v.shape) == 1:
+            n = v.shape[0]
+        elif len(v.shape) == 2:
+            n = v.shape[1]
+        else:
+            raise ValueError('Input array must be 1D or 2D, but is %sD'
+                             % (len(v.shape)))
+        return ncomps, np.atleast_2d(np.array(v))
+
+    v1comps, v1 = ncomps(v1)
+    v2comps, v2 = ncomps(v2)
+    if v1.shape != v2.shape:
+        if v1.shape[0] == 1 and v2.shape[0] != 1:
+            v1 = np.repeat(v1, v2.shape[0], axis=0)
+        elif v1.shape[0] != 1 and v2.shape[0] == 1:
+            v2 = np.repeat(v2, v1.shape[0], axis=0)
+        assert v1comps == v2comps,\
+            'Input vectors must have same nubmer of components'
+
+    v1mag = np.linalg.norm(v1, axis=1)
+    v2mag = np.linalg.norm(v2, axis=1)
+    v1dotv2 = _columndotproduct(v1, v2)
 
     phi = np.arccos(v1dotv2 / (v1mag * v2mag))
     return phi
+
+
+def _columndotproduct(v1, v2, axis=1):
+    out = np.zeros(v1.shape[0])
+    for i in range(v1.shape[0]):
+        out[i] = np.dot(v1[int(i), :], v2[int(i), :])
+    return out
 
 
 def rotationmatrixangle(axis, theta):
