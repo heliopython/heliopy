@@ -78,8 +78,7 @@ def cart2pol(x, y):
 
 def cart2sph(x, y, z):
     """
-    Given cartesian x, y, z co-ordinates, returns shperical r, theta, phi
-    co-ordinates.
+    Given cartesian co-ordinates returns shperical co-ordinates.
 
     Parameters
     ----------
@@ -110,8 +109,7 @@ def cart2sph(x, y, z):
 
 def sph2cart(r, theta, phi):
     """
-    Given spherical r, theta, phi co-orinates, returns cartesian x, y, z
-    coordiantes.
+    Given spherical co-orinates, returns cartesian coordiantes.
 
     Parameters
     ----------
@@ -158,9 +156,8 @@ def angle(v1, v2):
         phi : array_like or float
             Angle between two vectors in radians. Shape will be `(m, )`.
     """
-
-    # Work out how many components a vector has
     def ncomps(v):
+        """Work out how many components a vector has, and make v 2d"""
         if len(v.shape) == 1:
             n = v.shape[0]
         elif len(v.shape) == 2:
@@ -168,7 +165,7 @@ def angle(v1, v2):
         else:
             raise ValueError('Input array must be 1D or 2D, but is %sD'
                              % (len(v.shape)))
-        return ncomps, np.atleast_2d(np.array(v))
+        return n, np.atleast_2d(np.array(v))
 
     v1comps, v1 = ncomps(v1)
     v2comps, v2 = ncomps(v2)
@@ -188,7 +185,7 @@ def angle(v1, v2):
     return phi
 
 
-def _columndotproduct(v1, v2, axis=1):
+def _columndotproduct(v1, v2):
     out = np.zeros(v1.shape[0])
     for i in range(v1.shape[0]):
         out[i] = np.dot(v1[int(i), :], v2[int(i), :])
@@ -197,10 +194,10 @@ def _columndotproduct(v1, v2, axis=1):
 
 def rotationmatrixangle(axis, theta):
     """
-    Return the rotation matrix associated with counterclockwise rotation about
-    the given axis by theta.
+    Return the rotation matrix about a given axis.
 
-    Uses Euler-Rodrigues formula.
+    The rotation is taken to be counterclockwise about the given axis. Uses the
+    Euler-Rodrigues formula.
 
     Parameters
     ----------
