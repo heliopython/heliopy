@@ -8,10 +8,11 @@ import heliopy.stats as heliostats
 
 def spectral_slopes(fs, power, nbins=10, spacing='linear'):
     """
-    Calculates the slope of a power spectra in bins.
+    Calculates the local power law of a specturm across multiple bins.
 
-    The bins are equally spaced from the lowest frequency to the highest
-    frequency.
+    The bins are equally spaced from the lowest provided frequency to the
+    highest frequency. Data in each bin is then fitted with a straight line in
+    log space to estimate the local power law.
 
 
     Parameters
