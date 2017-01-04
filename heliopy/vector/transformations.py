@@ -143,17 +143,20 @@ def angle(v1, v2):
     """
     Return angle between vectors v1 and v2 in radians.
 
+    `n` is the number of components each vector has, and `m` is the number of
+    vectors.
+
     Parameters
     ----------
         v1 : array_like
-            Vector 1.
+            Vector 1. Can be shape `(n, )` or shape `(m, n)`.
         v2: array_like
-            Vector 2.
+            Vector 2. Can be shape `(n, )` or shape `(m, n)`.
 
     Returns
     -------
-        phi : float
-            Angle between two vectors in radians.
+        phi : array_like or float
+            Angle between two vectors in radians. Shape will be `(m, )`.
     """
 
     # Work out how many components a vector has
