@@ -8,6 +8,32 @@ import pandas as pd
 import numpy as np
 
 
+def timefilter(data, starttime, endtime):
+    """
+    Puts data in a single dataframe, and filters it between times.
+
+    Parameters
+    ----------
+        data : DataFrame or list
+            Input data. If a list, pd.concat(data) will be run to put it in a
+            DataFrame.
+        starttime : datetime
+            Start of interval.
+        endtime : datetime
+            End of interval.
+
+    Returns
+    -------
+        out : DataFrame
+            Filtered data.
+    """
+    if isinstance(data, list):
+        data = pd.concat(data)
+    data = data[(data['Time'] > starttime) &
+                (data['Time'] < endtime)]
+    return data
+
+
 def reporthook(blocknum, blocksize, totalsize):
     readsofar = blocknum * blocksize
     if totalsize > 0:
