@@ -3,6 +3,7 @@ import heliopy.data.mms as mms
 import heliopy.data.helios as helios
 import heliopy.data.cluster as cluster
 import heliopy.data.ace as ace
+import heliopy.data.artemis as artemis
 import heliopy.data.imp as imp
 from heliopy import config
 
@@ -15,6 +16,14 @@ nodata = pytest.mark.skipif(
     pytest.config.getoption("--no-data"),
     reason="Skipped test that involves data download"
 )
+
+
+@nodata
+def test_artemis():
+    starttime = datetime(2008, 1, 1, 0, 0, 0)
+    endtime = datetime(2008, 1, 2, 0, 0, 0)
+    probe = 'a'
+    artemis.fgm(probe, 'h', 'dsl', starttime, endtime)
 
 
 @nodata
