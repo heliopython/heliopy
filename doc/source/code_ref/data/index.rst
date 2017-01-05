@@ -8,6 +8,7 @@ own module.
    :maxdepth: 2
 
    ace
+   artemis
    cluster
    helios
    imp
