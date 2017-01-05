@@ -22,7 +22,8 @@ def cart2pitchangles(x, y, z, v):
         theta : array_like
             Pitch angles. Angles are in range [0, pi].
     """
-    assert all((x.shape == y.shape, x.shape == z.shape)), 'Input vector shapes must match'
+    assert all((x.shape == y.shape, x.shape == z.shape)),\
+        'Input vector shapes must match'
     rotx, roty, rotz = changezaxis(x, y, z, v)
     _, theta, _ = cart2sph(rotx, roty, rotz)
     return -(theta - (np.pi / 2))
@@ -77,8 +78,7 @@ def cart2pol(x, y):
 
 def cart2sph(x, y, z):
     """
-    Given cartesian x, y, z co-ordinates, returns shperical r, theta, phi
-    co-ordinates.
+    Given cartesian co-ordinates returns shperical co-ordinates.
 
     Parameters
     ----------
@@ -109,8 +109,7 @@ def cart2sph(x, y, z):
 
 def sph2cart(r, theta, phi):
     """
-    Given spherical r, theta, phi co-orinates, returns cartesian x, y, z
-    coordiantes.
+    Given spherical co-orinates, returns cartesian coordiantes.
 
     Parameters
     ----------
@@ -142,33 +141,63 @@ def angle(v1, v2):
     """
     Return angle between vectors v1 and v2 in radians.
 
+    `n` is the number of components each vector has, and `m` is the number of
+    vectors.
+
     Parameters
     ----------
         v1 : array_like
-            Vector 1.
+            Vector 1. Can be shape `(n, )` or shape `(m, n)`.
         v2: array_like
-            Vector 2.
+            Vector 2. Can be shape `(n, )` or shape `(m, n)`.
 
     Returns
     -------
-        phi : float
-            Angle between two vectors in radians.
+        phi : array_like or float
+            Angle between two vectors in radians. Shape will be `(m, )`.
     """
-    assert v1.shape == v2.shape, 'Input vectors must be the same shape'
-    v1mag = np.linalg.norm(v1)
-    v2mag = np.linalg.norm(v2)
-    v1dotv2 = np.dot(v1, v2)
+    def ncomps(v):
+        """Work out how many components a vector has, and make v 2d"""
+        if len(v.shape) == 1:
+            n = v.shape[0]
+        elif len(v.shape) == 2:
+            n = v.shape[1]
+        else:
+            raise ValueError('Input array must be 1D or 2D, but is %sD'
+                             % (len(v.shape)))
+        return n, np.atleast_2d(np.array(v))
+
+    v1comps, v1 = ncomps(v1)
+    v2comps, v2 = ncomps(v2)
+    if v1.shape != v2.shape:
+        if v1.shape[0] == 1 and v2.shape[0] != 1:
+            v1 = np.repeat(v1, v2.shape[0], axis=0)
+        elif v1.shape[0] != 1 and v2.shape[0] == 1:
+            v2 = np.repeat(v2, v1.shape[0], axis=0)
+        assert v1comps == v2comps,\
+            'Input vectors must have same nubmer of components'
+
+    v1mag = np.linalg.norm(v1, axis=1)
+    v2mag = np.linalg.norm(v2, axis=1)
+    v1dotv2 = _columndotproduct(v1, v2)
 
     phi = np.arccos(v1dotv2 / (v1mag * v2mag))
     return phi
 
 
+def _columndotproduct(v1, v2):
+    out = np.zeros(v1.shape[0])
+    for i in range(v1.shape[0]):
+        out[i] = np.dot(v1[int(i), :], v2[int(i), :])
+    return out
+
+
 def rotationmatrixangle(axis, theta):
     """
-    Return the rotation matrix associated with counterclockwise rotation about
-    the given axis by theta.
+    Return the rotation matrix about a given axis.
 
-    Uses Euler-Rodrigues formula.
+    The rotation is taken to be counterclockwise about the given axis. Uses the
+    Euler-Rodrigues formula.
 
     Parameters
     ----------
@@ -191,9 +220,10 @@ def rotationmatrixangle(axis, theta):
     b, c, d = -normaxis * np.sin(theta / 2)
     aa, bb, cc, dd = a * a, b * b, c * c, d * d
     bc, ad, ac, ab, bd, cd = b * c, a * d, a * c, a * b, b * d, c * d
-    return np.array([[aa + bb - cc - dd, 2 * (bc + ad), 2 * (bd - ac)],
-                     [2 * (bc - ad), aa + cc - bb - dd, 2 * (cd + ab)],
-                     [2 * (bd + ac), 2 * (cd - ab), aa + dd - bb - cc]])
+    out = np.array([[aa + bb - cc - dd, 2 * (bc + ad), 2 * (bd - ac)],
+                    [2 * (bc - ad), aa + cc - bb - dd, 2 * (cd + ab)],
+                    [2 * (bd + ac), 2 * (cd - ab), aa + dd - bb - cc]])
+    return out[:, :, 0]
 
 
 def rotationmatrix(v):
