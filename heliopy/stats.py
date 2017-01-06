@@ -3,7 +3,7 @@ import numpy as np
 import inspect
 
 
-def hist(x, bins='auto', normed=True, return_centres=True):
+def hist(x, bins='auto', normed=True, return_centres=True, **kwargs):
     """
     Improved histogram function
 
@@ -28,7 +28,7 @@ def hist(x, bins='auto', normed=True, return_centres=True):
             Bin centres or bin edges (depends on value of return_centres
             argument)
     """
-    hist, bin_edges = np.histogram(x, bins=bins, normed=normed)
+    hist, bin_edges = np.histogram(x, bins=bins, normed=normed, **kwargs)
     # Calculate centres of bins (e.g. for plotting scatter pdf)
     bin_centres = (bin_edges[1:] + bin_edges[:-1]) / 2
     if return_centres:
