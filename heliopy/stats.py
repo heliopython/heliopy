@@ -3,6 +3,11 @@ import numpy as np
 import inspect
 
 
+def _edges_to_centres(bin_edges):
+    """Converts bin edges to bin centres"""
+    return (bin_edges[1:] + bin_edges[:-1]) / 2
+
+
 def hist(x, bins='auto', normed=True, return_centres=True, **kwargs):
     """
     Improved histogram function
@@ -29,10 +34,8 @@ def hist(x, bins='auto', normed=True, return_centres=True, **kwargs):
             argument)
     """
     hist, bin_edges = np.histogram(x, bins=bins, normed=normed, **kwargs)
-    # Calculate centres of bins (e.g. for plotting scatter pdf)
-    bin_centres = (bin_edges[1:] + bin_edges[:-1]) / 2
     if return_centres:
-        return hist, bin_centres
+        return hist, _edges_to_centres(bin_edges)
     else:
         return hist, bin_edges
 
