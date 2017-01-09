@@ -24,8 +24,8 @@ import unittest.mock as mock
 sys.path.insert(0, os.path.abspath('../../'))
 
 # Pretend these modules exits so readthedocs builds
-MOCK_MODULES = ['numpy', 'scipy', 'scipy.optimize', 'matplotlib.pyplot',
-                'spacepy', 'pandas']
+MOCK_MODULES = ['numpy', 'scipy', 'scipy.optimize', 'scipy.stats',
+                'matplotlib.pyplot', 'spacepy', 'pandas']
 for mod_name in MOCK_MODULES:
     sys.modules[mod_name] = mock.Mock()
 # -- General configuration ------------------------------------------------
