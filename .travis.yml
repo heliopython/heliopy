@@ -18,9 +18,9 @@ before_install:
 - make OS=linux ENV=gnu all
 - sudo make INSTALLDIR=/usr/local/cdf install
 - cd ../
-- pip install pytest pytest-cov coveralls pandas tables
+- pip install pytest pytest-cov pandas tables
 - pip install spacepy
 script:
 - py.test heliopy/ --cov=heliopy/ -v
 after_success:
-- coveralls
+  - bash <(curl -s https://codecov.io/bash)
