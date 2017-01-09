@@ -1,5 +1,6 @@
 """Statistical methods"""
 import numpy as np
+import scipy.stats as stats
 import inspect
 
 
@@ -38,6 +39,36 @@ def hist(x, bins='auto', normed=True, return_centres=True, **kwargs):
         return hist, _edges_to_centres(bin_edges)
     else:
         return hist, bin_edges
+
+
+def gaussian_kde(x, bins='auto'):
+    """
+    Improved gaussian kernel density estimation function.
+
+    See https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.gaussian_kde.html
+    for the method upon which this is based.
+
+    Parameters
+    ----------
+        x : array_like
+            Data values.
+        bins : array | string
+            If a sting, will be passed to np.hist to automatically work out
+            bins to use. Otherwise the kernel density estimate is evaluated at
+            the values provided.
+
+    Returns
+    -------
+        kde : array_like
+            Kernel density estimates.
+        bins : array_like
+            Location of evalulated values.
+    """
+    if isinstance(bins, str):
+        _, bins = hist(x, bins=bins)
+    kernel = stats.gaussian_kde(x)
+    kde = kernel.pdf(bins)
+    return kde, bins
 
 
 def binfunc(x, y, bins, f):
