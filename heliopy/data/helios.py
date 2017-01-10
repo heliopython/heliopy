@@ -368,12 +368,12 @@ def distribution(probe, year, doy, hour, minute, second):
     params = distparams(probe, year, doy, hour, minute, second)
 
     nionlines = None   # Number of lines in ion distribution
-    linesread = 16  # Stores the total number of lines read in the file
+    linesread = 0  # Stores the total number of lines read in the file
     # Loop through file to find end of ion distribution function
     for i, line in enumerate(f):
         # Find start of proton distribution function
         if line[0:23] == 'Maximum of distribution':
-            ionstartline = i + linesread
+            ionstartline = i + 1
         # Find number of lines in ion distribution function
         if line[0:4] == ' 2-D':
             nionlines = i - ionstartline
