@@ -208,9 +208,9 @@ def electron_dist(probe, year, doy, hour, minute, second):
         return dist
 
 
-def distribution(probe, year, doy, hour, minute, second):
+def distparams(probe, year, doy, hour, minute, second):
     """
-    Read in full distribution functions and associated paraemters.
+    Read in distribution paraemters.
 
     Parameters
     ----------
@@ -229,10 +229,6 @@ def distribution(probe, year, doy, hour, minute, second):
 
     Returns
     -------
-        electrondist : DataFrame
-            2D electron distribution function.
-        iondist : DataFrame
-            3D ion distribution function.
         distparams : Series
             Distribution parameters from top of distribution function files.
     """
@@ -337,6 +333,39 @@ def distribution(probe, year, doy, hour, minute, second):
                   'v_az_i1a': [-1, 0], 'v_el_i1a': [-1, 0],
                   'na_i1a': [-1, 0], 'va_i1a': [-1, 0], 'Ta_i1a': [-1, 0]}
     distparams = distparams.replace(to_replace, np.nan)
+    return distparams
+
+
+def distribution(probe, year, doy, hour, minute, second):
+    """
+    Read in full distribution functions and associated paraemters.
+
+    Parameters
+    ----------
+        probe : int
+            Helios probe to import data from. Must be 1 or 2.
+        year : int
+            Year
+        doy : int
+            Day of year.
+        hour : int
+            Hour.
+        minute : int
+            Minute.
+        second : int
+            Second.
+
+    Returns
+    -------
+        electrondist : DataFrame
+            2D electron distribution function.
+        iondist : DataFrame
+            3D ion distribution function.
+        distparams : Series
+            Distribution parameters from top of distribution function files.
+    """
+    f, filename = loaddistfile(probe, year, doy, hour, minute, second)
+    params = distparams(probe, year, doy, hour, minute, second)
 
     nionlines = None   # Number of lines in ion distribution
     electronstartline = None  # Number of lines in electron distribution
@@ -398,12 +427,12 @@ def distribution(probe, year, doy, hour, minute, second):
 
         # Work out when maximum of distribution was recorded
         maxbin = np.argmax(iondist['pdf'])
-        distparams['Peak Time'] = iondist.loc[maxbin, 'E_bin']
+        params['Peak Time'] = iondist.loc[maxbin, 'E_bin']
 
         # Remove spacecraft abberation
         # Assumes that spacecraft motion is always in the ecliptic (x-y) plane
-        iondist['vx'] += distparams['helios_vr']
-        iondist['vy'] += distparams['helios_v']
+        iondist['vx'] += params['helios_vr']
+        iondist['vy'] += params['helios_v']
         # Convert to SI units
         iondist[['vx', 'vy', 'vz']] *= 1e3
         iondist['pdf'] *= 1e12
@@ -413,12 +442,9 @@ def distribution(probe, year, doy, hour, minute, second):
         # Calculate bin energy assuming particles are protons
         iondist['E_proton'] = 0.5 * constants.m_p * ((iondist['|v|']) ** 2)
 
-    ##########################################
-    # Read and process electron distribution #
-    ##########################################
     electrondist = electron_dist(probe, year, doy, hour, minute, second)
 
-    return electrondist, iondist, distparams
+    return electrondist, iondist, params
 
 
 def merged(probe, starttime, endtime, verbose=True):
