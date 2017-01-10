@@ -336,9 +336,9 @@ def distparams(probe, year, doy, hour, minute, second):
     return distparams
 
 
-def distribution(probe, year, doy, hour, minute, second):
+def ion_dist(probe, year, doy, hour, minute, second):
     """
-    Read in full distribution functions and associated paraemters.
+    Read in ion distribution function.
 
     Parameters
     ----------
@@ -357,15 +357,10 @@ def distribution(probe, year, doy, hour, minute, second):
 
     Returns
     -------
-        electrondist : DataFrame
-            2D electron distribution function.
-        iondist : DataFrame
+        dist : DataFrame
             3D ion distribution function.
-        distparams : Series
-            Distribution parameters from top of distribution function files.
     """
     f, filename = loaddistfile(probe, year, doy, hour, minute, second)
-    params = distparams(probe, year, doy, hour, minute, second)
 
     nionlines = None   # Number of lines in ion distribution
     linesread = 0  # Stores the total number of lines read in the file
@@ -404,35 +399,59 @@ def distribution(probe, year, doy, hour, minute, second):
     #####################################
     # If no ion data in file
     if nionlines < 1:
-        iondist = None
-    else:
-        # Arguments for reading in data
-        readargs = {'usecols': [0, 1, 2, 3, 4, 5, 6, 7],
-                    'names': ['Az', 'El', 'E_bin', 'pdf', 'counts',
-                              'vx', 'vy', 'vz'],
-                    'delim_whitespace': True,
-                    'skiprows': ionstartline,
-                    'nrows': nionlines}
-        # Read in data
-        iondist = pd.read_table(filename, **readargs)
+        return None
 
-        # Work out when maximum of distribution was recorded
-        maxbin = np.argmax(iondist['pdf'])
-        params['Peak Time'] = iondist.loc[maxbin, 'E_bin']
+    # Arguments for reading in data
+    readargs = {'usecols': [0, 1, 2, 3, 4, 5, 6, 7],
+                'names': ['Az', 'El', 'E_bin', 'pdf', 'counts',
+                          'vx', 'vy', 'vz'],
+                'delim_whitespace': True,
+                'skiprows': ionstartline,
+                'nrows': nionlines}
+    # Read in data
+    dist = pd.read_table(filename, **readargs)
 
-        # Remove spacecraft abberation
-        # Assumes that spacecraft motion is always in the ecliptic (x-y) plane
-        iondist['vx'] += params['helios_vr']
-        iondist['vy'] += params['helios_v']
-        # Convert to SI units
-        iondist[['vx', 'vy', 'vz']] *= 1e3
-        iondist['pdf'] *= 1e12
-        # Calculate magnitude, elevation and azimuth of energy bins
-        iondist['|v|'], iondist['theta'], iondist['phi'] =\
-            spacetrans.cart2sph(iondist['vx'], iondist['vy'], iondist['vz'])
-        # Calculate bin energy assuming particles are protons
-        iondist['E_proton'] = 0.5 * constants.m_p * ((iondist['|v|']) ** 2)
+    # Convert to SI units
+    dist[['vx', 'vy', 'vz']] *= 1e3
+    dist['pdf'] *= 1e12
+    # Calculate magnitude, elevation and azimuth of energy bins
+    dist['|v|'], dist['theta'], dist['phi'] =\
+        spacetrans.cart2sph(dist['vx'], dist['vy'], dist['vz'])
+    # Calculate bin energy assuming particles are protons
+    dist['E_proton'] = 0.5 * constants.m_p * ((dist['|v|']) ** 2)
+    return dist
 
+
+def distribution(probe, year, doy, hour, minute, second):
+    """
+    Read in full distribution functions and associated paraemters.
+
+    Parameters
+    ----------
+        probe : int
+            Helios probe to import data from. Must be 1 or 2.
+        year : int
+            Year
+        doy : int
+            Day of year.
+        hour : int
+            Hour.
+        minute : int
+            Minute.
+        second : int
+            Second.
+
+    Returns
+    -------
+        electrondist : DataFrame
+            2D electron distribution function.
+        iondist : DataFrame
+            3D ion distribution function.
+        distparams : Series
+            Distribution parameters from top of distribution function files.
+    """
+    params = distparams(probe, year, doy, hour, minute, second)
+    iondist = ion_dist(probe, year, doy, hour, minute, second)
     electrondist = electron_dist(probe, year, doy, hour, minute, second)
 
     return electrondist, iondist, params
