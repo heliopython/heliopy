@@ -189,6 +189,8 @@ def electron_dist(probe, year, doy, hour, minute, second):
                     'skiprows': startline}
         # Read in data
         dist = pd.read_table(filename, **readargs)
+        if dist.empty:
+            return None
 
         # Remove spacecraft abberation
         # Assumes that spacecraft motion is always in the ecliptic (x-y)
