@@ -177,6 +177,11 @@ def electron_dist(probe, year, doy, hour, minute, second):
                 if f.readline()[0:27] == ' no electron data available':
                     return None
                 break
+        nlines = None
+        for i, line in enumerate(f):
+            if line[:30] == ' -1.2 Degree, Pizzo correction':
+                break
+        nlines = i + 1
         if startline is None:
             return None
         ##########################################
@@ -186,7 +191,8 @@ def electron_dist(probe, year, doy, hour, minute, second):
         readargs = {'usecols': [0, 1, 2, 3, 4, 5],
                     'names': ['Az', 'E_bin', 'pdf', 'counts', 'vx', 'vy'],
                     'delim_whitespace': True,
-                    'skiprows': startline}
+                    'skiprows': startline,
+                    'nrows': nlines}
         # Read in data
         dist = pd.read_table(filename, **readargs)
         if dist.empty:
