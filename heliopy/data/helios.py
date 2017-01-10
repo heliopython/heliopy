@@ -141,6 +141,73 @@ def integrateddists(probe, year, doy, hour, minute, second):
     return i1a, i1b
 
 
+def electron_dist(probe, year, doy, hour, minute, second):
+        """
+        Read in 2D electron distribution function.
+
+        Parameters
+        ----------
+            probe : int
+                Helios probe to import data from. Must be 1 or 2.
+            year : int
+                Year
+            doy : int
+                Day of year.
+            hour : int
+                Hour.
+            minute : int
+                Minute.
+            second : int
+                Second.
+
+        Returns
+        -------
+            dist : DataFrame
+                2D electron distribution function.
+        """
+        f, filename = loaddistfile(probe, year, doy, hour, minute, second)
+        startline = None
+        for i, line in enumerate(f):
+            # Find start of electron distribution function
+            if line[0:4] == ' 2-D':
+                startline = i + 2
+                # Throw away next line (just has max of distribution)
+                f.readline()
+                # Throw away next line (just has table headings)
+                if f.readline()[0:27] == ' no electron data available':
+                    return None
+                break
+        if startline is None:
+            return None
+        ##########################################
+        # Read and process electron distribution #
+        ##########################################
+        # Arguments for reading in data
+        readargs = {'usecols': [0, 1, 2, 3, 4, 5],
+                    'names': ['Az', 'E_bin', 'pdf', 'counts', 'vx', 'vy'],
+                    'delim_whitespace': True,
+                    'skiprows': startline}
+        # Read in data
+        dist = pd.read_table(filename, **readargs)
+
+        # Remove spacecraft abberation
+        # Assumes that spacecraft motion is always in the ecliptic (x-y)
+        # plane
+        # NOTE: This probably needs re-instating
+        # dist['vx'] += distparams['helios_vr']
+        # dist['vy'] += distparams['helios_v']
+        # Convert to SI units
+        dist[['vx', 'vy']] *= 1e3
+        dist['pdf'] *= 1e12
+        # Calculate spherical coordinates of energy bins
+        dist['|v|'], _, dist['phi'] =\
+            spacetrans.cart2sph(dist['vx'], dist['vy'], 0)
+        # Calculate bin energy assuming particles are electrons
+        dist['E_electron'] = 0.5 * constants.m_e *\
+            ((dist['|v|']) ** 2)
+        return dist
+
+
 def distribution(probe, year, doy, hour, minute, second):
     """
     Read in full distribution functions and associated paraemters.
@@ -349,32 +416,7 @@ def distribution(probe, year, doy, hour, minute, second):
     ##########################################
     # Read and process electron distribution #
     ##########################################
-    # If no electron data in file
-    if nelectronlines < 1:
-        electrondist = None
-    else:
-        # Arguments for reading in data
-        readargs = {'usecols': [0, 1, 2, 3, 4, 5],
-                    'names': ['Az', 'E_bin', 'pdf', 'counts', 'vx', 'vy'],
-                    'delim_whitespace': True,
-                    'skiprows': electronstartline,
-                    'nrows': nelectronlines}
-        # Read in data
-        electrondist = pd.read_table(filename, **readargs)
-
-        # Remove spacecraft abberation
-        # Assumes that spacecraft motion is always in the ecliptic (x-y) plane
-        electrondist['vx'] += distparams['helios_vr']
-        electrondist['vy'] += distparams['helios_v']
-        # Convert to SI units
-        electrondist[['vx', 'vy']] *= 1e3
-        electrondist['pdf'] *= 1e12
-        # Calculate spherical coordinates of energy bins
-        electrondist['|v|'], _, electrondist['phi'] =\
-            spacetrans.cart2sph(electrondist['vx'], electrondist['vy'], 0)
-        # Calculate bin energy assuming particles are electrons
-        electrondist['E_electron'] = 0.5 * constants.m_e *\
-            ((electrondist['|v|']) ** 2)
+    electrondist = electron_dist(probe, year, doy, hour, minute, second)
 
     return electrondist, iondist, distparams
 
