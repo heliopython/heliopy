@@ -368,7 +368,6 @@ def distribution(probe, year, doy, hour, minute, second):
     params = distparams(probe, year, doy, hour, minute, second)
 
     nionlines = None   # Number of lines in ion distribution
-    electronstartline = None  # Number of lines in electron distribution
     linesread = 16  # Stores the total number of lines read in the file
     # Loop through file to find end of ion distribution function
     for i, line in enumerate(f):
@@ -377,7 +376,6 @@ def distribution(probe, year, doy, hour, minute, second):
             ionstartline = i + linesread
         # Find number of lines in ion distribution function
         if line[0:4] == ' 2-D':
-            electronstartline = i + linesread + 1
             nionlines = i - ionstartline
             break
 
@@ -385,8 +383,6 @@ def distribution(probe, year, doy, hour, minute, second):
     # Bizzare case where there are two proton distributions in one file,
     # or there's no electron data available
     for i, line in enumerate(f):
-        if line[0:27] == ' no electron data available':
-            electronstartline = None
         if line[0:23] == 'Maximum of distribution' or\
            line[0:30] == '  1.2 Degree, Pizzo correction' or\
            line[0:30] == ' -1.2 Degree, Pizzo correction':
@@ -396,11 +392,6 @@ def distribution(probe, year, doy, hour, minute, second):
             linesread -= 1
             break
 
-    # Get number of lines in electron distribution function
-    if electronstartline is None:
-        nelectronlines = 0
-    else:
-        nelectronlines = i - electronstartline + linesread + 1
     f.close()
 
     # If there's no electron data to get number of lines, set end of ion
