@@ -213,6 +213,9 @@ def electron_dist(probe, year, doy, hour, minute, second):
         # Calculate bin energy assuming particles are electrons
         dist['E_electron'] = 0.5 * constants.m_e *\
             ((dist['|v|']) ** 2)
+
+        # Convert to multi-index using Azimuth and energy bin
+        dist = dist.set_index(['E_bin', 'Az'])
         return dist
 
 
@@ -427,6 +430,9 @@ def ion_dist(probe, year, doy, hour, minute, second):
         spacetrans.cart2sph(dist['vx'], dist['vy'], dist['vz'])
     # Calculate bin energy assuming particles are protons
     dist['E_proton'] = 0.5 * constants.m_p * ((dist['|v|']) ** 2)
+
+    # Convert to multi-index using azimuth, elevation, and energy bins
+    dist = dist.set_index(['E_bin', 'El', 'Az'])
     return dist
 
 
