@@ -5,9 +5,16 @@ In general the data are available form a number of sources (replace 'helios1'
 with 'helios2' in url to change probe):
 
 * Distribution functions - Not publically available
-* Merged plasma/mangetic field - ftp://cdaweb.gsfc.nasa.gov/pub/data/helios/helios1/merged/
-* 6 second cadence magnetic field - ftp://cdaweb.gsfc.nasa.gov/pub/data/helios/helios1/mag/6sec_ness/
-* Trajectory - ftp://cdaweb.gsfc.nasa.gov/pub/data/helios/helios1/traj/
+* Merged plasma/mangetic field - |merged_url|
+* 6 second cadence magnetic field - |6s_mag_url|
+* Trajectory - |traj_url|
+
+.. |merged_url| replace::
+    ftp://cdaweb.gsfc.nasa.gov/pub/data/helios/helios1/merged/
+.. |6s_mag_url| replace::
+    ftp://cdaweb.gsfc.nasa.gov/pub/data/helios/helios1/mag/6sec_ness/
+.. |traj_url| replace::
+    ftp://cdaweb.gsfc.nasa.gov/pub/data/helios/helios1/traj/
 
 If the data is publically available, it will be dowloaded automatically if it
 doesn't exist locally.
