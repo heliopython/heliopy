@@ -49,7 +49,7 @@ def _check_probe(probe):
     return probe
 
 
-def loaddistfile(probe, year, doy, hour, minute, second):
+def _loaddistfile(probe, year, doy, hour, minute, second):
     """
     Method to load a Helios distribution file.
 
