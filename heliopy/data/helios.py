@@ -136,7 +136,7 @@ def integrateddists(probe, year, doy, hour, minute, second):
                 i1b integrated distribution function.
     """
     probe = _check_probe(probe)
-    f, _ = loaddistfile(probe, year, doy, hour, minute, second)
+    f, _ = _loaddistfile(probe, year, doy, hour, minute, second)
     for line in f:
         if line[0:19] == ' 1-D i1a integrated':
             break
@@ -188,7 +188,7 @@ def electron_dist(probe, year, doy, hour, minute, second, remove_advect=False):
             2D electron distribution function.
     """
     probe = _check_probe(probe)
-    f, filename = loaddistfile(probe, year, doy, hour, minute, second)
+    f, filename = _loaddistfile(probe, year, doy, hour, minute, second)
     startline = None
     for i, line in enumerate(f):
         # Find start of electron distribution function
@@ -265,7 +265,7 @@ def distparams(probe, year, doy, hour, minute, second):
             Distribution parameters from top of distribution function files.
     """
     probe = _check_probe(probe)
-    f, filename = loaddistfile(probe, year, doy, hour, minute, second)
+    f, filename = _loaddistfile(probe, year, doy, hour, minute, second)
 
     _, month, day = spacetime.doy2ymd(year, doy)
     dtime = datetime.datetime(year, month, day, hour, minute, second)
@@ -402,7 +402,7 @@ def ion_dist(probe, year, doy, hour, minute, second, remove_advect=False):
             3D ion distribution function.
     """
     probe = _check_probe(probe)
-    f, filename = loaddistfile(probe, year, doy, hour, minute, second)
+    f, filename = _loaddistfile(probe, year, doy, hour, minute, second)
 
     nionlines = None   # Number of lines in ion distribution
     linesread = 0  # Stores the total number of lines read in the file
