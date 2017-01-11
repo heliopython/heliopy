@@ -141,82 +141,88 @@ def integrateddists(probe, year, doy, hour, minute, second):
     return i1a, i1b
 
 
-def electron_dist(probe, year, doy, hour, minute, second):
-        """
-        Read in 2D electron distribution function.
+def electron_dist(probe, year, doy, hour, minute, second, remove_advect=False):
+    """
+    Read in 2D electron distribution function.
 
-        Parameters
-        ----------
-            probe : int
-                Helios probe to import data from. Must be 1 or 2.
-            year : int
-                Year
-            doy : int
-                Day of year.
-            hour : int
-                Hour.
-            minute : int
-                Minute.
-            second : int
-                Second.
+    Parameters
+    ----------
+        probe : int
+            Helios probe to import data from. Must be 1 or 2.
+        year : int
+            Year
+        doy : int
+            Day of year.
+        hour : int
+            Hour.
+        minute : int
+            Minute.
+        second : int
+            Second.
+        remove_advect : bool, optional
+            If *False*, the distribution is returned in
+            the spacecraft frame.
 
-        Returns
-        -------
-            dist : DataFrame
-                2D electron distribution function.
-        """
-        f, filename = loaddistfile(probe, year, doy, hour, minute, second)
-        startline = None
-        for i, line in enumerate(f):
-            # Find start of electron distribution function
-            if line[0:4] == ' 2-D':
-                startline = i + 2
-                # Throw away next line (just has max of distribution)
-                f.readline()
-                # Throw away next line (just has table headings)
-                if f.readline()[0:27] == ' no electron data available':
-                    return None
-                break
-        nlines = None
-        for i, line in enumerate(f):
-            if line[:30] == ' -1.2 Degree, Pizzo correction':
-                break
-        nlines = i + 1
-        if startline is None:
-            return None
-        ##########################################
-        # Read and process electron distribution #
-        ##########################################
-        # Arguments for reading in data
-        readargs = {'usecols': [0, 1, 2, 3, 4, 5],
-                    'names': ['Az', 'E_bin', 'pdf', 'counts', 'vx', 'vy'],
-                    'delim_whitespace': True,
-                    'skiprows': startline,
-                    'nrows': nlines}
-        # Read in data
-        dist = pd.read_table(filename, **readargs)
-        if dist.empty:
-            return None
+            If *True*, the distribution is
+            returned in the solar wind frame, by subtracting the spacecraft
+            velocity from the velcoity of each bin. Note this significantly
+            slows down reading in the distribution.
 
-        # Remove spacecraft abberation
-        # Assumes that spacecraft motion is always in the ecliptic (x-y)
-        # plane
-        # NOTE: This probably needs re-instating
-        # dist['vx'] += distparams['helios_vr']
-        # dist['vy'] += distparams['helios_v']
-        # Convert to SI units
-        dist[['vx', 'vy']] *= 1e3
-        dist['pdf'] *= 1e12
-        # Calculate spherical coordinates of energy bins
-        dist['|v|'], _, dist['phi'] =\
-            spacetrans.cart2sph(dist['vx'], dist['vy'], 0)
-        # Calculate bin energy assuming particles are electrons
-        dist['E_electron'] = 0.5 * constants.m_e *\
-            ((dist['|v|']) ** 2)
+    Returns
+    -------
+        dist : DataFrame
+            2D electron distribution function.
+    """
+    f, filename = loaddistfile(probe, year, doy, hour, minute, second)
+    startline = None
+    for i, line in enumerate(f):
+        # Find start of electron distribution function
+        if line[0:4] == ' 2-D':
+            startline = i + 2
+            # Throw away next line (just has max of distribution)
+            f.readline()
+            # Throw away next line (just has table headings)
+            if f.readline()[0:27] == ' no electron data available':
+                return None
+            break
+    nlines = None
+    for i, line in enumerate(f):
+        if line[:30] == ' -1.2 Degree, Pizzo correction':
+            break
+    nlines = i + 1
+    if startline is None:
+        return None
+    ##########################################
+    # Read and process electron distribution #
+    ##########################################
+    # Arguments for reading in data
+    readargs = {'usecols': [0, 1, 2, 3, 4, 5],
+                'names': ['Az', 'E_bin', 'pdf', 'counts', 'vx', 'vy'],
+                'delim_whitespace': True,
+                'skiprows': startline,
+                'nrows': nlines}
+    # Read in data
+    dist = pd.read_table(filename, **readargs)
+    if dist.empty:
+        return None
 
-        # Convert to multi-index using Azimuth and energy bin
-        dist = dist.set_index(['E_bin', 'Az'])
-        return dist
+    # Remove spacecraft abberation
+    # Assumes that spacecraft motion is always in the ecliptic (x-y)
+    # plane
+    if remove_advect:
+        params = distparams(probe, year, doy, hour, minute, second)
+        dist['vx'] += params['helios_vr']
+        dist['vy'] += params['helios_v']
+    # Convert to SI units
+    dist[['vx', 'vy']] *= 1e3
+    dist['pdf'] *= 1e12
+    # Calculate spherical coordinates of energy bins
+    dist['|v|'], _, dist['phi'] =\
+        spacetrans.cart2sph(dist['vx'], dist['vy'], 0)
+    # Calculate bin energy assuming particles are electrons
+    dist['E_electron'] = 0.5 * constants.m_e *\
+        ((dist['|v|']) ** 2)
+    return dist
 
 
 def distparams(probe, year, doy, hour, minute, second):
@@ -347,7 +353,7 @@ def distparams(probe, year, doy, hour, minute, second):
     return distparams
 
 
-def ion_dist(probe, year, doy, hour, minute, second):
+def ion_dist(probe, year, doy, hour, minute, second, remove_advect=False):
     """
     Read in ion distribution function.
 
@@ -365,6 +371,14 @@ def ion_dist(probe, year, doy, hour, minute, second):
             Minute.
         second : int
             Second.
+        remove_advect : bool, optional
+            If *False*, the distribution is returned in
+            the spacecraft frame.
+
+            If *True*, the distribution is
+            returned in the solar wind frame, by subtracting the spacecraft
+            velocity from the velcoity of each bin. Note this significantly
+            slows down reading in the distribution.
 
     Returns
     -------
@@ -422,6 +436,13 @@ def ion_dist(probe, year, doy, hour, minute, second):
     # Read in data
     dist = pd.read_table(filename, **readargs)
 
+    # Remove spacecraft abberation
+    # Assumes that spacecraft motion is always in the ecliptic (x-y)
+    # plane
+    if remove_advect:
+        params = distparams(probe, year, doy, hour, minute, second)
+        dist['vx'] += params['helios_vr']
+        dist['vy'] += params['helios_v']
     # Convert to SI units
     dist[['vx', 'vy', 'vz']] *= 1e3
     dist['pdf'] *= 1e12
@@ -434,41 +455,6 @@ def ion_dist(probe, year, doy, hour, minute, second):
     # Convert to multi-index using azimuth, elevation, and energy bins
     dist = dist.set_index(['E_bin', 'El', 'Az'])
     return dist
-
-
-def distribution(probe, year, doy, hour, minute, second):
-    """
-    Read in full distribution functions and associated paraemters.
-
-    Parameters
-    ----------
-        probe : int
-            Helios probe to import data from. Must be 1 or 2.
-        year : int
-            Year
-        doy : int
-            Day of year.
-        hour : int
-            Hour.
-        minute : int
-            Minute.
-        second : int
-            Second.
-
-    Returns
-    -------
-        electrondist : DataFrame
-            2D electron distribution function.
-        iondist : DataFrame
-            3D ion distribution function.
-        distparams : Series
-            Distribution parameters from top of distribution function files.
-    """
-    params = distparams(probe, year, doy, hour, minute, second)
-    iondist = ion_dist(probe, year, doy, hour, minute, second)
-    electrondist = electron_dist(probe, year, doy, hour, minute, second)
-
-    return electrondist, iondist, params
 
 
 def merged(probe, starttime, endtime, verbose=True):
