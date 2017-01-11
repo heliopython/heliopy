@@ -141,7 +141,7 @@ def integrateddists(probe, year, doy, hour, minute, second):
     return i1a, i1b
 
 
-def electron_dist(probe, year, doy, hour, minute, second):
+def electron_dist(probe, year, doy, hour, minute, second, remove_advect=False):
         """
         Read in 2D electron distribution function.
 
@@ -159,6 +159,14 @@ def electron_dist(probe, year, doy, hour, minute, second):
                 Minute.
             second : int
                 Second.
+            remove_advect : bool, optional
+                If *False*, the distribution is returned in
+                the spacecraft frame.
+
+                If *True*, the distribution is
+                returned in the solar wind frame, by subtracting the spacecraft
+                velocity from the velcoity of each bin. Note this significantly
+                slows down reading in the distribution.
 
         Returns
         -------
@@ -201,9 +209,10 @@ def electron_dist(probe, year, doy, hour, minute, second):
         # Remove spacecraft abberation
         # Assumes that spacecraft motion is always in the ecliptic (x-y)
         # plane
-        # NOTE: This probably needs re-instating
-        # dist['vx'] += distparams['helios_vr']
-        # dist['vy'] += distparams['helios_v']
+        if remove_advect:
+            params = distparams(probe, year, doy, hour, minute, second)
+            dist['vx'] += params['helios_vr']
+            dist['vy'] += params['helios_v']
         # Convert to SI units
         dist[['vx', 'vy']] *= 1e3
         dist['pdf'] *= 1e12
@@ -347,7 +356,7 @@ def distparams(probe, year, doy, hour, minute, second):
     return distparams
 
 
-def ion_dist(probe, year, doy, hour, minute, second):
+def ion_dist(probe, year, doy, hour, minute, second, remove_advect=False):
     """
     Read in ion distribution function.
 
@@ -365,6 +374,14 @@ def ion_dist(probe, year, doy, hour, minute, second):
             Minute.
         second : int
             Second.
+        remove_advect : bool, optional
+            If *False*, the distribution is returned in
+            the spacecraft frame.
+
+            If *True*, the distribution is
+            returned in the solar wind frame, by subtracting the spacecraft
+            velocity from the velcoity of each bin. Note this significantly
+            slows down reading in the distribution.
 
     Returns
     -------
@@ -422,6 +439,13 @@ def ion_dist(probe, year, doy, hour, minute, second):
     # Read in data
     dist = pd.read_table(filename, **readargs)
 
+    # Remove spacecraft abberation
+    # Assumes that spacecraft motion is always in the ecliptic (x-y)
+    # plane
+    if remove_advect:
+        params = distparams(probe, year, doy, hour, minute, second)
+        dist['vx'] += params['helios_vr']
+        dist['vy'] += params['helios_v']
     # Convert to SI units
     dist[['vx', 'vy', 'vz']] *= 1e3
     dist['pdf'] *= 1e12
@@ -434,41 +458,6 @@ def ion_dist(probe, year, doy, hour, minute, second):
     # Convert to multi-index using azimuth, elevation, and energy bins
     dist = dist.set_index(['E_bin', 'El', 'Az'])
     return dist
-
-
-def distribution(probe, year, doy, hour, minute, second):
-    """
-    Read in full distribution functions and associated paraemters.
-
-    Parameters
-    ----------
-        probe : int
-            Helios probe to import data from. Must be 1 or 2.
-        year : int
-            Year
-        doy : int
-            Day of year.
-        hour : int
-            Hour.
-        minute : int
-            Minute.
-        second : int
-            Second.
-
-    Returns
-    -------
-        electrondist : DataFrame
-            2D electron distribution function.
-        iondist : DataFrame
-            3D ion distribution function.
-        distparams : Series
-            Distribution parameters from top of distribution function files.
-    """
-    params = distparams(probe, year, doy, hour, minute, second)
-    iondist = ion_dist(probe, year, doy, hour, minute, second)
-    electrondist = electron_dist(probe, year, doy, hour, minute, second)
-
-    return electrondist, iondist, params
 
 
 def merged(probe, starttime, endtime, verbose=True):
