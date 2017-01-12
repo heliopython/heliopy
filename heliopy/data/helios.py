@@ -5,9 +5,16 @@ In general the data are available form a number of sources (replace 'helios1'
 with 'helios2' in url to change probe):
 
 * Distribution functions - Not publically available
-* Merged plasma/mangetic field - ftp://cdaweb.gsfc.nasa.gov/pub/data/helios/helios1/merged/
-* 6 second cadence magnetic field - ftp://cdaweb.gsfc.nasa.gov/pub/data/helios/helios1/mag/6sec_ness/
-* Trajectory - ftp://cdaweb.gsfc.nasa.gov/pub/data/helios/helios1/traj/
+* Merged plasma/mangetic field - |merged_url|
+* 6 second cadence magnetic field - |6s_mag_url|
+* Trajectory - |traj_url|
+
+.. |merged_url| replace::
+    ftp://cdaweb.gsfc.nasa.gov/pub/data/helios/helios1/merged/
+.. |6s_mag_url| replace::
+    ftp://cdaweb.gsfc.nasa.gov/pub/data/helios/helios1/mag/6sec_ness/
+.. |traj_url| replace::
+    ftp://cdaweb.gsfc.nasa.gov/pub/data/helios/helios1/traj/
 
 If the data is publically available, it will be dowloaded automatically if it
 doesn't exist locally.
@@ -36,7 +43,13 @@ def dtime2ordinal(dtime):
     return pd.DatetimeIndex(dtime).astype(np.int64)
 
 
-def loaddistfile(probe, year, doy, hour, minute, second):
+def _check_probe(probe):
+    probe = str(probe)
+    assert probe == '1' or probe == '2', 'Probe number must be 1 or 2'
+    return probe
+
+
+def _loaddistfile(probe, year, doy, hour, minute, second):
     """
     Method to load a Helios distribution file.
 
@@ -45,7 +58,7 @@ def loaddistfile(probe, year, doy, hour, minute, second):
 
     Parameters
     ----------
-        probe : int
+        probe : int, string
             Helios probe to import data from. Must be 1 or 2.
         year : int
             Year
@@ -65,7 +78,7 @@ def loaddistfile(probe, year, doy, hour, minute, second):
         filename : string
             Filename of opened file.
     """
-    assert probe == '1' or probe == '2', 'Probe must be 1 or 2'
+    probe = _check_probe(probe)
     # Work out location of file
     yearstring = str(year)[-2:]
     filename = os.path.join(helios_dir,
@@ -102,7 +115,7 @@ def integrateddists(probe, year, doy, hour, minute, second):
 
     Parameters
     ----------
-        probe : int
+        probe : int, string
             Helios probe to import data from. Must be 1 or 2.
         year : int
             Year
@@ -122,7 +135,8 @@ def integrateddists(probe, year, doy, hour, minute, second):
             i1b : DataFrame
                 i1b integrated distribution function.
     """
-    f, _ = loaddistfile(probe, year, doy, hour, minute, second)
+    probe = _check_probe(probe)
+    f, _ = _loaddistfile(probe, year, doy, hour, minute, second)
     for line in f:
         if line[0:19] == ' 1-D i1a integrated':
             break
@@ -147,7 +161,7 @@ def electron_dist(probe, year, doy, hour, minute, second, remove_advect=False):
 
     Parameters
     ----------
-        probe : int
+        probe : int, string
             Helios probe to import data from. Must be 1 or 2.
         year : int
             Year
@@ -173,7 +187,8 @@ def electron_dist(probe, year, doy, hour, minute, second, remove_advect=False):
         dist : DataFrame
             2D electron distribution function.
     """
-    f, filename = loaddistfile(probe, year, doy, hour, minute, second)
+    probe = _check_probe(probe)
+    f, filename = _loaddistfile(probe, year, doy, hour, minute, second)
     startline = None
     for i, line in enumerate(f):
         # Find start of electron distribution function
@@ -231,7 +246,7 @@ def distparams(probe, year, doy, hour, minute, second):
 
     Parameters
     ----------
-        probe : int
+        probe : int, string
             Helios probe to import data from. Must be 1 or 2.
         year : int
             Year
@@ -249,7 +264,8 @@ def distparams(probe, year, doy, hour, minute, second):
         distparams : Series
             Distribution parameters from top of distribution function files.
     """
-    f, filename = loaddistfile(probe, year, doy, hour, minute, second)
+    probe = _check_probe(probe)
+    f, filename = _loaddistfile(probe, year, doy, hour, minute, second)
 
     _, month, day = spacetime.doy2ymd(year, doy)
     dtime = datetime.datetime(year, month, day, hour, minute, second)
@@ -359,7 +375,7 @@ def ion_dist(probe, year, doy, hour, minute, second, remove_advect=False):
 
     Parameters
     ----------
-        probe : int
+        probe : int, string
             Helios probe to import data from. Must be 1 or 2.
         year : int
             Year
@@ -385,7 +401,8 @@ def ion_dist(probe, year, doy, hour, minute, second, remove_advect=False):
         dist : DataFrame
             3D ion distribution function.
     """
-    f, filename = loaddistfile(probe, year, doy, hour, minute, second)
+    probe = _check_probe(probe)
+    f, filename = _loaddistfile(probe, year, doy, hour, minute, second)
 
     nionlines = None   # Number of lines in ion distribution
     linesread = 0  # Stores the total number of lines read in the file
@@ -463,8 +480,8 @@ def merged(probe, starttime, endtime, verbose=True):
 
     Parameters
     ----------
-        probe : int
-            Helios probe to import data from. Must be '1' or '2'.
+        probe : int, string
+            Helios probe to import data from. Must be 1 or 2.
         starttime : datetime
             Interval start time.
         endtime : datetime
@@ -477,6 +494,7 @@ def merged(probe, starttime, endtime, verbose=True):
         data : DataFrame
             Merged data set.
     """
+    probe = _check_probe(probe)
     startdate = starttime.date()
     enddate = endtime.date()
 
@@ -540,7 +558,7 @@ def _merged_fromascii(probe, year, doy):
 
     Parameters
     ----------
-        probe : int
+        probe : int, string
             Helios probe to import data from. Must be 1 or 2.
         year : int
             Year.
@@ -552,6 +570,7 @@ def _merged_fromascii(probe, year, doy):
         data : DataFrame
             Merged data set.
     """
+    probe = _check_probe(probe)
     local_dir = os.path.join(helios_dir,
                              'helios' + probe,
                              'merged',
@@ -593,8 +612,8 @@ def mag_4hz(probe, starttime, endtime, verbose=True):
 
     Parameters
     ----------
-        probe : string
-            Helios probe to import data from. Must be '1' or '2'.
+        probe : int, string
+            Helios probe to import data from. Must be 1 or 2.
         starttime : datetime
             Interval start time.
         endtime : datetime
@@ -607,6 +626,7 @@ def mag_4hz(probe, starttime, endtime, verbose=True):
         data : DataFrame
             4Hz magnetic field data set
     """
+    probe = _check_probe(probe)
     startdate = starttime.date()
     enddate = endtime.date()
 
@@ -669,7 +689,7 @@ def _fourHz_fromascii(probe, year, doy):
 
     Parameters
     ----------
-        probe : int
+        probe : int, string
             Helios probe to import data from. Must be 1 or 2.
         year : int
             Year.
@@ -681,6 +701,7 @@ def _fourHz_fromascii(probe, year, doy):
         data : DataFrame
             4Hz magnetic field data set.
     """
+    probe = _check_probe(probe)
     floc = os.path.join(helios_dir,
                         'helios' + probe,
                         'mag',
@@ -718,8 +739,8 @@ def mag_ness(probe, starttime, endtime):
 
     Parameters
     ----------
-        probe : int
-            Helios probe to import data from. Must be '1' or '2'.
+        probe : int, string
+            Helios probe to import data from. Must be 1 or 2.
         starttime : datetime
             Interval start time.
         endtime : datetime
@@ -732,6 +753,7 @@ def mag_ness(probe, starttime, endtime):
         data : DataFrame
             6 second magnetic field data set
     """
+    probe = _check_probe(probe)
     startdate = starttime.date()
     enddate = endtime.date()
 
@@ -787,7 +809,7 @@ def _mag_ness_fromascii(probe, year, doy):
 
     Parameters
     ----------
-        probe : int
+        probe : int, string
             Helios probe to import data from. Must be 1 or 2.
         year : int
             Year.
@@ -799,6 +821,7 @@ def _mag_ness_fromascii(probe, year, doy):
         data : DataFrame
             6 second magnetic field data set.
     """
+    probe = _check_probe(probe)
     floc = os.path.join(helios_dir,
                         'helios' + probe,
                         'mag',
@@ -842,7 +865,7 @@ def trajectory(probe, startdate, enddate):
 
     Parameters
     ----------
-        probe : int
+        probe : int, string
             Helios probe to import data from. Must be 1 or 2.
         startdate : date
             Interval start date.
@@ -854,6 +877,7 @@ def trajectory(probe, startdate, enddate):
         data : DataFrame
             Trajectory data set.
     """
+    probe = _check_probe(probe)
     data = []
     headings = ['Year', 'doy', 'Hour', 'Carrrot', 'r', 'selat', 'selon',
                 'hellat', 'hellon', 'hilon', 'escang', 'code']
