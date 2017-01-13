@@ -222,6 +222,9 @@ def electron_dist(probe, year, doy, hour, minute, second, remove_advect=False):
     # Calculate bin energy assuming particles are electrons
     dist['E_electron'] = 0.5 * constants.m_e *\
         ((dist['|v|']) ** 2)
+
+    # Convert to multi-index using Azimuth and energy bin
+    dist = dist.set_index(['E_bin', 'Az'])
     return dist
 
 
