@@ -13,6 +13,7 @@ import os
 import tarfile
 from datetime import datetime, time
 from urllib.request import urlretrieve
+import numpy as np
 
 from heliopy import config
 from heliopy.time import daysplitinterval
@@ -54,7 +55,13 @@ def _load(probe, starttime, endtime, instrument, product_id, cdfkeys):
             year + month + day + '.cdf'
         # If we don't have local file download it
         if not os.path.exists(os.path.join(local_dir, local_fname)):
-            _download(probe, starttime, endtime, instrument, product_id)
+            thisstart = datetime.combine(date, time.min)
+            thisend = datetime.combine(date, time.max)
+            try:
+                _download(probe, thisstart, thisend, instrument, product_id)
+            except Exception as err:
+                print(str(err))
+                continue
 
         cdf = pycdf.CDF(os.path.join(local_dir, local_fname))
         for key, value in cdfkeys.items():
@@ -62,6 +69,9 @@ def _load(probe, starttime, endtime, instrument, product_id, cdfkeys):
                 index_key = key
                 break
         data.append(cdf2df(cdf, index_key, cdfkeys))
+    if len(data) == 0:
+        raise RuntimeError('No data available to download during requested '
+                           'times')
     return timefilter(data, starttime, endtime)
 
 
@@ -234,5 +244,8 @@ def cis_hia_onboard_moms(probe, starttime, endtime):
                 'vi_y',
                 'vi_z'],
                'time_tags__C' + probe + '_CP_CIS-HIA_ONBOARD_MOMENTS': 'Time'}
-    return _load(probe, starttime, endtime, 'cis', 'CP_CIS-HIA_ONBOARD_MOMENTS',
+    data = _load(probe, starttime, endtime, 'cis', 'CP_CIS-HIA_ONBOARD_MOMENTS',
                  cdfkeys)
+    to_replace = {'vi_x': -1.803100937500000000e+05}
+    data = data.replace(to_replace, np.nan)
+    return data
