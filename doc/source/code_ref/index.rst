@@ -8,6 +8,7 @@ API reference
    data/index
    fitting
    plasma
+   plot/index
    stats
    time
    timeseries
