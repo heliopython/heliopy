@@ -1,7 +1,42 @@
 """Methods for plotting vector fields."""
 import matplotlib.pyplot as plt
 import numpy as np
+
 import heliopy.time as heliotime
+import heliopy.vector.transformations as trans
+
+
+def thetaphi(x, y, z):
+    """
+    Plots a 'theta-phi map' given 3D cartesian data.
+
+    Parameters
+    ----------
+        x: array_like
+            x data values
+        y: array_like
+            y data values
+        z: array_like
+            z data values
+    """
+    _, theta, phi = trans.cart2sph(x, y, z)
+
+    ax = plt.gca()
+    ax.hexbin(phi, theta,
+              C=1 / np.cos(theta),
+              reduce_C_function=np.sum,
+              bins='log',
+              mincnt=1,
+              cmap='gray_r')
+
+    # Add guide lines
+    ax.axhline(0, color='k', alpha=0.5)
+    ax.axvline(0, color='k', alpha=0.5)
+    ax.axvline(-np.deg2rad(90), color='k', alpha=0.5)
+    ax.axvline(np.deg2rad(90), color='k', alpha=0.5)
+    # Axis labels
+    ax.set_xlabel(r'$\phi$')
+    ax.set_ylabel(r'$\theta$')
 
 
 def advectedfield(t, x, y, z, vx, vy, vz, **kwargs):
