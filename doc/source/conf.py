@@ -25,7 +25,8 @@ sys.path.insert(0, os.path.abspath('../../'))
 
 # Pretend these modules exits so readthedocs builds
 MOCK_MODULES = ['numpy', 'scipy', 'scipy.optimize', 'scipy.stats',
-                'matplotlib.pyplot', 'spacepy', 'pandas']
+                'matplotlib', 'matplotlib.pyplot', 'mpl_toolkits.mplot3d',
+                'spacepy', 'pandas']
 for mod_name in MOCK_MODULES:
     sys.modules[mod_name] = mock.Mock()
 # -- General configuration ------------------------------------------------
@@ -63,7 +64,6 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'heliopy'
-copyright = '2016, David Stansby'
 author = 'David Stansby'
 
 # The version info for the project you're documenting, acts as replacement for
