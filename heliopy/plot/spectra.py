@@ -31,7 +31,7 @@ def loglog(fs, power, title=None, xlabel=None, ylabel=None, legend=None,
     --------
     A simple log-log plot:
 
-    .. literalinclude:: /examples/scripts/plot_loglog.py
+    .. literalinclude:: /scripts/plot_loglog.py
     .. image:: /figures/plot_loglog.png
     """
     if ax is None:
