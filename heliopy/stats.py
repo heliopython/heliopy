@@ -34,7 +34,7 @@ def hist(x, bins='auto', normed=True, return_centres=True, **kwargs):
             Bin centres or bin edges (depends on value of return_centres
             argument)
     """
-    hist, bin_edges = np.histogram(x, bins=bins, normed=normed, **kwargs)
+    hist, bin_edges = np.histogram(x, bins=bins, density=normed, **kwargs)
     if return_centres:
         return hist, _edges_to_centres(bin_edges)
     else:
