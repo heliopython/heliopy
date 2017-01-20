@@ -11,8 +11,9 @@ def jointdists(data, title=None, **kwargs):
     Plots joint distributions for 3D field data on a single figure.
 
     Uses the current figure if created, or if no figures are created a new one
-    is created. `**kwargs` are passed to plt.hexbin, which does the
-    distribution plotting.
+    is created. `**kwargs` are passed to
+    :py:func:`matplotlib:matplotlib.pyplot.hexbin`, which does the distribution
+    plotting.
 
     Parameters
     ----------
@@ -21,6 +22,13 @@ def jointdists(data, title=None, **kwargs):
             in the columns.
         title : string, optional
             If specified, the given `title` is added to the top of the figure.
+
+    Examples
+    --------
+    A joint distribution plot for a single day of WIND magnetic field data:
+
+    .. literalinclude:: /scripts/plot_jointdists.py
+    .. image:: /figures/plot_jointdists.png
     """
     # Set the same axis limits for each plot
     plotlim = data.abs().max().max()
@@ -105,7 +113,7 @@ def advectedfield(t, x, y, z, vx, vy, vz, **kwargs):
     advected velocities of the field. The conversion from time to spatial
     co-ordinates is done using r = t * v.
 
-    kwargs are passed to `plt.quiver()`.
+    kwargs are passed to :py:func:`matplotlib:matplotlib.pyplot.quiver`.
 
     Parameters
     ----------
