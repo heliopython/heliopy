@@ -12,9 +12,9 @@ before_install:
 - conda update --yes conda
 - conda create --yes -n testenv python=$TRAVIS_PYTHON_VERSION scipy
 - source activate testenv
-- wget http://cdaweb.gsfc.nasa.gov/pub/software/cdf/dist/cdf36_3/linux/cdf36_3-dist-all.tar.gz
-- tar -zxvf cdf36_3-dist-all.tar.gz
-- cd cdf36_3-dist
+- wget http://cdaweb.gsfc.nasa.gov/pub/software/cdf/dist/cdf36_3_1/linux/cdf36_3_1-dist-all.tar.gz
+- tar -zxvf cdf36_3_1-dist-all.tar.gz
+- cd cdf36_3_1-dist
 - make OS=linux ENV=gnu all
 - sudo make INSTALLDIR=/usr/local/cdf install
 - cd ../
