@@ -87,6 +87,9 @@ def thetaphi(x, y, z):
     # Axis labels
     ax.set_xlabel(r'$\phi$')
     ax.set_ylabel(r'$\theta$')
+    # Axis limits
+    ax.set_xlim(left=-np.pi, right=np.pi)
+    ax.set_ylim(bottom=-np.pi / 2, top=np.pi / 2)
 
 
 def advectedfield(t, x, y, z, vx, vy, vz, **kwargs):
