@@ -6,7 +6,6 @@ http://themis.ssl.berkeley.edu/data/themis/.
 """
 import os
 import pandas as pd
-import numpy as np
 
 import heliopy.time as spacetime
 from heliopy.data import helper

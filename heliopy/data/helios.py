@@ -268,7 +268,7 @@ def distparams(probe, year, doy, hour, minute, second):
             Distribution parameters from top of distribution function files.
     """
     probe = _check_probe(probe)
-    f, filename = _loaddistfile(probe, year, doy, hour, minute, second)
+    f, _ = _loaddistfile(probe, year, doy, hour, minute, second)
 
     _, month, day = spacetime.doy2ymd(year, doy)
     dtime = datetime.datetime(year, month, day, hour, minute, second)

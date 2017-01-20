@@ -45,10 +45,10 @@ def jointdists(data, title=None, **kwargs):
             else:
                 axs[i, j].set_xlim(left=-plotlim, right=plotlim)
                 axs[i, j].set_aspect('equal')
-                im = axs[i, j].hexbin(data[labels[j]], data[labels[i + 1]],
+                axs[i, j].hexbin(data[labels[j]], data[labels[i + 1]],
                                       extent=extent, mincnt=1,
                                       cmap='gray_r',
-                                      bins='log')
+                                      bins='log', **kwargs)
                 if i == n - 1:
                     axs[i, j].set_xlabel(labels[j])
                 if j == 0:
