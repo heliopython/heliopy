@@ -1,5 +1,5 @@
-heliopy.bodies.spectra package
-------------------------------
+heliopy.plot.spectra package
+----------------------------
 
 Methods for plotting spectral data.
 

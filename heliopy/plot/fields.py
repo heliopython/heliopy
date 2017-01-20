@@ -53,6 +53,11 @@ def thetaphi(x, y, z):
     """
     Plots a 'theta-phi map' given 3D cartesian data.
 
+    Theta values are defined between [-pi / 2, pi / 2], with theta=0 being the
+    x-y plane.
+
+    Phi values are defined between [-pi, pi], with phi = 0 along the x-axis.
+
     Parameters
     ----------
         x: array_like
@@ -61,6 +66,13 @@ def thetaphi(x, y, z):
             y data values
         z: array_like
             z data values
+
+    Examples
+    --------
+    A theta-phi plot for a single day of WIND magnetic field data:
+
+    .. literalinclude:: /scripts/plot_thetaphi.py
+    .. image:: /figures/plot_thetaphi.png
     """
     _, theta, phi = trans.cart2sph(x, y, z)
 
@@ -80,6 +92,9 @@ def thetaphi(x, y, z):
     # Axis labels
     ax.set_xlabel(r'$\phi$')
     ax.set_ylabel(r'$\theta$')
+    # Axis limits
+    ax.set_xlim(left=-np.pi, right=np.pi)
+    ax.set_ylim(bottom=-np.pi / 2, top=np.pi / 2)
 
 
 def advectedfield(t, x, y, z, vx, vy, vz, **kwargs):

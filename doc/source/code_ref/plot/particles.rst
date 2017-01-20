@@ -1,5 +1,5 @@
-heliopy.bodies.particles package
---------------------------------
+heliopy.plot.particles package
+------------------------------
 
 Methods for plotting particle distribution function data.
 
