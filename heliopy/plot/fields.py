@@ -50,13 +50,14 @@ def jointdists(data, title=None, **kwargs):
 
 
 def thetaphi(x, y, z):
-    """
+    r"""
     Plots a 'theta-phi map' given 3D cartesian data.
 
-    Theta values are defined between [-pi / 2, pi / 2], with theta=0 being the
-    x-y plane.
+    Theta values are defined between
+    :math:`[-\pi /2, \pi / 2]`, with :math:`\theta = 0` being the x-y plane.
 
-    Phi values are defined between [-pi, pi], with phi = 0 along the x-axis.
+    Phi values are defined between :math:`[-\pi, \pi]`, with :math:`\phi = 0`
+    along the x-axis.
 
     Parameters
     ----------
