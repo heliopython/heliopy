@@ -1,5 +1,5 @@
-heliopy.bodies.fields package
------------------------------
+heliopy.plot.fields package
+---------------------------
 
 Methods for plotting vector fields.
 
