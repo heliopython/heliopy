@@ -61,6 +61,13 @@ def thetaphi(x, y, z):
             y data values
         z: array_like
             z data values
+
+    Examples
+    --------
+    A theta-phi plot for a single day of WIND magnetic field data:
+
+    .. literalinclude:: /scripts/plot_thetaphi.py
+    .. image:: /figures/plot_thetaphi.png
     """
     _, theta, phi = trans.cart2sph(x, y, z)
 
