@@ -14,7 +14,7 @@ before_install:
 - source activate testenv
 - wget http://cdaweb.gsfc.nasa.gov/pub/software/cdf/dist/cdf36_3_1/linux/cdf36_3_1-dist-all.tar.gz
 - tar -zxvf cdf36_3_1-dist-all.tar.gz
-- cd cdf36_3_1-dist
+- cd cdf36_3-dist
 - make OS=linux ENV=gnu all
 - sudo make INSTALLDIR=/usr/local/cdf install
 - cd ../
