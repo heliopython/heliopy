@@ -6,6 +6,49 @@ import heliopy.time as heliotime
 import heliopy.vector.transformations as trans
 
 
+def jointdists(data, title=None, **kwargs):
+    """
+    Plots joint distributions for 3D field data on a single figure.
+
+    Uses the current figure if created, or if no figures are created a new one
+    is created. `**kwargs` are passed to plt.hexbin, which does the
+    distribution plotting.
+
+    Parameters
+    ----------
+        data : DataFrame
+            The data must be a pandas DataFrame, with each independent variable
+            in the columns.
+        title : string, optional
+            If specified, the given `title` is added to the top of the figure.
+    """
+    # Set the same axis limits for each plot
+    plotlim = data.abs().max().max()
+    extent = (-plotlim, plotlim, -plotlim, plotlim)
+    labels = list(data)
+    n = len(labels) - 1
+    fig = plt.gcf()
+    axs = fig.subplots(n, n,
+                       gridspec_kw={'hspace': 0, 'wspace': 0})
+    for i in range(0, n):
+        for j in range(0, n):
+            if i < j:
+                axs[i, j].axis('off')
+            else:
+                axs[i, j].set_xlim(left=-plotlim, right=plotlim)
+                axs[i, j].set_aspect('equal')
+                im = axs[i, j].hexbin(data[labels[j]], data[labels[i + 1]],
+                                      extent=extent, mincnt=1,
+                                      cmap='gray_r',
+                                      bins='log')
+                if i == n - 1:
+                    axs[i, j].set_xlabel(labels[j])
+                if j == 0:
+                    axs[i, j].set_ylabel(labels[i + 1])
+    if title is not None:
+        fig.suptitle(title)
+
+
 def thetaphi(x, y, z):
     """
     Plots a 'theta-phi map' given 3D cartesian data.
