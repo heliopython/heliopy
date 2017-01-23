@@ -106,7 +106,7 @@ def load(filename, local_dir, remote_url, guessversion=False):
     remote_url : string
         Remote location of file
     guessversion : bool
-        If true, try to guess the version number in the filename. Only
+        If *True*, try to guess the version number in the filename. Only
         works for cdf files. Default is *False*.
 
     Returns
