@@ -5,7 +5,7 @@ All data is publically available at http://ufa.esac.esa.int/ufa/
 """
 import os
 import pandas as pd
-from datetime import datetime
+from datetime import datetime, date
 from urllib.error import HTTPError
 
 import heliopy.time as heliotime
@@ -96,24 +96,25 @@ def swoops_ions(starttime, endtime):
                 'delim_whitespace': True}
 
     data = []
-    days_loaded = []
+    months_loaded = []
     dtimes = heliotime.daysplitinterval(starttime, endtime)
     # Loop through individual days
     for dtime in dtimes:
-        date = dtime[0]
-        doy = int(date.strftime('%j'))
-        # Files are only every 32 days
-        doy = (doy // 32) + 1
-        if doy in days_loaded:
+        thisdate = dtime[0]
+        # Get first day of the month
+        first_day = date(thisdate.year, thisdate.month, 1)
+        # Check if this month's data already loaded
+        if first_day in months_loaded:
             continue
+        doy = first_day.strftime('%j')
 
         swoops_options['FILE_NAME'] = ('u' +
-                                       date.strftime('%y') +
-                                       str(doy).zfill(3) +
+                                       first_day.strftime('%y') +
+                                       doy +
                                        'bam.dat')
         swoops_options['FILE_PATH'] =\
             ('/ufa/stageIngestArea/swoops/ions/bamion' +
-             date.strftime('%y') + '.zip_files')
+             first_day.strftime('%y') + '.zip_files')
 
         # Put together url for this days data
         remote_url = ulysses_url
@@ -121,12 +122,13 @@ def swoops_ions(starttime, endtime):
             remote_url += key + '=' + swoops_options[key] + '&'
         # Local locaiton to download to
         local_dir = os.path.join(ulysses_dir, 'swoops', 'ions',
-                                 date.strftime('%Y'))
+                                 first_day.strftime('%Y'))
 
+        # Load data
         try:
             f = helper.load(swoops_options['FILE_NAME'], local_dir, remote_url)
         except HTTPError:
-            print('No SWOOPS ion data available for date %s' % date)
+            print('No SWOOPS ion data available for date %s' % first_day)
             continue
 
         # Read in data
@@ -134,7 +136,7 @@ def swoops_ions(starttime, endtime):
         # Process data/time
         thisdata = _convert_ulysses_time(thisdata)
         data.append(thisdata)
-        days_loaded.append(doy)
+        months_loaded.append(first_day)
 
     return helper.timefilter(data, starttime, endtime)
 
