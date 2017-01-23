@@ -1,13 +1,14 @@
-;
-; heliopy configuration
-;
+; heliopy configuration file
+
 ; The working directory is the parent directory in which all downloaded
-; data will be stored.
-;
-; Should be specified relative to home directory
-;
+; data will be stored. Should be specified relative to home directory
 [default]
 download_dir = heliopy/data
+
+; Choose whether to convert all downloaded data to a hdf store, enabling much
+; faster file reading after the initial load, but requiring the additional
+; h5py and py-tables dependencies
+use_hdf = False
 
 ; Cluster user cookie
 [cluster]
