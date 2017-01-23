@@ -13,6 +13,7 @@ own module:
    helios
    imp
    mms
+   ulysses
    wind
 
 The helper methods that much of the data import uses are also available in the
