@@ -1,4 +1,6 @@
-; heliopy configuration file
+; Example heliopy configuration file. To make the configuration active, either
+; rename to 'heliopyrc' and leave here, or move a copy to ~/.heliopy/heliopyrc
+; The config parser will look in ~/.heliopy first.
 
 ; The working directory is the parent directory in which all downloaded
 ; data will be stored. Should be specified relative to home directory
