@@ -6,6 +6,7 @@ All data is publically available at http://ufa.esac.esa.int/ufa/
 import os
 import pandas as pd
 from datetime import datetime
+from urllib.error import HTTPError
 
 import heliopy.time as heliotime
 from heliopy.data import helper
@@ -14,7 +15,8 @@ from heliopy import config
 data_dir = config['default']['download_dir']
 ulysses_dir = os.path.join(data_dir, 'ulysses')
 ulysses_url = 'http://ufa.esac.esa.int/ufa-sl-server/data-action?'
-url_options = {'PROTOCOL': 'HTTP'}
+url_options = {'PROTOCOL': 'HTTP',
+               'PRODUCT_TYPE': 'ALL'}
 
 # http://ufa.esac.esa.int/ufa-sl-server/data-action?PROTOCOL=HTTP&PRODUCT_TYPE=ALL&FILE_NAME=U95006SH.ASC&FILE_PATH=/ufa/HiRes/VHM-FGM/1995
 
@@ -25,18 +27,17 @@ def fgm_hires(starttime, endtime):
 
     Parameters
     ----------
-        starttime : datetime
-            Start of interval
-        endtime : datetime
-            End of interval
+    starttime : datetime
+        Start of interval
+    endtime : datetime
+        End of interval
 
     Returns
     -------
-        data : DataFrame
-            Requested data
+    data : DataFrame
+        Requested data
     """
     fgm_options = url_options
-    fgm_options['PRODUCT_TYPE'] = 'ALL'
 
     data = []
     dtimes = heliotime.daysplitinterval(starttime, endtime)
@@ -73,6 +74,73 @@ def fgm_hires(starttime, endtime):
                              pd.to_timedelta(thisdata['minute'], unit='m') +
                              pd.to_timedelta(thisdata['second'], unit='s'))
         thisdata = thisdata.drop(['year', 'DOY', 'hour', 'minute', 'second'],
+                                 axis=1)
+        data.append(thisdata)
+
+    return helper.timefilter(data, starttime, endtime)
+
+
+def swoops_ions(starttime, endtime):
+    """
+    Import SWOOPS ion data.
+
+    Parameters
+    ----------
+    starttime : datetime
+        Start of interval
+    endtime : datetime
+        End of interval
+
+    Returns
+    -------
+    data : DataFrame
+        Requested data
+    """
+    swoops_options = url_options
+
+    data = []
+    dtimes = heliotime.daysplitinterval(starttime, endtime)
+    # Loop through years
+    for dtime in dtimes:
+        date = dtime[0]
+        swoops_options['FILE_NAME'] = ('u' +
+                                       date.strftime('%y') +
+                                       date.strftime('%j') +
+                                       'bam.dat')
+        swoops_options['FILE_PATH'] =\
+            ('/ufa/stageIngestArea/swoops/ions/bamion' +
+             date.strftime('%y') + '.zip_files')
+
+        # Put together url for this days data
+        remote_url = ulysses_url
+        for key in swoops_options:
+            remote_url += key + '=' + swoops_options[key] + '&'
+        # Local locaiton to download to
+        local_dir = os.path.join(ulysses_dir, 'swoops', 'ions',
+                                 date.strftime('%Y'))
+
+        try:
+            f = helper.load(swoops_options['FILE_NAME'], local_dir, remote_url)
+        except HTTPError:
+            print('No SWOOPS ion data available for date %s' % date)
+            continue
+
+        readargs = {'names': ['year', 'doy', 'hour', 'minute', 'second',
+                              'r', 'hlat', 'hlon', 'n_p', 'n_a',
+                              'T_p_large', 'T_p_small',
+                              'v_r', 'v_t', 'v_n', 'iqual'],
+                    'delim_whitespace': True}
+        # Read in data
+        thisdata = pd.read_table(f, **readargs)
+        # Process data/time
+        thisdata['year'] += 1900
+        thisdata['Time'] = pd.to_datetime(thisdata['year'].astype(str) + ':' +
+                                          thisdata['doy'].astype(str),
+                                          format='%Y:%j')
+        thisdata['Time'] += (pd.to_timedelta(thisdata['hour'], unit='h') +
+                             pd.to_timedelta(thisdata['minute'], unit='m') +
+                             pd.to_timedelta(thisdata['second'], unit='s'))
+        thisdata = thisdata.drop(['year', 'doy', 'hour', 'minute', 'second'],
                                  axis=1)
         data.append(thisdata)
 
