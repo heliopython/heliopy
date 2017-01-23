@@ -24,6 +24,7 @@ def test_ulysses():
     starttime = datetime(1993, 1, 1, 0, 0, 0)
     endtime = datetime(1993, 1, 2, 0, 0, 0)
     ulysses.fgm_hires(starttime, endtime)
+    ulysses.swoops_ions(starttime, endtime)
 
 
 @nodata
