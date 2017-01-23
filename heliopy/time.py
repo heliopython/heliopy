@@ -1,5 +1,5 @@
 """Methods for processing times and dates"""
-from datetime import datetime, time, timedelta
+from datetime import datetime, time, date, timedelta
 import numpy as np
 import pandas as pd
 
@@ -123,29 +123,6 @@ def doy2ymd(y, doy):
         day : int
             Day of month.
     """
-    assert isinstance(y, int) and isinstance(doy, int),\
-        'Input year and day of year must be integers'
-    # Days in each month
-    nonleap = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
-    leap = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+    d = datetime.strptime(str(y) + ':' + str(doy), '%Y:%j')
 
-    # Select the right days
-    if isleap(y):
-        if doy > 366:
-            raise ValueError('Day of year cannot be greater than 366')
-        days = leap
-    else:
-        if doy > 365:
-            raise ValueError('Day of year cannot be greater than 365\
-                             in a non leap year')
-        days = nonleap
-
-    for i in range(len(days)):
-        if days[i] < doy:
-            doy -= days[i]
-        else:
-            m = i + 1
-            d = doy
-            break
-
-    return y, m, d
+    return d.year, d.month, d.day

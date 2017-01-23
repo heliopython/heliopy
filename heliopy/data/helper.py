@@ -14,18 +14,18 @@ def timefilter(data, starttime, endtime):
 
     Parameters
     ----------
-        data : DataFrame or list
-            Input data. If a list, pd.concat(data) will be run to put it in a
-            DataFrame.
-        starttime : datetime
-            Start of interval.
-        endtime : datetime
-            End of interval.
+    data : DataFrame or list
+        Input data. If a list, ``pd.concat(data)`` will be run to put it in
+        a DataFrame.
+    starttime : datetime
+        Start of interval.
+    endtime : datetime
+        End of interval.
 
     Returns
     -------
-        out : DataFrame
-            Filtered data.
+    out : DataFrame
+        Filtered data.
     """
     if isinstance(data, list):
         data = pd.concat(data)
@@ -55,14 +55,14 @@ def checkdir(directory):
 
     Parameters
     ----------
-        directory : string
-            Directory to check.
+    directory : string
+        Directory to check.
 
     Returns
     -------
-        isdir : bool
-            True if directory exists, False if directory didn't exist when
-            function was called.
+    isdir : bool
+        True if directory exists, False if directory didn't exist when
+        function was called.
     """
     if not os.path.exists(directory):
         print('Creating new directory', directory)
@@ -87,26 +87,36 @@ def _load_remote(remote_url, filename, local_dir, filetype):
     urlretrieve(remote_url + '/' + filename,
                 filename=os.path.join(local_dir, filename),
                 reporthook=reporthook)
+    print('\n')
     return _load_local(local_dir, filename, filetype)
 
 
 def load(filename, local_dir, remote_url, guessversion=False):
     """
-    Try to load a file from local_dir.
+    Try to load a file from *local_dir*.
 
-    If file doesn't exist locally, try to download from remtote_url instead.
+    If file doesn't exist locally, try to download from *remtote_url* instead.
 
     Parameters
     ----------
-        filename : string
-            Name of file.
-        local_dir : string
-            Local location of file.
-        remote_url : string
-            Remote location of file.
-        guessversion : bool
-            If true, try to guess the version number in the filename. Only works
-            for cdf files.
+    filename : string
+        Name of file
+    local_dir : string
+        Local location of file
+    remote_url : string
+        Remote location of file
+    guessversion : bool
+        If true, try to guess the version number in the filename. Only
+        works for cdf files. Default is *False*.
+
+    Returns
+    -------
+    file : CDF or open file
+        If *filename* ends in *.cdf* the CDF file will be opened and
+        returned.
+
+        Otherwise it is assumed that the file is an ascii file, and
+        *filename* will be opened using python's :func:`open` method.
     """
     # Check if file is cdf
     if filename[-4:] == '.cdf':
@@ -151,7 +161,7 @@ def pitchdist_cdf2df(cdf, distkeys, energykey, timekey, anglelabels):
     Converts cdf file of a pitch angle distribution to a pandas dataframe.
 
     MultiIndexing is used as a pitch angle distribution is essentially a 3D
-    dataset f(time, energy, angle). See
+    dataset *f(time, energy, angle)*. See
     http://pandas.pydata.org/pandas-docs/stable/advanced.html#multiindex-advanced-indexing
     for more information.
 
@@ -160,33 +170,34 @@ def pitchdist_cdf2df(cdf, distkeys, energykey, timekey, anglelabels):
 
     Assumes that each energy in the cdf has its own 2D array (time, angle). In
     the below description of the function there are
+
         - `n` time data points
         - `m` energy data points
         - `l` anglular data points
 
     Parameters
     ----------
-        cdf : cdf
-            Opened cdf file.
-        distkeys : list
-            A list of the cdf keys for a given energies. Each array accessed by
-            distkeys is shape `(n, l)`, and there must be `m` distkeys.
-        energykey : string
-            The cdf key for the energy values. The array accessed by energykey
-            must have shape `(m)` or `(a, m)` where `a` can be anything. If it
-            has shape `(a, m)`, we assume energies measured don't change, and
-            take the first row as the energies for all times.
-        timekey : string
-            The cdf key for the timestamps. The array access by timekey must
-            have shape `(n)`
-        anglelabels : list
-            A list of the labels to give each anglular bin (eg. [0, 10, 20] in
-            degrees). Must be of length `l`.
+    cdf : cdf
+        Opened cdf file.
+    distkeys : list
+        A list of the cdf keys for a given energies. Each array accessed by
+        distkeys is shape `(n, l)`, and there must be `m` distkeys.
+    energykey : string
+        The cdf key for the energy values. The array accessed by energykey
+        must have shape `(m)` or `(a, m)` where `a` can be anything. If it
+        has shape `(a, m)`, we assume energies measured don't change, and
+        take the first row as the energies for all times.
+    timekey : string
+        The cdf key for the timestamps. The array access by timekey must
+        have shape `(n)`
+    anglelabels : list
+        A list of the labels to give each anglular bin (eg. [0, 10, 20] in
+        degrees). Must be of length `l`.
 
     Returns
     -------
-        df : DataFrame
-            Data frame with read in data.
+    df : DataFrame
+        Data frame with read in data.
     """
     times = cdf[timekey][...]
     ntimesteps = times.size
@@ -229,24 +240,25 @@ def cdf2df(cdf, index_key, keys, dtimeindex=True, badvalues=None):
 
     Parameters
     ----------
-        cdf : cdf
-            Opened cdf file.
-        index_key : string
-            The key to use as indexing in the output dataframe.
-        keys : dictionary
-            A dictionary that maps keys in the cdf file to the corresponding
-            desired keys in the ouput dataframe. If a particular cdf key has
-            multiple columns, the mapped keys must be in a list.
-        dtimeindex : bool
-            If True, dataframe index is parsed as a datetime.
-        badvalues : dictionary
-            A dictionary that maps the new DataFrame keys to a list of bad
-            values to replace with nans.
+    cdf : cdf
+        Opened cdf file
+    index_key : string
+        The key to use as indexing in the output dataframe
+    keys : dict
+        A dictionary that maps keys in the cdf file to the corresponding
+        desired keys in the ouput dataframe. If a particular cdf key has
+        multiple columns, the mapped keys must be in a list.
+    dtimeindex : bool
+        If True, dataframe index is parsed as a datetime
+    badvalues : dict
+        A dictionary that maps the new DataFrame keys to a list of bad
+
+        values to replace with nans.
 
     Returns
     -------
-        df : DataFrame
-            Data frame with read in data.
+    df : DataFrame
+        Data frame with read in data
     """
     try:
         index = cdf[index_key][...][:, 0]

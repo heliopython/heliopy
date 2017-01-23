@@ -5,6 +5,7 @@ import heliopy.data.cluster as cluster
 import heliopy.data.ace as ace
 import heliopy.data.artemis as artemis
 import heliopy.data.imp as imp
+import heliopy.data.ulysses as ulysses
 from heliopy import config
 
 from datetime import datetime
@@ -16,6 +17,13 @@ nodata = pytest.mark.skipif(
     pytest.config.getoption("--no-data"),
     reason="Skipped test that involves data download"
 )
+
+
+@nodata
+def test_ulysses():
+    starttime = datetime(1993, 1, 1, 0, 0, 0)
+    endtime = datetime(1993, 1, 2, 0, 0, 0)
+    ulysses.fgm_hires(starttime, endtime)
 
 
 @nodata
