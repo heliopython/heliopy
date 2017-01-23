@@ -96,13 +96,20 @@ def swoops_ions(starttime, endtime):
                 'delim_whitespace': True}
 
     data = []
+    days_loaded = []
     dtimes = heliotime.daysplitinterval(starttime, endtime)
     # Loop through individual days
     for dtime in dtimes:
         date = dtime[0]
+        doy = int(date.strftime('%j'))
+        # Files are only every 32 days
+        doy = (doy // 32) + 1
+        if doy in days_loaded:
+            continue
+
         swoops_options['FILE_NAME'] = ('u' +
                                        date.strftime('%y') +
-                                       date.strftime('%j') +
+                                       str(doy).zfill(3) +
                                        'bam.dat')
         swoops_options['FILE_PATH'] =\
             ('/ufa/stageIngestArea/swoops/ions/bamion' +
@@ -127,6 +134,7 @@ def swoops_ions(starttime, endtime):
         # Process data/time
         thisdata = _convert_ulysses_time(thisdata)
         data.append(thisdata)
+        days_loaded.append(doy)
 
     return helper.timefilter(data, starttime, endtime)
 
