@@ -18,8 +18,6 @@ ulysses_url = 'http://ufa.esac.esa.int/ufa-sl-server/data-action?'
 url_options = {'PROTOCOL': 'HTTP',
                'PRODUCT_TYPE': 'ALL'}
 
-# http://ufa.esac.esa.int/ufa-sl-server/data-action?PROTOCOL=HTTP&PRODUCT_TYPE=ALL&FILE_NAME=U95006SH.ASC&FILE_PATH=/ufa/HiRes/VHM-FGM/1995
-
 
 def fgm_hires(starttime, endtime):
     """
