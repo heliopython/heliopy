@@ -38,6 +38,9 @@ def fgm_hires(starttime, endtime):
         Requested data
     """
     fgm_options = url_options
+    readargs = {'names': ['year', 'doy', 'hour', 'minute', 'second',
+                          'Bx', 'By', 'Bz', '|B|'],
+                'delim_whitespace': True}
 
     data = []
     dtimes = heliotime.daysplitinterval(starttime, endtime)
@@ -60,21 +63,10 @@ def fgm_hires(starttime, endtime):
 
         f = helper.load(fgm_options['FILE_NAME'], local_dir, remote_url)
 
-        readargs = {'names': ['year', 'DOY', 'hour', 'minute', 'second',
-                              'Bx', 'By', 'Bz', '|B|'],
-                    'delim_whitespace': True}
         # Read in data
         thisdata = pd.read_table(f, **readargs)
         # Process data/time
-        thisdata['year'] += 1900
-        thisdata['Time'] = pd.to_datetime(thisdata['year'].astype(str) + ':' +
-                                          thisdata['DOY'].astype(str),
-                                          format='%Y:%j')
-        thisdata['Time'] += (pd.to_timedelta(thisdata['hour'], unit='h') +
-                             pd.to_timedelta(thisdata['minute'], unit='m') +
-                             pd.to_timedelta(thisdata['second'], unit='s'))
-        thisdata = thisdata.drop(['year', 'DOY', 'hour', 'minute', 'second'],
-                                 axis=1)
+        thisdata = _convert_ulysses_time(thisdata)
         data.append(thisdata)
 
     return helper.timefilter(data, starttime, endtime)
@@ -97,10 +89,15 @@ def swoops_ions(starttime, endtime):
         Requested data
     """
     swoops_options = url_options
+    readargs = {'names': ['year', 'doy', 'hour', 'minute', 'second',
+                          'r', 'hlat', 'hlon', 'n_p', 'n_a',
+                          'T_p_large', 'T_p_small',
+                          'v_r', 'v_t', 'v_n', 'iqual'],
+                'delim_whitespace': True}
 
     data = []
     dtimes = heliotime.daysplitinterval(starttime, endtime)
-    # Loop through years
+    # Loop through individual days
     for dtime in dtimes:
         date = dtime[0]
         swoops_options['FILE_NAME'] = ('u' +
@@ -125,23 +122,24 @@ def swoops_ions(starttime, endtime):
             print('No SWOOPS ion data available for date %s' % date)
             continue
 
-        readargs = {'names': ['year', 'doy', 'hour', 'minute', 'second',
-                              'r', 'hlat', 'hlon', 'n_p', 'n_a',
-                              'T_p_large', 'T_p_small',
-                              'v_r', 'v_t', 'v_n', 'iqual'],
-                    'delim_whitespace': True}
         # Read in data
         thisdata = pd.read_table(f, **readargs)
         # Process data/time
-        thisdata['year'] += 1900
-        thisdata['Time'] = pd.to_datetime(thisdata['year'].astype(str) + ':' +
-                                          thisdata['doy'].astype(str),
-                                          format='%Y:%j')
-        thisdata['Time'] += (pd.to_timedelta(thisdata['hour'], unit='h') +
-                             pd.to_timedelta(thisdata['minute'], unit='m') +
-                             pd.to_timedelta(thisdata['second'], unit='s'))
-        thisdata = thisdata.drop(['year', 'doy', 'hour', 'minute', 'second'],
-                                 axis=1)
+        thisdata = _convert_ulysses_time(thisdata)
         data.append(thisdata)
 
     return helper.timefilter(data, starttime, endtime)
+
+
+def _convert_ulysses_time(data):
+    """Method to convert timestamps to datetimes"""
+    data['year'] += 1900
+    data['Time'] = pd.to_datetime(data['year'].astype(str) + ':' +
+                                  data['doy'].astype(str),
+                                  format='%Y:%j')
+    data['Time'] += (pd.to_timedelta(data['hour'], unit='h') +
+                     pd.to_timedelta(data['minute'], unit='m') +
+                     pd.to_timedelta(data['second'], unit='s'))
+    data = data.drop(['year', 'doy', 'hour', 'minute', 'second'],
+                     axis=1)
+    return data
