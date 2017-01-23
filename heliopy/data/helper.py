@@ -87,6 +87,7 @@ def _load_remote(remote_url, filename, local_dir, filetype):
     urlretrieve(remote_url + '/' + filename,
                 filename=os.path.join(local_dir, filename),
                 reporthook=reporthook)
+    print('\n')
     return _load_local(local_dir, filename, filetype)
 
 
