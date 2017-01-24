@@ -90,8 +90,8 @@ def test_mms():
 
     Try and import a single days' worth of data for each data product.
     """
-    starttime = datetime(2016, 1, 1, 0, 0, 0)
-    endtime = datetime(2016, 1, 1, 1, 0, 0)
+    starttime = datetime(2016, 1, 2, 0, 0, 0)
+    endtime = datetime(2016, 1, 2, 1, 0, 0)
 
     for i in range(1, 5):
         mms.fgm_survey(str(i), starttime, endtime)
