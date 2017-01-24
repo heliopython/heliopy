@@ -11,7 +11,7 @@ import heliopy.time as spacetime
 from heliopy.data import helper
 from heliopy import config
 
-data_dir = config['default']['download_dir']
+data_dir = config['DEFAULT']['download_dir']
 wind_dir = data_dir + '/wind'
 remote_wind_dir = 'ftp://spdf.gsfc.nasa.gov/pub/data/wind/'
 

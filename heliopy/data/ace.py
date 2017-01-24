@@ -11,7 +11,7 @@ import heliopy.time as spacetime
 from heliopy.data import helper
 from heliopy import config
 
-data_dir = config['default']['download_dir']
+data_dir = config['DEFAULT']['download_dir']
 ace_dir = os.path.join(data_dir, 'ace')
 remote_ace_dir = 'ftp://spdf.gsfc.nasa.gov/pub/data/ace/'
 
