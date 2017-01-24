@@ -52,7 +52,7 @@ def test_imp():
 
 @nodata
 def test_cluster():
-    if config['cluster']['cluster_cookie'] != 'none':
+    if config['DEFAULT']['cluster_cookie'] != 'none':
         probe = '2'
         starttime = datetime(2004, 6, 18, 11, 35, 0)
         endtime = datetime(2004, 6, 19, 18, 35, 0)
