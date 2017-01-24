@@ -18,17 +18,16 @@ def load_config():
 
     for f in [config_file_1, config_file_2]:
         if os.path.isfile(f):
-            print('Reading config')
             config.read(f)
             break
-    print(config.sections())
+
     # Set data download directory
     download_dir = os.path.join(home_dir, config['DEFAULT']['download_dir'])
     config['DEFAULT']['download_dir'] = download_dir
     # Create data download if not created
     if not os.path.isdir(download_dir):
         print('Creating download directory %s' % download_dir)
-        os.mkdir(download_dir)
+        os.makedirs(download_dir)
 
     # Set cluster cookie
     # Check environment variables for a cluster cookie
