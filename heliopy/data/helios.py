@@ -30,7 +30,7 @@ from heliopy.data import helper
 import heliopy.vector.transformations as spacetrans
 import heliopy.time as spacetime
 import heliopy.constants as constants
-data_dir = config['default']['download_dir']
+data_dir = config['DEFAULT']['download_dir']
 helios_dir = os.path.join(data_dir, 'helios')
 
 

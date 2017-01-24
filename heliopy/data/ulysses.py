@@ -12,7 +12,9 @@ import heliopy.time as heliotime
 from heliopy.data import helper
 from heliopy import config
 
-data_dir = config['default']['download_dir']
+use_hdf = config['DEFAULT']['use_hdf']
+data_dir = config['DEFAULT']['download_dir']
+
 ulysses_dir = os.path.join(data_dir, 'ulysses')
 ulysses_url = 'http://ufa.esac.esa.int/ufa-sl-server/data-action?'
 url_options = {'PROTOCOL': 'HTTP',
@@ -45,26 +47,30 @@ def fgm_hires(starttime, endtime):
     # Loop through years
     for dtime in dtimes:
         date = dtime[0]
-        fgm_options['FILE_NAME'] = ('U' +
-                                    date.strftime('%y') +
-                                    date.strftime('%j') +
-                                    'SH.ASC')
-        fgm_options['FILE_PATH'] = '/ufa/HiRes/VHM-FGM/' + date.strftime('%Y')
-        # Put together url for this days data
-        remote_url = ulysses_url
-        for key in fgm_options:
-            remote_url += key + '=' + fgm_options[key] + '&'
-
+        yearstr = date.strftime('%Y')
+        fgm_options['FILE_NAME'] = ('U' + yearstr[-2:] +
+                                    date.strftime('%j') + 'SH.ASC')
         # Local locaiton to download to
-        local_dir = os.path.join(ulysses_dir, 'fgm', 'hires',
-                                 date.strftime('%Y'))
+        local_dir = os.path.join(ulysses_dir, 'fgm', 'hires', yearstr)
+        local_file = os.path.join(local_dir, fgm_options['FILE_NAME'])
+        local_hdf = local_file[:-4] + '.hdf'
+        # If we have already saved a hdf file
+        if os.path.exists(local_hdf):
+            thisdata = pd.read_hdf(local_hdf)
+        else:
+            # Put together remote url
+            fgm_options['FILE_PATH'] = '/ufa/HiRes/VHM-FGM/' + yearstr
+            remote_url = ulysses_url
+            for key in fgm_options:
+                remote_url += key + '=' + fgm_options[key] + '&'
+            f = helper.load(fgm_options['FILE_NAME'], local_dir, remote_url)
 
-        f = helper.load(fgm_options['FILE_NAME'], local_dir, remote_url)
-
-        # Read in data
-        thisdata = pd.read_table(f, **readargs)
-        # Process data/time
-        thisdata = _convert_ulysses_time(thisdata)
+            # Read in data
+            thisdata = pd.read_table(f, **readargs)
+            # Process data/time
+            thisdata = _convert_ulysses_time(thisdata)
+            if use_hdf:
+                thisdata.to_hdf(local_hdf, 'fgm_hires')
         data.append(thisdata)
 
     return helper.timefilter(data, starttime, endtime)

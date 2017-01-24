@@ -1,0 +1,16 @@
+; Example heliopy configuration file. To make the configuration active, either
+; edit this copy or move a copy to ~/.heliopy/heliopyrc
+; The config parser will look in ~/.heliopy first.
+
+[DEFAULT]
+; The working directory is the parent directory in which all downloaded
+; data will be stored. Should be specified relative to home directory
+download_dir = heliopy/data
+
+; Choose whether to convert all downloaded data to a hdf store, enabling much
+; faster file reading after the initial load, but requiring the additional
+; h5py and py-tables dependencies
+use_hdf = False
+
+; Cluster user cookie
+cluster_cookie = none

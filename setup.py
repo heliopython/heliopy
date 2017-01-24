@@ -19,5 +19,4 @@ setup(name='heliopy',
                 'heliopy.plot',
                 'heliopy.vector',
                 'heliopy.util'],
-      data_files=[('heliopy/data', ['heliopy/data/heliopyrc']),
-                  ('heliopy', ['README.md'])])
+      package_data={'heliopy': ['heliopyrc']})

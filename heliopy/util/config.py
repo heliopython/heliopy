@@ -11,18 +11,28 @@ def load_config():
 
     # Get user configuration location
     home_dir = os.path.expanduser("~")
-    config_file = os.path.join(home_dir, '.heliopy', config_filename)
-    if os.path.isfile(config_file):
-        config.read(config_file)
-        return config
+    config_file_1 = os.path.join(home_dir, '.heliopy', config_filename)
 
-    # Get default configuration location
     module_dir = os.path.dirname(heliopy.__file__)
-    config_file = os.path.join(module_dir, 'data', config_filename)
-    config.read(config_file)
-    config['default']['download_dir'] = os.path.join(home_dir,
-                                                     config['default']['download_dir'])
+    config_file_2 = os.path.join(module_dir, config_filename)
+
+    for f in [config_file_1, config_file_2]:
+        if os.path.isfile(f):
+            config.read(f)
+            break
+
+    # Set data download directory
+    download_dir = os.path.join(home_dir, config['DEFAULT']['download_dir'])
+    config['DEFAULT']['download_dir'] = download_dir
+    # Create data download if not created
+    if not os.path.isdir(download_dir):
+        print('Creating download directory %s' % download_dir)
+        os.makedirs(download_dir)
+
+    # Set cluster cookie
+    # Check environment variables for a cluster cookie
     if os.environ.get('CLUSTERCOOKIE') is not None and\
-            config['default']['download_dir'] == 'none':
-        config['cluster']['user_cookie'] = os.environ.get('CLUSTERCOOKIE')
+            config['DEFAULT']['cluster_cookie'] == 'none':
+        config['DEFAULT']['cluster_cookie'] = os.environ.get('CLUSTERCOOKIE')
+
     return config
