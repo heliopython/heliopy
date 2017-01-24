@@ -72,7 +72,6 @@ def fgm_hires(starttime, endtime):
             if use_hdf:
                 thisdata.to_hdf(local_hdf, 'fgm_hires')
         data.append(thisdata)
-
     return helper.timefilter(data, starttime, endtime)
 
 
@@ -147,7 +146,9 @@ def swoops_ions(starttime, endtime):
 
 def _convert_ulysses_time(data):
     """Method to convert timestamps to datetimes"""
-    data['year'] += 1900
+    data.loc[data['year'] > 50, 'year'] += 1900
+    data.loc[data['year'] < 50, 'year'] += 2000
+
     data['Time'] = pd.to_datetime(data['year'].astype(str) + ':' +
                                   data['doy'].astype(str),
                                   format='%Y:%j')
