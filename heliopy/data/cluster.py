@@ -22,7 +22,7 @@ from heliopy.data.helper import reporthook, checkdir, cdf2df, timefilter
 from spacepy import pycdf
 
 data_dir = config['DEFAULT']['download_dir']
-cda_cookie = config['DEFAULT']['user_cookie']
+cda_cookie = config['DEFAULT']['cluster_cookie']
 csa_url = 'https://csa.esac.esa.int/csa/aio/product-action?'
 cluster_dir = os.path.join(data_dir, 'cluster')
 
