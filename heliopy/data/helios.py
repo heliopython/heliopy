@@ -31,6 +31,7 @@ import heliopy.vector.transformations as spacetrans
 import heliopy.time as spacetime
 import heliopy.constants as constants
 data_dir = config['DEFAULT']['download_dir']
+use_hdf = config['DEFAULT']['use_hdf']
 helios_dir = os.path.join(data_dir, 'helios')
 
 
@@ -604,8 +605,8 @@ def _merged_fromascii(probe, year, doy):
     data.replace(0.0, np.nan, inplace=True)
 
     # Save data to a hdf store
-    saveloc = os.path.join(local_dir, filename[:-4] + '.h5')
-    data.to_hdf(saveloc, 'table', format='fixed', mode='w')
+    if use_hdf:
+        _save_hdf(floc, fname)
     return(data)
 
 
@@ -731,8 +732,8 @@ def _fourHz_fromascii(probe, year, doy):
     data['ordinal'] = pd.DatetimeIndex(data['Time']).astype(np.int64)
 
     # Save data to a hdf store
-    saveloc = os.path.join(floc, fname + '.h5')
-    data.to_hdf(saveloc, 'table', format='fixed', mode='w')
+    if use_hdf:
+        _save_hdf(floc, fname)
     return(data)
 
 
@@ -857,9 +858,14 @@ def _mag_ness_fromascii(probe, year, doy):
     data = data.drop(['year', 'doy', 'hour', 'minute', 'second'], axis=1)
 
     # Save data to a hdf store
-    saveloc = os.path.join(floc, fname + '.h5')
-    data.to_hdf(saveloc, 'table', format='fixed', mode='w')
+    if use_hdf:
+        _save_hdf(floc, fname)
     return(data)
+
+
+def _save_hdf(fdir, fname):
+    saveloc = os.path.join(fdir, fname + '.h5')
+    data.to_hdf(saveloc, 'table', format='fixed', mode='w')
 
 
 def trajectory(probe, startdate, enddate):
