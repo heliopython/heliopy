@@ -606,7 +606,7 @@ def _merged_fromascii(probe, year, doy):
 
     # Save data to a hdf store
     if use_hdf:
-        _save_hdf(floc, fname)
+        _save_hdf(local_dir, filename[:-4])
     return(data)
 
 
