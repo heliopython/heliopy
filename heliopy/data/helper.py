@@ -130,7 +130,7 @@ def load(filename, local_dir, remote_url, guessversion=False):
     # Try to load locally
     if checkdir(local_dir):
         for f in os.listdir(local_dir):
-            if f[:-6] == filename[:-6]:
+            if f == filename or guessversion and (f[:-6] == filename[:-6]):
                 filename = f
                 return _load_local(local_dir, f, filetype)
 
