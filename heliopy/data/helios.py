@@ -31,6 +31,7 @@ import heliopy.vector.transformations as spacetrans
 import heliopy.time as spacetime
 import heliopy.constants as constants
 data_dir = config['DEFAULT']['download_dir']
+use_hdf = config['DEFAULT']['use_hdf']
 helios_dir = os.path.join(data_dir, 'helios')
 
 
@@ -48,6 +49,13 @@ def _check_probe(probe):
     assert probe == '1' or probe == '2', 'Probe number must be 1 or 2'
     return probe
 
+def _dist_file_dir(probe, year, doy):
+    yearstring = str(year)[-2:]
+    return os.path.join(helios_dir,
+                        'helios' + probe,
+                        'dist',
+                        'h' + probe + yearstring,
+                        'Y' + yearstring + 'D' + str(doy).zfill(3))
 
 def _loaddistfile(probe, year, doy, hour, minute, second):
     """
@@ -81,11 +89,8 @@ def _loaddistfile(probe, year, doy, hour, minute, second):
     probe = _check_probe(probe)
     # Work out location of file
     yearstring = str(year)[-2:]
-    filename = os.path.join(helios_dir,
-                            'helios' + probe,
-                            'dist',
-                            'h' + probe + yearstring,
-                            'Y' + yearstring + 'D' + str(doy).zfill(3),
+    filedir = _dist_file_dir(probe, year, doy)
+    filename = os.path.join(filedir,
                             'h' + probe + 'y' + yearstring +
                             'd' + str(doy).zfill(3) +
                             'h' + str(hour).zfill(2) +
@@ -242,10 +247,68 @@ def electron_dist(probe, year, doy, hour, minute, second, remove_advect=False):
     dist = dist.set_index(['E_bin', 'Az'])
     return dist
 
-
-def distparams(probe, year, doy, hour, minute, second):
+def distparams(probe, starttime, endtime):
     """
-    Read in distribution paraemters.
+    Read in distribution parameters found in the header of distribution files.
+
+    Parameters
+    ----------
+    probe : int
+        Helios probe to import data from. Must be 1 or 2.
+    starttime : datetime
+        Start of interval
+    endtime : datetime
+        End of interval
+
+    Returns
+    -------
+    distinfo : Series
+        Infromation stored in the top of distribution function files.
+    """
+    extensions = ['hdm.0', 'hdm.1', 'ndm.0', 'ndm.1']
+    days = spacetime.daysplitinterval(starttime, endtime)
+    paramlist = []
+
+    # Loop through each day
+    while starttime < endtime:
+        year = starttime.year
+        doy = starttime.strftime('%j')
+        # Directory for today's distribution files
+        dist_dir = _dist_file_dir(probe, year, doy)
+        # Locaiton of hdf file to save to/load from
+        hdffile = 'h' + probe + str(year) + str(doy).zfill(3) + 'distparams.hdf'
+        hdffile = os.path.join(dist_dir, hdffile)
+        if os.path.isfile(hdffile):
+            todays_params = pd.read_hdf(hdffile)
+        else:
+            todays_params = []
+            # Get every distribution function file present for this day
+            for f in os.listdir(dist_dir):
+                path = os.path.join(dist_dir, f)
+                # Check for distribution function
+                if path[-5:] in extensions:
+                    # year = int(path[-21:-19]) + 1900
+                    # doy = int(path[-18:-15])
+                    hour = int(path[-14:-12])
+                    minute = int(path[-11:-9])
+                    second = int(path[-8:-6])
+                    p = distparams_single(probe, year, doy, hour, minute, second)
+                    todays_params.append(p)
+
+            todays_params = pd.concat(todays_params, ignore_index=True, axis=1).T
+            todays_params = todays_params.set_index('Time', drop=False)
+            if use_hdf:
+                todays_params.to_hdf(hdffile, key='distparams', mode='w')
+
+        paramlist.append(todays_params)
+        starttime += datetime.timedelta(days=1)
+
+    return pd.concat(paramlist)
+
+
+def distparams_single(probe, year, doy, hour, minute, second):
+    """
+    Read in parameters from a single distribution function measurement.
 
     Parameters
     ----------
@@ -265,7 +328,7 @@ def distparams(probe, year, doy, hour, minute, second):
     Returns
     -------
         distparams : Series
-            Distribution parameters from top of distribution function files.
+            Distribution parameters from top of distribution function file.
     """
     probe = _check_probe(probe)
     f, filename = _loaddistfile(probe, year, doy, hour, minute, second)
