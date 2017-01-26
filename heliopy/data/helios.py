@@ -303,7 +303,7 @@ def distparams(probe, starttime, endtime):
         paramlist.append(todays_params)
         starttime += datetime.timedelta(days=1)
 
-    return pd.concat(paramlist)
+    return helper.timefilter(paramlist, starttime, endtime)
 
 
 def distparams_single(probe, year, doy, hour, minute, second):
