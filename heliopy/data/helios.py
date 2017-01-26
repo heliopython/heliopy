@@ -50,11 +50,11 @@ def _check_probe(probe):
 
 def _dist_file_dir(probe, year, doy):
     yearstring = str(year)[-2:]
-    return = os.path.join(helios_dir,
-                          'helios' + probe,
-                          'dist',
-                          'h' + probe + yearstring,
-                          'Y' + yearstring + 'D' + str(doy).zfill(3))
+    return os.path.join(helios_dir,
+                        'helios' + probe,
+                        'dist',
+                        'h' + probe + yearstring,
+                        'Y' + yearstring + 'D' + str(doy).zfill(3))
 
 def _loaddistfile(probe, year, doy, hour, minute, second):
     """
