@@ -48,6 +48,13 @@ def _check_probe(probe):
     assert probe == '1' or probe == '2', 'Probe number must be 1 or 2'
     return probe
 
+def _dist_file_dir(probe, year, doy):
+    yearstring = str(year)[-2:]
+    return = os.path.join(helios_dir,
+                          'helios' + probe,
+                          'dist',
+                          'h' + probe + yearstring,
+                          'Y' + yearstring + 'D' + str(doy).zfill(3))
 
 def _loaddistfile(probe, year, doy, hour, minute, second):
     """
@@ -81,11 +88,8 @@ def _loaddistfile(probe, year, doy, hour, minute, second):
     probe = _check_probe(probe)
     # Work out location of file
     yearstring = str(year)[-2:]
-    filename = os.path.join(helios_dir,
-                            'helios' + probe,
-                            'dist',
-                            'h' + probe + yearstring,
-                            'Y' + yearstring + 'D' + str(doy).zfill(3),
+    filedir = _dist_file_dir(probe, year, doy)
+    filename = os.path.join(filedir,
                             'h' + probe + 'y' + yearstring +
                             'd' + str(doy).zfill(3) +
                             'h' + str(hour).zfill(2) +
