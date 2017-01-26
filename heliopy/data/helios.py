@@ -249,7 +249,7 @@ def electron_dist(probe, year, doy, hour, minute, second, remove_advect=False):
 
 def distparams(probe, year, doy, hour, minute, second):
     """
-    Read in distribution paraemters.
+    Read in parameters from a single distribution function measurement.
 
     Parameters
     ----------
@@ -269,7 +269,7 @@ def distparams(probe, year, doy, hour, minute, second):
     Returns
     -------
         distparams : Series
-            Distribution parameters from top of distribution function files.
+            Distribution parameters from top of distribution function file.
     """
     probe = _check_probe(probe)
     f, filename = _loaddistfile(probe, year, doy, hour, minute, second)
