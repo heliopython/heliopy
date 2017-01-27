@@ -111,23 +111,23 @@ def binfunc(x, y, bins, f):
 
     Parameters
     ----------
-        x : array_like
-            x co-ordinates of data points.
-        y : array_like
-            Data points.
-        bins : array_like
-            Bin edges.
-        f : function
-            Function to apply to data points. If f takes only one argument it
-            is passed y. If f takes 2 arguments it is passed x and y in that
-            order.
+    x : array_like
+        x co-ordinates of data points.
+    y : array_like
+        Data points.
+    bins : array_like
+        Bin edges.
+    f : function
+        Function to apply to data points. If f takes only one argument it
+        is passed y. If f takes 2 arguments it is passed x and y in that
+        order.
 
     Returns
     -------
-        out : list
-            The results function applied in each bin. If no data points are
-            present in a bin, the value in that bin is set to an emtpy list.
-            Length is bins.size - 1.
+    out : list
+        The results function applied in each bin. If no data points are
+        present in a bin, the value in that bin is set to an emtpy list.
+        Length is bins.size - 1.
 
     """
     if isinstance(bins, list):
