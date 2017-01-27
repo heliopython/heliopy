@@ -6,7 +6,6 @@ API reference
 
    bodies/index
    data/index
-   fitting
    plasma
    plot/index
    stats
