@@ -124,6 +124,39 @@ def binfunc(x, y, bins, f):
     return out
 
 
+def fisher_dist(theta, phi, kappa, theta_0, phi_0):
+    """
+    A distribution on a sphere, centred on a single point with a given width.
+
+    e.g. see 'Statistical analysis of spherical data' by Fisher, Lewis,
+    Embleton, section 4.4.3
+
+    Parameters
+    ----------
+    theta : array_like
+        theta values, defined in the range :math:`[-\pi / 2, \pi / 2]`
+    phi : array_like
+        phi values, defined in the range :math:`[-\pi, \pi]`
+    kappa : float
+        The 'width' of the distribution. The larger kappa is, the wider the
+        distribution
+    theta_0 : float
+        The theta co-ordinate of the distribution centre
+    phi_0 : float
+        The phi co-ordinate of the distribution centre
+
+    Returns
+    -------
+    pdf : array_like
+        The probability density at the given (theta, phi) coordinates
+    """
+    C = kappa / (4 * np.pi * np.sinh(kappa))
+    exp = np.exp(kappa *
+                 (np.cos(theta) * np.cos(theta_0) * np.cos(phi - phi_0) +
+                  (np.sin(theta) * np.sin(theta_0))))
+    return C * exp * np.cos(theta)
+
+
 def binmean(x, y, bins):
     """
     Returns the mean of data points lying in given bins.
