@@ -13,13 +13,13 @@ def dtime2ordinal(dtime):
 
     Parameters
     ----------
-        dtime : array_like or datetime
-            Input datetime array or single datetime value.
+    dtime : array_like or datetime
+        Input datetime array or single datetime value
 
     Returns
     -------
-        ordinal : array_like
-            Converted datetimes as ordinals.
+    ordinal : array_like
+        Converted datetimes as ordinals
     """
     if type(dtime) == datetime:
         dtime = pd.Series(dtime)
@@ -32,13 +32,13 @@ def nptimedelta2seconds(dt):
 
     Parameters
     ----------
-        dt : array_like
-            Input timedelta array.
+    dt : array_like
+        Input timedelta array
 
     Returns
     -------
-        s : array_like
-            Converted array in seconds.
+    s : array_like
+        Converted array in seconds
     """
     assert np.issubdtype(dt.dtype, np.timedelta64),\
         'Input array must be of type "np.timedelta64"'
@@ -51,16 +51,16 @@ def daysplitinterval(starttime, endtime):
 
     Parameters
     ----------
-        starttime : datetime
-            Start date/time of interval
-        endtime : datetime
-            End date/time of interval
+    starttime : datetime
+        Start date/time of interval
+    endtime : datetime
+        End date/time of interval
 
     Returns
     -------
-        intervals : list
-            A list of lists. Each item in the sublists consists of the date,
-            start time, and end time for the particular date.
+    intervals : list
+        A list of lists. Each item in the sublists consists of the date,
+        start time, and end time for the particular date.
     """
     assert starttime < endtime, 'Start datetime must be before end datetime'
     out = []
@@ -89,13 +89,13 @@ def isleap(y):
 
     Parameters
     ----------
-        y : int
-            Year.
+    y : int
+        Year
 
     Returns
     -------
-        leap : bool
-            True if y is a leap year, false otherwise.
+    leap : bool
+        True if y is a leap year, false otherwise
     """
     rem1 = (y % 4) == 0
     rem2 = (y % 100) == 0
@@ -116,12 +116,12 @@ def doy2ymd(y, doy):
 
     Returns
     -------
-        year : int
-            Year.
-        month : int
-            Month
-        day : int
-            Day of month.
+    year : int
+        Year
+    month : int
+        Month
+    day : int
+        Day of month
     """
     d = datetime.strptime(str(y) + ':' + str(doy), '%Y:%j')
 

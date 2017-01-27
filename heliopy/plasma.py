@@ -15,19 +15,19 @@ from heliopy import constants
 
 def alfvenspeed(n, B):
     """
-    Given number density and magnetic field strength, return Alfven speed.
+    Given number density and magnetic field strength, return Alfven speed
 
     Parameters
     ----------
-        n : array_like
-            Number density in cm^-3.
-        B : array_like
-            Magnetic field magnitude in nT.
+    n : array_like
+        Number density in cm^-3
+    B : array_like
+        Magnetic field magnitude in nT
 
     Returns
     -------
-        v_a : array_like
-            Alfven speed in km/s.
+    v_a : array_like
+        Alfven speed in km/s
     """
     n *= 1e6
     B *= 1e-9
@@ -38,19 +38,19 @@ def alfvenspeed(n, B):
 
 def vth2temp(v, m):
     """
-    Converts thermal velocity to temperature.
+    Converts thermal velocity to temperature
 
     Parameters
     ----------
-        v : array_like
-            Thermal velocities in km/s.
-        m : float
-            Particle mass in kg.
+    v : array_like
+        Thermal velocities in km/s
+    m : float
+        Particle mass in kg
 
     Returns
     -------
-        t : array_like
-            Temperatures.
+    t : array_like
+        Temperatures
     """
     v *= 1e3
     t = m * v**2 / constants.k_B
@@ -59,17 +59,17 @@ def vth2temp(v, m):
 
 def magneticpressure(B):
     """
-    Returns magnetic pressure given magnetic field magnitude.
+    Returns magnetic pressure given magnetic field magnitude
 
     Parameters
     ----------
-        B : array_like
-            Magnetic field magnitude in nT.
+    B : array_like
+        Magnetic field magnitude in nT
 
     Returns
     -------
-        p : array_like
-            Pressure in Pascals.
+    p : array_like
+        Pressure in Pascals
     """
     # Convert to Tesla
     B *= 1e-9
