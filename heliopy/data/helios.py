@@ -24,7 +24,7 @@ import numpy as np
 import datetime
 import os
 import warnings
-
+from urllib.error import URLError
 from heliopy import config
 from heliopy.data import helper
 import heliopy.vector.transformations as spacetrans
@@ -592,7 +592,7 @@ def merged(probe, starttime, endtime, verbose=True):
                     data.append(_merged_fromascii(probe, year, doy))
                     if verbose:
                         print(year, doy, 'Processed ascii file')
-                except FileNotFoundError as err:
+                except (FileNotFoundError, URLError) as err:
                     if verbose:
                         print(str(err))
                         print(year, doy, 'No raw merged data')
