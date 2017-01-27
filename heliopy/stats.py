@@ -149,6 +149,13 @@ def fisher_dist(theta, phi, kappa, theta_0, phi_0):
     -------
     pdf : array_like
         The probability density at the given (theta, phi) coordinates
+
+    Examples
+    --------
+    Fisher distributions with different widths:
+
+    .. literalinclude:: /scripts/fisher_dist.py
+    .. image:: /figures/fisher_dist.png
     """
     C = kappa / (4 * np.pi * np.sinh(kappa))
     exp = np.exp(kappa *
