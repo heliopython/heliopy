@@ -4,6 +4,37 @@ import scipy.stats as stats
 import inspect
 
 
+def multi_variate_mode(data, bins=100):
+    """
+    Calculate the mode of a multi-variable data set.
+
+    A d-dimensional histogram is calculated for the data, and the peak of the
+    histogram found. By default the number of bins is 100 in each dimesnion.
+
+    Parameters
+    ----------
+    data : array_like
+        Input data. Different data dimensions are assumed to be columns.
+    bins : int
+        Number of bins to use when taking the histogram
+
+    Returns
+    -------
+    mode : array_like
+        Mode of the data set. A 1D array with the number of entries equal to
+        the number of columns in *data*.
+    """
+    mode = []
+    hist, edges = np.histogramdd(np.array(data),
+                                 normed=True,
+                                 bins=100)
+    peak = np.unravel_index(np.argmax(hist), hist.shape)
+    for i, edge in enumerate(edges):
+        bins = (edge[:-1] + edge[1:]) / 2
+        mode.append(bins[peak[i]])
+    return np.array(mode)
+
+
 def _edges_to_centres(bin_edges):
     """Converts bin edges to bin centres"""
     return (bin_edges[1:] + bin_edges[:-1]) / 2
