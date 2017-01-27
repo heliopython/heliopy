@@ -152,7 +152,7 @@ def load(filename, local_dir, remote_url, guessversion=False,
         ftp.login()
         # List files in directory
         files = ftp.nlst(server_dir)
-        fpt.quit()
+        ftp.quit()
         # Loop through and find files
         for f in files:
             if f[-len(filename):-8] == filename[:-8]:
