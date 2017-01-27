@@ -24,7 +24,7 @@ import numpy as np
 import datetime
 import os
 import warnings
-
+from urllib.error import URLError
 from heliopy import config
 from heliopy.data import helper
 import heliopy.vector.transformations as spacetrans
@@ -540,7 +540,7 @@ def ion_dist(probe, year, doy, hour, minute, second, remove_advect=False):
     return dist
 
 
-def merged(probe, starttime, endtime, verbose=True):
+def merged(probe, starttime, endtime, verbose=True, try_download=True):
     """
     Read in merged data set
 
@@ -589,10 +589,11 @@ def merged(probe, starttime, endtime, verbose=True):
             # Data not processed yet, try to process and load it
             if not os.path.isfile(hdfloc):
                 try:
-                    data.append(_merged_fromascii(probe, year, doy))
+                    data.append(_merged_fromascii(probe, year, doy,
+                                try_download=try_download))
                     if verbose:
                         print(year, doy, 'Processed ascii file')
-                except FileNotFoundError as err:
+                except (FileNotFoundError, URLError) as err:
                     if verbose:
                         print(str(err))
                         print(year, doy, 'No raw merged data')
@@ -615,7 +616,7 @@ def merged(probe, starttime, endtime, verbose=True):
     return data
 
 
-def _merged_fromascii(probe, year, doy):
+def _merged_fromascii(probe, year, doy, try_download):
     """
     Read in a single day of merged data.
 
@@ -647,7 +648,7 @@ def _merged_fromascii(probe, year, doy):
     asciiloc = os.path.join(local_dir, filename)
 
     # Make sure file is downloaded
-    helper.load(filename, local_dir, remote_url)
+    helper.load(filename, local_dir, remote_url, try_download=try_download)
 
     # Load data
     data = pd.read_table(asciiloc, delim_whitespace=True)
