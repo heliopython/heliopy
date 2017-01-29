@@ -6,7 +6,7 @@ import heliopy.time as heliotime
 import heliopy.vector.transformations as trans
 
 
-def jointdists(data, title=None, **kwargs):
+def jointdists(data, title=None, sharelims=True, **kwargs):
     """
     Plots joint distributions for 3D field data on a single figure.
 
@@ -17,11 +17,19 @@ def jointdists(data, title=None, **kwargs):
 
     Parameters
     ----------
-        data : DataFrame
-            The data must be a pandas DataFrame, with each independent variable
-            in the columns.
-        title : string, optional
-            If specified, the given `title` is added to the top of the figure.
+    data : DataFrame
+        The data must be a pandas DataFrame, with each independent variable
+        in the columns.
+    title : string, optional
+        If specified, the given `title` is added to the top of the figure
+    sharelims : bool, optional
+        If *True*, all joint distributions will share the same axis limits,
+        which will be set by the minimum and maximum values of the combined
+        dataset.
+
+        If *False*, each distribution will automatically scale it's own axis.
+
+        Default is *True*
 
     Examples
     --------
@@ -30,9 +38,13 @@ def jointdists(data, title=None, **kwargs):
     .. literalinclude:: /scripts/plot_jointdists.py
     .. image:: /figures/plot_jointdists.png
     """
-    # Set the same axis limits for each plot
-    plotlim = data.abs().max().max()
-    extent = (-plotlim, plotlim, -plotlim, plotlim)
+    if sharelims:
+        # Set the same axis limits for each plot
+        plotlim = data.abs().max().max()
+        extent = (-plotlim, plotlim, -plotlim, plotlim)
+    else:
+        extent = None
+
     labels = list(data)
     n = len(labels) - 1
     fig = plt.gcf()
@@ -43,8 +55,9 @@ def jointdists(data, title=None, **kwargs):
             if i < j:
                 axs[i, j].axis('off')
             else:
-                axs[i, j].set_xlim(left=-plotlim, right=plotlim)
-                axs[i, j].set_aspect('equal')
+                if sharelims:
+                    axs[i, j].set_xlim(left=-plotlim, right=plotlim)
+                    axs[i, j].set_aspect('equal')
                 im = axs[i, j].hexbin(data[labels[j]], data[labels[i + 1]],
                                       extent=extent, mincnt=1,
                                       cmap='gray_r',
