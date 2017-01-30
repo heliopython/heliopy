@@ -17,11 +17,17 @@ def jointdists(data, title=None, **kwargs):
 
     Parameters
     ----------
-        data : DataFrame
-            The data must be a pandas DataFrame, with each independent variable
-            in the columns.
-        title : string, optional
-            If specified, the given `title` is added to the top of the figure.
+    data : DataFrame
+        The data must be a pandas DataFrame, with each independent variable
+        in the columns.
+    title : string, optional
+        If specified, the given `title` is added to the top of the figure.
+
+    Returns
+    -------
+    axs : list
+        A list of matplotlib axes objects, corresponding to the subplots
+        created.
 
     Examples
     --------
@@ -46,15 +52,16 @@ def jointdists(data, title=None, **kwargs):
                 axs[i, j].set_xlim(left=-plotlim, right=plotlim)
                 axs[i, j].set_aspect('equal')
                 axs[i, j].hexbin(data[labels[j]], data[labels[i + 1]],
-                                      extent=extent, mincnt=1,
-                                      cmap='gray_r',
-                                      bins='log', **kwargs)
+                                 extent=extent, mincnt=1,
+                                 cmap='gray_r',
+                                 bins='log', **kwargs)
                 if i == n - 1:
                     axs[i, j].set_xlabel(labels[j])
                 if j == 0:
                     axs[i, j].set_ylabel(labels[i + 1])
     if title is not None:
         fig.suptitle(title)
+    return axs
 
 
 def thetaphi(x, y, z):
