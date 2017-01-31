@@ -91,7 +91,8 @@ def _load_remote(remote_url, filename, local_dir, filetype):
     return _load_local(local_dir, filename, filetype)
 
 
-def load(filename, local_dir, remote_url, guessversion=False):
+def load(filename, local_dir, remote_url, guessversion=False,
+         try_download=True):
     """
     Try to load a file from *local_dir*.
 
@@ -108,6 +109,9 @@ def load(filename, local_dir, remote_url, guessversion=False):
     guessversion : bool
         If *True*, try to guess the version number in the filename. Only
         works for cdf files. Default is *False*.
+    try_download : bool
+        If a file isn't available locally, try to downloaded it. Default is
+        *True*.
 
     Returns
     -------
@@ -130,7 +134,7 @@ def load(filename, local_dir, remote_url, guessversion=False):
     # Try to load locally
     if checkdir(local_dir):
         for f in os.listdir(local_dir):
-            if f[:-6] == filename[:-6]:
+            if f == filename or guessversion and (f[:-6] == filename[:-6]):
                 filename = f
                 return _load_local(local_dir, f, filetype)
 
@@ -148,12 +152,16 @@ def load(filename, local_dir, remote_url, guessversion=False):
         ftp.login()
         # List files in directory
         files = ftp.nlst(server_dir)
+        ftp.quit()
         # Loop through and find files
         for f in files:
             if f[-len(filename):-8] == filename[:-8]:
                 filename = f[-len(filename):]
 
-    return _load_remote(remote_url, filename, local_dir, filetype)
+    if try_download:
+        return _load_remote(remote_url, filename, local_dir, filetype)
+    else:
+        return []
 
 
 def pitchdist_cdf2df(cdf, distkeys, energykey, timekey, anglelabels):
@@ -228,7 +236,8 @@ def pitchdist_cdf2df(cdf, distkeys, energykey, timekey, anglelabels):
             data += list(thisdata)
 
     tuples = list(zip(*index))
-    index = pd.MultiIndex.from_tuples(tuples, names=['Time', 'Energy', 'Angle'])
+    index = pd.MultiIndex.from_tuples(tuples,
+                                      names=['Time', 'Energy', 'Angle'])
     data = pd.DataFrame(data, index=index, columns=['df'])
     data = data.sort_index()
     return data

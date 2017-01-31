@@ -16,14 +16,14 @@ def spectral_slopes(fs, power, nbins=10, spacing='linear'):
 
     Parameters
     ----------
-        fs : array_like
-            Frequencies.
-        power : array_like
-            Power at corresponding frequencies.
-        nbins : int
-            Number of bins to split slope calculation into.
-        spacing : string
-            Either 'linear' or 'log'
+    fs : array_like
+        Frequencies.
+    power : array_like
+        Power at corresponding frequencies.
+    nbins : int
+        Number of bins to split slope calculation into.
+    spacing : string
+        Either 'linear' or 'log'
     """
     # Sort frequencies
     argsorted = np.argsort(fs)
