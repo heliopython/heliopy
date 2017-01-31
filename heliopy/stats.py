@@ -196,31 +196,29 @@ def kent_dist(theta, phi, kappa, beta, theta_0, phi_0, theta_1, phi_1):
     .. [1] 'Statistical analysis of spherical data' by Fisher, Lewis,
        Embleton, section 4.4.5
     """
-    assert kappa >= 2 * beta,\
-        'kappa must be >= 2 * beta for a unimodal distribution'
+    assert kappa > 2 * beta,\
+        'kappa must be > 2 * beta for a unimodal distribution'
 
     def get_cart(theta, phi):
         return np.array(transformations.sph2cart(1, theta, phi))
     r_0 = get_cart(theta_0, phi_0)
     r_1 = get_cart(theta_1, phi_1)
-    # Make r_1 perpendicular to r_0
-    r_1 = transformations.changezaxis(r_1[0], r_1[1], r_1[2], r_0)
-    old_zaxis = np.array(transformations.changezaxis(0, 0, 1, r_0))[:, 0]
-    r_1 = np.array(transformations.cart2sph(r_1[0], r_1[1], r_1[2]))
-    # Set theta component to 0, whilst retaining phi component
-    r_1[1] = 0
-    r_1 = transformations.sph2cart(r_1[0], r_1[1], r_1[2])
-    r_1 = np.array(transformations.changezaxis(r_1[0], r_1[1], r_1[2], old_zaxis))[:, 0]
-    r = np.array(transformations.sph2cart(1, theta, phi)).T
+    # Get directon perpendicular to peak and maximum width direction
+    r_2 = np.cross(r_1, r_0)
+    r_1_new = np.cross(r_0, r_2)
+    assert np.dot(r_1_new, r_1) > 0
+    r_1 = r_1_new
 
-    # Two vectors perpendicular to [0, 0, 1]
-    r_2 = np.cross(r_0, r_1)
-    print(r_0, r_1, r_2)
-    print(np.dot(r_0, r_1), np.dot(r_0, r_2), np.dot(r_1, r_2))
+    def normalise(v):
+        return v / np.linalg.norm(v)
+    r_1 = normalise(r_1)
+    r_2 = normalise(r_2)
+
+    r = np.dstack(transformations.sph2cart(1, theta, phi))
 
     # Work out weight for these parameters
     weight = kappa * (np.dot(r, r_0))
-    weight += beta * (np.dot(r, r_2)**2 - np.dot(r, r_1)**2)
+    weight += beta * (np.dot(r, r_1)**2 - np.dot(r, r_2)**2)
     return np.exp(weight) * np.cos(theta)
 
 
