@@ -160,7 +160,9 @@ def kent_dist(theta, phi, kappa, beta, theta_0, phi_0, theta_1, phi_1):
     """
     An asymmetric distribution on a sphere, centred on a single point.
 
-    Note: The distribution is not normalised.
+    *theta_0* and *phi_0* give the co-ordinates of the distribution peak at
+    :math:`r_{0}`. *theta_1* and *phi_1* (relative to :math:`r_{0}`) give the
+    direction of the maximum width of the distribution.
 
     Parameters
     ----------
@@ -169,11 +171,12 @@ def kent_dist(theta, phi, kappa, beta, theta_0, phi_0, theta_1, phi_1):
     phi : array_like
         phi values, defined in the range :math:`[-\pi, \pi]`
     kappa : float
-        The 'width' of the distribution in the phi_1 direction.
+        The 'width' of the distribution in the :math:`r_{0}` direction.
         The larger kappa is, the wider the distribution in this direction.
     beta : float
-        The 'width' of the distribution in the direction perpendicular to r_0
-        and r_1. The larger beta is, the wider the distribution in this
+        The 'width' of the distribution in the direction perpendicular to
+        :math:`r_{0}` and :math:`r_{1}`. The larger beta is, the wider the
+        distribution in this
         direction.
     theta_0 : float
         The theta co-ordinate of the distribution peak
@@ -191,10 +194,16 @@ def kent_dist(theta, phi, kappa, beta, theta_0, phi_0, theta_1, phi_1):
     pdf : array_like
         The probability density at the given (theta, phi) coordinates
 
+    Notes
+    -----
+    The distribution returned by this method is not normalised. The
+    `normalise_kent` method can be used to numerically normalise a Kent
+    distribution.
+
     References
     ----------
-    .. [1] 'Statistical analysis of spherical data' by Fisher, Lewis,
-       Embleton, section 4.4.5
+    'Statistical analysis of spherical data' by Fisher, Lewis, Embleton,
+    section 4.4.5
     """
     assert kappa > 2 * beta,\
         'kappa must be > 2 * beta for a unimodal distribution'
@@ -247,8 +256,8 @@ def fisher_dist(theta, phi, kappa, theta_0, phi_0):
 
     References
     ----------
-    .. [1] 'Statistical analysis of spherical data' by Fisher, Lewis,
-       Embleton, section 4.4.3
+    'Statistical analysis of spherical data' by Fisher, Lewis, Embleton,
+    section 4.4.3
 
     Examples
     --------
