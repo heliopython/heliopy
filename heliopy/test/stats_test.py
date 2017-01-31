@@ -17,3 +17,25 @@ def test_binmean():
     out = binmean(x, y, bins)
     expected = np.array([2, 7, 10])
     np.testing.assert_almost_equal(out, expected)
+
+
+def test_kent_dist():
+    theta = np.linspace(-np.pi / 2, np.pi / 2, 50)
+    phi = np.linspace(-np.pi, np.pi, 100)
+    theta, phi = np.meshgrid(theta, phi)
+
+    # Simple distribution centred on an arbitrary point
+    phi_0 = 1.2
+    theta_0 = 0.2
+    theta_1 = 0.5
+    phi_1 = 0.5
+    kappa = 4
+    beta = 1
+    dist = kent_dist(theta, phi, kappa, beta,
+                     theta_0, phi_0, theta_1, phi_1)
+    # Divide by cos(theta) to remove spherical area dependence
+    dist /= np.cos(theta)
+    dist_max = np.argmax(dist)
+    # Check that maximum is closest to r_0
+    expected_max = np.argmin((theta - theta_0)**2 + (phi - phi_0)**2)
+    np.testing.assert_equal(dist_max, expected_max)
