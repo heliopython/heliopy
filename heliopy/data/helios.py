@@ -865,7 +865,7 @@ def _mag_ness_fromascii(probe, year, doy):
 
 def _save_hdf(fdir, fname):
     saveloc = os.path.join(fdir, fname + '.h5')
-    data.to_hdf(saveloc, 'table', format='fixed', mode='w')
+    data.to_hdf(saveloc, 'key', format='fixed', mode='w')
 
 
 def trajectory(probe, startdate, enddate):
