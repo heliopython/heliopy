@@ -15,7 +15,11 @@ endtime = starttime + timedelta(hours=2)
 
 data = wind.mfi_h0(starttime, endtime)
 
-plt.plot(data['Time'], data[['Bx_gse', 'By_gse', 'Bz_gse']])
+plt.plot(data['Time'], data['Bx_gse'])
+plt.plot(data['Time'], data['By_gse'])
+plt.plot(data['Time'], data['Bz_gse'])
+
+plt.show()
 ```
 
 **If heliopy is missing a method to import a dataset you are interested in,
@@ -25,4 +29,4 @@ Full documentation can be found [here](http://heliopy.readthedocs.io/en/latest/)
 
 [![Build Status](https://travis-ci.org/heliopython/heliopy.svg?branch=master)](https://travis-ci.org/heliopython/heliopy)
 [![Code Health](https://landscape.io/github/heliopython/heliopy/master/landscape.svg?style=flat)](https://landscape.io/github/heliopython/heliopy/master)
-[![Coverage Status](https://coveralls.io/repos/github/heliopython/heliopy/badge.svg?branch=master)](https://coveralls.io/github/heliopython/heliopy?branch=master)
+[![Coverage](https://codecov.io/gh/heliopython/heliopy/branch/master/graph/badge.svg)](https://codecov.io/gh/heliopython/heliopy)
