@@ -12,6 +12,7 @@ own module:
    cluster
    helios
    imp
+   messenger
    mms
    ulysses
    wind
