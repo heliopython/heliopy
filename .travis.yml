@@ -23,4 +23,5 @@ before_install:
 script:
 - py.test heliopy/ --cov=heliopy/ -v
 after_success:
-  - bash <(curl -s https://codecov.io/bash)
+- pip install codecov
+- codecov
