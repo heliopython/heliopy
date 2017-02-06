@@ -1,5 +1,5 @@
 """
-Methods for importing data from the WIND spacecraft.
+Methods for importing data from the Messenger spacecraft.
 
 All data is publically available at ftp://spdf.gsfc.nasa.gov/pub/data/messenger
 """
