@@ -6,6 +6,7 @@ import heliopy.data.ace as ace
 import heliopy.data.artemis as artemis
 import heliopy.data.imp as imp
 import heliopy.data.ulysses as ulysses
+import heliopy.data.messenger as messenger
 from heliopy import config
 
 from datetime import datetime
@@ -17,6 +18,13 @@ nodata = pytest.mark.skipif(
     pytest.config.getoption("--no-data"),
     reason="Skipped test that involves data download"
 )
+
+
+@nodata
+def test_messenger():
+    starttime = datetime(2010, 1, 1, 0, 0, 0)
+    endtime = datetime(2010, 1, 2, 1, 0, 0)
+    messenger.mag_rtn(starttime, endtime)
 
 
 @nodata
