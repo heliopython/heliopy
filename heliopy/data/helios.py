@@ -35,10 +35,8 @@ use_hdf = config['DEFAULT']['use_hdf']
 helios_dir = os.path.join(data_dir, 'helios')
 
 
-####################################################
-# Consistent method to convert datetime to ordinal #
-####################################################
 def dtime2ordinal(dtime):
+    """Consistent method to convert datetime to ordinal"""
     if type(dtime) == datetime:
         dtime = pd.Series(dtime)
     return pd.DatetimeIndex(dtime).astype(np.int64)
@@ -117,8 +115,10 @@ def _loaddistfile(probe, year, doy, hour, minute, second):
 def integrateddists(probe, year, doy, hour, minute, second):
     """
     Returns the integrated distributions from experiments i1a and i1b in Helios
-    distribution function files. The distributions are integrated over all
-    angles and given as a function of proton velocity.
+    distribution function files.
+
+    The distributions are integrated over all angles and given as a function
+    of proton velocity.
 
     Parameters
     ----------
@@ -269,7 +269,6 @@ def distparams(probe, starttime, endtime):
         Infromation stored in the top of distribution function files.
     """
     extensions = ['hdm.0', 'hdm.1', 'ndm.0', 'ndm.1']
-    days = spacetime.daysplitinterval(starttime, endtime)
     paramlist = []
 
     # Loop through each day
@@ -337,13 +336,13 @@ def distparams_single(probe, year, doy, hour, minute, second):
             Distribution parameters from top of distribution function file.
     """
     probe = _check_probe(probe)
-    f, filename = _loaddistfile(probe, year, doy, hour, minute, second)
+    f, _ = _loaddistfile(probe, year, doy, hour, minute, second)
 
     _, month, day = spacetime.doy2ymd(year, doy)
     dtime = datetime(year, month, day, hour, minute, second)
     distparams = pd.Series(dtime, index=['Time'], dtype=object)
     # Ignore the Pizzo et. al. correction at top of file
-    for i in range(0, 3):
+    for _ in range(0, 3):
         f.readline()
     # Line of flags
     flags = f.readline().split()
