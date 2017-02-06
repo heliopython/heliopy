@@ -574,44 +574,41 @@ def merged(probe, starttime, endtime, verbose=True, try_download=True):
     startdate = starttime.date()
     enddate = endtime.date()
 
+
+    daylist = spacetime.daysplitinterval(starttime, endtime)
     data = []
-    # Loop through years
-    for year in range(startdate.year, enddate.year + 1):
-        floc = os.path.join(helios_dir,
-                            'helios' + probe,
-                            'merged',
-                            'he' + probe + '_40sec')
-        # Calculate start day
-        startdoy = 1
-        if year == startdate.year:
-            startdoy = int(startdate.strftime('%j'))
+    floc = os.path.join(helios_dir,
+                        'helios' + probe,
+                        'merged',
+                        'he' + probe + '_40sec')
+    for day in daylist:
+        this_date = day[0]
+        if probe == '1':
+            if this_date < date(1974, 12, 12) or this_date > date(1985, 9, 4):
+                continue
 
-        # Calculate end day
-        enddoy = 366
-        if year == enddate.year:
-            enddoy = int(enddate.strftime('%j'))
+        doy = int(this_date.strftime('%j'))
+        year = this_date.year
 
-        # Loop through days of year
-        for doy in range(startdoy, enddoy + 1):
-            hdfloc = os.path.join(floc,
-                                  'H' + probe + str(year - 1900) + '_' +
-                                  str(doy).zfill(3) + '.h5')
-            # Data not processed yet, try to process and load it
-            if not os.path.isfile(hdfloc):
-                try:
-                    data.append(_merged_fromascii(probe, year, doy,
-                                try_download=try_download))
-                    if verbose:
-                        print(year, doy, 'Processed ascii file')
-                except (FileNotFoundError, URLError) as err:
-                    if verbose:
-                        print(str(err))
-                        print(year, doy, 'No raw merged data')
-            else:
-                # Load data from already processed file
-                data.append(pd.read_hdf(hdfloc, 'table'))
+        hdfloc = os.path.join(floc,
+                              'H' + probe + str(year - 1900) + '_' +
+                              str(doy).zfill(3) + '.h5')
+        # Data not processed yet, try to process and load it
+        if not os.path.isfile(hdfloc):
+            try:
+                data.append(_merged_fromascii(probe, year, doy,
+                            try_download=try_download))
                 if verbose:
-                    print(year, doy)
+                    print(year, doy, 'Processed ascii file')
+            except (FileNotFoundError, URLError) as err:
+                if verbose:
+                    print(str(err))
+                    print(year, doy, 'No raw merged data')
+        else:
+            # Load data from already processed file
+            data.append(pd.read_hdf(hdfloc, 'table'))
+            if verbose:
+                print(year, doy)
 
     if data == []:
         fmt = '%d-%m-%Y'
