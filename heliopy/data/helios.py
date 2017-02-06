@@ -21,7 +21,7 @@ doesn't exist locally.
 """
 import pandas as pd
 import numpy as np
-import datetime
+from datetime import date, datetime, timedelta
 import os
 import warnings
 from urllib.error import URLError
@@ -35,11 +35,9 @@ use_hdf = config['DEFAULT']['use_hdf']
 helios_dir = os.path.join(data_dir, 'helios')
 
 
-####################################################
-# Consistent method to convert datetime to ordinal #
-####################################################
 def dtime2ordinal(dtime):
-    if type(dtime) == datetime.datetime:
+    """Consistent method to convert datetime to ordinal"""
+    if type(dtime) == datetime:
         dtime = pd.Series(dtime)
     return pd.DatetimeIndex(dtime).astype(np.int64)
 
@@ -49,6 +47,7 @@ def _check_probe(probe):
     assert probe == '1' or probe == '2', 'Probe number must be 1 or 2'
     return probe
 
+
 def _dist_file_dir(probe, year, doy):
     yearstring = str(year)[-2:]
     return os.path.join(helios_dir,
@@ -56,6 +55,7 @@ def _dist_file_dir(probe, year, doy):
                         'dist',
                         'h' + probe + yearstring,
                         'Y' + yearstring + 'D' + str(doy).zfill(3))
+
 
 def _loaddistfile(probe, year, doy, hour, minute, second):
     """
@@ -115,8 +115,10 @@ def _loaddistfile(probe, year, doy, hour, minute, second):
 def integrateddists(probe, year, doy, hour, minute, second):
     """
     Returns the integrated distributions from experiments i1a and i1b in Helios
-    distribution function files. The distributions are integrated over all
-    angles and given as a function of proton velocity.
+    distribution function files.
+
+    The distributions are integrated over all angles and given as a function
+    of proton velocity.
 
     Parameters
     ----------
@@ -230,7 +232,7 @@ def electron_dist(probe, year, doy, hour, minute, second, remove_advect=False):
     # Assumes that spacecraft motion is always in the ecliptic (x-y)
     # plane
     if remove_advect:
-        params = distparams(probe, year, doy, hour, minute, second)
+        params = distparams_single(probe, year, doy, hour, minute, second)
         dist['vx'] += params['helios_vr']
         dist['vy'] += params['helios_v']
     # Convert to SI units
@@ -246,6 +248,7 @@ def electron_dist(probe, year, doy, hour, minute, second, remove_advect=False):
     # Convert to multi-index using Azimuth and energy bin
     dist = dist.set_index(['E_bin', 'Az'])
     return dist
+
 
 def distparams(probe, starttime, endtime):
     """
@@ -266,7 +269,6 @@ def distparams(probe, starttime, endtime):
         Infromation stored in the top of distribution function files.
     """
     extensions = ['hdm.0', 'hdm.1', 'ndm.0', 'ndm.1']
-    days = spacetime.daysplitinterval(starttime, endtime)
     paramlist = []
 
     # Loop through each day
@@ -276,7 +278,8 @@ def distparams(probe, starttime, endtime):
         # Directory for today's distribution files
         dist_dir = _dist_file_dir(probe, year, doy)
         # Locaiton of hdf file to save to/load from
-        hdffile = 'h' + probe + str(year) + str(doy).zfill(3) + 'distparams.hdf'
+        hdffile = 'h' + probe + str(year) + str(doy).zfill(3) +\
+            'distparams.hdf'
         hdffile = os.path.join(dist_dir, hdffile)
         if os.path.isfile(hdffile):
             todays_params = pd.read_hdf(hdffile)
@@ -292,16 +295,18 @@ def distparams(probe, starttime, endtime):
                     hour = int(path[-14:-12])
                     minute = int(path[-11:-9])
                     second = int(path[-8:-6])
-                    p = distparams_single(probe, year, doy, hour, minute, second)
+                    p = distparams_single(probe, year, doy,
+                                          hour, minute, second)
                     todays_params.append(p)
 
-            todays_params = pd.concat(todays_params, ignore_index=True, axis=1).T
+            todays_params = pd.concat(todays_params,
+                                      ignore_index=True, axis=1).T
             todays_params = todays_params.set_index('Time', drop=False)
             if use_hdf:
                 todays_params.to_hdf(hdffile, key='distparams', mode='w')
 
         paramlist.append(todays_params)
-        starttime += datetime.timedelta(days=1)
+        starttime += timedelta(days=1)
 
     return helper.timefilter(paramlist, starttime, endtime)
 
@@ -331,13 +336,13 @@ def distparams_single(probe, year, doy, hour, minute, second):
             Distribution parameters from top of distribution function file.
     """
     probe = _check_probe(probe)
-    f, filename = _loaddistfile(probe, year, doy, hour, minute, second)
+    f, _ = _loaddistfile(probe, year, doy, hour, minute, second)
 
     _, month, day = spacetime.doy2ymd(year, doy)
-    dtime = datetime.datetime(year, month, day, hour, minute, second)
+    dtime = datetime(year, month, day, hour, minute, second)
     distparams = pd.Series(dtime, index=['Time'], dtype=object)
     # Ignore the Pizzo et. al. correction at top of file
-    for i in range(0, 3):
+    for _ in range(0, 3):
         f.readline()
     # Line of flags
     flags = f.readline().split()
@@ -425,8 +430,12 @@ def distparams_single(probe, year, doy, hour, minute, second):
     distparams['sigmaBz'] = float(sigmaB[2]) / 10
 
     # Replace bad values with nans
-    to_replace = {'Tp_i1a': [-1.0, 0], 'np_i1a': [-1.0, 0], 'vp_i1a': [-1.0, 0],
-                  'Tp_i1b': [-1.0, 0], 'np_i1b': [-1.0, 0], 'vp_i1b': [-1.0, 0],
+    to_replace = {'Tp_i1a': [-1.0, 0],
+                  'np_i1a': [-1.0, 0],
+                  'vp_i1a': [-1.0, 0],
+                  'Tp_i1b': [-1.0, 0],
+                  'np_i1b': [-1.0, 0],
+                  'vp_i1b': [-1.0, 0],
                   'sigmaBx': -0.01, 'sigmaBy': -0.01, 'sigmaBz': -0.01,
                   'Bx': 0.0, 'By': 0.0, 'Bz': 0.0,
                   'v_az_i1a': [-1, 0], 'v_el_i1a': [-1, 0],
@@ -523,7 +532,7 @@ def ion_dist(probe, year, doy, hour, minute, second, remove_advect=False):
     # Assumes that spacecraft motion is always in the ecliptic (x-y)
     # plane
     if remove_advect:
-        params = distparams(probe, year, doy, hour, minute, second)
+        params = distparams_single(probe, year, doy, hour, minute, second)
         dist['vx'] += params['helios_vr']
         dist['vy'] += params['helios_v']
     # Convert to SI units
@@ -564,44 +573,44 @@ def merged(probe, starttime, endtime, verbose=True, try_download=True):
     startdate = starttime.date()
     enddate = endtime.date()
 
+    daylist = spacetime.daysplitinterval(starttime, endtime)
     data = []
-    # Loop through years
-    for year in range(startdate.year, enddate.year + 1):
-        floc = os.path.join(helios_dir,
-                            'helios' + probe,
-                            'merged',
-                            'he' + probe + '_40sec')
-        # Calculate start day
-        startdoy = 1
-        if year == startdate.year:
-            startdoy = int(startdate.strftime('%j'))
+    floc = os.path.join(helios_dir,
+                        'helios' + probe,
+                        'merged',
+                        'he' + probe + '_40sec')
+    for day in daylist:
+        this_date = day[0]
+        # Check that data for this day exists
+        if probe == '1':
+            if this_date < date(1974, 12, 12) or this_date > date(1985, 9, 4):
+                continue
+        if probe == '2':
+            if this_date < date(1976, 1, 17) or this_date > date(1980, 3, 8):
+                continue
 
-        # Calculate end day
-        enddoy = 366
-        if year == enddate.year:
-            enddoy = int(enddate.strftime('%j'))
+        doy = int(this_date.strftime('%j'))
+        year = this_date.year
 
-        # Loop through days of year
-        for doy in range(startdoy, enddoy + 1):
-            hdfloc = os.path.join(floc,
-                                  'H' + probe + str(year - 1900) + '_' +
-                                  str(doy).zfill(3) + '.h5')
-            # Data not processed yet, try to process and load it
-            if not os.path.isfile(hdfloc):
-                try:
-                    data.append(_merged_fromascii(probe, year, doy,
-                                try_download=try_download))
-                    if verbose:
-                        print(year, doy, 'Processed ascii file')
-                except (FileNotFoundError, URLError) as err:
-                    if verbose:
-                        print(str(err))
-                        print(year, doy, 'No raw merged data')
-            else:
-                # Load data from already processed file
-                data.append(pd.read_hdf(hdfloc, 'table'))
+        hdfloc = os.path.join(floc,
+                              'H' + probe + str(year - 1900) + '_' +
+                              str(doy).zfill(3) + '.h5')
+        # Data not processed yet, try to process and load it
+        if not os.path.isfile(hdfloc):
+            try:
+                data.append(_merged_fromascii(probe, year, doy,
+                            try_download=try_download))
                 if verbose:
-                    print(year, doy)
+                    print(year, doy, 'Processed ascii file')
+            except (FileNotFoundError, URLError) as err:
+                if verbose:
+                    print(str(err))
+                    print(year, doy, 'No raw merged data')
+        else:
+            # Load data from already processed file
+            data.append(pd.read_hdf(hdfloc, 'table'))
+            if verbose:
+                print(year, doy)
 
     if data == []:
         fmt = '%d-%m-%Y'
@@ -642,9 +651,10 @@ def _merged_fromascii(probe, year, doy, try_download):
                              'helios' + probe,
                              'merged',
                              'he' + probe + '_40sec/')
-    remote_url = 'ftp://cdaweb.gsfc.nasa.gov/pub/data/helios/helios' + probe + \
-        '/' + 'merged/he' + probe + '_40sec'
-    filename = 'H' + probe + str(year - 1900) + '_' + str(doy).zfill(3) + '.dat'
+    remote_url = 'ftp://cdaweb.gsfc.nasa.gov/pub/data/helios/helios' +\
+        probe + '/' + 'merged/he' + probe + '_40sec'
+    filename = 'H' + probe + str(year - 1900) + '_' +\
+        str(doy).zfill(3) + '.dat'
     asciiloc = os.path.join(local_dir, filename)
 
     # Make sure file is downloaded
@@ -750,9 +760,6 @@ def mag_4hz(probe, starttime, endtime, verbose=True):
 def _fourHz_fromascii(probe, year, doy):
     """
     Read in a single day of 4Hz magnetic field data.
-
-    Data is read in from orignal ascii files, and saved to a hdf file for faster
-    access after the first read.
 
     Parameters
     ----------
@@ -907,7 +914,8 @@ def _mag_ness_fromascii(probe, year, doy):
     colspecs = [(1, 2), (2, 4), (4, 7), (7, 9), (9, 11), (11, 13), (13, 15),
                 (15, 22), (22, 29), (29, 36), (36, 42), (42, 48), (48, 54),
                 (54, 60)]
-    data = pd.read_fwf(asciiloc, names=headings, header=None, colspecs=colspecs)
+    data = pd.read_fwf(asciiloc, names=headings, header=None,
+                       colspecs=colspecs)
 
     # Process data
     data['year'] += 1900
@@ -948,8 +956,8 @@ def trajectory(probe, startdate, enddate):
     data = []
     headings = ['Year', 'doy', 'Hour', 'Carrrot', 'r', 'selat', 'selon',
                 'hellat', 'hellon', 'hilon', 'escang', 'code']
-    colspecs = [(0, 3), (4, 7), (8, 10), (11, 15), (16, 22), (23, 30), (31, 37),
-                (38, 44), (45, 51), (52, 58), (59, 65), (66, 67)]
+    colspecs = [(0, 3), (4, 7), (8, 10), (11, 15), (16, 22), (23, 30),
+                (31, 37), (38, 44), (45, 51), (52, 58), (59, 65), (66, 67)]
     # Loop through years
     for i in range(startdate.year, enddate.year + 1):
         floc = os.path.join(helios_dir,
