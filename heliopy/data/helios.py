@@ -232,7 +232,7 @@ def electron_dist(probe, year, doy, hour, minute, second, remove_advect=False):
     # Assumes that spacecraft motion is always in the ecliptic (x-y)
     # plane
     if remove_advect:
-        params = distparams(probe, year, doy, hour, minute, second)
+        params = distparams_single(probe, year, doy, hour, minute, second)
         dist['vx'] += params['helios_vr']
         dist['vy'] += params['helios_v']
     # Convert to SI units
@@ -533,7 +533,7 @@ def ion_dist(probe, year, doy, hour, minute, second, remove_advect=False):
     # Assumes that spacecraft motion is always in the ecliptic (x-y)
     # plane
     if remove_advect:
-        params = distparams(probe, year, doy, hour, minute, second)
+        params = distparams_single(probe, year, doy, hour, minute, second)
         dist['vx'] += params['helios_vr']
         dist['vy'] += params['helios_v']
     # Convert to SI units
