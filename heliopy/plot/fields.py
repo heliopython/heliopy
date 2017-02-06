@@ -68,6 +68,7 @@ def jointdists(data, title=None, sharelims=True, **kwargs):
                     axs[i, j].set_ylabel(labels[i + 1])
     if title is not None:
         fig.suptitle(title)
+    return axs
 
 
 def thetaphi(x, y, z):
@@ -117,6 +118,7 @@ def thetaphi(x, y, z):
     # Axis limits
     ax.set_xlim(left=-np.pi, right=np.pi)
     ax.set_ylim(bottom=-np.pi / 2, top=np.pi / 2)
+    return ax
 
 
 def advectedfield(t, x, y, z, vx, vy, vz, **kwargs):
@@ -158,3 +160,4 @@ def advectedfield(t, x, y, z, vx, vy, vz, **kwargs):
 
     ax = plt.gca()
     ax.quiver(rx, ry, rz, x, y, z, pivot='tail', **kwargs)
+    return ax
