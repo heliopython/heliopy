@@ -574,7 +574,6 @@ def merged(probe, starttime, endtime, verbose=True, try_download=True):
     startdate = starttime.date()
     enddate = endtime.date()
 
-
     daylist = spacetime.daysplitinterval(starttime, endtime)
     data = []
     floc = os.path.join(helios_dir,
@@ -583,8 +582,12 @@ def merged(probe, starttime, endtime, verbose=True, try_download=True):
                         'he' + probe + '_40sec')
     for day in daylist:
         this_date = day[0]
+        # Check that data for this day exists
         if probe == '1':
             if this_date < date(1974, 12, 12) or this_date > date(1985, 9, 4):
+                continue
+        if probe == '2':
+            if this_date < date(1976, 1, 17) or this_date > date(1980, 3, 8):
                 continue
 
         doy = int(this_date.strftime('%j'))
