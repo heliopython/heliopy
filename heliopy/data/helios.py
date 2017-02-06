@@ -21,7 +21,7 @@ doesn't exist locally.
 """
 import pandas as pd
 import numpy as np
-import datetime
+from datetime import date, datetime, timedelta
 import os
 import warnings
 from urllib.error import URLError
@@ -39,7 +39,7 @@ helios_dir = os.path.join(data_dir, 'helios')
 # Consistent method to convert datetime to ordinal #
 ####################################################
 def dtime2ordinal(dtime):
-    if type(dtime) == datetime.datetime:
+    if type(dtime) == datetime:
         dtime = pd.Series(dtime)
     return pd.DatetimeIndex(dtime).astype(np.int64)
 
@@ -307,7 +307,7 @@ def distparams(probe, starttime, endtime):
                 todays_params.to_hdf(hdffile, key='distparams', mode='w')
 
         paramlist.append(todays_params)
-        starttime += datetime.timedelta(days=1)
+        starttime += timedelta(days=1)
 
     return helper.timefilter(paramlist, starttime, endtime)
 
@@ -340,7 +340,7 @@ def distparams_single(probe, year, doy, hour, minute, second):
     f, filename = _loaddistfile(probe, year, doy, hour, minute, second)
 
     _, month, day = spacetime.doy2ymd(year, doy)
-    dtime = datetime.datetime(year, month, day, hour, minute, second)
+    dtime = datetime(year, month, day, hour, minute, second)
     distparams = pd.Series(dtime, index=['Time'], dtype=object)
     # Ignore the Pizzo et. al. correction at top of file
     for i in range(0, 3):
