@@ -5,7 +5,6 @@ All data is publically available at ftp://spdf.gsfc.nasa.gov/pub/data/messenger
 """
 import os
 import pandas as pd
-import numpy as np
 
 import heliopy.time as spacetime
 from heliopy.data import helper
