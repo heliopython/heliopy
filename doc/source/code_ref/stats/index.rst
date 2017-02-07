@@ -5,4 +5,5 @@ heliopy.stats package
    :maxdepth: 2
 
    distributions
+   fitting
    stats
