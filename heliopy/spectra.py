@@ -2,7 +2,7 @@
 import numpy as np
 from scipy.stats import linregress
 
-import heliopy.stats as heliostats
+import heliopy.stats.stats as heliostats
 
 
 def spectral_slopes(fs, power, nbins=10, spacing='linear'):
