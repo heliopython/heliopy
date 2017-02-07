@@ -1,4 +1,4 @@
-from heliopy.stats import *
+from heliopy.stats.stats import *
 import numpy as np
 
 

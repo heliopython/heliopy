@@ -16,6 +16,7 @@ setup(name='heliopy',
       packages=['heliopy',
                 'heliopy.data',
                 'heliopy.plot',
+                'heliopy.stats',
                 'heliopy.vector',
                 'heliopy.util'],
       package_data={'heliopy': ['heliopyrc']})
