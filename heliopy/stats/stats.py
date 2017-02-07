@@ -1,8 +1,7 @@
 """Statistical methods"""
 import numpy as np
-import scipy.stats as stats
+import scipy.stats as scistats
 import inspect
-import heliopy.vector.transformations as transformations
 
 
 def multi_variate_mode(data, bins=100):
@@ -98,7 +97,7 @@ def gaussian_kde(x, bins='auto'):
     """
     if isinstance(bins, str):
         _, bins = hist(x, bins=bins)
-    kernel = stats.gaussian_kde(x)
+    kernel = scistats.gaussian_kde(x)
     kde = kernel.pdf(bins)
     return kde, bins
 
