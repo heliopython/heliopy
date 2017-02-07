@@ -93,9 +93,9 @@ def test_mms():
     starttime = datetime(2016, 1, 1, 0, 0, 0)
     endtime = datetime(2016, 1, 1, 1, 0, 0)
 
-    for i in range(1, 5):
-        mms.fgm_survey(str(i), starttime, endtime)
-        mms.fpi_dis_moms(str(i), 'fast', starttime, endtime)
+    probe = '1'
+    mms.fgm_survey(probe, starttime, endtime)
+    mms.fpi_dis_moms(probe, 'fast', starttime, endtime)
 
 
 @nodata
