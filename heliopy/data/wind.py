@@ -12,7 +12,8 @@ from heliopy.data import helper
 from heliopy import config
 
 data_dir = config['DEFAULT']['download_dir']
-wind_dir = data_dir + '/wind'
+use_hdf = config['DEFAULT']['use_hdf']
+wind_dir = os.path.join(data_dir, 'wind')
 remote_wind_dir = 'ftp://spdf.gsfc.nasa.gov/pub/data/wind/'
 
 
@@ -93,18 +94,23 @@ def mfi_h0(starttime, endtime):
     data = []
     for day in daylist:
         date = day[0]
+        this_relative_dir = os.path.join(relative_dir, str(day[0].year))
+        # Absolute path to local directory for this data file
+        local_dir = os.path.join(wind_dir, this_relative_dir)
         filename = 'wi_h0_mfi_' +\
             str(date.year) +\
             str(date.month).zfill(2) +\
             str(date.day).zfill(2) +\
             '_v05.cdf'
-        this_relative_dir = os.path.join(relative_dir, str(day[0].year))
-        # Absolute path to local directory for this data file
-        local_dir = os.path.join(wind_dir, this_relative_dir)
+        hdfname = filename[:-4] + 'hdf'
+        hdfloc = os.path.join(local_dir, hdfname)
+        if os.path.isfile(hdfloc):
+            df = pd.read_hdf(hdfloc)
+            data.append(df)
+            continue
+
         helper.checkdir(local_dir)
-
         remote_url = remote_wind_dir + this_relative_dir
-
         cdf = helper.load(filename, local_dir, remote_url, guessversion=True)
 
         keys = {'B3GSE': ['Bx_gse', 'By_gse', 'Bz_gse'],
@@ -116,11 +122,11 @@ def mfi_h0(starttime, endtime):
                            index_key='Epoch3',
                            keys=keys,
                            badvalues=badvalues)
+        if use_hdf:
+            df.to_hdf(hdfloc, 'mag', mode='w', format='f')
         data.append(df)
 
-    data = pd.concat(data)
-    data = data[(data['Time'] > starttime) & (data['Time'] < endtime)]
-    return data
+    return helper.timefilter(data, starttime, endtime)
 
 
 def threedp_pm(starttime, endtime):
@@ -145,18 +151,23 @@ def threedp_pm(starttime, endtime):
     data = []
     for day in daylist:
         date = day[0]
+        this_relative_dir = os.path.join(relative_dir, str(day[0].year))
+        # Absolute path to local directory for this data file
+        local_dir = os.path.join(wind_dir, this_relative_dir)
         filename = 'wi_pm_3dp_' +\
             str(date.year) +\
             str(date.month).zfill(2) +\
             str(date.day).zfill(2) +\
             '_v05.cdf'
-        this_relative_dir = os.path.join(relative_dir, str(day[0].year))
-        # Absolute path to local directory for this data file
-        local_dir = os.path.join(wind_dir, this_relative_dir)
+        hdfname = filename[:-4] + 'hdf'
+        hdfloc = os.path.join(local_dir, hdfname)
+        if os.path.isfile(hdfloc):
+            df = pd.read_hdf(hdfloc)
+            data.append(df)
+            continue
+
         helper.checkdir(local_dir)
-
         remote_url = remote_wind_dir + this_relative_dir
-
         cdf = helper.load(filename, local_dir, remote_url, guessversion=True)
 
         keys = {'A_DENS': 'n_a',
@@ -167,8 +178,8 @@ def threedp_pm(starttime, endtime):
                 'P_VELS': ['vp_x', 'vp_y', 'vp_z'],
                 'Epoch': 'Time'}
         df = helper.cdf2df(cdf, index_key='Epoch', keys=keys)
+        if use_hdf:
+            df.to_hdf(hdfloc, 'pm', mode='w', format='f')
         data.append(df)
 
-    data = pd.concat(data)
-    data = data[(data['Time'] > starttime) & (data['Time'] < endtime)]
-    return data
+    return helper.timefilter(data, starttime, endtime)
