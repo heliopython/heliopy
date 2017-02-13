@@ -19,7 +19,6 @@ before_install:
 - make OS=linux ENV=gnu all
 - sudo make INSTALLDIR=/usr/local/cdf install
 - cd ../
-- pip install spacepy
 script:
 - pytest heliopy/ --cov=heliopy/ -v --durations=5
 after_success:
