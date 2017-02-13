@@ -10,15 +10,15 @@ before_install:
 - "./miniconda.sh -b -p $HOME/miniconda"
 - export PATH="$HOME/miniconda/bin:$PATH"
 - conda update --yes conda
-- conda create --yes -n testenv python=$TRAVIS_PYTHON_VERSION scipy
+- conda create --yes -n testenv python=$TRAVIS_PYTHON_VERSION
 - source activate testenv
+- conda install --yes scipy pytest pytest-cov pandas tables
 - wget http://cdaweb.gsfc.nasa.gov/pub/software/cdf/dist/cdf36_3_1/linux/cdf36_3_1-dist-all.tar.gz
 - tar -zxvf cdf36_3_1-dist-all.tar.gz
 - cd cdf36_3-dist
 - make OS=linux ENV=gnu all
 - sudo make INSTALLDIR=/usr/local/cdf install
 - cd ../
-- pip install pytest pytest-cov pandas tables
 - pip install spacepy
 script:
 - py.test heliopy/ --cov=heliopy/ -v --durations=5
