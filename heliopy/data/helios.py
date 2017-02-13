@@ -857,9 +857,9 @@ def mag_ness(probe, starttime, endtime, verbose=True):
                 # Data not processed yet, try to process and load it
                 try:
                     data.append(_mag_ness_fromascii(probe, year, doy))
-                    print(year, doy, 'Ness data processed')
                 except ValueError:
-                    print(year, doy, 'No raw mag data')
+                    if verbose:
+                        print(year, doy, 'No raw mag data')
             else:
                 # Load data from already processed file
                 data.append(pd.read_hdf(hdfloc, 'table'))
