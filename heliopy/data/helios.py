@@ -919,8 +919,9 @@ def _mag_ness_fromascii(probe, year, doy):
     data = data.drop(['year', 'doy', 'hour', 'minute', 'second'], axis=1)
 
     # Save data to a hdf store
-    saveloc = os.path.join(floc, fname + '.h5')
-    data.to_hdf(saveloc, 'table', format='fixed', mode='w')
+    if use_hdf:
+        saveloc = os.path.join(floc, fname + '.h5')
+        data.to_hdf(saveloc, 'mag', format='fixed', mode='w')
     return(data)
 
 
