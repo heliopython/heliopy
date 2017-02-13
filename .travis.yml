@@ -21,7 +21,7 @@ before_install:
 - cd ../
 - pip install spacepy
 script:
-- py.test heliopy/ --cov=heliopy/ -v --durations=5
+- pytest heliopy/ --cov=heliopy/ -v --durations=5
 after_success:
 - pip install codecov
 - codecov
