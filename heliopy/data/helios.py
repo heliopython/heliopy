@@ -853,16 +853,17 @@ def mag_ness(probe, starttime, endtime, verbose=True):
         for doy in range(startdoy, enddoy + 1):
             hdfloc = os.path.join(floc, 'h' + probe + str(year - 1900) +
                                   str(doy).zfill(3) + '.h5')
-            if not os.path.isfile(hdfloc):
-                # Data not processed yet, try to process and load it
-                try:
-                    data.append(_mag_ness_fromascii(probe, year, doy))
-                except ValueError:
-                    if verbose:
-                        print(year, doy, 'No raw mag data')
-            else:
+            if os.path.isfile(hdfloc):
                 # Load data from already processed file
                 data.append(pd.read_hdf(hdfloc, 'table'))
+                continue
+
+            # Data not processed yet, try to process and load it
+            try:
+                data.append(_mag_ness_fromascii(probe, year, doy))
+            except ValueError:
+                if verbose:
+                    print(year, doy, 'No raw mag data')
 
     return helper.timefilter(data, starttime, endtime)
 
