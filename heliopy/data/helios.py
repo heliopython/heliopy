@@ -678,8 +678,8 @@ def _merged_fromascii(probe, year, doy, try_download):
     data.replace(0.0, np.nan, inplace=True)
 
     # Save data to a hdf store
-    saveloc = os.path.join(local_dir, filename[:-4] + '.h5')
-    data.to_hdf(saveloc, 'table', format='fixed', mode='w')
+    if use_hdf:
+        _save_hdf(local_dir, filename[:-4])
     return(data)
 
 
@@ -802,8 +802,8 @@ def _fourHz_fromascii(probe, year, doy):
     data['ordinal'] = pd.DatetimeIndex(data['Time']).astype(np.int64)
 
     # Save data to a hdf store
-    saveloc = os.path.join(floc, fname + '.h5')
-    data.to_hdf(saveloc, 'table', format='fixed', mode='w')
+    if use_hdf:
+        _save_hdf(floc, fname)
     return(data)
 
 
@@ -929,9 +929,14 @@ def _mag_ness_fromascii(probe, year, doy):
     data = data.drop(['year', 'doy', 'hour', 'minute', 'second'], axis=1)
 
     # Save data to a hdf store
-    saveloc = os.path.join(floc, fname + '.h5')
-    data.to_hdf(saveloc, 'table', format='fixed', mode='w')
+    if use_hdf:
+        _save_hdf(floc, fname)
     return(data)
+
+
+def _save_hdf(fdir, fname):
+    saveloc = os.path.join(fdir, fname + '.h5')
+    data.to_hdf(saveloc, 'key', format='fixed', mode='w')
 
 
 def trajectory(probe, startdate, enddate):
