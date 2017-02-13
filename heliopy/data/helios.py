@@ -618,11 +618,7 @@ def merged(probe, starttime, endtime, verbose=True, try_download=True):
                          ' between ' + startdate.strftime(fmt) + ' and ' +
                          enddate.strftime(fmt))
 
-    data = pd.concat(data, ignore_index=True)
-    # Filter data between start and end times
-    data = data[(data['Time'] > starttime) & (data['Time'] < endtime)]
-
-    return data
+    return helper.timefilter(data, starttime, endtime)
 
 
 def _merged_fromascii(probe, year, doy, try_download):
