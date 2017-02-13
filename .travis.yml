@@ -1,27 +1,23 @@
-sudo: required
 language: python
 python:
 - '3.5'
 before_install:
-- sudo apt-get -qq update
-- sudo apt-get install -y gfortran
 - wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
 - chmod +x miniconda.sh
 - "./miniconda.sh -b -p $HOME/miniconda"
 - export PATH="$HOME/miniconda/bin:$PATH"
 - conda update --yes conda
-- conda create --yes -n testenv python=$TRAVIS_PYTHON_VERSION scipy
+- conda create --yes -n testenv python=$TRAVIS_PYTHON_VERSION
 - source activate testenv
+- conda install --yes scipy pytest pytest-cov pandas pytables
 - wget http://cdaweb.gsfc.nasa.gov/pub/software/cdf/dist/cdf36_3_1/linux/cdf36_3_1-dist-all.tar.gz
 - tar -zxvf cdf36_3_1-dist-all.tar.gz
 - cd cdf36_3-dist
 - make OS=linux ENV=gnu all
 - sudo make INSTALLDIR=/usr/local/cdf install
 - cd ../
-- pip install pytest pytest-cov pandas tables
-- pip install spacepy
 script:
-- py.test heliopy/ --cov=heliopy/ -v --durations=5
+- pytest heliopy/ --cov=heliopy/ -v --durations=5
 after_success:
 - pip install codecov
 - codecov

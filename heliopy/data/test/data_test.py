@@ -14,20 +14,14 @@ import urllib
 import pytest
 
 
-nodata = pytest.mark.skipif(
-    pytest.config.getoption("--no-data"),
-    reason="Skipped test that involves data download"
-)
-
-
-@nodata
+@pytest.mark.data
 def test_messenger():
     starttime = datetime(2010, 1, 1, 0, 0, 0)
     endtime = datetime(2010, 1, 2, 1, 0, 0)
     messenger.mag_rtn(starttime, endtime)
 
 
-@nodata
+@pytest.mark.data
 def test_ulysses():
     starttime = datetime(1993, 1, 1, 0, 0, 0)
     endtime = datetime(1993, 1, 2, 0, 0, 0)
@@ -35,7 +29,7 @@ def test_ulysses():
     ulysses.swoops_ions(starttime, endtime)
 
 
-@nodata
+@pytest.mark.data
 def test_artemis():
     starttime = datetime(2008, 1, 1, 0, 0, 0)
     endtime = datetime(2008, 1, 2, 0, 0, 0)
@@ -43,14 +37,14 @@ def test_artemis():
     artemis.fgm(probe, 'h', 'dsl', starttime, endtime)
 
 
-@nodata
+@pytest.mark.data
 def test_ace():
     starttime = datetime(2016, 1, 1, 0, 0, 0)
     endtime = datetime(2016, 1, 2, 0, 0, 0)
     ace.mfi_h0(starttime, endtime)
 
 
-@nodata
+@pytest.mark.data
 def test_imp():
     starttime = datetime(1976, 1, 1, 0, 0, 0)
     endtime = datetime(1976, 1, 2, 0, 0, 0)
@@ -58,7 +52,7 @@ def test_imp():
     imp.mitplasma_h0('8', starttime, endtime)
 
 
-@nodata
+@pytest.mark.data
 def test_cluster():
     if config['DEFAULT']['cluster_cookie'] != 'none':
         probe = '2'
@@ -76,7 +70,7 @@ def test_cluster():
         cluster.cis_hia_onboard_moms(probe, starttime, endtime)
 
 
-@nodata
+@pytest.mark.data
 def test_wind():
     """
     Tests for imporitng wind data.
@@ -91,7 +85,7 @@ def test_wind():
     wind.swe_h3(starttime, endtime)
 
 
-@nodata
+@pytest.mark.data
 def test_mms():
     """
     Tests for importing mms data.
@@ -106,7 +100,7 @@ def test_mms():
     mms.fpi_dis_moms(probe, 'fast', starttime, endtime)
 
 
-@nodata
+@pytest.mark.data
 def test_helios():
     """
     Tests for importing Helios data.

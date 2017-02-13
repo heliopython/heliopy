@@ -1,7 +1,7 @@
 """Helper methods for importing data"""
 import os
 import sys
-from spacepy import pycdf
+from pycdf import pycdf
 from urllib.request import urlretrieve
 import ftplib
 import pandas as pd

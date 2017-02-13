@@ -19,7 +19,7 @@ from heliopy import config
 from heliopy.time import daysplitinterval
 from heliopy.data.helper import reporthook, checkdir, cdf2df, timefilter
 
-from spacepy import pycdf
+from pycdf import pycdf
 
 data_dir = config['DEFAULT']['download_dir']
 cda_cookie = config['DEFAULT']['cluster_cookie']
