@@ -864,15 +864,7 @@ def mag_ness(probe, starttime, endtime, verbose=True):
                 # Load data from already processed file
                 data.append(pd.read_hdf(hdfloc, 'table'))
 
-    if data == []:
-        raise ValueError('No raw mag data available')
-    data = pd.concat(data)
-    # Filter data between start and end times
-    data = data[(data['Time'] > starttime) & (data['Time'] < endtime)]
-
-    if data.empty:
-        raise ValueError('No raw mag data available')
-    return(data)
+    return helper.timefilter(data, starttime, endtime)
 
 
 def _mag_ness_fromascii(probe, year, doy):
