@@ -934,7 +934,7 @@ def _mag_ness_fromascii(probe, year, doy):
     return(data)
 
 
-def trajectory(probe, startdate, enddate):
+def trajectory(probe, starttime, endtime):
     """
     Read in trajectory data.
 
@@ -942,9 +942,9 @@ def trajectory(probe, startdate, enddate):
     ----------
         probe : int, string
             Helios probe to import data from. Must be 1 or 2.
-        startdate : date
+        startdate : datetime
             Interval start date.
-        enddate : date
+        enddate : datetime
             Interval end date.
 
     Returns
@@ -959,7 +959,7 @@ def trajectory(probe, startdate, enddate):
     colspecs = [(0, 3), (4, 7), (8, 10), (11, 15), (16, 22), (23, 30),
                 (31, 37), (38, 44), (45, 51), (52, 58), (59, 65), (66, 67)]
     # Loop through years
-    for i in range(startdate.year, enddate.year + 1):
+    for i in range(starttime.year, endtime.year + 1):
         floc = os.path.join(helios_dir,
                             'helios' + probe,
                             'traj')
@@ -977,11 +977,10 @@ def trajectory(probe, startdate, enddate):
         thisdata['Year'] += 1900
 
         # Convert date info to datetime
-        thisdata['Date'] = pd.to_datetime(thisdata['Year'], format='%Y') + \
+        thisdata['Time'] = pd.to_datetime(thisdata['Year'], format='%Y') + \
             pd.to_timedelta(thisdata['doy'] - 1, unit='d') + \
             pd.to_timedelta(thisdata['Hour'], unit='h')
-        thisdata['ordinal'] =\
-            pd.DatetimeIndex(thisdata['Date']).astype(np.int64)
+        thisdata['ordinal'] = dtime2ordinal(thisdata['Time'])
 
         # Calculate cartesian positions
         thisdata['x'] = thisdata['r'] * np.cos(thisdata['selat']) *\
@@ -993,7 +992,4 @@ def trajectory(probe, startdate, enddate):
         thisdata = thisdata.drop(['Year', 'doy', 'Hour'], axis=1)
         data.append(thisdata)
 
-    data = pd.concat(data)
-    data = data[data['Date'] > startdate]
-    data = data[data['Date'] < enddate]
-    return(data)
+    return helper.timefilter(data, starttime, endtime)
