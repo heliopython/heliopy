@@ -807,25 +807,26 @@ def _fourHz_fromascii(probe, year, doy):
     return(data)
 
 
-def mag_ness(probe, starttime, endtime):
+def mag_ness(probe, starttime, endtime, verbose=True):
     """
     Read in 6 second magnetic field data.
 
     Parameters
     ----------
-        probe : int, string
-            Helios probe to import data from. Must be 1 or 2.
-        starttime : datetime
-            Interval start time.
-        endtime : datetime
-            Interval end time.
-        verbose : bool
-            If True, print more information as data is loading.
+    probe : int, string
+        Helios probe to import data from. Must be 1 or 2.
+    starttime : datetime
+        Interval start time.
+    endtime : datetime
+        Interval end time.
+    verbose : bool, optional
+        If ``True``, print more information as data is loading. Default is
+        ``True``.
 
     Returns
     -------
-        data : DataFrame
-            6 second magnetic field data set
+    data : DataFrame
+        6 second magnetic field data set
     """
     probe = _check_probe(probe)
     startdate = starttime.date()
