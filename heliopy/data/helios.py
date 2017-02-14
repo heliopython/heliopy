@@ -112,7 +112,89 @@ def _loaddistfile(probe, year, doy, hour, minute, second):
         return f, filename
 
 
-def integrateddists(probe, year, doy, hour, minute, second):
+def integrated_dists(probe, starttime, endtime):
+    """
+    Returns the integrated distributions from experiments i1a and i1b in Helios
+    distribution function files.
+
+    The distributions are integrated over all angles and given as a function
+    of proton velocity.
+
+    Parameters
+    ----------
+    probe : int
+        Helios probe to import data from. Must be 1 or 2.
+    starttime : datetime
+        Start of interval
+    endtime : datetime
+        End of interval
+
+    Returns
+    -------
+    distinfo : Series
+        Infromation stored in the top of distribution function files.
+    """
+    extensions = ['hdm.0', 'hdm.1', 'ndm.0', 'ndm.1']
+    distlist = {'a': [], 'b': []}
+
+    # Loop through each day
+    while starttime < endtime:
+        year = starttime.year
+        doy = starttime.strftime('%j')
+        # Directory for today's distribution files
+        dist_dir = _dist_file_dir(probe, year, doy)
+        # Locaiton of hdf file to save to/load from
+        hdffile = 'h' + probe + str(year) + str(doy).zfill(3) +\
+            'integrated_dists.hdf'
+        hdffile = os.path.join(dist_dir, hdffile)
+        todays_dists = {'a': [], 'b': []}
+        if os.path.isfile(hdffile):
+            for key in todays_dists:
+                todays_dists[key] = pd.read_hdf(hdffile, key=key)
+        else:
+            # Get every distribution function file present for this day
+            for f in os.listdir(dist_dir):
+                path = os.path.join(dist_dir, f)
+                # Check for distribution function
+                if path[-5:] in extensions:
+                    # year = int(path[-21:-19]) + 1900
+                    # doy = int(path[-18:-15])
+                    hour = int(path[-14:-12])
+                    minute = int(path[-11:-9])
+                    second = int(path[-8:-6])
+                    try:
+                        a, b = integrated_dists_single(probe, year, doy,
+                                                       hour, minute, second)
+                    except RuntimeError as err:
+                        strerr = 'No ion distribution function data in file'
+                        if str(err) == strerr:
+                            continue
+                        raise err
+
+                    t = datetime.combine(starttime.date(),
+                                         time(hour, minute, second))
+                    dists = {'a': a, 'b': b}
+                    for key in dists:
+                        dist = dists[key]
+                        dist['Time'] = t
+                        dist = dist.set_index(['Time', 'v'], drop=True)
+                        todays_dists[key].append(dist)
+            for key in todays_dists:
+                todays_dists[key] = pd.concat(todays_dists[key])
+                if use_hdf:
+                    todays_dists[key].to_hdf(hdffile, key=key, mode='a')
+        for key in distlist:
+            distlist[key].append(todays_dists[key])
+        starttime += timedelta(days=1)
+
+    # The while loop will only stop after we have overshot
+    starttime -= timedelta(days=1)
+    for key in distlist:
+        distlist[key] = helper.timefilter(distlist[key], starttime, endtime)
+    return distlist
+
+
+def integrated_dists_single(probe, year, doy, hour, minute, second):
     """
     Returns the integrated distributions from experiments i1a and i1b in Helios
     distribution function files.
