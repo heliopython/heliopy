@@ -618,11 +618,7 @@ def merged(probe, starttime, endtime, verbose=True, try_download=True):
                          ' between ' + startdate.strftime(fmt) + ' and ' +
                          enddate.strftime(fmt))
 
-    data = pd.concat(data, ignore_index=True)
-    # Filter data between start and end times
-    data = data[(data['Time'] > starttime) & (data['Time'] < endtime)]
-
-    return data
+    return helper.timefilter(data, starttime, endtime)
 
 
 def _merged_fromascii(probe, year, doy, try_download):
@@ -807,25 +803,26 @@ def _fourHz_fromascii(probe, year, doy):
     return(data)
 
 
-def mag_ness(probe, starttime, endtime):
+def mag_ness(probe, starttime, endtime, verbose=True):
     """
     Read in 6 second magnetic field data.
 
     Parameters
     ----------
-        probe : int, string
-            Helios probe to import data from. Must be 1 or 2.
-        starttime : datetime
-            Interval start time.
-        endtime : datetime
-            Interval end time.
-        verbose : bool
-            If True, print more information as data is loading.
+    probe : int, string
+        Helios probe to import data from. Must be 1 or 2.
+    starttime : datetime
+        Interval start time.
+    endtime : datetime
+        Interval end time.
+    verbose : bool, optional
+        If ``True``, print more information as data is loading. Default is
+        ``True``.
 
     Returns
     -------
-        data : DataFrame
-            6 second magnetic field data set
+    data : DataFrame
+        6 second magnetic field data set
     """
     probe = _check_probe(probe)
     startdate = starttime.date()
@@ -852,26 +849,19 @@ def mag_ness(probe, starttime, endtime):
         for doy in range(startdoy, enddoy + 1):
             hdfloc = os.path.join(floc, 'h' + probe + str(year - 1900) +
                                   str(doy).zfill(3) + '.h5')
-            if not os.path.isfile(hdfloc):
-                # Data not processed yet, try to process and load it
-                try:
-                    data.append(_mag_ness_fromascii(probe, year, doy))
-                    print(year, doy, 'Ness data processed')
-                except ValueError:
-                    print(year, doy, 'No raw mag data')
-            else:
+            if os.path.isfile(hdfloc):
                 # Load data from already processed file
                 data.append(pd.read_hdf(hdfloc, 'table'))
+                continue
 
-    if data == []:
-        raise ValueError('No raw mag data available')
-    data = pd.concat(data)
-    # Filter data between start and end times
-    data = data[(data['Time'] > starttime) & (data['Time'] < endtime)]
+            # Data not processed yet, try to process and load it
+            try:
+                data.append(_mag_ness_fromascii(probe, year, doy))
+            except ValueError:
+                if verbose:
+                    print(year, doy, 'No raw mag data')
 
-    if data.empty:
-        raise ValueError('No raw mag data available')
-    return(data)
+    return helper.timefilter(data, starttime, endtime)
 
 
 def _mag_ness_fromascii(probe, year, doy):
@@ -929,12 +919,13 @@ def _mag_ness_fromascii(probe, year, doy):
     data = data.drop(['year', 'doy', 'hour', 'minute', 'second'], axis=1)
 
     # Save data to a hdf store
-    saveloc = os.path.join(floc, fname + '.h5')
-    data.to_hdf(saveloc, 'table', format='fixed', mode='w')
+    if use_hdf:
+        saveloc = os.path.join(floc, fname + '.h5')
+        data.to_hdf(saveloc, 'mag', format='fixed', mode='w')
     return(data)
 
 
-def trajectory(probe, startdate, enddate):
+def trajectory(probe, starttime, endtime):
     """
     Read in trajectory data.
 
@@ -942,9 +933,9 @@ def trajectory(probe, startdate, enddate):
     ----------
         probe : int, string
             Helios probe to import data from. Must be 1 or 2.
-        startdate : date
+        startdate : datetime
             Interval start date.
-        enddate : date
+        enddate : datetime
             Interval end date.
 
     Returns
@@ -959,7 +950,7 @@ def trajectory(probe, startdate, enddate):
     colspecs = [(0, 3), (4, 7), (8, 10), (11, 15), (16, 22), (23, 30),
                 (31, 37), (38, 44), (45, 51), (52, 58), (59, 65), (66, 67)]
     # Loop through years
-    for i in range(startdate.year, enddate.year + 1):
+    for i in range(starttime.year, endtime.year + 1):
         floc = os.path.join(helios_dir,
                             'helios' + probe,
                             'traj')
@@ -977,11 +968,10 @@ def trajectory(probe, startdate, enddate):
         thisdata['Year'] += 1900
 
         # Convert date info to datetime
-        thisdata['Date'] = pd.to_datetime(thisdata['Year'], format='%Y') + \
+        thisdata['Time'] = pd.to_datetime(thisdata['Year'], format='%Y') + \
             pd.to_timedelta(thisdata['doy'] - 1, unit='d') + \
             pd.to_timedelta(thisdata['Hour'], unit='h')
-        thisdata['ordinal'] =\
-            pd.DatetimeIndex(thisdata['Date']).astype(np.int64)
+        thisdata['ordinal'] = dtime2ordinal(thisdata['Time'])
 
         # Calculate cartesian positions
         thisdata['x'] = thisdata['r'] * np.cos(thisdata['selat']) *\
@@ -993,7 +983,4 @@ def trajectory(probe, startdate, enddate):
         thisdata = thisdata.drop(['Year', 'doy', 'Hour'], axis=1)
         data.append(thisdata)
 
-    data = pd.concat(data)
-    data = data[data['Date'] > startdate]
-    data = data[data['Date'] < enddate]
-    return(data)
+    return helper.timefilter(data, starttime, endtime)
