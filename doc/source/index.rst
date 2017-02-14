@@ -8,6 +8,7 @@ in python.
    :maxdepth: 2
 
    installing.rst
+   multiindex.rst
    examples/examples.rst
    code_ref/index.rst
 
