@@ -112,6 +112,16 @@ def _loaddistfile(probe, year, doy, hour, minute, second):
         return f, filename
 
 
+def _dist_filename_to_hms(path):
+    """Given distribution filename, extract hour, minute, second"""
+    # year = int(path[-21:-19]) + 1900
+    # doy = int(path[-18:-15])
+    hour = int(path[-14:-12])
+    minute = int(path[-11:-9])
+    second = int(path[-8:-6])
+    return hour, minute, second
+
+
 def integrated_dists(probe, starttime, endtime):
     """
     Returns the integrated distributions from experiments i1a and i1b in Helios
@@ -157,11 +167,7 @@ def integrated_dists(probe, starttime, endtime):
                 path = os.path.join(dist_dir, f)
                 # Check for distribution function
                 if path[-5:] in extensions:
-                    # year = int(path[-21:-19]) + 1900
-                    # doy = int(path[-18:-15])
-                    hour = int(path[-14:-12])
-                    minute = int(path[-11:-9])
-                    second = int(path[-8:-6])
+                    hour, minute, second = _dist_filename_to_hms(path)
                     try:
                         a, b = integrated_dists_single(probe, year, doy,
                                                        hour, minute, second)
@@ -372,11 +378,7 @@ def distparams(probe, starttime, endtime):
                 path = os.path.join(dist_dir, f)
                 # Check for distribution function
                 if path[-5:] in extensions:
-                    # year = int(path[-21:-19]) + 1900
-                    # doy = int(path[-18:-15])
-                    hour = int(path[-14:-12])
-                    minute = int(path[-11:-9])
-                    second = int(path[-8:-6])
+                    hour, minute, second = _dist_filename_to_hms(path)
                     p = distparams_single(probe, year, doy,
                                           hour, minute, second)
                     todays_params.append(p)
@@ -574,11 +576,7 @@ def ion_dists(probe, starttime, endtime, remove_advect=False):
                 path = os.path.join(dist_dir, f)
                 # Check for distribution function
                 if path[-5:] in extensions:
-                    # year = int(path[-21:-19]) + 1900
-                    # doy = int(path[-18:-15])
-                    hour = int(path[-14:-12])
-                    minute = int(path[-11:-9])
-                    second = int(path[-8:-6])
+                    hour, minute, second = _dist_filename_to_hms(path)
                     try:
                         d = ion_dist_single(probe, year, doy,
                                             hour, minute, second)
