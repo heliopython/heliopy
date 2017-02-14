@@ -26,7 +26,7 @@ sys.path.insert(0, os.path.abspath('../../'))
 # Pretend these modules exits so readthedocs builds
 MOCK_MODULES = ['numpy', 'scipy', 'scipy.optimize', 'scipy.stats',
                 'matplotlib', 'matplotlib.pyplot', 'mpl_toolkits.mplot3d',
-                'spacepy', 'pandas']
+                'spacepy', 'pandas', 'pycdf.pycdf']
 for mod_name in MOCK_MODULES:
     sys.modules[mod_name] = mock.Mock()
 # -- General configuration ------------------------------------------------
