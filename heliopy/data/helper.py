@@ -29,8 +29,18 @@ def timefilter(data, starttime, endtime):
     """
     if isinstance(data, list):
         data = pd.concat(data)
-    data = data[(data['Time'] > starttime) &
-                (data['Time'] < endtime)]
+    # Get time values
+    try:
+        time = data['Time']
+    except KeyError as _:
+        try:
+            time = data.index.get_level_values('Time')
+        except KeyError as err:
+            return KeyError('The label "Time" was not found in '
+                            'the dataframe columns or index')
+
+    data = data[(time > starttime) &
+                (time < endtime)]
     return data
 
 

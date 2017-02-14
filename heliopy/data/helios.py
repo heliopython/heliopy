@@ -21,7 +21,7 @@ doesn't exist locally.
 """
 import pandas as pd
 import numpy as np
-from datetime import date, datetime, timedelta
+from datetime import date, time, datetime, timedelta
 import os
 import warnings
 from urllib.error import URLError
@@ -444,37 +444,117 @@ def distparams_single(probe, year, doy, hour, minute, second):
     return distparams
 
 
-def ion_dist(probe, year, doy, hour, minute, second, remove_advect=False):
+def ion_dists(probe, starttime, endtime, remove_advect=False):
+    """
+    Read in distribution parameters found in the header of distribution files.
+
+    Parameters
+    ----------
+    probe : int
+        Helios probe to import data from. Must be 1 or 2.
+    starttime : datetime
+        Start of interval
+    endtime : datetime
+        End of interval
+    remove_advect : bool, optional
+        If *False*, the distribution is returned in
+        the spacecraft frame.
+
+        If *True*, the distribution is
+        returned in the solar wind frame, by subtracting the spacecraft
+        velocity from the velcoity of each bin. Note this significantly
+        slows down reading in the distribution.
+
+    Returns
+    -------
+    distinfo : Series
+        Infromation stored in the top of distribution function files.
+    """
+    extensions = ['hdm.0', 'hdm.1', 'ndm.0', 'ndm.1']
+    distlist = []
+
+    # Loop through each day
+    while starttime < endtime:
+        year = starttime.year
+        doy = starttime.strftime('%j')
+        # Directory for today's distribution files
+        dist_dir = _dist_file_dir(probe, year, doy)
+        # Locaiton of hdf file to save to/load from
+        hdffile = 'h' + probe + str(year) + str(doy).zfill(3) +\
+            'ion_dists.hdf'
+        hdffile = os.path.join(dist_dir, hdffile)
+        if os.path.isfile(hdffile):
+            todays_dist = pd.read_hdf(hdffile)
+        else:
+            todays_dist = []
+            # Get every distribution function file present for this day
+            for f in os.listdir(dist_dir):
+                path = os.path.join(dist_dir, f)
+                # Check for distribution function
+                if path[-5:] in extensions:
+                    # year = int(path[-21:-19]) + 1900
+                    # doy = int(path[-18:-15])
+                    hour = int(path[-14:-12])
+                    minute = int(path[-11:-9])
+                    second = int(path[-8:-6])
+                    try:
+                        d = ion_dist_single(probe, year, doy,
+                                            hour, minute, second)
+                    except RuntimeError as err:
+                        strerr = 'No ion distribution function data in file'
+                        if str(err) == strerr:
+                            continue
+                        raise err
+
+                    t = datetime.combine(starttime.date(),
+                                         time(hour, minute, second))
+                    d['Time'] = t
+                    todays_dist.append(d)
+            todays_dist = pd.concat(todays_dist)
+            todays_dist = todays_dist.set_index('Time', append=True)
+            if use_hdf:
+                todays_dist.to_hdf(hdffile, key='ion_dist', mode='w')
+
+        distlist.append(todays_dist)
+        starttime += timedelta(days=1)
+
+    # The while loop will only stop after we have overshot
+    starttime -= timedelta(days=1)
+    return helper.timefilter(distlist, starttime, endtime)
+
+
+def ion_dist_single(probe, year, doy, hour, minute, second,
+                    remove_advect=False):
     """
     Read in ion distribution function.
 
     Parameters
     ----------
-        probe : int, string
-            Helios probe to import data from. Must be 1 or 2.
-        year : int
-            Year
-        doy : int
-            Day of year.
-        hour : int
-            Hour.
-        minute : int
-            Minute.
-        second : int
-            Second.
-        remove_advect : bool, optional
-            If *False*, the distribution is returned in
-            the spacecraft frame.
+    probe : int, string
+        Helios probe to import data from. Must be 1 or 2.
+    year : int
+        Year
+    doy : int
+        Day of year.
+    hour : int
+        Hour.
+    minute : int
+        Minute.
+    second : int
+        Second.
+    remove_advect : bool, optional
+        If *False*, the distribution is returned in
+        the spacecraft frame.
 
-            If *True*, the distribution is
-            returned in the solar wind frame, by subtracting the spacecraft
-            velocity from the velcoity of each bin. Note this significantly
-            slows down reading in the distribution.
+        If *True*, the distribution is
+        returned in the solar wind frame, by subtracting the spacecraft
+        velocity from the velcoity of each bin. Note this significantly
+        slows down reading in the distribution.
 
     Returns
     -------
-        dist : DataFrame
-            3D ion distribution function.
+    dist : DataFrame
+        3D ion distribution function.
     """
     probe = _check_probe(probe)
     f, filename = _loaddistfile(probe, year, doy, hour, minute, second)
@@ -516,7 +596,7 @@ def ion_dist(probe, year, doy, hour, minute, second, remove_advect=False):
     #####################################
     # If no ion data in file
     if nionlines < 1:
-        return None
+        raise RuntimeError('No ion distribution function data in file')
 
     # Arguments for reading in data
     readargs = {'usecols': [0, 1, 2, 3, 4, 5, 6, 7],
