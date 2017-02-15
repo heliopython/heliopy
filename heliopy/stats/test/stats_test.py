@@ -15,7 +15,7 @@ class TestFitting():
                                   [0, 1, 0]])
         np.testing.assert_equal(hist, hist_expected)
         np.testing.assert_equal(((xedges[:-1] + xedges[1:]) / 2), xbins[1, :])
-        np.testing.assert_equal(((yedges[:-1] + yedges[1:]) / 2), ybins[1, :])
+        np.testing.assert_equal(((yedges[:-1] + yedges[1:]) / 2), ybins[:, 1])
 
 
 def test_hist():
