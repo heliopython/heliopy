@@ -1,6 +1,21 @@
 from heliopy.stats.stats import *
 from heliopy.stats.distributions import *
+from heliopy.stats.fitting import *
 import numpy as np
+
+
+class TestFitting():
+    def test_bin_2d_data(self):
+        x = [0.5, 1.5, 1.5, 2.5]
+        y = [0.5, 0.5, 2.5, 1.5]
+        hist, xedges, yedges, xbins, ybins = bin_2d_data(x, y,
+                                                         bins=3, normed=False)
+        hist_expected = np.array([[1, 1, 0],
+                                  [0, 0, 1],
+                                  [0, 1, 0]])
+        np.testing.assert_equal(hist, hist_expected)
+        np.testing.assert_equal(((xedges[:-1] + xedges[1:]) / 2), xbins[1, :])
+        np.testing.assert_equal(((yedges[:-1] + yedges[1:]) / 2), ybins[:, 1])
 
 
 def test_hist():
