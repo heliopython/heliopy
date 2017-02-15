@@ -66,25 +66,25 @@ def _loaddistfile(probe, year, doy, hour, minute, second):
 
     Parameters
     ----------
-        probe : int, string
-            Helios probe to import data from. Must be 1 or 2.
-        year : int
-            Year
-        doy : int
-            Day of year.
-        hour : int
-            Hour.
-        minute : int
-            Minute.
-        second : int
-            Second.
+    probe : int, string
+        Helios probe to import data from. Must be 1 or 2.
+    year : int
+        Year
+    doy : int
+        Day of year
+    hour : int
+        Hour.
+    minute : int
+        Minute
+    second : int
+        Second
 
     Returns
     -------
-        f : file
-            Opened distribution function file.
-        filename : string
-            Filename of opened file.
+    f : file
+        Opened distribution function file
+    filename : string
+        Filename of opened file
     """
     probe = _check_probe(probe)
     # Work out location of file
@@ -112,7 +112,17 @@ def _loaddistfile(probe, year, doy, hour, minute, second):
         return f, filename
 
 
-def integrateddists(probe, year, doy, hour, minute, second):
+def _dist_filename_to_hms(path):
+    """Given distribution filename, extract hour, minute, second"""
+    # year = int(path[-21:-19]) + 1900
+    # doy = int(path[-18:-15])
+    hour = int(path[-14:-12])
+    minute = int(path[-11:-9])
+    second = int(path[-8:-6])
+    return hour, minute, second
+
+
+def integrated_dists(probe, starttime, endtime):
     """
     Returns the integrated distributions from experiments i1a and i1b in Helios
     distribution function files.
@@ -122,25 +132,103 @@ def integrateddists(probe, year, doy, hour, minute, second):
 
     Parameters
     ----------
-        probe : int, string
-            Helios probe to import data from. Must be 1 or 2.
-        year : int
-            Year
-        doy : int
-            Day of year.
-        hour : int
-            Hour.
-        minute : int
-            Minute.
-        second : int
-            Second.
+    probe : int
+        Helios probe to import data from. Must be 1 or 2.
+    starttime : datetime
+        Start of interval
+    endtime : datetime
+        End of interval
 
     Returns
     -------
-            i1a : DataFrame
-                i1a integrated distribution function.
-            i1b : DataFrame
-                i1b integrated distribution function.
+    distinfo : Series
+        Infromation stored in the top of distribution function files.
+    """
+    extensions = ['hdm.0', 'hdm.1', 'ndm.0', 'ndm.1']
+    distlist = {'a': [], 'b': []}
+
+    # Loop through each day
+    while starttime < endtime:
+        year = starttime.year
+        doy = starttime.strftime('%j')
+        # Directory for today's distribution files
+        dist_dir = _dist_file_dir(probe, year, doy)
+        # Locaiton of hdf file to save to/load from
+        hdffile = 'h' + probe + str(year) + str(doy).zfill(3) +\
+            'integrated_dists.hdf'
+        hdffile = os.path.join(dist_dir, hdffile)
+        todays_dists = {'a': [], 'b': []}
+        if os.path.isfile(hdffile):
+            for key in todays_dists:
+                todays_dists[key] = pd.read_hdf(hdffile, key=key)
+        else:
+            # Get every distribution function file present for this day
+            for f in os.listdir(dist_dir):
+                path = os.path.join(dist_dir, f)
+                # Check for distribution function
+                if path[-5:] in extensions:
+                    hour, minute, second = _dist_filename_to_hms(path)
+                    try:
+                        a, b = integrated_dists_single(probe, year, doy,
+                                                       hour, minute, second)
+                    except RuntimeError as err:
+                        strerr = 'No ion distribution function data in file'
+                        if str(err) == strerr:
+                            continue
+                        raise err
+
+                    t = datetime.combine(starttime.date(),
+                                         time(hour, minute, second))
+                    dists = {'a': a, 'b': b}
+                    for key in dists:
+                        dist = dists[key]
+                        dist['Time'] = t
+                        dist = dist.set_index(['Time', 'v'], drop=True)
+                        todays_dists[key].append(dist)
+            for key in todays_dists:
+                todays_dists[key] = pd.concat(todays_dists[key])
+                if use_hdf:
+                    todays_dists[key].to_hdf(hdffile, key=key, mode='a')
+        for key in distlist:
+            distlist[key].append(todays_dists[key])
+        starttime += timedelta(days=1)
+
+    # The while loop will only stop after we have overshot
+    starttime -= timedelta(days=1)
+    for key in distlist:
+        distlist[key] = helper.timefilter(distlist[key], starttime, endtime)
+    return distlist
+
+
+def integrated_dists_single(probe, year, doy, hour, minute, second):
+    """
+    Returns the integrated distributions from experiments i1a and i1b in Helios
+    distribution function files.
+
+    The distributions are integrated over all angles and given as a function
+    of proton velocity.
+
+    Parameters
+    ----------
+    probe : int, string
+        Helios probe to import data from. Must be 1 or 2.
+    year : int
+        Year
+    doy : int
+        Day of year
+    hour : int
+        Hour
+    minute : int
+        Minute.
+    second : int
+        Second
+
+    Returns
+    -------
+    i1a : DataFrame
+        i1a integrated distribution function.
+    i1b : DataFrame
+        i1b integrated distribution function.
     """
     probe = _check_probe(probe)
     f, _ = _loaddistfile(probe, year, doy, hour, minute, second)
@@ -168,31 +256,31 @@ def electron_dist(probe, year, doy, hour, minute, second, remove_advect=False):
 
     Parameters
     ----------
-        probe : int, string
-            Helios probe to import data from. Must be 1 or 2.
-        year : int
-            Year
-        doy : int
-            Day of year.
-        hour : int
-            Hour.
-        minute : int
-            Minute.
-        second : int
-            Second.
-        remove_advect : bool, optional
-            If *False*, the distribution is returned in
-            the spacecraft frame.
+    probe : int, string
+        Helios probe to import data from. Must be 1 or 2.
+    year : int
+        Year
+    doy : int
+        Day of year
+    hour : int
+        Hour.
+    minute : int
+        Minute
+    second : int
+        Second
+    remove_advect : bool, optional
+        If ``False``, the distribution is returned in
+        the spacecraft frame.
 
-            If *True*, the distribution is
-            returned in the solar wind frame, by subtracting the spacecraft
-            velocity from the velcoity of each bin. Note this significantly
-            slows down reading in the distribution.
+        If ``True``, the distribution is
+        returned in the solar wind frame, by subtracting the spacecraft
+        velocity from the velcoity of each bin. Note this significantly
+        slows down reading in the distribution.
 
     Returns
     -------
-        dist : DataFrame
-            2D electron distribution function.
+    dist : DataFrame
+        2D electron distribution function
     """
     probe = _check_probe(probe)
     f, filename = _loaddistfile(probe, year, doy, hour, minute, second)
@@ -266,7 +354,7 @@ def distparams(probe, starttime, endtime):
     Returns
     -------
     distinfo : Series
-        Infromation stored in the top of distribution function files.
+        Infromation stored in the top of distribution function files
     """
     extensions = ['hdm.0', 'hdm.1', 'ndm.0', 'ndm.1']
     paramlist = []
@@ -290,11 +378,7 @@ def distparams(probe, starttime, endtime):
                 path = os.path.join(dist_dir, f)
                 # Check for distribution function
                 if path[-5:] in extensions:
-                    # year = int(path[-21:-19]) + 1900
-                    # doy = int(path[-18:-15])
-                    hour = int(path[-14:-12])
-                    minute = int(path[-11:-9])
-                    second = int(path[-8:-6])
+                    hour, minute, second = _dist_filename_to_hms(path)
                     p = distparams_single(probe, year, doy,
                                           hour, minute, second)
                     todays_params.append(p)
@@ -317,23 +401,23 @@ def distparams_single(probe, year, doy, hour, minute, second):
 
     Parameters
     ----------
-        probe : int, string
-            Helios probe to import data from. Must be 1 or 2.
-        year : int
-            Year
-        doy : int
-            Day of year.
-        hour : int
-            Hour.
-        minute : int
-            Minute.
-        second : int
-            Second.
+    probe : int, string
+        Helios probe to import data from. Must be 1 or 2.
+    year : int
+        Year
+    doy : int
+        Day of year
+    hour : int
+        Hour
+    minute : int
+        Minute
+    second : int
+        Second
 
     Returns
     -------
-        distparams : Series
-            Distribution parameters from top of distribution function file.
+    distparams : Series
+        Distribution parameters from top of distribution function file.
     """
     probe = _check_probe(probe)
     f, _ = _loaddistfile(probe, year, doy, hour, minute, second)
@@ -446,7 +530,7 @@ def distparams_single(probe, year, doy, hour, minute, second):
 
 def ion_dists(probe, starttime, endtime, remove_advect=False):
     """
-    Read in distribution parameters found in the header of distribution files.
+    Return 3D ion distributions between *starttime* and *endtime*
 
     Parameters
     ----------
@@ -492,11 +576,7 @@ def ion_dists(probe, starttime, endtime, remove_advect=False):
                 path = os.path.join(dist_dir, f)
                 # Check for distribution function
                 if path[-5:] in extensions:
-                    # year = int(path[-21:-19]) + 1900
-                    # doy = int(path[-18:-15])
-                    hour = int(path[-14:-12])
-                    minute = int(path[-11:-9])
-                    second = int(path[-8:-6])
+                    hour, minute, second = _dist_filename_to_hms(path)
                     try:
                         d = ion_dist_single(probe, year, doy,
                                             hour, minute, second)
@@ -535,13 +615,13 @@ def ion_dist_single(probe, year, doy, hour, minute, second,
     year : int
         Year
     doy : int
-        Day of year.
+        Day of year
     hour : int
-        Hour.
+        Hour
     minute : int
         Minute.
     second : int
-        Second.
+        Second
     remove_advect : bool, optional
         If *False*, the distribution is returned in
         the spacecraft frame.
@@ -554,7 +634,7 @@ def ion_dist_single(probe, year, doy, hour, minute, second,
     Returns
     -------
     dist : DataFrame
-        3D ion distribution function.
+        3D ion distribution function
     """
     probe = _check_probe(probe)
     f, filename = _loaddistfile(probe, year, doy, hour, minute, second)
@@ -635,19 +715,19 @@ def merged(probe, starttime, endtime, verbose=True, try_download=True):
 
     Parameters
     ----------
-        probe : int, string
-            Helios probe to import data from. Must be 1 or 2.
-        starttime : datetime
-            Interval start time.
-        endtime : datetime
-            Interval end time.
-        verbose : bool
-            If True, print more information as data is loading.
+    probe : int, string
+        Helios probe to import data from. Must be 1 or 2.
+    starttime : datetime
+        Interval start time
+    endtime : datetime
+        Interval end time
+    verbose : bool
+        If ``True``, print more information as data is loading
 
     Returns
     -------
-        data : DataFrame
-            Merged data set.
+    data : DataFrame
+        Merged data set
     """
     probe = _check_probe(probe)
     startdate = starttime.date()
@@ -710,17 +790,17 @@ def _merged_fromascii(probe, year, doy, try_download):
 
     Parameters
     ----------
-        probe : int, string
-            Helios probe to import data from. Must be 1 or 2.
-        year : int
-            Year.
-        doy : int
-            Day of year.
+    probe : int, string
+        Helios probe to import data from. Must be 1 or 2.
+    year : int
+        Year
+    doy : int
+        Day of year
 
     Returns
     -------
-        data : DataFrame
-            Merged data set.
+    data : DataFrame
+        Merged data set
     """
     probe = _check_probe(probe)
     local_dir = os.path.join(helios_dir,
@@ -765,19 +845,19 @@ def mag_4hz(probe, starttime, endtime, verbose=True):
 
     Parameters
     ----------
-        probe : int, string
-            Helios probe to import data from. Must be 1 or 2.
-        starttime : datetime
-            Interval start time.
-        endtime : datetime
-            Interval end time.
-        verbose : bool
-            If True, print more information as data is loading.
+    probe : int, string
+        Helios probe to import data from. Must be 1 or 2.
+    starttime : datetime
+        Interval start time
+    endtime : datetime
+        Interval end time
+    verbose : bool
+        If ``True``, print more information as data is loading
 
     Returns
     -------
-        data : DataFrame
-            4Hz magnetic field data set
+    data : DataFrame
+        4Hz magnetic field data set
     """
     probe = _check_probe(probe)
     startdate = starttime.date()
@@ -839,17 +919,17 @@ def _fourHz_fromascii(probe, year, doy):
 
     Parameters
     ----------
-        probe : int, string
-            Helios probe to import data from. Must be 1 or 2.
-        year : int
-            Year.
-        doy : int
-            Day of year.
+    probe : int, string
+        Helios probe to import data from. Must be 1 or 2.
+    year : int
+        Year
+    doy : int
+        Day of year
 
     Returns
     -------
-        data : DataFrame
-            4Hz magnetic field data set.
+    data : DataFrame
+        4Hz magnetic field data set
     """
     probe = _check_probe(probe)
     floc = os.path.join(helios_dir,
@@ -892,9 +972,9 @@ def mag_ness(probe, starttime, endtime, verbose=True):
     probe : int, string
         Helios probe to import data from. Must be 1 or 2.
     starttime : datetime
-        Interval start time.
+        Interval start time
     endtime : datetime
-        Interval end time.
+        Interval end time
     verbose : bool, optional
         If ``True``, print more information as data is loading. Default is
         ``True``.
@@ -953,17 +1033,17 @@ def _mag_ness_fromascii(probe, year, doy):
 
     Parameters
     ----------
-        probe : int, string
-            Helios probe to import data from. Must be 1 or 2.
-        year : int
-            Year.
-        doy : int
-            Day of year.
+    probe : int, string
+        Helios probe to import data from. Must be 1 or 2.
+    year : int
+        Year
+    doy : int
+        Day of year
 
     Returns
     -------
-        data : DataFrame
-            6 second magnetic field data set.
+    data : DataFrame
+        6 second magnetic field data set
     """
     probe = _check_probe(probe)
     floc = os.path.join(helios_dir,
@@ -1011,17 +1091,17 @@ def trajectory(probe, starttime, endtime):
 
     Parameters
     ----------
-        probe : int, string
-            Helios probe to import data from. Must be 1 or 2.
-        startdate : datetime
-            Interval start date.
-        enddate : datetime
-            Interval end date.
+    probe : int, string
+        Helios probe to import data from. Must be 1 or 2.
+    startdate : datetime
+        Interval start date
+    enddate : datetime
+        Interval end date
 
     Returns
     -------
-        data : DataFrame
-            Trajectory data set.
+    data : DataFrame
+        Trajectory data set
     """
     probe = _check_probe(probe)
     data = []
