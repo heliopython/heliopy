@@ -60,12 +60,16 @@ def fit_2d_residuals(x, y, f, *fargs):
 
     Returns
     -------
-    resids : array_like
+    resids : 2D array_like
         The residuals at each (*x*, *y*) coordinate
+    xedges : 1D array_like
+        Edges of the x bins
+    yedges : 1D array_like
+        Edges of the y bins
     """
-    hist, _, _, xbins, ybins = bin_2d_data(x, y)
+    hist, xedges, yedges, xbins, ybins = bin_2d_data(x, y)
     hist_fit = f(xbins, ybins, *fargs)
-    return hist - hist_fit
+    return hist - hist_fit, xedges, yedges
 
 
 def fit_2d(x, y, f, x0, **minkwargs):
@@ -97,7 +101,6 @@ def fit_2d(x, y, f, x0, **minkwargs):
         The residuals at each (*x*, *y*) coordinate
     """
     def resids(args):
-        r = fit_residuals(x, y, f, *args)
+        r, _, _ = fit_2d_residuals(x, y, f, *args)
         return np.sum(np.abs(r))
-
     return opt.minimize(resids, x0, **minkwargs)
