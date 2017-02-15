@@ -110,5 +110,6 @@ class TestHelios:
 
         starttime = datetime(2000, 1, 1, 0, 0, 0)
         endtime = datetime(2000, 1, 2, 0, 0, 0)
-        with pytest.raises(ValueError):
-            helios.merged('1', starttime, endtime)
+        for probe in ['1', '2']:
+            with pytest.raises(ValueError):
+                helios.merged(probe, starttime, endtime)
