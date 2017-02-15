@@ -730,8 +730,6 @@ def merged(probe, starttime, endtime, verbose=True, try_download=True):
         Merged data set
     """
     probe = _check_probe(probe)
-    startdate = starttime.date()
-    enddate = endtime.date()
 
     daylist = spacetime.daysplitinterval(starttime, endtime)
     data = []
@@ -775,8 +773,8 @@ def merged(probe, starttime, endtime, verbose=True, try_download=True):
     if data == []:
         fmt = '%d-%m-%Y'
         raise ValueError('No data to import for probe ' + probe +
-                         ' between ' + startdate.strftime(fmt) + ' and ' +
-                         enddate.strftime(fmt))
+                         ' between ' + starttime.strftime(fmt) + ' and ' +
+                         endtime.strftime(fmt))
 
     return helper.timefilter(data, starttime, endtime)
 
