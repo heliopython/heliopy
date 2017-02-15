@@ -1,5 +1,6 @@
 """Methods to fit statistical distributions to data"""
 import numpy as np
+import scipy.optimize as opt
 
 
 def bin_2d_data(x, y, normed=True):
