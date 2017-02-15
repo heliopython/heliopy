@@ -101,12 +101,14 @@ def test_mms():
 
 
 @pytest.mark.data
-def test_helios():
-    """
-    Tests for importing Helios data.
+class TestHelios:
+    """Tests for importing Helios data."""
+    def test_merged(self):
+        starttime = datetime(1976, 1, 1, 0, 0, 0)
+        endtime = datetime(1976, 1, 1, 23, 59, 59)
+        helios.merged('1', starttime, endtime)
 
-    Try and import a single days' worth of data for each data product.
-    """
-    starttime = datetime(1976, 1, 1, 0, 0, 0)
-    endtime = datetime(1976, 1, 1, 23, 59, 59)
-    helios.merged('1', starttime, endtime)
+        starttime = datetime(2000, 1, 1, 0, 0, 0)
+        endtime = datetime(2000, 1, 2, 0, 0, 0)
+        with pytest.raises(ValueError):
+            helios.merged('1', starttime, endtime)
