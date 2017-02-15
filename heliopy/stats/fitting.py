@@ -3,7 +3,7 @@ import numpy as np
 import scipy.optimize as opt
 
 
-def bin_2d_data(x, y, normed=True):
+def bin_2d_data(x, y, bins=100, normed=True):
     """
     Bin a 2D data set
 
@@ -13,6 +13,8 @@ def bin_2d_data(x, y, normed=True):
         x data points
     y : array_like
         y data points
+    bins : int
+        Number of bins in each direction
     normed : bool, optional
         If ``True``, normalise output histogram, otherwise return counts in
         each bin. Default is ``False``.
@@ -30,7 +32,7 @@ def bin_2d_data(x, y, normed=True):
     ybins : 2D array_like
         y coordinates of the data points in *hist*
     """
-    hist, xedges, yedges = np.histogram2d(x, y, bins=100, normed=True)
+    hist, xedges, yedges = np.histogram2d(x, y, bins=bins, normed=normed)
     # Transpose due to a inconsitensy with histogram2d and meshgrid
     hist = hist.T
     xbins = (xedges[1:] + xedges[:-1]) / 2
