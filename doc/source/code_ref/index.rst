@@ -7,6 +7,7 @@ API reference
    data/index
    plasma
    plot/index
+   spectra
    stats/index
    time
    vector
