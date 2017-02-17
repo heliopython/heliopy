@@ -148,7 +148,7 @@ def integrated_dists(probe, starttime, endtime):
     distlist = {'a': [], 'b': []}
 
     # Loop through each day
-    while starttime < endtime:
+    while starttime < endtime + timedelta(days=1):
         year = starttime.year
         doy = starttime.strftime('%j')
         # Directory for today's distribution files
