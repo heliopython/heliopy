@@ -1073,8 +1073,8 @@ def _mag_ness_fromascii(probe, year, doy):
         pd.to_timedelta(data['hour'], unit='h') + \
         pd.to_timedelta(data['minute'], unit='m') + \
         pd.to_timedelta(data['second'], unit='s')
-    data['ordinal'] = pd.DatetimeIndex(data['Time']).astype(np.int64)
     data = data.drop(['year', 'doy', 'hour', 'minute', 'second'], axis=1)
+    data = data.set_index('Time', drop=False)
 
     # Save data to a hdf store
     if use_hdf:
