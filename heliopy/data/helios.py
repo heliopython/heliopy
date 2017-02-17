@@ -148,7 +148,7 @@ def integrated_dists(probe, starttime, endtime):
     distlist = {'a': [], 'b': []}
 
     # Loop through each day
-    while starttime < endtime:
+    while starttime < endtime + timedelta(days=1):
         year = starttime.year
         doy = starttime.strftime('%j')
         # Directory for today's distribution files
@@ -1006,10 +1006,10 @@ def mag_ness(probe, starttime, endtime, verbose=True):
         # Loop through days of year
         for doy in range(startdoy, enddoy + 1):
             hdfloc = os.path.join(floc, 'h' + probe + str(year - 1900) +
-                                  str(doy).zfill(3) + '.h5')
+                                  str(doy).zfill(3) + '.hdf')
             if os.path.isfile(hdfloc):
                 # Load data from already processed file
-                data.append(pd.read_hdf(hdfloc, 'table'))
+                data.append(pd.read_hdf(hdfloc))
                 continue
 
             # Data not processed yet, try to process and load it
@@ -1073,12 +1073,12 @@ def _mag_ness_fromascii(probe, year, doy):
         pd.to_timedelta(data['hour'], unit='h') + \
         pd.to_timedelta(data['minute'], unit='m') + \
         pd.to_timedelta(data['second'], unit='s')
-    data['ordinal'] = pd.DatetimeIndex(data['Time']).astype(np.int64)
     data = data.drop(['year', 'doy', 'hour', 'minute', 'second'], axis=1)
+    data = data.set_index('Time', drop=False)
 
     # Save data to a hdf store
     if use_hdf:
-        saveloc = os.path.join(floc, fname + '.h5')
+        saveloc = os.path.join(floc, fname + '.hdf')
         data.to_hdf(saveloc, 'mag', format='fixed', mode='w')
     return(data)
 
