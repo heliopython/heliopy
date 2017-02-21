@@ -4,6 +4,55 @@ import scipy.stats as scistats
 import inspect
 
 
+def structure_function(data, order, npoints, spacing='linear', maxshift=None):
+    r"""
+    Calculate the structure function of a data set
+
+    The structure function of order p is defined as
+    :math:`S(j) = \left < \left | x(i + j) - x(i) \right |^{p}  \right >_{i}`
+
+    Parameters
+    ----------
+    data : 1D array
+        Input data
+    order : scalar
+        Order of structure function to calculate
+    npoints : scalar
+        Number of strucutre function points to calculate
+    spacing : string, optional
+        How to chose the spacing of scales to cacluate the strcutre function.
+        Can be ``'linear'`` or ``'log'``.
+
+    Returns
+    -------
+    sf : 1D array
+        Structure function
+    scales : 1D array
+        Correspoinding scales at which the structure function was evaluated
+    """
+    data = np.array(data)
+    if not maxshift:
+        maxshift = data.size
+        endpoint = False
+    else:
+        endpoint = True
+    if spacing == 'log':
+        indices = np.logspace(0, np.log10(maxshift), npoints,
+                              endpoint=endpoint)
+    elif spacing == 'linear':
+        indices = np.linspace(1, maxshift, npoints, endpoint=endpoint)
+
+    indices = [int(i) for i in indices]
+    indices = np.unique(indices)
+    out = np.zeros(indices.shape) * np.nan
+    for j, shift in enumerate(indices):
+        shifted = np.append(np.zeros(shift) * np.nan, data[:-shift])
+        struct = (np.abs(shifted - data))**order
+        struct = np.nanmean(struct)
+        out[j] = struct
+    return out, indices
+
+
 def multi_variate_mode(data, bins=100):
     """
     Calculate the mode of a multi-variable data set.
