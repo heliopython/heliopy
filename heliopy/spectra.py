@@ -24,11 +24,24 @@ def spectral_slopes(fs, power, nbins=10, spacing='linear'):
         Number of bins to split slope calculation into.
     spacing : string
         Either 'linear' or 'log'
+
+    Returns
+    -------
+    bins : array_like
+        Bins in which each power law is fitted
+    slopes : array_like
+        Estimates for the power law indices
+    stderr : array_like
+        Estimate of the standard error in fitting a straight line to the data
+        in log space
     """
     # Sort frequencies
     argsorted = np.argsort(fs)
     fs = fs[argsorted]
     power = power[argsorted]
+    if fs[0] == 0:
+        fs = fs[1:]
+        power = power[1:]
 
     # Calculate bin size
     if spacing == 'linear':
