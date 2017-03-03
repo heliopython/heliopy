@@ -60,7 +60,7 @@ def _load(probe, starttime, endtime, instrument, product_id, cdfkeys):
             try:
                 _download(probe, thisstart, thisend, instrument, product_id)
             except Exception as err:
-                print(str(err))
+                print(str(err), '\n')
                 continue
 
         cdf = pycdf.CDF(os.path.join(local_dir, local_fname))
@@ -119,6 +119,7 @@ def _download(probe, starttime, endtime, instrument, product_id):
         urlretrieve(request_url,
                     filename=os.path.join(local_dir, filename),
                     reporthook=reporthook)
+        print('\n')
         # Extract tar.gz file
         tar = tarfile.open(os.path.join(local_dir, filename))
         tar.extractall(local_dir)
