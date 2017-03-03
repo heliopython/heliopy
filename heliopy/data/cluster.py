@@ -60,7 +60,7 @@ def _load(probe, starttime, endtime, instrument, product_id, cdfkeys):
             try:
                 _download(probe, thisstart, thisend, instrument, product_id)
             except Exception as err:
-                print(str(err))
+                print(str(err), '\n')
                 continue
 
         cdf = pycdf.CDF(os.path.join(local_dir, local_fname))
@@ -119,6 +119,7 @@ def _download(probe, starttime, endtime, instrument, product_id):
         urlretrieve(request_url,
                     filename=os.path.join(local_dir, filename),
                     reporthook=reporthook)
+        print('\n')
         # Extract tar.gz file
         tar = tarfile.open(os.path.join(local_dir, filename))
         tar.extractall(local_dir)
@@ -171,6 +172,44 @@ def fgm(probe, starttime, endtime):
                'B_vec_xyz_gse__C' + probe + '_CP_FGM_FULL': ['Bx', 'By', 'Bz'],
                'time_tags__C' + probe + '_CP_FGM_FULL': 'Time'}
     return _load(probe, starttime, endtime, 'fgm', 'CP_FGM_FULL', cdfkeys)
+
+
+def cis_codif_h1_moms(probe, starttime, endtime, sensitivity='high'):
+    """
+    Load He+ moments from CIS instrument.
+
+    See https://caa.estec.esa.int/documents/UG/CAA_EST_UG_CIS_v35.pdf for more
+    information on the CIS data.
+
+    Parameters
+    ----------
+    probe : string
+        Probe number. Must be '1', '2', '3', or '4'.
+    starttime : datetime
+        Interval start.
+    endtime : datetime
+        Interval end.
+    sensitivity : string, 'high' or 'low', default: 'low'
+        Load high or low sensitivity
+
+    Returns
+    -------
+    data : DataFrame
+        Requested data.
+    """
+    sensitivitydict = {'high': 'HS', 'low': 'LS'}
+    sensitivity = sensitivitydict[sensitivity]
+    endstr = '_CP_CIS-CODIF_' + sensitivity + '_H1_MOMENTS'
+    cdfkeys = {'density__C' + probe + endstr: 'n_h',
+               # 'pressure__C' + probe + endstr: 'p_h',
+               'T__C' + probe + endstr: 'Th',
+               'T_par__C' + probe + endstr: 'Th_par',
+               'T_perp__C' + probe + endstr: 'Tg_perp',
+               'velocity__C' + probe + endstr: ['vh_x',
+                                                'vh_y',
+                                                'vh_z'],
+               'time_tags__C' + probe + endstr: 'Time'}
+    return _load(probe, starttime, endtime, 'peace', endstr[1:], cdfkeys)
 
 
 def peace_moments(probe, starttime, endtime):
@@ -244,8 +283,8 @@ def cis_hia_onboard_moms(probe, starttime, endtime):
                 'vi_y',
                 'vi_z'],
                'time_tags__C' + probe + '_CP_CIS-HIA_ONBOARD_MOMENTS': 'Time'}
-    data = _load(probe, starttime, endtime, 'cis', 'CP_CIS-HIA_ONBOARD_MOMENTS',
-                 cdfkeys)
+    data = _load(probe, starttime, endtime, 'cis',
+                 'CP_CIS-HIA_ONBOARD_MOMENTS', cdfkeys)
     to_replace = {'vi_x': -1.803100937500000000e+05}
     data = data.replace(to_replace, np.nan)
     return data

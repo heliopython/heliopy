@@ -68,6 +68,7 @@ def test_cluster():
         starttime = datetime(2009, 1, 1, 0, 0, 0)
         endtime = datetime(2009, 1, 1, 2, 0, 0)
         cluster.cis_hia_onboard_moms(probe, starttime, endtime)
+        cluster.cis_codif_h1_moms(probe, starttime, endtime)
 
 
 @pytest.mark.data
