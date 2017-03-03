@@ -174,6 +174,44 @@ def fgm(probe, starttime, endtime):
     return _load(probe, starttime, endtime, 'fgm', 'CP_FGM_FULL', cdfkeys)
 
 
+def cis_codif_h1_moms(probe, starttime, endtime, sensitivity='high'):
+    """
+    Load He+ moments from CIS instrument.
+
+    See https://caa.estec.esa.int/documents/UG/CAA_EST_UG_CIS_v35.pdf for more
+    information on the CIS data.
+
+    Parameters
+    ----------
+    probe : string
+        Probe number. Must be '1', '2', '3', or '4'.
+    starttime : datetime
+        Interval start.
+    endtime : datetime
+        Interval end.
+    sensitivity : string, 'high' or 'low', default: 'low'
+        Load high or low sensitivity
+
+    Returns
+    -------
+    data : DataFrame
+        Requested data.
+    """
+    sensitivitydict = {'high': 'HS', 'low': 'LS'}
+    sensitivity = sensitivitydict[sensitivity]
+    endstr = '_CP_CIS-CODIF_' + sensitivity + '_H1_MOMENTS'
+    cdfkeys = {'density__C' + probe + endstr: 'n_h',
+               # 'pressure__C' + probe + endstr: 'p_h',
+               'T__C' + probe + endstr: 'Th',
+               'T_par__C' + probe + endstr: 'Th_par',
+               'T_perp__C' + probe + endstr: 'Tg_perp',
+               'velocity__C' + probe + endstr: ['vh_x',
+                                                'vh_y',
+                                                'vh_z'],
+               'time_tags__C' + probe + endstr: 'Time'}
+    return _load(probe, starttime, endtime, 'peace', endstr[1:], cdfkeys)
+
+
 def peace_moments(probe, starttime, endtime):
     """
     Download electron moments from the PEACE instrument.
@@ -245,8 +283,8 @@ def cis_hia_onboard_moms(probe, starttime, endtime):
                 'vi_y',
                 'vi_z'],
                'time_tags__C' + probe + '_CP_CIS-HIA_ONBOARD_MOMENTS': 'Time'}
-    data = _load(probe, starttime, endtime, 'cis', 'CP_CIS-HIA_ONBOARD_MOMENTS',
-                 cdfkeys)
+    data = _load(probe, starttime, endtime, 'cis',
+                 'CP_CIS-HIA_ONBOARD_MOMENTS', cdfkeys)
     to_replace = {'vi_x': -1.803100937500000000e+05}
     data = data.replace(to_replace, np.nan)
     return data
