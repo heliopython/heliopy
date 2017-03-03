@@ -5,7 +5,7 @@ from scipy.stats import linregress
 import heliopy.stats.stats as heliostats
 
 
-def spectral_slopes(fs, power, nbins=10, spacing='linear'):
+def spectral_slopes(fs, power, bins=10, spacing='linear'):
     """
     Calculates the local power law of a specturm across multiple bins.
 
@@ -20,10 +20,13 @@ def spectral_slopes(fs, power, nbins=10, spacing='linear'):
         Frequencies.
     power : array_like
         Power at corresponding frequencies.
-    nbins : int
-        Number of bins to split slope calculation into.
-    spacing : string
-        Either 'linear' or 'log'
+    bins : int or sequence of scalars, default: 10
+        If an integer, number of bins to calculate slopes over.
+        If a sequence of scalars, the sequence defines the edges of the
+        frequency bins in which to calculate the slopes.
+    spacing : string, default: 'linear'
+        If *bins* is an integer, the method of spacing frequency bins.
+        Either 'linear' or 'log'.
 
     Returns
     -------
@@ -44,12 +47,14 @@ def spectral_slopes(fs, power, nbins=10, spacing='linear'):
         power = power[1:]
 
     # Calculate bin size
-    if spacing == 'linear':
-        bins = np.linspace(fs[0], fs[-1], nbins + 1)
-    elif spacing == 'log':
-        bins = np.logspace(np.log10(fs[0]), np.log10(fs[-1]), nbins + 1)
-    else:
-        raise RuntimeError('spacing argument must be either "linear" or "log"')
+    if isinstance(bins, int):
+        if spacing == 'linear':
+            bins = np.linspace(fs[0], fs[-1], bins + 1)
+        elif spacing == 'log':
+            bins = np.logspace(np.log10(fs[0]), np.log10(fs[-1]), bins + 1)
+        else:
+            raise RuntimeError('spacing argument must be either "linear" '
+                               'or "log"')
 
     # Perform linear regression in logspace
     out = heliostats.binfunc(np.log10(fs),
@@ -60,5 +65,6 @@ def spectral_slopes(fs, power, nbins=10, spacing='linear'):
     # Extract slopes and their errors
     slopes = out[:, 0]
     stderr = out[:, 4]
+    slopes[np.isnan(stderr)] *= np.nan
 
     return np.array(bins), slopes, stderr
