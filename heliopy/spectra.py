@@ -65,5 +65,6 @@ def spectral_slopes(fs, power, bins=10, spacing='linear'):
     # Extract slopes and their errors
     slopes = out[:, 0]
     stderr = out[:, 4]
+    slopes[np.isnan(stderr)] *= np.nan
 
     return np.array(bins), slopes, stderr
