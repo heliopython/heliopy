@@ -176,7 +176,7 @@ def fgm(probe, starttime, endtime):
 
 def cis_codif_h1_moms(probe, starttime, endtime, sensitivity='high'):
     """
-    Load He+ moments from CIS instrument.
+    Load H+ moments from CIS instrument.
 
     See https://caa.estec.esa.int/documents/UG/CAA_EST_UG_CIS_v35.pdf for more
     information on the CIS data.
