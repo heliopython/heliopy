@@ -259,7 +259,7 @@ def cis_hia_onboard_moms(probe, starttime, endtime):
     Parameters
     ----------
         probe : string
-            Probe number. Must be '1', '2', '3', or '4'.
+            Probe number. Must be '1' or '3'
         starttime : datetime
             Interval start.
         endtime : datetime
@@ -270,6 +270,9 @@ def cis_hia_onboard_moms(probe, starttime, endtime):
         data : DataFrame
             Requested data.
     """
+    if probe == '2' or probe == '4':
+        raise ValueError('Onboard ion moment data is not available for '
+                         'cluster probes 2 or 4')
     cdfkeys = {'density__C' + probe + '_CP_CIS-HIA_ONBOARD_MOMENTS': 'n_i',
                'pressure__C' + probe + '_CP_CIS-HIA_ONBOARD_MOMENTS': 'p_i',
                'temperature__C' + probe + '_CP_CIS-HIA_ONBOARD_MOMENTS':
