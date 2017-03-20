@@ -99,8 +99,13 @@ def fit_2d(x, y, f, x0, **minkwargs):
 
     Returns
     -------
-    resids : array_like
-        The residuals at each (*x*, *y*) coordinate
+    resids : OptimizeResult
+        The optimization result represented as a :class:`scipy.optimize.OptimizeResult`
+        object.
+
+        Important attributes are: x the solution array, success a Boolean flag
+        indicating if the optimizer exited successfully and message which
+        describes the cause of the termination.
     """
     def resids(args):
         r, _, _ = fit_2d_residuals(x, y, f, *args)
