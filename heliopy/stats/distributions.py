@@ -3,7 +3,7 @@ import numpy as np
 import heliopy.vector.transformations as transformations
 
 
-def maxwellian(v, n, v0, vth):
+def maxwellian_1D(v, n, v0, vth):
     r"""
     1D Maxwell-Boltzmann velocity distribution, defined as
     :math:`f \left (v \right ) = 4 * \pi $ v^{2} n \left ( \frac{1}{\pi v_{th}} \right )^{\frac{3}{2}} e^{-v^{2} / v_{th}^{2}}`
