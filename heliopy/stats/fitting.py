@@ -100,8 +100,8 @@ def fit_2d(x, y, f, x0, **minkwargs):
     Returns
     -------
     resids : OptimizeResult
-        The optimization result represented as a :class:`scipy.optimize.OptimizeResult`
-        object.
+        The optimization result represented as a
+        :class:`scipy.optimize.OptimizeResult` object.
 
         Important attributes are: x the solution array, success a Boolean flag
         indicating if the optimizer exited successfully and message which
@@ -109,5 +109,70 @@ def fit_2d(x, y, f, x0, **minkwargs):
     """
     def resids(args):
         r, _, _ = fit_2d_residuals(x, y, f, *args)
+        return np.sum(np.abs(r))
+    return opt.minimize(resids, x0, **minkwargs)
+
+
+def fit_1d_residuals(xp, data, f, *fargs):
+    """
+    Return the residuals from a fitted distribution
+
+    The distribution given by ``f(x, *fargs)`` is evaluated at each bin. The
+    fitted function is then subtracted from the data to give the residuals.
+
+    Parameters
+    ----------
+    xp : array_like
+        Sampling points
+    data : array_like
+        Data at corresponding sample points
+    f : callable
+        Function fitted to data. *f* must take *xp* as its first argument, and
+        then the fit parameters (*fargs*) as the remaining arguments.
+
+    Returns
+    -------
+    resids : 2D array_like
+        The residuals at each *xp* coordinate
+    """
+    fit = f(xp, *fargs)
+    return data - fit
+
+
+def fit_1d(xp, data, f, x0, **minkwargs):
+    """
+    Fit a function to a 2D data set
+
+    The function is fitted by minimising the sum of the aboslute values of
+    the residuals calculated using :func:`fit_1d_residuals`.
+
+    Parameters
+    ----------
+    xp : array_like
+        Sampling points
+    data : array_like
+        Data at corresponding sample points
+    f : callable
+        Function fitted to data. *f* must take *x* and *y* as its first two
+        arguments, and then the fit parameters as the remaining
+        arguments
+    x0 : tuple
+        Initial guess for the fit parameters. ``len(x0)`` must equal the number
+        of additional paramerts that *f* takes.
+    minkwargs
+        Keyword arguments are passed to `minimize`
+
+    Returns
+    -------
+    resids : OptimizeResult
+        The optimization result represented as a
+        :class:`scipy.optimize.OptimizeResult` object.
+
+        Important attributes are: x the solution array, success a Boolean flag
+        indicating if the optimizer exited successfully and message which
+        describes the cause of the termination.
+    """
+    def resids(args):
+        r = fit_1d_residuals(xp, data, f, *args)
         return np.sum(np.abs(r))
     return opt.minimize(resids, x0, **minkwargs)
