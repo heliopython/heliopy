@@ -1,12 +1,19 @@
 from setuptools import setup
 
 setup(name='heliopy',
-      version='0.1',
+      version='0.1b1',
       description='Python for Space Physics',
-      url='https://github.com/dstansby/heliopy',
+      url='https://github.com/heliopy/heliopy',
       author='David Stansby',
       author_email='dstansby@gmail.com',
       license='GPL-3.0',
+      classifiers=['Development Status :: 4 - Beta',
+                   'Environment :: Console',
+                   'Intended Audience :: Science/Research',
+                   'License :: OSI Approved :: GNU General Public License v3 (GPLv3)'
+                   'Natural Language :: English',
+                   'Programming Language :: Python :: 3',
+                   'Topic :: Scientific/Engineering :: Physics'],
       include_package_data=True,
       install_requires=['numpy',
                         'scipy',
