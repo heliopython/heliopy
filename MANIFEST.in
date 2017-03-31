@@ -1,5 +1,3 @@
 recursive-include heliopy *.py
 
-include setup.py
-include README.md
-include heliopy/data/heliopyrc
+include heliopy/heliopyrc
