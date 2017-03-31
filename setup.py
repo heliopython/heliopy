@@ -10,7 +10,6 @@ setup(name='heliopy',
       classifiers=['Development Status :: 4 - Beta',
                    'Environment :: Console',
                    'Intended Audience :: Science/Research',
-                   'License :: OSI Approved :: GNU General Public License v3 (GPLv3)'
                    'Natural Language :: English',
                    'Programming Language :: Python :: 3',
                    'Topic :: Scientific/Engineering :: Physics'],
