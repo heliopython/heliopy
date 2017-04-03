@@ -122,7 +122,7 @@ def _dist_filename_to_hms(path):
     return hour, minute, second
 
 
-def integrated_dists(probe, starttime, endtime):
+def integrated_dists(probe, starttime, endtime, verbose=False):
     """
     Returns the integrated distributions from experiments i1a and i1b in Helios
     distribution function files.
@@ -138,6 +138,8 @@ def integrated_dists(probe, starttime, endtime):
         Start of interval
     endtime : datetime
         End of interval
+    verbose : bool, optional
+        If ``True``, print information whilst loading. Default is ``False``.
 
     Returns
     -------
@@ -146,9 +148,10 @@ def integrated_dists(probe, starttime, endtime):
     """
     extensions = ['hdm.0', 'hdm.1', 'ndm.0', 'ndm.1']
     distlist = {'a': [], 'b': []}
+    starttime_orig = starttime
 
     # Loop through each day
-    while starttime < endtime + timedelta(days=1):
+    while starttime < endtime:
         year = starttime.year
         doy = starttime.strftime('%j')
         # Directory for today's distribution files
@@ -158,9 +161,14 @@ def integrated_dists(probe, starttime, endtime):
             'integrated_dists.hdf'
         hdffile = os.path.join(dist_dir, hdffile)
         todays_dists = {'a': [], 'b': []}
+        # Check if data is already saved
         if os.path.isfile(hdffile):
             for key in todays_dists:
                 todays_dists[key] = pd.read_hdf(hdffile, key=key)
+                distlist[key].append(todays_dists[key])
+            starttime += timedelta(days=1)
+            continue
+        # If not saved, generate a derived file
         else:
             # Get every distribution function file present for this day
             for f in os.listdir(dist_dir):
@@ -179,24 +187,25 @@ def integrated_dists(probe, starttime, endtime):
 
                     t = datetime.combine(starttime.date(),
                                          time(hour, minute, second))
+                    if verbose:
+                        print(t)
                     dists = {'a': a, 'b': b}
                     for key in dists:
                         dist = dists[key]
                         dist['Time'] = t
                         dist = dist.set_index(['Time', 'v'], drop=True)
                         todays_dists[key].append(dist)
-            for key in todays_dists:
-                todays_dists[key] = pd.concat(todays_dists[key])
-                if use_hdf:
-                    todays_dists[key].to_hdf(hdffile, key=key, mode='a')
-        for key in distlist:
+        # Go through a and b and concat all the data
+        for key in todays_dists:
+            todays_dists[key] = pd.concat(todays_dists[key])
+            if use_hdf:
+                todays_dists[key].to_hdf(hdffile, key=key, mode='a')
             distlist[key].append(todays_dists[key])
         starttime += timedelta(days=1)
 
     # The while loop will only stop after we have overshot
-    starttime -= timedelta(days=1)
     for key in distlist:
-        distlist[key] = helper.timefilter(distlist[key], starttime, endtime)
+        distlist[key] = helper.timefilter(distlist[key], starttime_orig, endtime)
     return distlist
 
 
