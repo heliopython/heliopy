@@ -58,3 +58,11 @@ together with a new multiindex level::
     df2['newlevel'] = 2
     df = pd.concat([df1, df2])
     df = df.set_index('newlevel', append=True)
+
+Re-ordering index levels
+========================
+Suppose we have a data frame with the index column labels
+``['E', 'Theta', 'Phi']``, and we want to change the order of the levels.
+This can be done with ``reorder_levels``::
+
+    df = df.reorder_levels(['Theta', 'Phi', 'E'], axis=0)
