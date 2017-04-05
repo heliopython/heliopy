@@ -161,9 +161,3 @@ def fgm_survey(probe, starttime, endtime):
     data = pd.concat(data)
     data = data[(data['Time'] > starttime) & (data['Time'] < endtime)]
     return data
-
-if __name__ == '__main__':
-    starttime = datetime(2016, 1, 1, 0, 0, 0)
-    endtime = datetime(2016, 1, 1, 1, 0, 0)
-    data = fgm_survey('2', starttime, endtime)
-    print(data)
