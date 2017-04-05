@@ -36,6 +36,13 @@ def test_artemis():
     probe = 'a'
     artemis.fgm(probe, 'h', 'dsl', starttime, endtime)
 
+    with pytest.raises(ValueError):
+        artemis.fgm('123', 'h', 'dsl', starttime, endtime)
+    with pytest.raises(ValueError):
+        artemis.fgm('1', '123', 'dsl', starttime, endtime)
+    with pytest.raises(ValueError):
+        artemis.fgm('1', 'h', '123', starttime, endtime)
+
 
 @pytest.mark.data
 def test_ace():
