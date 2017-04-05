@@ -368,6 +368,7 @@ def distparams(probe, starttime, endtime):
     extensions = ['hdm.0', 'hdm.1', 'ndm.0', 'ndm.1']
     paramlist = []
 
+    starttime_orig = starttime
     # Loop through each day
     while starttime < endtime:
         year = starttime.year
@@ -401,7 +402,7 @@ def distparams(probe, starttime, endtime):
         paramlist.append(todays_params)
         starttime += timedelta(days=1)
 
-    return helper.timefilter(paramlist, starttime, endtime)
+    return helper.timefilter(paramlist, starttime_orig, endtime)
 
 
 def distparams_single(probe, year, doy, hour, minute, second):
