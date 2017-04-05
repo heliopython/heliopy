@@ -833,7 +833,7 @@ def _merged_fromascii(probe, year, doy, try_download):
 
     # Save data to a hdf store
     if use_hdf:
-        _save_hdf(local_dir, filename[:-4])
+        _save_hdf(data, local_dir, filename[:-4])
     return(data)
 
 
@@ -957,7 +957,7 @@ def _fourHz_fromascii(probe, year, doy):
 
     # Save data to a hdf store
     if use_hdf:
-        _save_hdf(floc, fname)
+        _save_hdf(data, floc, fname)
     return(data)
 
 
@@ -1078,11 +1078,11 @@ def _mag_ness_fromascii(probe, year, doy):
 
     # Save data to a hdf store
     if use_hdf:
-        _save_hdf(floc, fname)
+        _save_hdf(data, floc, fname)
     return(data)
 
 
-def _save_hdf(fdir, fname):
+def _save_hdf(data, fdir, fname):
     saveloc = os.path.join(fdir, fname + '.h5')
     data.to_hdf(saveloc, 'table', format='fixed', mode='w')
 
