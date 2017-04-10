@@ -570,6 +570,7 @@ def ion_dists(probe, starttime, endtime, remove_advect=False, verbose=False):
     distlist = []
 
     # Loop through each day
+    starttime_orig = starttime
     while starttime < endtime:
         year = starttime.year
         doy = starttime.strftime('%j')
@@ -614,9 +615,7 @@ def ion_dists(probe, starttime, endtime, remove_advect=False, verbose=False):
         distlist.append(todays_dist)
         starttime += timedelta(days=1)
 
-    # The while loop will only stop after we have overshot
-    starttime -= timedelta(days=1)
-    return helper.timefilter(distlist, starttime, endtime)
+    return helper.timefilter(distlist, starttime_orig, endtime)
 
 
 def ion_dist_single(probe, year, doy, hour, minute, second,
