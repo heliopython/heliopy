@@ -538,7 +538,7 @@ def distparams_single(probe, year, doy, hour, minute, second):
     return distparams
 
 
-def ion_dists(probe, starttime, endtime, remove_advect=False):
+def ion_dists(probe, starttime, endtime, remove_advect=False, verbose=False):
     """
     Return 3D ion distributions between *starttime* and *endtime*
 
@@ -558,6 +558,8 @@ def ion_dists(probe, starttime, endtime, remove_advect=False):
         returned in the solar wind frame, by subtracting the spacecraft
         velocity from the velcoity of each bin. Note this significantly
         slows down reading in the distribution.
+    verbose : bool, optional
+        If ``True``, print dates when loading files. Default is ``False``.
 
     Returns
     -------
@@ -568,9 +570,12 @@ def ion_dists(probe, starttime, endtime, remove_advect=False):
     distlist = []
 
     # Loop through each day
+    starttime_orig = starttime
     while starttime < endtime:
         year = starttime.year
         doy = starttime.strftime('%j')
+        if verbose:
+            print('Loading year', year, 'doy', doy)
         # Directory for today's distribution files
         dist_dir = _dist_file_dir(probe, year, doy)
         # Locaiton of hdf file to save to/load from
@@ -599,6 +604,8 @@ def ion_dists(probe, starttime, endtime, remove_advect=False):
                     t = datetime.combine(starttime.date(),
                                          time(hour, minute, second))
                     d['Time'] = t
+                    if verbose:
+                        print(t)
                     todays_dist.append(d)
             todays_dist = pd.concat(todays_dist)
             todays_dist = todays_dist.set_index('Time', append=True)
@@ -608,9 +615,7 @@ def ion_dists(probe, starttime, endtime, remove_advect=False):
         distlist.append(todays_dist)
         starttime += timedelta(days=1)
 
-    # The while loop will only stop after we have overshot
-    starttime -= timedelta(days=1)
-    return helper.timefilter(distlist, starttime, endtime)
+    return helper.timefilter(distlist, starttime_orig, endtime)
 
 
 def ion_dist_single(probe, year, doy, hour, minute, second,
