@@ -584,6 +584,12 @@ def ion_dists(probe, starttime, endtime, remove_advect=False, verbose=False):
             print('Loading ion dists from year', year, 'doy', doy)
         # Directory for today's distribution files
         dist_dir = _dist_file_dir(probe, year, doy)
+        # If directory doesn't exist, print error and continue
+        if not os.path.exists(dist_dir):
+            print('No ion distributions available for year', year, 'doy', doy)
+            starttime += timedelta(days=1)
+            continue
+
         # Locaiton of hdf file to save to/load from
         hdffile = 'h' + probe + str(year) + str(doy).zfill(3) +\
             'ion_dists.hdf'
@@ -617,10 +623,13 @@ def ion_dists(probe, starttime, endtime, remove_advect=False, verbose=False):
             todays_dist = todays_dist.set_index('Time', append=True)
             if use_hdf:
                 todays_dist.to_hdf(hdffile, key='ion_dist', mode='w')
-
-        distlist.append(todays_dist)
+        if not todays_dist.empty:
+            distlist.append(todays_dist)
         starttime += timedelta(days=1)
 
+    if distlist == []:
+        raise RuntimeError('No data available for times ' +
+                           str(starttime_orig) + ' to ' + str(endtime))
     return helper.timefilter(distlist, starttime_orig, endtime)
 
 
