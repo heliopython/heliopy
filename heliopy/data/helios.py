@@ -347,7 +347,7 @@ def electron_dist(probe, year, doy, hour, minute, second, remove_advect=False):
     return dist
 
 
-def distparams(probe, starttime, endtime):
+def distparams(probe, starttime, endtime, verbose=False):
     """
     Read in distribution parameters found in the header of distribution files.
 
@@ -359,6 +359,8 @@ def distparams(probe, starttime, endtime):
         Start of interval
     endtime : datetime
         End of interval
+    verbose : bool, optional
+        If ``True``, print information whilst loading. Default is ``False``.
 
     Returns
     -------
@@ -389,6 +391,8 @@ def distparams(probe, starttime, endtime):
                 # Check for distribution function
                 if path[-5:] in extensions:
                     hour, minute, second = _dist_filename_to_hms(path)
+                    if verbose:
+                        print(starttime.date(), hour, minute, second)
                     p = distparams_single(probe, year, doy,
                                           hour, minute, second)
                     todays_params.append(p)
@@ -577,7 +581,7 @@ def ion_dists(probe, starttime, endtime, remove_advect=False, verbose=False):
         year = starttime.year
         doy = starttime.strftime('%j')
         if verbose:
-            print('Loading year', year, 'doy', doy)
+            print('Loading ion dists from year', year, 'doy', doy)
         # Directory for today's distribution files
         dist_dir = _dist_file_dir(probe, year, doy)
         # Locaiton of hdf file to save to/load from
