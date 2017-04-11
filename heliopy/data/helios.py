@@ -396,6 +396,8 @@ def distparams(probe, starttime, endtime):
             todays_params = pd.concat(todays_params,
                                       ignore_index=True, axis=1).T
             todays_params = todays_params.set_index('Time', drop=False)
+            # Convert columns to numeric types
+            todays_params = todays_params.apply(pd.to_numeric, errors='ignore')
             if use_hdf:
                 todays_params.to_hdf(hdffile, key='distparams', mode='w')
 
@@ -434,7 +436,7 @@ def distparams_single(probe, year, doy, hour, minute, second):
 
     _, month, day = spacetime.doy2ymd(year, doy)
     dtime = datetime(year, month, day, hour, minute, second)
-    distparams = pd.Series(dtime, index=['Time'], dtype=object)
+    distparams = pd.Series(dtime, index=['Time'])
     # Ignore the Pizzo et. al. correction at top of file
     for _ in range(0, 3):
         f.readline()
