@@ -5,7 +5,6 @@ All data is publically available at ftp://cdaweb.gsfc.nasa.gov/pub/data/imp/
 """
 import os
 import pandas as pd
-from datetime import datetime
 
 import heliopy.time as spacetime
 from heliopy.data import helper

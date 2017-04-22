@@ -31,6 +31,12 @@ def jointdists(data, title=None, sharelims=True, **kwargs):
 
         Default is *True*
 
+    Returns
+    -------
+    axs : list
+        A list of matplotlib axes objects, corresponding to the subplots
+        created.
+
     Examples
     --------
     A joint distribution plot for a single day of WIND magnetic field data:
