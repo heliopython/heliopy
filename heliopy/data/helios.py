@@ -122,6 +122,45 @@ def _dist_filename_to_hms(path):
     return hour, minute, second
 
 
+def ion_fitparams(probe, starttime, endtime):
+    """
+    Returns parameters from 3D fitting to ion distribution functions.
+
+    Parameters
+    ----------
+    probe : int
+        Helios probe to import data from. Must be 1 or 2.
+    starttime : datetime
+        Start of interval
+    endtime : datetime
+        End of interval
+
+    Returns
+    -------
+    distinfo : DataFrame
+        Parameters from 3D fitting.
+    """
+    starttime_orig = starttime
+    paramlist = []
+    while starttime < endtime:
+        year = str(starttime.year)
+        doy = starttime.strftime('%j')
+        fname = 'h' + probe + '_' + year + '_' + doy + '_fits.h5'
+        saveloc = os.path.join(helios_dir,
+                               'helios' + probe,
+                               'fits',
+                               year,
+                               fname)
+        try:
+            params = pd.read_hdf(saveloc, 'fits')
+        except FileNotFoundError:
+            starttime += timedelta(days=1)
+            continue
+        paramlist.append(params)
+        starttime += timedelta(days=1)
+    return pd.concat(paramlist)
+
+
 def integrated_dists(probe, starttime, endtime, verbose=False):
     """
     Returns the integrated distributions from experiments i1a and i1b in Helios
