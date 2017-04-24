@@ -596,35 +596,40 @@ def ion_dists(probe, starttime, endtime, remove_advect=False, verbose=False):
         hdffile = os.path.join(dist_dir, hdffile)
         if os.path.isfile(hdffile):
             todays_dist = pd.read_hdf(hdffile)
-        else:
-            todays_dist = []
-            # Get every distribution function file present for this day
-            for f in os.listdir(dist_dir):
-                path = os.path.join(dist_dir, f)
-                # Check for distribution function
-                if path[-5:] in extensions:
-                    hour, minute, second = _dist_filename_to_hms(path)
-                    try:
-                        d = ion_dist_single(probe, year, doy,
-                                            hour, minute, second)
-                    except RuntimeError as err:
-                        strerr = 'No ion distribution function data in file'
-                        if str(err) == strerr:
-                            continue
-                        raise err
+            starttime += timedelta(days=1)
+            continue
 
-                    t = datetime.combine(starttime.date(),
-                                         time(hour, minute, second))
-                    d['Time'] = t
-                    if verbose:
-                        print(t)
-                    todays_dist.append(d)
-            todays_dist = pd.concat(todays_dist)
-            todays_dist = todays_dist.set_index('Time', append=True)
-            if use_hdf:
-                todays_dist.to_hdf(hdffile, key='ion_dist', mode='w')
-        if not todays_dist.empty:
-            distlist.append(todays_dist)
+        todays_dist = []
+        # Get every distribution function file present for this day
+        for f in os.listdir(dist_dir):
+            path = os.path.join(dist_dir, f)
+            # Check for distribution function
+            if path[-5:] in extensions:
+                hour, minute, second = _dist_filename_to_hms(path)
+                try:
+                    d = ion_dist_single(probe, year, doy,
+                                        hour, minute, second)
+                except RuntimeError as err:
+                    strerr = 'No ion distribution function data in file'
+                    if str(err) == strerr:
+                        continue
+                    raise err
+
+                t = datetime.combine(starttime.date(),
+                                     time(hour, minute, second))
+                d['Time'] = t
+                if verbose:
+                    print(t)
+                todays_dist.append(d)
+
+        if todays_dist == []:
+            starttime += timedelta(days=1)
+            continue
+        todays_dist = pd.concat(todays_dist)
+        todays_dist = todays_dist.set_index('Time', append=True)
+        if use_hdf:
+            todays_dist.to_hdf(hdffile, key='ion_dist', mode='w')
+        distlist.append(todays_dist)
         starttime += timedelta(days=1)
 
     if distlist == []:
