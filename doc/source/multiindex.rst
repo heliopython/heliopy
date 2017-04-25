@@ -66,3 +66,11 @@ Suppose we have a data frame with the index column labels
 This can be done with ``reorder_levels``::
 
     df = df.reorder_levels(['Theta', 'Phi', 'E'], axis=0)
+
+Getting index values
+====================
+Sometimes it is useful to extract the index values as a standard numpy array.
+This can be done with ``get_level_values()``::
+
+    values = df.index.get_level_values('index_label')
+    values = np.array(values)
