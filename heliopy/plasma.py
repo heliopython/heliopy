@@ -7,6 +7,7 @@ Note that units are in general not SI. The following units are used throughout:
 * Mangetic field: nT
 * Mass: kg
 * Pressure: Pa
+* Temperature: Kelvin
 * Velocity: km/s
 """
 import numpy as np
@@ -38,19 +39,19 @@ def alfvenspeed(n, B):
 
 def vth2temp(v, m):
     """
-    Converts thermal velocity to temperature
+    Converts thermal velocity to temperature.
 
     Parameters
     ----------
     v : array_like
-        Thermal velocities in km/s
+        Thermal velocities in km/s.
     m : float
-        Particle mass in kg
+        Particle mass in kg.
 
     Returns
     -------
     t : array_like
-        Temperatures
+        Temperatures in Kelvin.
     """
     v *= 1e3
     t = m * v**2 / constants.k_B
