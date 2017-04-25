@@ -635,6 +635,7 @@ def ion_dists(probe, starttime, endtime, remove_advect=False, verbose=False):
         hdffile = os.path.join(dist_dir, hdffile)
         if os.path.isfile(hdffile):
             todays_dist = pd.read_hdf(hdffile)
+            distlist.append(todays_dist)
             starttime += timedelta(days=1)
             continue
 
