@@ -5,7 +5,7 @@
 [DEFAULT]
 ; The working directory is the parent directory in which all downloaded
 ; data will be stored.
-download_dir = heliopy/data
+download_dir = ~heliopy/data
 
 ; Choose whether to convert all downloaded data to a hdf store, enabling much
 ; faster file reading after the initial load, but requiring the additional
