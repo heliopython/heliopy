@@ -22,7 +22,7 @@ def load_config():
             break
 
     # Set data download directory
-    download_dir = config['DEFAULT']['download_dir']
+    download_dir = os.path.expanduser(config['DEFAULT']['download_dir'])
     config['DEFAULT']['download_dir'] = download_dir
     # Create data download if not created
     if not os.path.isdir(download_dir):
