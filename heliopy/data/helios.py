@@ -122,7 +122,32 @@ def _dist_filename_to_hms(path):
     return hour, minute, second
 
 
-def ion_fitparams(probe, starttime, endtime):
+def _ion_fitparams(probe, starttime, endtime, D):
+    """
+    Wrapper funciton to load fitting distribution parameters
+    """
+    starttime_orig = starttime
+    paramlist = []
+    while starttime < endtime:
+        year = str(starttime.year)
+        doy = starttime.strftime('%j')
+        fname = 'h' + probe + '_' + year + '_' + doy + '_' + D + 'D_fits.h5'
+        saveloc = os.path.join(helios_dir,
+                               'helios' + probe,
+                               'fits',
+                               year,
+                               fname)
+        try:
+            params = pd.read_hdf(saveloc, 'fits')
+        except FileNotFoundError:
+            starttime += timedelta(days=1)
+            continue
+        paramlist.append(params)
+        starttime += timedelta(days=1)
+    return pd.concat(paramlist)
+
+
+def ion_fitparams_3D(probe, starttime, endtime):
     """
     Returns parameters from 3D fitting to ion distribution functions.
 
@@ -140,25 +165,28 @@ def ion_fitparams(probe, starttime, endtime):
     distinfo : DataFrame
         Parameters from 3D fitting.
     """
-    starttime_orig = starttime
-    paramlist = []
-    while starttime < endtime:
-        year = str(starttime.year)
-        doy = starttime.strftime('%j')
-        fname = 'h' + probe + '_' + year + '_' + doy + '_fits.h5'
-        saveloc = os.path.join(helios_dir,
-                               'helios' + probe,
-                               'fits',
-                               year,
-                               fname)
-        try:
-            params = pd.read_hdf(saveloc, 'fits')
-        except FileNotFoundError:
-            starttime += timedelta(days=1)
-            continue
-        paramlist.append(params)
-        starttime += timedelta(days=1)
-    return pd.concat(paramlist)
+    return _ion_fitparams(probe, starttime, endtime, '3')
+
+
+def ion_fitparams_1D(probe, starttime, endtime):
+    """
+    Returns parameters from 1D fitting to ion distribution functions.
+
+    Parameters
+    ----------
+    probe : int
+        Helios probe to import data from. Must be 1 or 2.
+    starttime : datetime
+        Start of interval
+    endtime : datetime
+        End of interval
+
+    Returns
+    -------
+    distinfo : DataFrame
+        Parameters from 1D fitting.
+    """
+    return _ion_fitparams(probe, starttime, endtime, '1')
 
 
 def integrated_dists(probe, starttime, endtime, verbose=False):
