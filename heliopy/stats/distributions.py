@@ -6,7 +6,7 @@ import heliopy.vector.transformations as transformations
 def maxwellian_1D(v, n, v0, vth):
     r"""
     1D Maxwell-Boltzmann velocity distribution, defined as
-    :math:`f \left (v \right ) = 4 * \pi $ v^{2} n \left ( \frac{1}{\pi v_{th}} \right )^{\frac{3}{2}} e^{-v^{2} / v_{th}^{2}}`
+    :math:`f \left (v \right ) = 4 * \pi $ v^{2} n \left ( \frac{1}{\pi v_{th}^{2}} \right )^{\frac{3}{2}} e^{-v^{2} / v_{th}^{2}}`
 
     Parameters
     ----------
@@ -26,7 +26,7 @@ def maxwellian_1D(v, n, v0, vth):
     ----------
     'Basic space plasma physics' by Baumjohann and Treumann, section 6.3
     """
-    prefactor = n * 4 * np.pi * v**2 * np.power(1 / (np.pi * vth), 1.5)
+    prefactor = n * 4 * np.pi * v**2 * np.power(np.pi * vth**2, -1.5)
     return prefactor * np.exp(-((v - v0) / vth)**2)
 
 
