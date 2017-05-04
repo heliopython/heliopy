@@ -50,12 +50,32 @@ def vth2temp(v, m):
 
     Returns
     -------
-    t : array_like
+    T : array_like
         Temperatures in Kelvin.
     """
     v *= 1e3
-    t = m * v**2 / constants.k_B
-    return t
+    T = m * v**2 / (2 * constants.k_B)
+    return T
+
+
+def temp2vth(T, m):
+    """
+    Converts temperature to thermal speed.
+
+    Parameters
+    ----------
+    T : array_like
+        Temperatures in Kelvin.
+    m : float
+        Particle mass in kg.
+
+    Returns
+    -------
+    v : array_like
+        Thermal velocities in km/s.
+    """
+    v = np.sqrt(2 * T * constants.k_B / m)
+    return v / 1e3
 
 
 def magneticpressure(B):

@@ -13,8 +13,13 @@ def test_magneticpressure():
 
 def test_vth2temp():
     out = vth2temp(1e-3, 1)
-    expected = 1 / const.k_B
+    expected = 1 / (2 *const.k_B)
     np.testing.assert_almost_equal(out, expected)
+
+
+def test_temp2vth():
+    out = temp2vth(vth2temp(1234, 4321), 4321)
+    np.testing.assert_almost_equal(out, 1234)
 
 
 def test_alfvenspeed():
