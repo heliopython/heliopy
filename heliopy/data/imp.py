@@ -103,9 +103,7 @@ def merged(probe, starttime, endtime):
             pd.to_timedelta(thisdata['Minute'], unit='m')
         data.append(thisdata)
 
-    data = pd.concat(data)
-    data = data[(data['Time'] > starttime) & (data['Time'] < endtime)]
-    return data
+    return helper.timefilter(data, starttime, endtime)
 
 
 def mitplasma_h0(probe, starttime, endtime):
