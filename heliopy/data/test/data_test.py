@@ -57,6 +57,7 @@ def test_imp():
     endtime = datetime(1976, 1, 2, 0, 0, 0)
     imp.mag320ms('8', starttime, endtime)
     imp.mitplasma_h0('8', starttime, endtime)
+    imp.merged('8', starttime, endtime)
 
 
 @pytest.mark.data
