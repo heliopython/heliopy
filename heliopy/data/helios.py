@@ -144,7 +144,9 @@ def _ion_fitparams(probe, starttime, endtime, D):
             continue
         paramlist.append(params)
         starttime += timedelta(days=1)
-    return pd.concat(paramlist)
+    paramlist = pd.concat(paramlist)
+    paramlist = paramlist.set_index('Time', drop=False)
+    return paramlist
 
 
 def ion_fitparams_3D(probe, starttime, endtime):
