@@ -144,7 +144,9 @@ def _ion_fitparams(probe, starttime, endtime, D):
             continue
         paramlist.append(params)
         starttime += timedelta(days=1)
-    return pd.concat(paramlist)
+    paramlist = pd.concat(paramlist)
+    paramlist = paramlist.set_index('Time', drop=False)
+    return paramlist
 
 
 def ion_fitparams_3D(probe, starttime, endtime):
@@ -450,6 +452,9 @@ def distparams(probe, starttime, endtime, verbose=False):
         hdffile = os.path.join(dist_dir, hdffile)
         if os.path.isfile(hdffile):
             todays_params = pd.read_hdf(hdffile)
+        elif not os.path.isdir(dist_dir):
+            starttime += timedelta(days=1)
+            continue
         else:
             todays_params = []
             # Get every distribution function file present for this day
