@@ -452,6 +452,9 @@ def distparams(probe, starttime, endtime, verbose=False):
         hdffile = os.path.join(dist_dir, hdffile)
         if os.path.isfile(hdffile):
             todays_params = pd.read_hdf(hdffile)
+        elif not os.path.isdir(dist_dir):
+            starttime += timedelta(days=1)
+            continue
         else:
             todays_params = []
             # Get every distribution function file present for this day
