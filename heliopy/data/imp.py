@@ -12,6 +12,7 @@ from heliopy.data import helper
 from heliopy import config
 
 data_dir = config['DEFAULT']['download_dir']
+use_hdf = config['DEFAULT']['use_hdf']
 imp_url = 'ftp://cdaweb.gsfc.nasa.gov/pub/data/imp/'
 imp_dir = data_dir + '/imp'
 valid_probes = ['1', '2', '3', '4', '5', '6', '7', '8']
@@ -101,6 +102,8 @@ def merged(probe, starttime, endtime):
             pd.to_timedelta(thisdata['doy'] - 1, unit='d') + \
             pd.to_timedelta(thisdata['Hour'], unit='h') + \
             pd.to_timedelta(thisdata['Minute'], unit='m')
+
+        thisdata = thisdata.set_index('Time', drop=False)
         data.append(thisdata)
 
     return helper.timefilter(data, starttime, endtime)
@@ -192,13 +195,19 @@ def mag320ms(probe, startTime, endTime):
             str(date.month).zfill(2) +\
             str(date.day).zfill(2)
         filename = 'i8_320msec_mag_' + intervalstring + '_v01.cdf'
+        hdffname = filename[:-3] + '.hdf'
         # Location of file relative to local directory or remote url
         relative_loc = 'imp' + probe + '/mag/mag_320msec_cdaweb/' +\
             str(date.year)
 
         local_dir = os.path.join(imp_dir, relative_loc)
-        remote_url = imp_url + relative_loc
+        hdffile = os.path.join(local_dir, hdffname)
+        if os.path.exists(hdffile):
+            thisdata = pd.read_hdf(hdffile)
+            data.append(thisdata)
+            continue
 
+        remote_url = imp_url + relative_loc
         cdf = helper.load(filename, local_dir, remote_url)
         keys = {'B': '|B|',
                 'BX': 'Bx',
@@ -207,6 +216,8 @@ def mag320ms(probe, startTime, endTime):
                 'Epoch': 'Time'}
         thisdata = helper.cdf2df(cdf, 'Epoch', keys)
         data.append(thisdata)
+        if use_hdf:
+            thisdata.to_hdf(hdffile, key='merged', mode='w')
 
     data = pd.concat(data)
     data = data[(data['Time'] > startTime) & (data['Time'] < endTime)]
