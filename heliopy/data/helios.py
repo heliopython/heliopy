@@ -128,7 +128,8 @@ def _ion_fitparams(probe, starttime, endtime, D):
     """
     starttime_orig = starttime
     paramlist = []
-    while starttime < endtime:
+    starttime_orig = starttime
+    while starttime < endtime + timedelta(days=1):
         year = str(starttime.year)
         doy = starttime.strftime('%j')
         fname = 'h' + probe + '_' + year + '_' + doy + '_' + D + 'D_fits.h5'
@@ -146,7 +147,7 @@ def _ion_fitparams(probe, starttime, endtime, D):
         starttime += timedelta(days=1)
     paramlist = pd.concat(paramlist)
     paramlist = paramlist.set_index('Time', drop=False)
-    return paramlist
+    return helper.timefilter(paramlist, starttime_orig, endtime)
 
 
 def ion_fitparams_3D(probe, starttime, endtime):
