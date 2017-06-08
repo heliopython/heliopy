@@ -18,7 +18,7 @@ imp_dir = data_dir + '/imp'
 valid_probes = ['1', '2', '3', '4', '5', '6', '7', '8']
 
 
-def merged(probe, starttime, endtime):
+def merged(probe, starttime, endtime, verbose=False):
     """
     Import merged plasma data. See
     ftp://cdaweb.gsfc.nasa.gov/pub/data/imp/imp8/merged/00readme.txt
@@ -32,6 +32,9 @@ def merged(probe, starttime, endtime):
             Start of interval.
         endtime : datetime
             End of interval.
+        verbose : bool, optional
+            If ``True``, print information whilst loading. Default is
+            ``False``.
 
     Returns
     -------
@@ -55,56 +58,66 @@ def merged(probe, starttime, endtime):
 
         # Loop through months
         for month in range(startmonth, endmonth + 1):
+            print('Loading IMP merged probe {}, {:02d}/{}'.format(probe, month,
+                                                                  year))
             intervalstring = str(year) + str(month).zfill(2)
-        filename = 'imp_min_merge' + intervalstring + '.asc'
-        # Location of file relative to local directory or remote url
-        relative_loc = os.path.join('imp' + probe,
-                                    'merged')
+            filename = 'imp_min_merge' + intervalstring + '.asc'
+            # Location of file relative to local directory or remote url
+            relative_loc = os.path.join('imp' + probe,
+                                        'merged')
 
-        local_dir = os.path.join(imp_dir, relative_loc)
-        remote_url = imp_url + relative_loc
+            local_dir = os.path.join(imp_dir, relative_loc)
+            hdffile = os.path.join(local_dir, filename[:-3] + 'hdf')
+            if os.path.isfile(hdffile):
+                data.append(pd.read_hdf(hdffile))
+                continue
 
-        f = helper.load(filename, local_dir, remote_url)
-        readargs = {'names': ['Year', 'doy', 'Hour', 'Minute', 'sw_flag',
-                              'x_gse', 'y_gse', 'z_gse', 'y_gsm', 'z_gsm',
-                              'Nm', 'FCm', 'DWm',
-                              '<|B|>', '|<B>|', '<B_lat>', '<B_long>',
-                              'Bx_gse', 'By_gse', 'Bz_gse',
-                              'By_gsm', 'Bz_gsm',
-                              'sigma|B|', 'sigma B',
-                              'sigma B_x', 'sigma B_y', 'sigma B_z',
-                              'plas_reg', 'Npp', 'FCp', 'DWp',
-                              'v_fit',
-                              'vx_fit_gse', 'vy_fit_gse', 'vz_fit_gse',
-                              'vlong_fit', 'vlat_fit',
-                              'np_fit', 'Tp_fit',
-                              'v_mom',
-                              'vx_mom_gse', 'vy_mom_gse', 'vz_mom_gse',
-                              'vlong_mom', 'vlat_mom',
-                              'np_mom', 'Tp_mom'],
-                    'na_values': ['9999', '999', '99', '99', '9',
-                                  '9999.99', '9999.99', '9999.99',
-                                  '9999.99', '9999.99',
-                                  '9', '99', '9.99', '9999.99', '9999.99',
-                                  '9999.99', '9999.99', '9999.99', '9999.99',
-                                  '9999.99', '9999.99', '9999.99', '9999.99',
-                                  '9999.99',
-                                  '9999.99', '9999.99', '9999.99',
-                                  '9', '9', '99', '9.99',
-                                  '9999.9', '9999.9', '9999.9', '9999.9',
-                                  '9999.9', '9999.9', '9999.9', '9999999.',
-                                  '9999.9', '9999.9', '9999.9', '9999.9',
-                                  '9999.9', '9999.9', '9999.9', '9999999.'],
-                    'delim_whitespace': True}
-        # Read in data
-        thisdata = pd.read_table(f, **readargs)
-        thisdata['Time'] = pd.to_datetime(thisdata['Year'], format='%Y') + \
-            pd.to_timedelta(thisdata['doy'] - 1, unit='d') + \
-            pd.to_timedelta(thisdata['Hour'], unit='h') + \
-            pd.to_timedelta(thisdata['Minute'], unit='m')
-
-        thisdata = thisdata.set_index('Time', drop=False)
-        data.append(thisdata)
+            remote_url = imp_url + relative_loc
+            f = helper.load(filename, local_dir, remote_url)
+            readargs = {'names': ['Year', 'doy', 'Hour', 'Minute', 'sw_flag',
+                                  'x_gse', 'y_gse', 'z_gse', 'y_gsm', 'z_gsm',
+                                  'Nm', 'FCm', 'DWm',
+                                  '<|B|>', '|<B>|', '<B_lat>', '<B_long>',
+                                  'Bx_gse', 'By_gse', 'Bz_gse',
+                                  'By_gsm', 'Bz_gsm',
+                                  'sigma|B|', 'sigma B',
+                                  'sigma B_x', 'sigma B_y', 'sigma B_z',
+                                  'plas_reg', 'Npp', 'FCp', 'DWp',
+                                  'v_fit',
+                                  'vx_fit_gse', 'vy_fit_gse', 'vz_fit_gse',
+                                  'vlong_fit', 'vlat_fit',
+                                  'np_fit', 'Tp_fit',
+                                  'v_mom',
+                                  'vx_mom_gse', 'vy_mom_gse', 'vz_mom_gse',
+                                  'vlong_mom', 'vlat_mom',
+                                  'np_mom', 'Tp_mom'],
+                        'na_values': ['9999', '999', '99', '99', '9',
+                                      '9999.99', '9999.99', '9999.99',
+                                      '9999.99', '9999.99',
+                                      '9', '99', '9.99', '9999.99', '9999.99',
+                                      '9999.99', '9999.99',
+                                      '9999.99', '9999.99',
+                                      '9999.99', '9999.99',
+                                      '9999.99', '9999.99',
+                                      '9999.99',
+                                      '9999.99', '9999.99', '9999.99',
+                                      '9', '9', '99', '9.99',
+                                      '9999.9', '9999.9', '9999.9', '9999.9',
+                                      '9999.9', '9999.9', '9999.9', '9999999.',
+                                      '9999.9', '9999.9', '9999.9', '9999.9',
+                                      '9999.9', '9999.9',
+                                      '9999.9', '9999999.'],
+                        'delim_whitespace': True}
+            # Read in data
+            thisdata = pd.read_table(f, **readargs)
+            thisdata['Time'] = (pd.to_datetime(thisdata['Year'], format='%Y') +
+                                pd.to_timedelta(thisdata['doy'] - 1,
+                                                unit='d') +
+                                pd.to_timedelta(thisdata['Hour'], unit='h') +
+                                pd.to_timedelta(thisdata['Minute'], unit='m'))
+            if use_hdf:
+                thisdata.to_hdf(hdffile, key='distparams', mode='w')
+            data.append(thisdata)
 
     return helper.timefilter(data, starttime, endtime)
 
