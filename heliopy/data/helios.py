@@ -122,7 +122,7 @@ def _dist_filename_to_hms(path):
     return hour, minute, second
 
 
-def _ion_fitparams(probe, starttime, endtime, D):
+def _ion_fitparams(probe, starttime, endtime, D, verbose=False):
     """
     Wrapper funciton to load fitting distribution parameters
     """
@@ -132,6 +132,8 @@ def _ion_fitparams(probe, starttime, endtime, D):
     while starttime < endtime + timedelta(days=1):
         year = str(starttime.year)
         doy = starttime.strftime('%j')
+        if verbose:
+            print(year, doy)
         fname = 'h' + probe + '_' + year + '_' + doy + '_' + D + 'D_fits.h5'
         saveloc = os.path.join(helios_dir,
                                'helios' + probe,
@@ -150,7 +152,7 @@ def _ion_fitparams(probe, starttime, endtime, D):
     return helper.timefilter(paramlist, starttime_orig, endtime)
 
 
-def ion_fitparams_3D(probe, starttime, endtime):
+def ion_fitparams_3D(probe, starttime, endtime, verbose=False):
     """
     Returns parameters from 3D fitting to ion distribution functions.
 
@@ -168,7 +170,7 @@ def ion_fitparams_3D(probe, starttime, endtime):
     distinfo : DataFrame
         Parameters from 3D fitting.
     """
-    return _ion_fitparams(probe, starttime, endtime, '3')
+    return _ion_fitparams(probe, starttime, endtime, '3', verbose)
 
 
 def ion_fitparams_1D(probe, starttime, endtime):
