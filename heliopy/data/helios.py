@@ -329,7 +329,8 @@ def integrated_dists_single(probe, year, doy, hour, minute, second):
     return i1a, i1b
 
 
-def electron_dist(probe, year, doy, hour, minute, second, remove_advect=False):
+def electron_dist_single(probe, year, doy, hour, minute, second,
+                         remove_advect=False):
     """
     Read in 2D electron distribution function.
 
@@ -376,7 +377,7 @@ def electron_dist(probe, year, doy, hour, minute, second, remove_advect=False):
             break
     nlines = None
     for i, line in enumerate(f):
-        if line[:30] == ' -1.2 Degree, Pizzo correction':
+        if 'Degree, Pizzo correction' in line:
             break
     nlines = i + 1
     if startline is None:
@@ -615,6 +616,106 @@ def distparams_single(probe, year, doy, hour, minute, second):
                   'na_i1a': [-1, 0], 'va_i1a': [-1, 0], 'Ta_i1a': [-1, 0]}
     distparams = distparams.replace(to_replace, np.nan)
     return distparams
+
+
+def electron_dists(probe, starttime, endtime, remove_advect=False,
+                   verbose=False):
+    """
+    Return 2D electron distributions between *starttime* and *endtime*
+
+    Parameters
+    ----------
+    probe : int
+        Helios probe to import data from. Must be 1 or 2.
+    starttime : datetime
+        Start of interval
+    endtime : datetime
+        End of interval
+    remove_advect : bool, optional
+        If *False*, the distribution is returned in
+        the spacecraft frame.
+
+        If *True*, the distribution is
+        returned in the solar wind frame, by subtracting the spacecraft
+        velocity from the velcoity of each bin. Note this significantly
+        slows down reading in the distribution.
+    verbose : bool, optional
+        If ``True``, print dates when loading files. Default is ``False``.
+
+    Returns
+    -------
+    dists : DataFrame
+        Electron distribution functions
+    """
+    extensions = ['hdm.0', 'hdm.1', 'ndm.0', 'ndm.1']
+    distlist = []
+
+    # Loop through each day
+    starttime_orig = starttime
+    while starttime < endtime:
+        year = starttime.year
+        doy = starttime.strftime('%j')
+        if verbose:
+            print('Loading electron dists from year', year, 'doy', doy)
+        # Directory for today's distribution files
+        dist_dir = _dist_file_dir(probe, year, doy)
+        print(dist_dir)
+        # If directory doesn't exist, print error and continue
+        if not os.path.exists(dist_dir):
+            print('No electron distributions available for year', year,
+                  'doy', doy)
+            starttime += timedelta(days=1)
+            continue
+
+        # Locaiton of hdf file to save to/load from
+        hdffile = 'h' + probe + str(year) + str(doy).zfill(3) +\
+            'electron_dists.hdf'
+        hdffile = os.path.join(dist_dir, hdffile)
+        if os.path.isfile(hdffile):
+            todays_dist = pd.read_hdf(hdffile)
+            distlist.append(todays_dist)
+            starttime += timedelta(days=1)
+            continue
+
+        todays_dist = []
+        # Get every distribution function file present for this day
+        for f in os.listdir(dist_dir):
+            path = os.path.join(dist_dir, f)
+            # Check for distribution function
+            if path[-5:] in extensions:
+                hour, minute, second = _dist_filename_to_hms(path)
+                try:
+                    d = electron_dist_single(probe, year, doy,
+                                             hour, minute, second)
+                except RuntimeError as err:
+                    strerr = 'No electron distribution function data in file'
+                    if str(err) == strerr:
+                        continue
+                    raise err
+                if d is None:
+                    continue
+
+                t = datetime.combine(starttime.date(),
+                                     time(hour, minute, second))
+                d['Time'] = t
+                if verbose:
+                    print(t)
+                todays_dist.append(d)
+
+        if todays_dist == []:
+            starttime += timedelta(days=1)
+            continue
+        todays_dist = pd.concat(todays_dist)
+        todays_dist = todays_dist.set_index('Time', append=True)
+        if use_hdf:
+            todays_dist.to_hdf(hdffile, key='electron_dists', mode='w')
+        distlist.append(todays_dist)
+        starttime += timedelta(days=1)
+
+    if distlist == []:
+        raise RuntimeError('No electron data available for times ' +
+                           str(starttime_orig) + ' to ' + str(endtime))
+    return helper.timefilter(distlist, starttime_orig, endtime)
 
 
 def ion_dists(probe, starttime, endtime, remove_advect=False, verbose=False):
