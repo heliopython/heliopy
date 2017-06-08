@@ -126,3 +126,19 @@ def doy2ymd(y, doy):
     d = datetime.strptime(str(y) + ':' + str(doy), '%Y:%j')
 
     return d.year, d.month, d.day
+
+
+def dtime2doy(dt):
+    """
+    Returns day of year of a datetime object.
+
+    Parameters
+    ----------
+    dt : datetime
+
+    Returns
+    -------
+    doy : int
+        Day of year
+    """
+    return int(dt.strftime('%j'))

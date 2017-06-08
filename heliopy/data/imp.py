@@ -237,3 +237,82 @@ def mag320ms(probe, startTime, endTime):
     data = pd.concat(data)
     data = data[(data['Time'] > startTime) & (data['Time'] < endTime)]
     return data
+
+
+def mag15s(probe, starttime, endtime, verbose=False):
+    """
+    Import 15s cadence magnetic field data.
+
+    Parameters
+    ----------
+    probe : string
+        Probe number.
+    starttime : datetime
+        Start of interval.
+    endtime : datetime
+        End of interval.
+    verbose : bool, optional
+        If ``True``, print information whilst loading. Default is ``False``.
+
+    Returns
+    -------
+        data : DataFrame
+            Requested data.
+    """
+    data = []
+    dtimes = spacetime.daysplitinterval(starttime, endtime)
+    # Loop through years
+    for dtime in dtimes:
+        startdt = dtime[0]
+        year = startdt.year
+        doy = spacetime.dtime2doy(startdt)
+        if verbose:
+            print('Loading IMP 15s mag probe {}, {:03d}/{}'.format(probe,
+                                                                   doy,
+                                                                   year))
+        filename = '{}{:03d}_imp{}_mag_15s_v3.asc'.format(year, doy, probe)
+        hdffname = filename[:-3] + 'hdf'
+        # Location of file relative to local directory or remote url
+        relative_loc = os.path.join('imp{}'.format(probe),
+                                    'mag',
+                                    '15s_ascii_v3',
+                                    str(year))
+
+        local_dir = os.path.join(imp_dir, relative_loc)
+        hdffile = os.path.join(local_dir, hdffname)
+        if os.path.exists(hdffile):
+            thisdata = pd.read_hdf(hdffile)
+            data.append(thisdata)
+            continue
+
+        remote_url = imp_url + relative_loc
+        f = helper.load(filename, local_dir, remote_url)
+        readargs = {'names': ['Year', 'doy', 'Second', 'Source flag',
+                              'n points', 'x gse', 'y gse', 'z gsm',
+                              'y gsm', 'z gsm',
+                              '|B|', 'Bx gse', 'By gse', 'Bz gse',
+                              'By gsm', 'Bz gsm',
+                              'Bxx gse', 'Byy gse', 'Bzz gse',
+                              'Byx gse', 'Bzx gse', 'Bzy gse',
+                              'Time shift', 'sw flag'],
+                    'na_values': ['9999', '999', '99', '9',
+                                  '999', '99.99', '99.99', '99.99',
+                                  '99.99', '99.99',
+                                  '9999.99', '9999.99', '9999.99', '9999.99',
+                                  '9999.99', '9999.99',
+                                  '9999.99', '9999.99', '9999.99',
+                                  '9999.99', '9999.99', '9999.99',
+                                  '999.9', '9'],
+                    'delim_whitespace': True}
+        # Read in data
+        thisdata = pd.read_table(f, **readargs)
+        thisdata['Time'] = (pd.to_datetime(thisdata['Year'], format='%Y') +
+                            pd.to_timedelta(thisdata['doy'] - 1,
+                                            unit='d') +
+                            pd.to_timedelta(thisdata['Second'], unit='s'))
+        thisdata = thisdata.set_index('Time', drop=False)
+        thisdata = thisdata.drop(['Year', 'doy', 'Second'], 1)
+        if use_hdf:
+            thisdata.to_hdf(hdffile, key='distparams', mode='w')
+        data.append(thisdata)
+    return helper.timefilter(data, starttime, endtime)
