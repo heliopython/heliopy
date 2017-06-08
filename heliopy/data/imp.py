@@ -58,8 +58,10 @@ def merged(probe, starttime, endtime, verbose=False):
 
         # Loop through months
         for month in range(startmonth, endmonth + 1):
-            print('Loading IMP merged probe {}, {:02d}/{}'.format(probe, month,
-                                                                  year))
+            if verbose:
+                print('Loading IMP merged probe {}, {:02d}/{}'.format(probe,
+                                                                      month,
+                                                                      year))
             intervalstring = str(year) + str(month).zfill(2)
             filename = 'imp_min_merge' + intervalstring + '.asc'
             # Location of file relative to local directory or remote url
