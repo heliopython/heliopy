@@ -328,6 +328,7 @@ def integrated_dists_single(probe, year, doy, hour, minute, second):
 
     i1a = pd.DataFrame({'v': i1avs, 'df': i1adf}, dtype=float)
     i1b = pd.DataFrame({'v': i1bvs, 'df': i1bdf}, dtype=float)
+    f.close()
     return i1a, i1b
 
 
@@ -417,6 +418,7 @@ def electron_dist_single(probe, year, doy, hour, minute, second,
 
     # Convert to multi-index using Azimuth and energy bin
     dist = dist.set_index(['E_bin', 'Az'])
+    f.close()
     return dist
 
 
@@ -617,6 +619,7 @@ def distparams_single(probe, year, doy, hour, minute, second):
                   'v_az_i1a': [-1, 0], 'v_el_i1a': [-1, 0],
                   'na_i1a': [-1, 0], 'va_i1a': [-1, 0], 'Ta_i1a': [-1, 0]}
     distparams = distparams.replace(to_replace, np.nan)
+    f.close()
     return distparams
 
 
