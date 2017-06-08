@@ -1161,10 +1161,10 @@ def _fourHz_fromascii(probe, year, doy):
                              ', Year: ' + str(year) + ' doy: ' + str(doy))
 
     # Read in data
-    headings = ['Time', 'Bx', 'By', 'Bz']
-    widths = [24, 16, 15, 15]
-    data = pd.read_fwf(asciiloc, names=headings, header=None, widths=widths,
-                       delim_whitespace=True)
+    headings = ['Time', 'Bx', 'By', 'Bz', '|B|']
+    cols = [0, 4, 5, 6, 7]
+    data = pd.read_table(asciiloc, names=headings, header=None,
+                         usecols=cols, delim_whitespace=True)
 
     # Convert date info to datetime
     data['Time'] = pd.to_datetime(data['Time'], format='%Y-%m-%dT%H:%M:%S')
