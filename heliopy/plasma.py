@@ -78,7 +78,7 @@ def temp2vth(T, m):
     return v / 1e3
 
 
-def magneticpressure(B):
+def p_mag(B):
     """
     Returns magnetic pressure given magnetic field magnitude
 
@@ -93,6 +93,26 @@ def magneticpressure(B):
         Pressure in Pascals
     """
     # Convert to Tesla
-    B *= 1e-9
-    p = B**2 / (2 * constants.mu_0)
-    return p
+    B = B * 1e-9
+    return B**2 / (2 * constants.mu_0)
+
+
+def p_th(n, T):
+    """
+    Returns thermal pressure given number density and temperature.
+
+    Parameters
+    ----------
+    n : array_like
+        Number density in cm^-3
+    T : array_like
+        Temperature in Kelvin
+
+    Returns
+    -------
+    p : array_like
+        Pressure in Pascals
+    """
+    # Convert to m^-3
+    n = n * 1e6
+    return n * constants.k_B * T
