@@ -3,10 +3,10 @@ import heliopy.constants as const
 import numpy as np
 
 
-def test_magneticpressure():
-    assert magneticpressure(0) == 0
+def test_p_mag():
+    assert p_mag(0) == 0
 
-    out = magneticpressure(1e9)
+    out = p_mag(1e9)
     expected = 1 / (2 * const.mu_0)
     np.testing.assert_almost_equal(out, expected)
 
@@ -26,3 +26,9 @@ def test_alfvenspeed():
     out = alfvenspeed(1e-6, 1e9)
     expected = 1e-3 / np.sqrt(const.m_p * const.mu_0)
     np.testing.assert_almost_equal(out, expected)
+
+
+def test_p_th():
+    assert p_th(0, 1) == 0
+    assert p_th(1, 0) == 0
+    np.testing.assert_almost_equal(p_th(1e-6, 1 / const.k_B), 1)
