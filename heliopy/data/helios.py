@@ -967,7 +967,7 @@ def merged(probe, starttime, endtime, verbose=True, try_download=True):
 
         hdfloc = os.path.join(floc,
                               'H' + probe + str(year - 1900) + '_' +
-                              str(doy).zfill(3) + '.h5')
+                              str(doy).zfill(3) + '.hdf')
         # Data not processed yet, try to process and load it
         if not os.path.isfile(hdfloc):
             try:
@@ -1040,7 +1040,6 @@ def _merged_fromascii(probe, year, doy, try_download):
         pd.to_timedelta(data['hour'], unit='h') + \
         pd.to_timedelta(data['min'], unit='m') + \
         pd.to_timedelta(data['sec'], unit='s')
-    data['ordinal'] = pd.DatetimeIndex(data['Time']).astype(np.int64)
 
     data = data.drop(['year', 'day', 'hour', 'min', 'sec', 'dechr'], axis=1)
     # Set zero values to nans
@@ -1098,7 +1097,7 @@ def mag_4hz(probe, starttime, endtime, verbose=True):
         for doy in range(startdoy, enddoy + 1):
             hdfloc = os.path.join(floc,
                                   'he' + probe + '1s' + str(year - 1900) +
-                                  str(doy).zfill(3) + '.h5')
+                                  str(doy).zfill(3) + '.hdf')
             if not os.path.isfile(hdfloc):
                 # Data not processed yet, try to process and load it
                 try:
@@ -1117,9 +1116,7 @@ def mag_4hz(probe, starttime, endtime, verbose=True):
                 data.append(pd.read_hdf(hdfloc, 'table'))
     if data == []:
         raise ValueError('No raw mag data available')
-    data = pd.concat(data, ignore_index=True)
-    # Filter data between start and end times
-    data = data[(data['Time'] > starttime) & (data['Time'] < endtime)]
+    data = helper.timefilter(data, starttime, endtime)
 
     if data.empty:
         raise ValueError('No 4Hz raw mag data available for entire interval')
@@ -1168,7 +1165,7 @@ def _fourHz_fromascii(probe, year, doy):
 
     # Convert date info to datetime
     data['Time'] = pd.to_datetime(data['Time'], format='%Y-%m-%dT%H:%M:%S')
-    data['ordinal'] = pd.DatetimeIndex(data['Time']).astype(np.int64)
+    data = data.set_index('Time', drop=False)
 
     # Save data to a hdf store
     if use_hdf:
@@ -1298,7 +1295,7 @@ def _mag_ness_fromascii(probe, year, doy):
 
 
 def _save_hdf(data, fdir, fname):
-    saveloc = os.path.join(fdir, fname + '.h5')
+    saveloc = os.path.join(fdir, fname + '.hdf')
     data.to_hdf(saveloc, 'table', format='fixed', mode='w')
 
 
@@ -1348,7 +1345,6 @@ def trajectory(probe, starttime, endtime):
         thisdata['Time'] = pd.to_datetime(thisdata['Year'], format='%Y') + \
             pd.to_timedelta(thisdata['doy'] - 1, unit='d') + \
             pd.to_timedelta(thisdata['Hour'], unit='h')
-        thisdata['ordinal'] = dtime2ordinal(thisdata['Time'])
 
         # Calculate cartesian positions
         thisdata['x'] = thisdata['r'] * np.cos(thisdata['selat']) *\
