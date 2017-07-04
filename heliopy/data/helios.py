@@ -1040,7 +1040,6 @@ def _merged_fromascii(probe, year, doy, try_download):
         pd.to_timedelta(data['hour'], unit='h') + \
         pd.to_timedelta(data['min'], unit='m') + \
         pd.to_timedelta(data['sec'], unit='s')
-    data['ordinal'] = pd.DatetimeIndex(data['Time']).astype(np.int64)
 
     data = data.drop(['year', 'day', 'hour', 'min', 'sec', 'dechr'], axis=1)
     # Set zero values to nans
@@ -1117,9 +1116,7 @@ def mag_4hz(probe, starttime, endtime, verbose=True):
                 data.append(pd.read_hdf(hdfloc, 'table'))
     if data == []:
         raise ValueError('No raw mag data available')
-    data = pd.concat(data, ignore_index=True)
-    # Filter data between start and end times
-    data = data[(data['Time'] > starttime) & (data['Time'] < endtime)]
+    data = helper.timefilter(data, starttime, endtime)
 
     if data.empty:
         raise ValueError('No 4Hz raw mag data available for entire interval')
@@ -1168,7 +1165,6 @@ def _fourHz_fromascii(probe, year, doy):
 
     # Convert date info to datetime
     data['Time'] = pd.to_datetime(data['Time'], format='%Y-%m-%dT%H:%M:%S')
-    data['ordinal'] = pd.DatetimeIndex(data['Time']).astype(np.int64)
 
     # Save data to a hdf store
     if use_hdf:
@@ -1348,7 +1344,6 @@ def trajectory(probe, starttime, endtime):
         thisdata['Time'] = pd.to_datetime(thisdata['Year'], format='%Y') + \
             pd.to_timedelta(thisdata['doy'] - 1, unit='d') + \
             pd.to_timedelta(thisdata['Hour'], unit='h')
-        thisdata['ordinal'] = dtime2ordinal(thisdata['Time'])
 
         # Calculate cartesian positions
         thisdata['x'] = thisdata['r'] * np.cos(thisdata['selat']) *\
