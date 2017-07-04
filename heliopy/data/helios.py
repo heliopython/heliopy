@@ -134,7 +134,7 @@ def _ion_fitparams(probe, starttime, endtime, D, verbose=False):
         doy = starttime.strftime('%j')
         if verbose:
             print(year, doy)
-        fname = 'h' + probe + '_' + year + '_' + doy + '_' + D + 'D_fits.h5'
+        fname = 'h' + probe + '_' + year + '_' + doy + '_' + D + 'D_fits.hdf'
         saveloc = os.path.join(helios_dir,
                                'helios' + probe,
                                'fits',
@@ -967,7 +967,7 @@ def merged(probe, starttime, endtime, verbose=True, try_download=True):
 
         hdfloc = os.path.join(floc,
                               'H' + probe + str(year - 1900) + '_' +
-                              str(doy).zfill(3) + '.h5')
+                              str(doy).zfill(3) + '.hdf')
         # Data not processed yet, try to process and load it
         if not os.path.isfile(hdfloc):
             try:
@@ -1097,7 +1097,7 @@ def mag_4hz(probe, starttime, endtime, verbose=True):
         for doy in range(startdoy, enddoy + 1):
             hdfloc = os.path.join(floc,
                                   'he' + probe + '1s' + str(year - 1900) +
-                                  str(doy).zfill(3) + '.h5')
+                                  str(doy).zfill(3) + '.hdf')
             if not os.path.isfile(hdfloc):
                 # Data not processed yet, try to process and load it
                 try:
@@ -1294,7 +1294,7 @@ def _mag_ness_fromascii(probe, year, doy):
 
 
 def _save_hdf(data, fdir, fname):
-    saveloc = os.path.join(fdir, fname + '.h5')
+    saveloc = os.path.join(fdir, fname + '.hdf')
     data.to_hdf(saveloc, 'table', format='fixed', mode='w')
 
 
