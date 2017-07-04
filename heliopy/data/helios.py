@@ -134,7 +134,7 @@ def _ion_fitparams(probe, starttime, endtime, D, verbose=False):
         doy = starttime.strftime('%j')
         if verbose:
             print(year, doy)
-        fname = 'h' + probe + '_' + year + '_' + doy + '_' + D + 'D_fits.hdf'
+        fname = 'h' + probe + '_' + year + '_' + doy + '_' + D + 'D_fits.h5'
         saveloc = os.path.join(helios_dir,
                                'helios' + probe,
                                'fits',
@@ -1165,6 +1165,7 @@ def _fourHz_fromascii(probe, year, doy):
 
     # Convert date info to datetime
     data['Time'] = pd.to_datetime(data['Time'], format='%Y-%m-%dT%H:%M:%S')
+    data = data.set_index('Time', drop=False)
 
     # Save data to a hdf store
     if use_hdf:
