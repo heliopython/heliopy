@@ -11,12 +11,16 @@ def scatter3d(x, y, z, pdf):
     ax.scatter(x, y, z, c=np.log10(pdf), s=40)
 
 
-def contour2d(x, y, pdf, showbins=True, nlevels=10):
+def contour2d(x, y, pdf, showbins=True, levels=10):
     """Perform a countour plot of 2D distribution function data."""
     ax = plt.gca()
-    ax.tricontourf(x, y, np.log10(pdf), nlevels, cmap='viridis')
+    pdf = np.log10(pdf)
+    if type(levels) == int:
+        levels = np.linspace(np.nanmin(pdf), np.nanmax(pdf), levels)
+    ax.tricontourf(x, y, pdf, levels=levels, cmap='viridis')
+    ax.tricontour(x, y, pdf, levels=levels, linestyles='-', colors='k', linewidths=0.5, alpha=0.8)
     if showbins:
-        ax.scatter(x, y, color='k', cmap='viridis', marker='+', s=4)
+        ax.scatter(x, y, color='k', marker='+', s=4, alpha=0.5)
 
 
 def surf2d(x, y, pdf):
