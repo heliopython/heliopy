@@ -21,132 +21,161 @@ def check_datetime_index(df):
 
 
 @pytest.mark.data
-def test_messenger():
-    starttime = datetime(2010, 1, 1, 0, 0, 0)
-    endtime = datetime(2010, 1, 2, 1, 0, 0)
+class TestMessenger:
+    @classmethod
+    def setup_class(self):
+        self.starttime = datetime(2010, 1, 1, 0, 0, 0)
+        self.endtime = datetime(2010, 1, 2, 1, 0, 0)
 
-    df = messenger.mag_rtn(starttime, endtime)
-    check_datetime_index(df)
-
-
-@pytest.mark.data
-def test_ulysses():
-    starttime = datetime(1993, 1, 1, 0, 0, 0)
-    endtime = datetime(1993, 1, 2, 0, 0, 0)
-
-    df = ulysses.fgm_hires(starttime, endtime)
-    check_datetime_index(df)
-
-    df = ulysses.swoops_ions(starttime, endtime)
-    check_datetime_index(df)
+    def test_mag(self):
+        df = messenger.mag_rtn(self.starttime, self.endtime)
+        check_datetime_index(df)
 
 
 @pytest.mark.data
-def test_artemis():
-    starttime = datetime(2008, 1, 1, 0, 0, 0)
-    endtime = datetime(2008, 1, 2, 0, 0, 0)
-    probe = 'a'
-    df = artemis.fgm(probe, 'h', 'dsl', starttime, endtime)
-    check_datetime_index(df)
+class TestUlysses:
+    @classmethod
+    def setup_class(self):
+        self.starttime = datetime(1993, 1, 1, 0, 0, 0)
+        self.endtime = datetime(1993, 1, 2, 0, 0, 0)
 
-    with pytest.raises(ValueError):
-        artemis.fgm('123', 'h', 'dsl', starttime, endtime)
-    with pytest.raises(ValueError):
-        artemis.fgm('1', '123', 'dsl', starttime, endtime)
-    with pytest.raises(ValueError):
-        artemis.fgm('1', 'h', '123', starttime, endtime)
+    def test_fgm_hires(self):
+        df = ulysses.fgm_hires(self.starttime, self.endtime)
+        check_datetime_index(df)
 
-
-@pytest.mark.data
-def test_ace():
-    starttime = datetime(2016, 1, 1, 0, 0, 0)
-    endtime = datetime(2016, 1, 2, 0, 0, 0)
-
-    df = ace.mfi_h0(starttime, endtime)
-    check_datetime_index(df)
+    def test_swoops_ions(self):
+        df = ulysses.swoops_ions(self.starttime, self.endtime)
+        check_datetime_index(df)
 
 
 @pytest.mark.data
-def test_imp():
-    starttime = datetime(1976, 1, 1, 0, 0, 0)
-    endtime = datetime(1976, 1, 2, 0, 0, 0)
-    df = imp.mag320ms('8', starttime, endtime)
-    check_datetime_index(df)
+class TestArtemis:
+    @classmethod
+    def setup_class(self):
+        self.starttime = datetime(2008, 1, 1, 0, 0, 0)
+        self.endtime = datetime(2008, 1, 2, 0, 0, 0)
+        self.probe = 'a'
 
-    df = imp.mag15s('8', starttime, endtime)
-    check_datetime_index(df)
+    def test_fgm(self):
+        df = artemis.fgm(self.probe, 'h', 'dsl', self.starttime, self.endtime)
+        check_datetime_index(df)
 
-    df = imp.mitplasma_h0('8', starttime, endtime)
-    check_datetime_index(df)
-
-    df = imp.merged('8', starttime, endtime)
-    check_datetime_index(df)
+        with pytest.raises(ValueError):
+            artemis.fgm('123', 'h', 'dsl', self.starttime, self.endtime)
+        with pytest.raises(ValueError):
+            artemis.fgm('1', '123', 'dsl', self.starttime, self.endtime)
+        with pytest.raises(ValueError):
+            artemis.fgm('1', 'h', '123', self.starttime, self.endtime)
 
 
 @pytest.mark.data
-def test_cluster():
-    if config['DEFAULT']['cluster_cookie'] != 'none':
-        probe = '2'
+class TestAce:
+    @classmethod
+    def setup_class(self):
+        self.starttime = datetime(2016, 1, 1, 0, 0, 0)
+        self.endtime = datetime(2016, 1, 2, 0, 0, 0)
+
+    def test_mfi_h0(self):
+        df = ace.mfi_h0(self.starttime, self.endtime)
+        check_datetime_index(df)
+
+
+@pytest.mark.data
+class TestImp:
+    @classmethod
+    def setup_class(self):
+        self.starttime = datetime(1976, 1, 1, 0, 0, 0)
+        self.endtime = datetime(1976, 1, 2, 0, 0, 0)
+        self.probe = '8'
+
+    def test_mag320ms(self):
+        df = imp.mag320ms(self.probe, self.starttime, self.endtime)
+        check_datetime_index(df)
+
+    def test_mag15s(self):
+        df = imp.mag15s(self.probe, self.starttime, self.endtime)
+        check_datetime_index(df)
+
+    def test_mitplasma_h0(self):
+        df = imp.mitplasma_h0(self.probe, self.starttime, self.endtime)
+        check_datetime_index(df)
+
+    def test_mereged(self):
+        df = imp.merged(self.probe, self.starttime, self.endtime)
+        check_datetime_index(df)
+
+
+@pytest.mark.data
+@pytest.mark.skipif(config['DEFAULT']['cluster_cookie'] == 'none',
+                    reason='Cluster download cookie not set')
+class TestCluster():
+    @classmethod
+    def setup_class(self):
+        self.probe = '3'
+
+    def test_fgm(self):
         starttime = datetime(2004, 6, 18, 11, 35, 0)
         endtime = datetime(2004, 6, 19, 18, 35, 0)
-        df = cluster.fgm(probe, starttime, endtime)
+        df = cluster.fgm(self.probe, starttime, endtime)
         check_datetime_index(df)
 
+    def test_peace_moments(self):
         starttime = datetime(2009, 12, 22, 4, 0, 0)
         endtime = datetime(2009, 12, 22, 6)
-        df = cluster.peace_moments(probe, starttime, endtime)
+        df = cluster.peace_moments(self.probe, starttime, endtime)
         check_datetime_index(df)
 
-        probe = '3'
+    def test_cis_hia_onboard_moms(self):
         starttime = datetime(2009, 1, 1, 0, 0, 0)
         endtime = datetime(2009, 1, 1, 2, 0, 0)
-        df = cluster.cis_hia_onboard_moms(probe, starttime, endtime)
+        df = cluster.cis_hia_onboard_moms(self.probe, starttime, endtime)
         check_datetime_index(df)
 
-        df = cluster.cis_codif_h1_moms(probe, starttime, endtime)
+    def test_cis_codif_h1_moms(self):
+        starttime = datetime(2009, 1, 1, 0, 0, 0)
+        endtime = datetime(2009, 1, 1, 2, 0, 0)
+        df = cluster.cis_codif_h1_moms(self.probe, starttime, endtime)
         check_datetime_index(df)
 
 
 @pytest.mark.data
-def test_wind():
-    """
-    Tests for imporitng wind data.
+class TestWind:
+    @classmethod
+    def setup_class(self):
+        self.starttime = datetime(2010, 1, 1, 0, 0, 0)
+        self.endtime = datetime(2010, 1, 1, 23, 59, 59)
 
-    Currently only try to download a single day's data for each product.
-    """
-    starttime = datetime(2010, 1, 1, 0, 0, 0)
-    endtime = datetime(2010, 1, 1, 23, 59, 59)
+    def test_mfi_h0(self):
+        df = wind.mfi_h0(self.starttime, self.endtime)
+        check_datetime_index(df)
 
-    df = wind.mfi_h0(starttime, endtime)
-    check_datetime_index(df)
+    def test_threedp_pm(self):
+        df = wind.threedp_pm(self.starttime, self.endtime)
+        check_datetime_index(df)
 
-    df = wind.threedp_pm(starttime, endtime)
-    check_datetime_index(df)
-
-    df = wind.swe_h3(starttime, endtime)
+    def test_swe_h3(self):
+        df = wind.swe_h3(self.starttime, self.endtime)
 
 
 @pytest.mark.data
-def test_mms():
-    """
-    Tests for importing mms data.
+class TestMMS:
+    @classmethod
+    def setup_class(self):
+        self.starttime = datetime(2016, 1, 2, 0, 0, 0)
+        self.endtime = datetime(2016, 1, 2, 1, 0, 0)
+        self.probe = '1'
 
-    Try and import a single days' worth of data for each data product.
-    """
-    starttime = datetime(2016, 1, 2, 0, 0, 0)
-    endtime = datetime(2016, 1, 2, 1, 0, 0)
-    probe = '1'
+    def test_fgm_survey(self):
+        df = mms.fgm_survey(self.probe, self.starttime, self.endtime)
+        check_datetime_index(df)
 
-    df = mms.fgm_survey(probe, starttime, endtime)
-    check_datetime_index(df)
-
-    df = mms.fpi_dis_moms(probe, 'fast', starttime, endtime)
-    check_datetime_index(df)
+    def test_fpi_dis_moms(self):
+        df = mms.fpi_dis_moms(self.probe, 'fast', self.starttime, self.endtime)
+        check_datetime_index(df)
 
 
 @pytest.mark.data
 class TestHelios:
-    """Tests for importing Helios data."""
     def test_merged(self):
         starttime = datetime(1976, 1, 1, 0, 0, 0)
         endtime = datetime(1976, 1, 1, 23, 59, 59)
