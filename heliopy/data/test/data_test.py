@@ -39,7 +39,7 @@ class TestUlysses():
         df = ulysses.fgm_hires(self.starttime, self.endtime)
         check_datetime_index(df)
 
-    def test_swoops_ions:
+    def test_swoops_ions(self):
         df = ulysses.swoops_ions(self.starttime, self.endtime)
         check_datetime_index(df)
 
