@@ -63,7 +63,7 @@ class TestArtemis:
         with pytest.raises(ValueError):
             artemis.fgm('123', 'h', 'dsl', self.starttime, self.endtime)
         with pytest.raises(ValueError):
-            artemis.fgm('1', '123', 'dsl', self.starttime, self.sendtime)
+            artemis.fgm('1', '123', 'dsl', self.starttime, self.endtime)
         with pytest.raises(ValueError):
             artemis.fgm('1', 'h', '123', self.starttime, self.endtime)
 
