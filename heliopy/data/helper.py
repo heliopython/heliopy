@@ -41,6 +41,12 @@ def timefilter(data, starttime, endtime):
 
     data = data[(time > starttime) &
                 (time < endtime)]
+    # Assume if this fails we have a multi-index that already has time in it
+    try:
+        if type(data.index[0]) != pd.Timestamp:
+            data = data.set_index('Time', drop=True)
+    except Exception as _:
+        pass
     return data
 
 
