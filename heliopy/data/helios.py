@@ -25,11 +25,14 @@ from datetime import date, time, datetime, timedelta
 import os
 import warnings
 from urllib.error import URLError
+from ftplib import FTP
+
 from heliopy import config
 from heliopy.data import helper
 import heliopy.vector.transformations as spacetrans
 import heliopy.time as spacetime
 import heliopy.constants as constants
+
 data_dir = config['DEFAULT']['download_dir']
 use_hdf = config['DEFAULT']['use_hdf']
 helios_dir = os.path.join(data_dir, 'helios')
@@ -1100,7 +1103,7 @@ def mag_4hz(probe, starttime, endtime, verbose=True):
                 except ValueError as err:
                     if str(err)[0:15] == 'No raw mag data':
                         if verbose:
-                            print(year, doy, 'No 4Hz raw mag data available'
+                            print(year, doy, 'No 4Hz raw mag data available '
                                   'for this day')
                     else:
                         raise
@@ -1135,20 +1138,42 @@ def _fourHz_fromascii(probe, year, doy):
         4Hz magnetic field data set
     """
     probe = _check_probe(probe)
-    floc = os.path.join(helios_dir,
-                        'helios' + probe,
-                        'mag',
-                        '4hz')
-    fname = 'he' + probe + '1s' + str(year - 1900) + str(doy).zfill(3)
+    local_dir = os.path.join(helios_dir,
+                             'helios' + probe,
+                             'mag',
+                             '4hz')
+    fname_prefix = 'he' + probe + '1s' + str(year - 1900) + str(doy).zfill(3)
     # For some reason the last number in the filename is the hour at which
     # data starts from on that day... this means a loop to check each hour
+    asciiloc = None
     for i in range(0, 24):
-        asciiloc = os.path.join(floc, fname + str(i).zfill(2) + '.asc')
-        if os.path.isfile(asciiloc):
+        testloc = os.path.join(local_dir,
+                               fname_prefix + str(i).zfill(2) + '.asc')
+        if os.path.isfile(testloc):
+            asciiloc = testloc
             break
-        elif i == 23:
-            raise ValueError('No raw mag data available for probe ' + probe +
-                             ', Year: ' + str(year) + ' doy: ' + str(doy))
+    if asciiloc is not None:
+        fname = asciiloc.split('/')[-1]
+        remote_url = None
+    else:
+        ftpsite = 'apollo.ssl.berkeley.edu'
+        remote_dir = ('pub/helios-data/E2_experiment/'
+                      'Data_Cologne_Nov2016_bestdata/'
+                      'HR/helios{}/'.format(probe))
+        remote_url = 'ftp://' + ftpsite + '/' + remote_dir
+
+        fname = None
+        with FTP(ftpsite) as ftp:
+            ftp.login()
+            filenames = ftp.nlst(remote_dir)
+            for filename in filenames:
+                if fname_prefix in filename:
+                    fname = filename
+                    break
+        if fname is None:
+            return ValueError('No mag data available locally or remotely')
+
+    asciiloc = helper.load(fname, local_dir, remote_url)
 
     # Read in data
     headings = ['Time', 'Bx', 'By', 'Bz', '|B|']
@@ -1162,7 +1187,7 @@ def _fourHz_fromascii(probe, year, doy):
 
     # Save data to a hdf store
     if use_hdf:
-        _save_hdf(data, floc, fname)
+        _save_hdf(data, local_dir, fname)
     return(data)
 
 
