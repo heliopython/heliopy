@@ -176,14 +176,20 @@ class TestMMS:
 
 @pytest.mark.data
 class TestHelios:
+    @classmethod
+    def setup_class(self):
+        self.starttime = datetime(1976, 1, 10, 0, 0, 0)
+        self.endtime = datetime(1976, 1, 10, 23, 59, 59)
+        self.probe = '1'
+
     def test_merged(self):
-        starttime = datetime(1976, 1, 1, 0, 0, 0)
-        endtime = datetime(1976, 1, 1, 23, 59, 59)
-        df = helios.merged('1', starttime, endtime)
+        df = helios.merged(self.probe, self.starttime, self.endtime)
         check_datetime_index(df)
 
         starttime = datetime(2000, 1, 1, 0, 0, 0)
         endtime = datetime(2000, 1, 2, 0, 0, 0)
-        for probe in ['1', '2']:
-            with pytest.raises(ValueError):
-                helios.merged(probe, starttime, endtime)
+        with pytest.raises(ValueError):
+            helios.merged(self.probe, starttime, endtime)
+
+    def test_6sec_ness(self):
+        helios.mag_ness(self.probe, self.starttime, self.endtime)
