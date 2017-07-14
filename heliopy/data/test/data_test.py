@@ -192,4 +192,9 @@ class TestHelios:
             helios.merged(self.probe, starttime, endtime)
 
     def test_6sec_ness(self):
-        helios.mag_ness(self.probe, self.starttime, self.endtime)
+        df = helios.mag_ness(self.probe, self.starttime, self.endtime)
+        check_datetime_index(df)
+
+    def test_mag_4hz(self):
+        df = helios.mag_4hz(self.probe, self.starttime, self.endtime)
+        check_datetime_index(df)
