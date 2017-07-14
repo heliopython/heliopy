@@ -1210,11 +1210,11 @@ def mag_ness(probe, starttime, endtime, verbose=True):
 
         # Loop through days of year
         for doy in range(startdoy, enddoy + 1):
-            hdfloc = os.path.join(floc, 'h' + probe + str(year - 1900) +
-                                  str(doy).zfill(3) + '.hdf')
+            hdfloc = os.path.join(floc,
+                                  'h{}{}{:03}.hdf'.format(probe, year - 1900, doy))
             if os.path.isfile(hdfloc):
                 # Load data from already processed file
-                data.append(pd.read_hdf(hdfloc))
+                data.append(pd.read_hdf(hdfloc, 'table'))
                 continue
 
             # Data not processed yet, try to process and load it
@@ -1249,16 +1249,15 @@ def _mag_ness_fromascii(probe, year, doy):
         6 second magnetic field data set
     """
     probe = _check_probe(probe)
-    floc = os.path.join(helios_dir,
-                        'helios' + probe,
-                        'mag',
-                        '6sec_ness',
-                        str(year))
-    fname = 'h' + probe + str(year - 1900) + str(doy).zfill(3)
-    asciiloc = os.path.join(floc, fname + '.asc')
-    if not os.path.isfile(asciiloc):
-        raise ValueError('No raw mag data available for probe ' + probe +
-                         ', Year: ' + str(year) + ' DOY: ' + str(doy))
+    local_dir = os.path.join(helios_dir,
+                             'helios' + probe,
+                             'mag',
+                             '6sec_ness',
+                             str(year))
+    remote_url = ('ftp://spdf.sci.gsfc.nasa.gov/pub/data/helios/helios' +
+                  probe + '/mag/6sec_ness/' + str(year) + '/')
+    fname = 'h' + probe + str(year - 1900) + str(doy).zfill(3) + '.asc'
+    f = helper.load(fname, local_dir, remote_url)
 
     # Read in data
     headings = ['probe', 'year', 'doy', 'hour', 'minute', 'second', 'naverage',
@@ -1267,7 +1266,7 @@ def _mag_ness_fromascii(probe, year, doy):
     colspecs = [(1, 2), (2, 4), (4, 7), (7, 9), (9, 11), (11, 13), (13, 15),
                 (15, 22), (22, 29), (29, 36), (36, 42), (42, 48), (48, 54),
                 (54, 60)]
-    data = pd.read_fwf(asciiloc, names=headings, header=None,
+    data = pd.read_fwf(f, names=headings, header=None,
                        colspecs=colspecs)
 
     # Process data
@@ -1283,7 +1282,7 @@ def _mag_ness_fromascii(probe, year, doy):
 
     # Save data to a hdf store
     if use_hdf:
-        _save_hdf(data, floc, fname)
+        _save_hdf(data, local_dir, fname)
     return(data)
 
 
