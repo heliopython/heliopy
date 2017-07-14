@@ -22,8 +22,10 @@ def check_datetime_index(df):
 
 @pytest.mark.data
 class TestMessenger:
-    self.starttime = datetime(2010, 1, 1, 0, 0, 0)
-    self.endtime = datetime(2010, 1, 2, 1, 0, 0)
+    @classmethod
+    def setup_class(self):
+        self.starttime = datetime(2010, 1, 1, 0, 0, 0)
+        self.endtime = datetime(2010, 1, 2, 1, 0, 0)
 
     def test_mag(self):
         df = messenger.mag_rtn(self.starttime, self.endtime)
@@ -31,9 +33,11 @@ class TestMessenger:
 
 
 @pytest.mark.data
-class TestUlysses():
-    self.starttime = datetime(1993, 1, 1, 0, 0, 0)
-    self.endtime = datetime(1993, 1, 2, 0, 0, 0)
+class TestUlysses:
+    @classmethod
+    def setup_class(self):
+        self.starttime = datetime(1993, 1, 1, 0, 0, 0)
+        self.endtime = datetime(1993, 1, 2, 0, 0, 0)
 
     def test_fgm_hires(self):
         df = ulysses.fgm_hires(self.starttime, self.endtime)
@@ -46,9 +50,11 @@ class TestUlysses():
 
 @pytest.mark.data
 class TestArtemis:
-    self.starttime = datetime(2008, 1, 1, 0, 0, 0)
-    self.endtime = datetime(2008, 1, 2, 0, 0, 0)
-    self.probe = 'a'
+    @classmethod
+    def setup_class(self):
+        self.starttime = datetime(2008, 1, 1, 0, 0, 0)
+        self.endtime = datetime(2008, 1, 2, 0, 0, 0)
+        self.probe = 'a'
 
     def test_fgm(self):
         df = artemis.fgm(self.probe, 'h', 'dsl', self.starttime, self.endtime)
@@ -64,8 +70,10 @@ class TestArtemis:
 
 @pytest.mark.data
 class TestAce:
-    self.starttime = datetime(2016, 1, 1, 0, 0, 0)
-    self.endtime = datetime(2016, 1, 2, 0, 0, 0)
+    @classmethod
+    def setup_class(self):
+        self.starttime = datetime(2016, 1, 1, 0, 0, 0)
+        self.endtime = datetime(2016, 1, 2, 0, 0, 0)
 
     def test_mfi_h0(self):
         df = ace.mfi_h0(self.starttime, self.endtime)
@@ -74,9 +82,11 @@ class TestAce:
 
 @pytest.mark.data
 class TestImp:
-    self.starttime = datetime(1976, 1, 1, 0, 0, 0)
-    self.endtime = datetime(1976, 1, 2, 0, 0, 0)
-    self.probe = '8'
+    @classmethod
+    def setup_class(self):
+        self.starttime = datetime(1976, 1, 1, 0, 0, 0)
+        self.endtime = datetime(1976, 1, 2, 0, 0, 0)
+        self.probe = '8'
 
     def test_mag320ms(self):
         df = imp.mag320ms(self.probe, self.starttime, self.endtime)
@@ -99,7 +109,9 @@ class TestImp:
 @pytest.mark.skipif(config['DEFAULT']['cluster_cookie'] == 'none',
                     reason='Cluster download cookie not set')
 class TestCluster():
-    self.probe = '3'
+    @classmethod
+    def setup_class(self):
+        self.probe = '3'
 
     def test_fgm(self):
         starttime = datetime(2004, 6, 18, 11, 35, 0)
@@ -128,8 +140,10 @@ class TestCluster():
 
 @pytest.mark.data
 class TestWind:
-    self.starttime = datetime(2010, 1, 1, 0, 0, 0)
-    self.endtime = datetime(2010, 1, 1, 23, 59, 59)
+    @classmethod
+    def setup_class(self):
+        self.starttime = datetime(2010, 1, 1, 0, 0, 0)
+        self.endtime = datetime(2010, 1, 1, 23, 59, 59)
 
     def test_mfi_h0(self):
         df = wind.mfi_h0(self.starttime, self.endtime)
@@ -145,9 +159,11 @@ class TestWind:
 
 @pytest.mark.data
 class TestMMS:
-    self.starttime = datetime(2016, 1, 2, 0, 0, 0)
-    self.endtime = datetime(2016, 1, 2, 1, 0, 0)
-    self.probe = '1'
+    @classmethod
+    def setup_class(self):
+        self.starttime = datetime(2016, 1, 2, 0, 0, 0)
+        self.endtime = datetime(2016, 1, 2, 1, 0, 0)
+        self.probe = '1'
 
     def test_fgm_survey(self):
         df = mms.fgm_survey(self.probe, self.starttime, self.endtime)
