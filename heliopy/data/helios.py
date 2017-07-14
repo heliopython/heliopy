@@ -35,13 +35,6 @@ use_hdf = config['DEFAULT']['use_hdf']
 helios_dir = os.path.join(data_dir, 'helios')
 
 
-def dtime2ordinal(dtime):
-    """Consistent method to convert datetime to ordinal"""
-    if type(dtime) == datetime:
-        dtime = pd.Series(dtime)
-    return pd.DatetimeIndex(dtime).astype(np.int64)
-
-
 def _check_probe(probe):
     probe = str(probe)
     assert probe == '1' or probe == '2', 'Probe number must be 1 or 2'
