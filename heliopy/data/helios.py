@@ -1216,8 +1216,6 @@ def mag_ness(probe, starttime, endtime, verbose=True):
     data = []
     # Loop through years
     for year in range(startdate.year, enddate.year + 1):
-        if not _check_doy(probe, year, 1):
-            continue
 
         floc = os.path.join(helios_dir,
                             'helios' + probe,
