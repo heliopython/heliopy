@@ -2,6 +2,7 @@
 import os
 import sys
 from pycdf import pycdf
+from urllib.error import URLError
 from urllib.request import urlretrieve
 import ftplib
 import pandas as pd
@@ -175,7 +176,11 @@ def load(filename, local_dir, remote_url, guessversion=False,
                 filename = f[-len(filename):]
 
     if try_download:
-        return _load_remote(remote_url, filename, local_dir, filetype)
+        try:
+            return _load_remote(remote_url, filename, local_dir, filetype)
+        except URLError:
+            raise ValueError('File {}{} not available'.format(remote_url,
+                                                              filename))
     else:
         return []
 
