@@ -1259,6 +1259,7 @@ def mag_ness(probe, starttime, endtime, verbose=True):
         # Loop through days of year
         for doy in range(startdoy, enddoy + 1):
             nodatastr = '{}/{:03} 6s mag data not available'.format(year, doy)
+            datastr = '{}/{:03} 6s mag data loaded'.format(year, doy)
             if not _check_doy(probe, year, doy):
                 if verbose:
                     print(nodatastr)
@@ -1270,12 +1271,14 @@ def mag_ness(probe, starttime, endtime, verbose=True):
             if os.path.isfile(hdfloc):
                 # Load data from already processed file
                 data.append(pd.read_hdf(hdfloc, 'table'))
+                print(datastr)
                 continue
 
             # Data not processed yet, try to process and load it
             try:
                 data.append(_mag_ness_fromascii(probe, year, doy))
-                print('{}/{:03} 6s mag data loaded'.format(year, doy))
+                if verbose:
+                    print(datastr)
             except ValueError:
                 if verbose:
                     print(nodatastr)
@@ -1338,7 +1341,7 @@ def _mag_ness_fromascii(probe, year, doy):
 
     # Save data to a hdf store
     if use_hdf:
-        _save_hdf(data, local_dir, fname)
+        _save_hdf(data, local_dir, fname[:-4])
     return(data)
 
 
