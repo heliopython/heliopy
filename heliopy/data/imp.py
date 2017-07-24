@@ -14,8 +14,16 @@ from heliopy import config
 data_dir = config['DEFAULT']['download_dir']
 use_hdf = config['DEFAULT']['use_hdf']
 imp_url = 'ftp://cdaweb.gsfc.nasa.gov/pub/data/imp/'
-imp_dir = data_dir + '/imp'
+imp_dir = os.path.join(data_dir, 'imp')
 valid_probes = ['1', '2', '3', '4', '5', '6', '7', '8']
+
+
+def _check_probe(probe, valid_probes):
+    if probe not in valid_probes:
+        raise ValueError(
+            '"{}" is not in the list of allowed probes ({})'.format(
+                probe, valid_probes))
+    return True
 
 
 def merged(probe, starttime, endtime, verbose=False):
@@ -41,6 +49,7 @@ def merged(probe, starttime, endtime, verbose=False):
         data : DataFrame
             Requested data.
     """
+    _check_probe(probe, ['8'])
     data = []
     startyear = starttime.year
     endyear = endtime.year
