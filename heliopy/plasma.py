@@ -116,3 +116,24 @@ def p_th(n, T):
     # Convert to m^-3
     n = n * 1e6
     return n * constants.k_B * T
+
+
+def beta(n, T, B):
+    """
+    Returns plasma beta.
+
+    Parameters
+    ----------
+    n : array_like
+        Number density in cm^-3
+    T : array_like
+        Temperature in Kelvin
+    B : array_like
+        Magnetic field magnitude in nT
+
+    Returns
+    -------
+    beta : array_like
+        Plasma beta
+    """
+    return p_th(n, T) / p_mag(B)
