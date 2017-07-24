@@ -1195,20 +1195,30 @@ def mag_ness(probe, starttime, endtime, verbose=True):
         '''
         Returns False if year and doy are out of bounds for given probe
         '''
-        if probe == '2':
-            if (year == 1976 and doy < 17) or (year < 1976):
-                return False
-            elif (year == 1980 and doy > 68) or (year > 1980):
-                return False
-        return True
+        if probe == '1':
+            minyear = 1974
+            mindoy = 349
+            maxyear = 1981
+            maxdoy = 167
+        elif probe == '2':
+            minyear = 1976
+            mindoy = 17
+            maxyear = 1980
+            maxdoy = 68
+
+        if (year == minyear and doy < mindoy) or (year < minyear):
+            return False
+        elif (year == maxyear and doy > maxdoy) or (year > maxyear):
+            return False
+        else:
+            return True
 
     data = []
     # Loop through years
     for year in range(startdate.year, enddate.year + 1):
-        if year < 1976:
+        if not _check_doy(probe, year, 1):
             continue
-        elif year > 1980:
-            break
+
         floc = os.path.join(helios_dir,
                             'helios' + probe,
                             'mag',
