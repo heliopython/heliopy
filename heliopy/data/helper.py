@@ -9,6 +9,36 @@ import pandas as pd
 import numpy as np
 
 
+def _sph2cart(r, theta, phi):
+    """
+    Given spherical co-orinates, returns cartesian coordiantes.
+
+    Parameters
+    ----------
+        r : array_like
+            r values
+        theta : array_like
+            Elevation angles defined from the x-y plane towards the z-axis
+        phi : array_like
+            Azimuthal angles defined in the x-y plane, clockwise about the
+            z-axis, from the x-axis.
+
+    Returns
+    -------
+        x : array_like
+            x values
+        y : array_like
+            y values
+        z : array_like
+            z values
+
+    """
+    x = r * np.cos(theta) * np.cos(phi)
+    y = r * np.cos(theta) * np.sin(phi)
+    z = r * np.sin(theta)
+    return x, y, z
+
+
 def timefilter(data, starttime, endtime):
     """
     Puts data in a single dataframe, and filters it between times.

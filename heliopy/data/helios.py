@@ -29,7 +29,6 @@ from ftplib import FTP
 
 from heliopy import config
 from heliopy.data import helper
-import heliopy.vector.transformations as spacetrans
 import heliopy.time as spacetime
 import heliopy.constants as constants
 
@@ -407,7 +406,7 @@ def electron_dist_single(probe, year, doy, hour, minute, second,
     dist['pdf'] *= 1e12
     # Calculate spherical coordinates of energy bins
     dist['|v|'], _, dist['phi'] =\
-        spacetrans.cart2sph(dist['vx'], dist['vy'], 0)
+        helper._cart2sph(dist['vx'], dist['vy'], 0)
     # Calculate bin energy assuming particles are electrons
     dist['E_electron'] = 0.5 * constants.m_e *\
         ((dist['|v|']) ** 2)
@@ -911,7 +910,7 @@ def ion_dist_single(probe, year, doy, hour, minute, second,
     dist['pdf'] *= 1e12
     # Calculate magnitude, elevation and azimuth of energy bins
     dist['|v|'], dist['theta'], dist['phi'] =\
-        spacetrans.cart2sph(dist['vx'], dist['vy'], dist['vz'])
+        helper._cart2sph(dist['vx'], dist['vy'], dist['vz'])
     # Calculate bin energy assuming particles are protons
     dist['E_proton'] = 0.5 * constants.m_p * ((dist['|v|']) ** 2)
 
