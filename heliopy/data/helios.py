@@ -1194,6 +1194,10 @@ def mag_ness(probe, starttime, endtime, verbose=True):
     data = []
     # Loop through years
     for year in range(startdate.year, enddate.year + 1):
+        if year < 1976:
+            continue
+        elif year > 1980:
+            break
         floc = os.path.join(helios_dir,
                             'helios' + probe,
                             'mag',
@@ -1210,6 +1214,10 @@ def mag_ness(probe, starttime, endtime, verbose=True):
 
         # Loop through days of year
         for doy in range(startdoy, enddoy + 1):
+            if year == 1976 and doy < 17:
+                continue
+            elif year == 1980 and doy > 68:
+                continue
             hdfloc = os.path.join(floc,
                                   'h{}{}{:03}.hdf'.format(probe, year - 1900, doy))
             if os.path.isfile(hdfloc):
