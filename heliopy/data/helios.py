@@ -1216,9 +1216,32 @@ def mag_ness(probe, starttime, endtime, verbose=True):
     startdate = starttime.date()
     enddate = endtime.date()
 
+    def _check_doy(probe, year, doy):
+        '''
+        Returns False if year and doy are out of bounds for given probe
+        '''
+        if probe == '1':
+            minyear = 1974
+            mindoy = 349
+            maxyear = 1981
+            maxdoy = 167
+        elif probe == '2':
+            minyear = 1976
+            mindoy = 17
+            maxyear = 1980
+            maxdoy = 68
+
+        if (year == minyear and doy < mindoy) or (year < minyear):
+            return False
+        elif (year == maxyear and doy > maxdoy) or (year > maxyear):
+            return False
+        else:
+            return True
+
     data = []
     # Loop through years
     for year in range(startdate.year, enddate.year + 1):
+
         floc = os.path.join(helios_dir,
                             'helios' + probe,
                             'mag',
@@ -1235,8 +1258,15 @@ def mag_ness(probe, starttime, endtime, verbose=True):
 
         # Loop through days of year
         for doy in range(startdoy, enddoy + 1):
-            hdfloc = os.path.join(floc,
-                                  'h{}{}{:03}.hdf'.format(probe, year - 1900, doy))
+            nodatastr = '{}/{:03} 6s mag data not available'.format(year, doy)
+            if not _check_doy(probe, year, doy):
+                if verbose:
+                    print(nodatastr)
+                continue
+
+            hdfloc = os.path.join(floc, 'h{}{}{:03}.hdf'.format(probe,
+                                                                year - 1900,
+                                                                doy))
             if os.path.isfile(hdfloc):
                 # Load data from already processed file
                 data.append(pd.read_hdf(hdfloc, 'table'))
@@ -1245,9 +1275,10 @@ def mag_ness(probe, starttime, endtime, verbose=True):
             # Data not processed yet, try to process and load it
             try:
                 data.append(_mag_ness_fromascii(probe, year, doy))
+                print('{}/{:03} 6s mag data loaded'.format(year, doy))
             except ValueError:
                 if verbose:
-                    print(year, doy, 'No raw mag data')
+                    print(nodatastr)
 
     return helper.timefilter(data, starttime, endtime)
 
