@@ -1189,7 +1189,7 @@ def _fourHz_fromascii(probe, year, doy):
 
     # Save data to a hdf store
     if use_hdf:
-        _save_hdf(data, local_dir, fname)
+        _save_hdf(data, local_dir, fname[:-4])
     return(data)
 
 
