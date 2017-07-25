@@ -1091,26 +1091,29 @@ def mag_4hz(probe, starttime, endtime, verbose=True):
         # Loop through days of year
         for doy in range(startdoy, enddoy + 1):
             hdfloc = os.path.join(floc,
-                                  'he' + probe + '1s' + str(year - 1900) +
-                                  str(doy).zfill(3) + '.hdf')
+                                  'he{}1s{}{:03}.hdf'.format(probe,
+                                                             year - 1900,
+                                                             doy))
             if not os.path.isfile(hdfloc):
                 # Data not processed yet, try to process and load it
                 try:
                     data.append(_fourHz_fromascii(probe, year, doy))
-                    if verbose:
-                        print(year, doy, '4Hz data processed')
                 except ValueError as err:
                     if str(err)[0:15] == 'No raw mag data':
                         if verbose:
-                            print(year, doy, 'No 4Hz raw mag data available '
-                                  'for this day')
+                            print('{}/{:03} '
+                                  '4Hz mag data not available'.format(year,
+                                                                      doy))
                     else:
                         raise
             else:
                 # Load data from already processed file
                 data.append(pd.read_hdf(hdfloc, 'table'))
+            if verbose:
+                print('{}/{:03} 4Hz mag data loaded'.format(year, doy))
     if data == []:
-        raise ValueError('No raw mag data available')
+        raise ValueError('No raw 4Hz mag data available')
+
     data = helper.timefilter(data, starttime, endtime)
 
     if data.empty:
@@ -1170,7 +1173,7 @@ def _fourHz_fromascii(probe, year, doy):
                     fname = filename
                     break
         if fname is None:
-            return ValueError('No mag data available locally or remotely')
+            raise ValueError('No mag data available locally or remotely')
 
     asciiloc = helper.load(fname, local_dir, remote_url)
 
@@ -1186,7 +1189,7 @@ def _fourHz_fromascii(probe, year, doy):
 
     # Save data to a hdf store
     if use_hdf:
-        _save_hdf(data, local_dir, fname)
+        _save_hdf(data, local_dir, fname[:-4])
     return(data)
 
 
