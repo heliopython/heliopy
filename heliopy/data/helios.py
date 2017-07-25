@@ -1173,7 +1173,7 @@ def _fourHz_fromascii(probe, year, doy):
                     fname = filename
                     break
         if fname is None:
-            return ValueError('No mag data available locally or remotely')
+            raise ValueError('No mag data available locally or remotely')
 
     asciiloc = helper.load(fname, local_dir, remote_url)
 
