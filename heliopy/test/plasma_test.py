@@ -32,3 +32,12 @@ def test_p_th():
     assert p_th(0, 1) == 0
     assert p_th(1, 0) == 0
     np.testing.assert_almost_equal(p_th(1e-6, 1 / const.k_B), 1)
+
+
+def test_beta():
+    assert beta(0, 1, 1) == 0
+    assert beta(1, 0, 1) == 0
+    np.testing.assert_almost_equal(beta(1e-6,
+                                        1 / const.k_B,
+                                        1e9 * np.sqrt(2 * const.mu_0)),
+                                   1)
