@@ -127,8 +127,6 @@ def _ion_fitparams(probe, starttime, endtime, D, verbose=False):
     while starttime < endtime + timedelta(days=1):
         year = str(starttime.year)
         doy = starttime.strftime('%j')
-        if verbose:
-            print(year, doy)
         fname = 'h' + probe + '_' + year + '_' + doy + '_' + D + 'D_fits.h5'
         saveloc = os.path.join(helios_dir,
                                'helios' + probe,
@@ -139,9 +137,13 @@ def _ion_fitparams(probe, starttime, endtime, D, verbose=False):
             params = pd.read_hdf(saveloc, 'fits')
         except FileNotFoundError:
             starttime += timedelta(days=1)
+            if verbose:
+                print('{}/{} corefit data not available'.format(year, doy))
             continue
         paramlist.append(params)
         starttime += timedelta(days=1)
+        if verbose:
+            print('{}/{} corefit data loaded'.format(year, doy))
     paramlist = pd.concat(paramlist)
     paramlist = paramlist.set_index('Time', drop=False)
     return helper.timefilter(paramlist, starttime_orig, endtime)
@@ -1285,6 +1287,8 @@ def mag_ness(probe, starttime, endtime, verbose=True):
                 if verbose:
                     print(nodatastr)
 
+    if data == []:
+        raise ValueError('No 6s mag data avaialble between {} and {}'.format(starttime, endtime))
     return helper.timefilter(data, starttime, endtime)
 
 
