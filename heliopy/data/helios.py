@@ -1048,7 +1048,7 @@ def _merged_fromascii(probe, year, doy, try_download):
     return(data)
 
 
-def mag_4hz(probe, starttime, endtime, verbose=True):
+def mag_4hz(probe, starttime, endtime, verbose=True, try_download=True):
     """
     Read in 4Hz magnetic field data.
 
@@ -1099,9 +1099,10 @@ def mag_4hz(probe, starttime, endtime, verbose=True):
             if not os.path.isfile(hdfloc):
                 # Data not processed yet, try to process and load it
                 try:
-                    data.append(_fourHz_fromascii(probe, year, doy))
+                    data.append(_fourHz_fromascii(probe, year, doy,
+                                                  try_download=try_download))
                 except ValueError as err:
-                    if str(err)[0:15] == 'No raw mag data':
+                    if 'No mag data available' in str(err):
                         if verbose:
                             print('{}/{:03} '
                                   '4Hz mag data not available'.format(year,
@@ -1123,7 +1124,7 @@ def mag_4hz(probe, starttime, endtime, verbose=True):
     return(data)
 
 
-def _fourHz_fromascii(probe, year, doy):
+def _fourHz_fromascii(probe, year, doy, try_download=True):
     """
     Read in a single day of 4Hz magnetic field data.
 
@@ -1150,6 +1151,7 @@ def _fourHz_fromascii(probe, year, doy):
     # For some reason the last number in the filename is the hour at which
     # data starts from on that day... this means a loop to check each hour
     asciiloc = None
+    fname = None
     for i in range(0, 24):
         testloc = os.path.join(local_dir,
                                fname_prefix + str(i).zfill(2) + '.asc')
@@ -1159,7 +1161,7 @@ def _fourHz_fromascii(probe, year, doy):
     if asciiloc is not None:
         fname = asciiloc.split('/')[-1]
         remote_url = None
-    else:
+    elif try_download is not False:
         ftpsite = 'apollo.ssl.berkeley.edu'
         remote_dir = ('pub/helios-data/E2_experiment/'
                       'Data_Cologne_Nov2016_bestdata/'
@@ -1174,8 +1176,8 @@ def _fourHz_fromascii(probe, year, doy):
                 if fname_prefix in filename:
                     fname = filename
                     break
-        if fname is None:
-            raise ValueError('No mag data available locally or remotely')
+    if fname is None:
+        raise ValueError('No mag data available locally or remotely')
 
     asciiloc = helper.load(fname, local_dir, remote_url)
 
@@ -1195,7 +1197,7 @@ def _fourHz_fromascii(probe, year, doy):
     return(data)
 
 
-def mag_ness(probe, starttime, endtime, verbose=True):
+def mag_ness(probe, starttime, endtime, verbose=True, try_download=True):
     """
     Read in 6 second magnetic field data.
 
@@ -1280,7 +1282,8 @@ def mag_ness(probe, starttime, endtime, verbose=True):
 
             # Data not processed yet, try to process and load it
             try:
-                data.append(_mag_ness_fromascii(probe, year, doy))
+                data.append(_mag_ness_fromascii(probe, year, doy,
+                                                try_download=try_download))
                 if verbose:
                     print(datastr)
             except ValueError:
@@ -1292,7 +1295,7 @@ def mag_ness(probe, starttime, endtime, verbose=True):
     return helper.timefilter(data, starttime, endtime)
 
 
-def _mag_ness_fromascii(probe, year, doy):
+def _mag_ness_fromascii(probe, year, doy, try_download=True):
     """
     Read in a single day of 6 second magnetic field data.
 
@@ -1322,7 +1325,7 @@ def _mag_ness_fromascii(probe, year, doy):
     remote_url = ('ftp://spdf.sci.gsfc.nasa.gov/pub/data/helios/helios' +
                   probe + '/mag/6sec_ness/' + str(year) + '/')
     fname = 'h' + probe + str(year - 1900) + str(doy).zfill(3) + '.asc'
-    f = helper.load(fname, local_dir, remote_url)
+    f = helper.load(fname, local_dir, remote_url, try_download=try_download)
 
     # Read in data
     headings = ['probe', 'year', 'doy', 'hour', 'minute', 'second', 'naverage',
