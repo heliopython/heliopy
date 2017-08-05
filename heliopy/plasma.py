@@ -30,10 +30,10 @@ def alfvenspeed(n, B):
     v_a : array_like
         Alfven speed in km/s
     """
-    n *= 1e6
-    B *= 1e-9
+    n = n * 1e6
+    B = B * 1e-9
     v_a = B / np.sqrt(constants.mu_0 * constants.m_p * n)
-    v_a *= 1e-3
+    v_a = v_a * 1e-3
     return v_a
 
 
