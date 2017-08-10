@@ -7,7 +7,7 @@ cache:
     - $HOME/miniconda
 before_install:
 - chmod ugo+x build/install_conda.sh
-script: ./build/install_conda.sh
+- bash ./build/install_conda.sh
 - conda update --yes conda
 - conda create --yes -n testenv python=$TRAVIS_PYTHON_VERSION
 - source activate testenv
