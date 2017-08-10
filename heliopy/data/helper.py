@@ -61,23 +61,20 @@ def timefilter(data, starttime, endtime):
     if isinstance(data, list):
         data = pd.concat(data)
     # Get time values
-    try:
+    if 'Time' in data.columns:
         time = data['Time']
-    except KeyError as _:
-        try:
-            time = data.index.get_level_values('Time')
-        except KeyError as err:
-            return KeyError('The label "Time" was not found in '
-                            'the dataframe columns or index')
+    elif 'Time' in data.index:
+        time = data.index.get_level_values('Time')
+    else:
+        return KeyError('The label "Time" was not found in '
+                        'the dataframe columns or index')
 
     data = data[(time > starttime) &
                 (time < endtime)]
     # Assume if this fails we have a multi-index that already has time in it
-    try:
-        if type(data.index[0]) != pd.Timestamp:
-            data = data.set_index('Time', drop=True)
-    except Exception as _:
-        pass
+    if ('Time' in data.columns) and (len(data.index.shape) == 1):
+        data = data.set_index('Time', drop=True)
+
     return data
 
 
