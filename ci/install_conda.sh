@@ -6,4 +6,3 @@ then
   chmod +x miniconda.sh
   "./miniconda.sh -b -f -p $HOME/miniconda"
 fi
-export PATH="$HOME/miniconda/bin:$PATH"
