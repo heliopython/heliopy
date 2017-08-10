@@ -3,7 +3,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 import heliopy.time as heliotime
-import heliopy.vector.transformations as trans
 
 
 def jointdists(data, title=None, sharelims=True, **kwargs):
@@ -97,7 +96,8 @@ def thetaphi(x, y, z):
     .. literalinclude:: /scripts/plot_thetaphi.py
     .. image:: /figures/plot_thetaphi.png
     """
-    _, theta, phi = trans.cart2sph(x, y, z)
+    phi = np.atan2(y, x)
+    theta = np.atan2(z, np.sqrt(x**2 + y**2))
 
     ax = plt.gca()
     ax.hexbin(phi, theta,
