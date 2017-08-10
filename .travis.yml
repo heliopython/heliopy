@@ -8,6 +8,8 @@ cache:
 before_install:
 - chmod ugo+x ./ci/install_conda.sh
 - bash ./ci/install_conda.sh
+- export PATH="$HOME/miniconda/bin:$PATH"
+- source activate testenv
 - conda install --yes scipy pytest pytest-cov pandas pytables
 
 - wget http://cdaweb.gsfc.nasa.gov/pub/software/cdf/dist/cdf36_3_1/linux/cdf36_3_1-dist-all.tar.gz

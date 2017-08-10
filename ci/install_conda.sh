@@ -14,4 +14,3 @@ if ! [ -d "$HOME/miniconda/envs/testenv" ]
 then
   conda create --yes -n testenv python=$TRAVIS_PYTHON_VERSION
 fi
-source activate testenv
