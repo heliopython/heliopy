@@ -99,7 +99,7 @@ def mfi_h0(starttime, endtime):
             str(date.month).zfill(2) +\
             str(date.day).zfill(2) +\
             '_v05.cdf'
-        hdfname = filename[:-4] + 'hdf'
+        hdfname = filename[:-4] + '.hdf'
         hdfloc = os.path.join(local_dir, hdfname)
         if os.path.isfile(hdfloc):
             df = pd.read_hdf(hdfloc)
