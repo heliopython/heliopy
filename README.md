@@ -5,7 +5,7 @@ to make it really easy to import common data sets used in Space Physics.
 
 A quick example shows how easy it is to import and view data:
 
-```
+```python
 from datetime import datetime, timedelta
 import heliopy.data.wind as wind
 import matplotlib.pyplot as plt
@@ -15,9 +15,9 @@ endtime = starttime + timedelta(hours=2)
 
 data = wind.mfi_h0(starttime, endtime)
 
-plt.plot(data['Time'], data['Bx_gse'])
-plt.plot(data['Time'], data['By_gse'])
-plt.plot(data['Time'], data['Bz_gse'])
+plt.plot(data['Bx_gse'])
+plt.plot(data['By_gse'])
+plt.plot(data['Bz_gse'])
 
 plt.show()
 ```
