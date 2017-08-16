@@ -149,6 +149,10 @@ class TestWind:
         df = wind.mfi_h0(self.starttime, self.endtime)
         check_datetime_index(df)
 
+    def test_mfi_h2(self):
+        df = wind.mfi_h2(self.starttime, self.endtime)
+        check_datetime_index(df)
+
     def test_threedp_pm(self):
         df = wind.threedp_pm(self.starttime, self.endtime)
         check_datetime_index(df)

@@ -84,8 +84,44 @@ def mfi_h0(starttime, endtime):
     -------
         data : DataFrame
     """
+    return _mfi(starttime, endtime, 'h0')
+
+
+def mfi_h2(starttime, endtime):
+    """
+    Import 'mfi_h2' magnetic field data product from WIND.
+
+    Parameters
+    ----------
+        starttime : datetime
+            Interval start time.
+        endtime : datetime
+            Interval end time.
+
+    Returns
+    -------
+        data : DataFrame
+    """
+    return _mfi(starttime, endtime, 'h2')
+
+
+def _mfi(starttime, endtime, version):
+    """
+    Import mfi magnetic field data products from WIND.
+
+    Parameters
+    ----------
+        starttime : datetime
+            Interval start time.
+        endtime : datetime
+            Interval end time.
+
+    Returns
+    -------
+        data : DataFrame
+    """
     # Directory relative to main WIND data directory
-    relative_dir = os.path.join('mfi', 'mfi_h0')
+    relative_dir = os.path.join('mfi', 'mfi_' + version)
 
     daylist = spacetime.daysplitinterval(starttime, endtime)
     data = []
@@ -94,7 +130,7 @@ def mfi_h0(starttime, endtime):
         this_relative_dir = os.path.join(relative_dir, str(day[0].year))
         # Absolute path to local directory for this data file
         local_dir = os.path.join(wind_dir, this_relative_dir)
-        filename = 'wi_h0_mfi_' +\
+        filename = 'wi_' + version + '_mfi_' +\
             str(date.year) +\
             str(date.month).zfill(2) +\
             str(date.day).zfill(2) +\
@@ -110,13 +146,19 @@ def mfi_h0(starttime, endtime):
         remote_url = remote_wind_dir + this_relative_dir
         cdf = helper.load(filename, local_dir, remote_url, guessversion=True)
 
-        keys = {'B3GSE': ['Bx_gse', 'By_gse', 'Bz_gse'],
-                'Epoch3': 'Time'}
+        epoch_dict = {'h0': 'Epoch3', 'h2': 'Epoch'}
+        mag_dict = {'h0': 'B3GSE', 'h2': 'BGSE'}
+
+        epoch_key = epoch_dict[version]
+        mag_key = mag_dict[version]
+
+        keys = {mag_key: ['Bx_gse', 'By_gse', 'Bz_gse'],
+                epoch_key: 'Time'}
         badvalues = {'Bx_gse': -1e+31,
                      'By_gse': -1e+31,
                      'Bz_gse': -1e+31}
         df = helper.cdf2df(cdf,
-                           index_key='Epoch3',
+                           index_key=epoch_key,
                            keys=keys,
                            badvalues=badvalues)
         if use_hdf:
