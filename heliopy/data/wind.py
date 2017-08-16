@@ -85,6 +85,26 @@ def mfi_h0(starttime, endtime):
         data : DataFrame
     """
     return _mfi(starttime, endtime, 'h0')
+
+
+def mfi_h2(starttime, endtime):
+    """
+    Import 'mfi_h2' magnetic field data product from WIND.
+
+    Parameters
+    ----------
+        starttime : datetime
+            Interval start time.
+        endtime : datetime
+            Interval end time.
+
+    Returns
+    -------
+        data : DataFrame
+    """
+    return _mfi(starttime, endtime, 'h2')
+
+
 def _mfi(starttime, endtime, version):
     """
     Import mfi magnetic field data products from WIND.
