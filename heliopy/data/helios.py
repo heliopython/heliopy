@@ -268,13 +268,13 @@ def integrated_dists(probe, starttime, endtime, verbose=False):
         for key in todays_dists:
             todays_dists[key] = pd.concat(todays_dists[key])
             if use_hdf:
-                todays_dists[key].to_hdf(hdffile, key=key, mode='a')
+                todays_dists[key].to_hdf(hdffile, key=key, mode='w')
             distlist[key].append(todays_dists[key])
         starttime += timedelta(days=1)
 
-    # The while loop will only stop after we have overshot
     for key in distlist:
-        distlist[key] = helper.timefilter(distlist[key], starttime_orig, endtime)
+        distlist[key] = helper.timefilter(distlist[key], starttime_orig,
+                                          endtime)
     return distlist
 
 
