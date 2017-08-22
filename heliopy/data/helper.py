@@ -63,11 +63,11 @@ def timefilter(data, starttime, endtime):
     # Get time values
     if 'Time' in data.columns:
         time = data['Time']
-    elif 'Time' in data.index:
+    elif 'Time' in data.index.names:
         time = data.index.get_level_values('Time')
     else:
-        return KeyError('The label "Time" was not found in '
-                        'the dataframe columns or index')
+        raise KeyError('The label "Time" was not found in '
+                       'the dataframe columns or index')
 
     data = data[(time > starttime) &
                 (time < endtime)]
