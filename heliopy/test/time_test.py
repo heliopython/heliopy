@@ -4,12 +4,6 @@ import pytest
 import numpy as np
 
 
-def test_nptimedelta2seconds():
-    t = np.timedelta64(1, 's')
-    s = nptimedelta2seconds(t)
-    assert s == 1
-
-
 def test_daysplitinterval():
     startTime = datetime(1992, 12, 20, 4, 5, 6)
     endTime = datetime(1992, 12, 22, 3, 5, 7)
