@@ -170,7 +170,7 @@ def ion_fitparams_3D(probe, starttime, endtime, verbose=False):
     return _ion_fitparams(probe, starttime, endtime, '3', verbose)
 
 
-def ion_fitparams_1D(probe, starttime, endtime):
+def _ion_fitparams_1D(probe, starttime, endtime):
     """
     Returns parameters from 1D fitting to ion distribution functions.
 
