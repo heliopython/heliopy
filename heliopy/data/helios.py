@@ -1193,7 +1193,8 @@ def _fourHz_fromascii(probe, year, doy, try_download=True):
 
     # Save data to a hdf store
     if use_hdf:
-        _save_hdf(data, local_dir, fname[:-4])
+        fname = 'he{}1s{}{:03}'.format(probe, year - 1900, doy)
+        _save_hdf(data, local_dir, fname)
     return(data)
 
 
