@@ -227,9 +227,9 @@ def pitchdist_cdf2df(cdf, distkeys, energykey, timekey, anglelabels):
     Assumes that each energy in the cdf has its own 2D array (time, angle). In
     the below description of the function there are
 
-        - `n` time data points
-        - `m` energy data points
-        - `l` anglular data points
+        - ``n`` time data points
+        - ``m`` energy data points
+        - ``l`` anglular data points
 
     Parameters
     ----------
