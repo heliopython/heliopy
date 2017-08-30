@@ -19,6 +19,7 @@ before_install:
 - cd ../
 script:
 - pytest heliopy/ --cov=heliopy/ -v --durations=5
+- python setup.py sdist
 after_success:
 - pip install codecov
 - codecov
