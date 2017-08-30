@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='heliopy',
-      version='0.1b1',
+      version='0.1b3',
       description='Python for Space Physics',
       url='https://github.com/heliopy/heliopy',
       author='David Stansby',
@@ -21,7 +21,5 @@ setup(name='heliopy',
       packages=['pycdf.pycdf',
                 'heliopy.data',
                 'heliopy.plot',
-                'heliopy.stats',
-                'heliopy.vector',
                 'heliopy.util'],
       package_data={'heliopy': ['heliopyrc']})
