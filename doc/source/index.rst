@@ -10,10 +10,10 @@ in the :ref:`data-index`.
    :maxdepth: 2
 
    installing.rst
+   configuring.rst
    multiindex.rst
    examples/examples.rst
    code_ref/index.rst
-
 
 * :ref:`genindex`
 * :ref:`modindex`
