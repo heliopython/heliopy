@@ -9,6 +9,37 @@ import pandas as pd
 import numpy as np
 
 
+def _cart2sph(x, y, z):
+    """
+    Given cartesian co-ordinates returns shperical co-ordinates.
+
+    Parameters
+    ----------
+        x : array_like
+            x values
+        y : array_like
+            y values
+        z : array_like
+            z values
+
+    Returns
+    -------
+        r : array_like
+            r values
+        theta : array_like
+            Elevation angles defined from the x-y plane towards the z-axis.
+            Angles are in the range [-pi/2, pi/2].
+        phi : array_like
+            Azimuthal angles defined in the x-y plane, clockwise about the
+            z-axis, from the x-axis. Angles are in the range [-pi, pi].
+    """
+    xy = x**2 + y**2
+    r = np.sqrt(xy + z**2)
+    theta = np.arctan2(z, np.sqrt(xy))
+    phi = np.arctan2(y, x)
+    return r, theta, phi
+
+
 def _sph2cart(r, theta, phi):
     """
     Given spherical co-orinates, returns cartesian coordiantes.
