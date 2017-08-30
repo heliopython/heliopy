@@ -1,3 +1,5 @@
+.. _data-index:
+
 heliopy.data package
 -----------------------
 
