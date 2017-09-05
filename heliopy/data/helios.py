@@ -145,7 +145,8 @@ def _ion_fitparams(probe, starttime, endtime, D, verbose=False):
         if verbose:
             print('{}/{} corefit data loaded'.format(year, doy))
     paramlist = pd.concat(paramlist)
-    paramlist = paramlist.set_index('Time', drop=False)
+    if not paramlist.index.name == 'Time':
+        paramlist = paramlist.set_index('Time', drop=False)
     return helper.timefilter(paramlist, starttime_orig, endtime)
 
 
