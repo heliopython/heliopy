@@ -63,6 +63,5 @@ def mfi_h0(starttime, endtime):
                            badvalues=badvalues)
         data.append(df)
 
-    data = pd.concat(data)
-    data = data[(data['Time'] > starttime) & (data['Time'] < endtime)]
+    data = helper.timefilter(data, starttime, endtime)
     return data
