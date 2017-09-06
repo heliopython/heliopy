@@ -79,6 +79,10 @@ class TestAce:
         df = ace.mfi_h0(self.starttime, self.endtime)
         check_datetime_index(df)
 
+    def test_swe_h0(self):
+        df = ace.swe_h0(self.starttime, self.endtime)
+        check_datetime_index(df)
+
 
 @pytest.mark.data
 class TestImp:
