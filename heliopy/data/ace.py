@@ -18,20 +18,19 @@ remote_ace_dir = 'ftp://spdf.gsfc.nasa.gov/pub/data/ace/'
 
 def mfi_h0(starttime, endtime):
     """
-    Import 'mfi_h0' magnetic field data product from ACE.
-
-    This data set has 16 second cadence.
+    Import 'mfi_h0' magnetic field data product from ACE. See
+    ftp://spdf.gsfc.nasa.gov/pub/data/ace/mag/ for more information.
 
     Parameters
     ----------
-        starttime : datetime
-            Interval start time.
-        endtime : datetime
-            Interval end time.
+    starttime : datetime
+        Interval start time.
+    endtime : datetime
+        Interval end time.
 
     Returns
     -------
-        data : DataFrame
+    data : DataFrame
     """
     # Directory relative to main WIND data directory
     relative_dir = os.path.join('mag', 'level_2_cdaweb', 'mfi_h0')
@@ -64,6 +63,5 @@ def mfi_h0(starttime, endtime):
                            badvalues=badvalues)
         data.append(df)
 
-    data = pd.concat(data)
-    data = data[(data['Time'] > starttime) & (data['Time'] < endtime)]
+    data = helper.timefilter(data, starttime, endtime)
     return data
