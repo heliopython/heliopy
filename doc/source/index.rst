@@ -11,6 +11,7 @@ in the :ref:`data-index`.
 
    installing.rst
    configuring.rst
+   pycdf.rst
    multiindex.rst
    examples/examples.rst
    code_ref/index.rst
