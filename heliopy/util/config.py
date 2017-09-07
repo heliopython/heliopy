@@ -45,7 +45,7 @@ def load_config():
     config : dict
         Dictionary containing configuration options read from ``heliopyrc``
     """
-    config_location = get_config_dir()
+    config_location = get_config_file()
     config = configparser.ConfigParser()
     config.read(config_location)
 
