@@ -10,8 +10,7 @@ environment:
       NUMPY_VERSION: "stable"
 
   matrix:
-      - PYTHON_VERSION: "2.7"
-      - PYTHON_VERSION: "3.5"
+      - PYTHON_VERSION: "3.6"
 
 matrix:
     fast_finish: true
