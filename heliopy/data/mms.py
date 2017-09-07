@@ -102,9 +102,7 @@ def fpi_dis_moms(probe, mode, starttime, endtime):
             df = helper.cdf2df(cdf, 'Epoch', keys)
             data.append(df)
 
-    data = pd.concat(data)
-    data = data[(data['Time'] > starttime) & (data['Time'] < endtime)]
-    return data
+    return helper.timefilter(data, starttime, endtime)
 
 
 def fgm_survey(probe, starttime, endtime):
@@ -158,6 +156,4 @@ def fgm_survey(probe, starttime, endtime):
         df = helper.cdf2df(cdf, 'Epoch', keys)
         data.append(df)
 
-    data = pd.concat(data)
-    data = data[(data['Time'] > starttime) & (data['Time'] < endtime)]
-    return data
+    return helper.timefilter(data, starttime, endtime)
