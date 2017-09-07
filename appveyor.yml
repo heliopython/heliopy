@@ -23,6 +23,12 @@ install:
     - "powershell ci-helpers/appveyor/install-miniconda.ps1"
     - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
     - "activate test"
+    # Install CDF library
+    - $source = "https://spdf.sci.gsfc.nasa.gov/pub/software/cdf/dist/cdf36_4/windows/cdf36_4_0-setup-32.exe"
+    - $destination = "c:\application\data\cdf_setup.exe"
+    - Invoke-WebRequest $source -OutFile $destination
+    - Start-Process "c:\application\data\cdf_setup.exe"
+
 
 # Not a .NET project, we build heliopy in the install step instead
 build: false
