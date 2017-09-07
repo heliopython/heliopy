@@ -25,7 +25,7 @@ install:
     - "activate test"
     # Install CDF library
     - ps: Start-FileDownload 'https://spdf.sci.gsfc.nasa.gov/pub/software/cdf/dist/cdf36_4/windows/cdf36_4_0-setup-32.exe'
-    - ps: Start-Process 'cdf36_4_0-setup-32.exe'
+    - 'cdf36_4_0-setup-32.exe'
 
 
 # Not a .NET project, we build heliopy in the install step instead
