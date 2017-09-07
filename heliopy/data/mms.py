@@ -44,11 +44,7 @@ def fpi_dis_moms(probe, mode, starttime, endtime):
     if mode not in valid_modes:
         raise RuntimeError('Mode must be either fast or brst')
     # Directory relative to main MMS data directory
-    relative_dir = os.path.join('mms' + probe,
-                                'fpi',
-                                mode,
-                                'l2',
-                                'dis-moms')
+    relative_dir = os.path.join('mms' + probe, 'fpi', mode, 'l2', 'dis-moms')
 
     daylist = spacetime.daysplitinterval(starttime, endtime)
     data = []
@@ -124,10 +120,7 @@ def fgm_survey(probe, starttime, endtime):
         Imported data.
     """
     # Directory relative to main MMS data directory
-    relative_dir = os.path.join('mms' + probe,
-                                'fgm',
-                                'srvy',
-                                'l2')
+    relative_dir = os.path.join('mms' + probe, 'fgm', 'srvy', 'l2')
 
     daylist = spacetime.daysplitinterval(starttime, endtime)
     data = []
