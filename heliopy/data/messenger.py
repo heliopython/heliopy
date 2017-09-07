@@ -67,7 +67,8 @@ def mag_rtn(starttime, endtime):
                 'Epoch': 'Time',
                 'azimuth_ecliptic': 'sc_Az',
                 'latitude_ecliptic': 'sc_Lat',
-                'radialDistance': 'sc_r'}
+                'radialDistance': 'sc_r'
+                'MissionElapsedTime', 'mission_time'}
         df = helper.cdf2df(cdf, index_key='Epoch', keys=keys)
 
         if use_hdf:
