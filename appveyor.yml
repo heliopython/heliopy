@@ -24,8 +24,8 @@ install:
     - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
     - "activate test"
     # Install CDF library
-    - ps: Start-FileDownload 'https://spdf.sci.gsfc.nasa.gov/pub/software/cdf/dist/cdf36_4/windows/cdf36_4_0-setup-32.exe' -FileName 'c:\application\data\cdf_setup.exe'
-    - ps: Start-Process 'c:\application\data\cdf_setup.exe'
+    - ps: Start-FileDownload 'https://spdf.sci.gsfc.nasa.gov/pub/software/cdf/dist/cdf36_4/windows/cdf36_4_0-setup-32.exe'
+    - ps: Start-Process 'cdf36_4_0-setup-32.exe'
 
 
 # Not a .NET project, we build heliopy in the install step instead
