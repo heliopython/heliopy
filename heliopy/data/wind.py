@@ -23,14 +23,14 @@ def swe_h3(starttime, endtime):
 
     Parameters
     ----------
-        starttime : datetime
-            Interval start time.
-        endtime : datetime
-            Interval end time.
+    starttime : datetime
+        Interval start time.
+    endtime : datetime
+        Interval end time.
 
     Returns
     -------
-        data : DataFrame
+    data : DataFrame
     """
     # Directory relative to main WIND data directory
     relative_dir = os.path.join('swe', 'swe_h3')
@@ -75,14 +75,14 @@ def mfi_h0(starttime, endtime):
 
     Parameters
     ----------
-        starttime : datetime
-            Interval start time.
-        endtime : datetime
-            Interval end time.
+    starttime : datetime
+        Interval start time.
+    endtime : datetime
+        Interval end time.
 
     Returns
     -------
-        data : DataFrame
+    data : DataFrame
     """
     return _mfi(starttime, endtime, 'h0')
 
@@ -93,14 +93,14 @@ def mfi_h2(starttime, endtime):
 
     Parameters
     ----------
-        starttime : datetime
-            Interval start time.
-        endtime : datetime
-            Interval end time.
+    starttime : datetime
+        Interval start time.
+    endtime : datetime
+        Interval end time.
 
     Returns
     -------
-        data : DataFrame
+    data : DataFrame
     """
     return _mfi(starttime, endtime, 'h2')
 
@@ -111,14 +111,14 @@ def _mfi(starttime, endtime, version):
 
     Parameters
     ----------
-        starttime : datetime
-            Interval start time.
-        endtime : datetime
-            Interval end time.
+    starttime : datetime
+        Interval start time.
+    endtime : datetime
+        Interval end time.
 
     Returns
     -------
-        data : DataFrame
+    data : DataFrame
     """
     # Directory relative to main WIND data directory
     relative_dir = os.path.join('mfi', 'mfi_' + version)
@@ -174,14 +174,14 @@ def threedp_pm(starttime, endtime):
 
     Parameters
     ----------
-        starttime : datetime
-            Interval start time.
-        endtime : datetime
-            Interval end time.
+    starttime : datetime
+        Interval start time.
+    endtime : datetime
+        Interval end time.
 
     Returns
     -------
-        data : DataFrame
+    data : DataFrame
     """
     # Directory relative to main WIND data directory
     relative_dir = os.path.join('3dp', '3dp_pm')
