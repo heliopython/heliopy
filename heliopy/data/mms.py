@@ -26,19 +26,19 @@ def fpi_dis_moms(probe, mode, starttime, endtime):
 
     Parameters
     ----------
-        probe : string
-            Probe number, must be 1, 2, 3, or 4
-        mode : string
-            Data mode, must be 'fast' or 'brst'
-        starttime : datetime
-            Interval start time.
-        endtime : datetime
-            Interval end time.
+    probe : string
+        Probe number, must be 1, 2, 3, or 4
+    mode : string
+        Data mode, must be 'fast' or 'brst'
+    starttime : datetime
+        Interval start time.
+    endtime : datetime
+        Interval end time.
 
     Returns
     -------
-        data : DataFrame
-            Imported data.
+    data : DataFrame
+        Imported data.
     """
     valid_modes = ['fast', 'brst']
     if mode not in valid_modes:
@@ -113,17 +113,17 @@ def fgm_survey(probe, starttime, endtime):
 
     Parameters
     ----------
-        probe : string
-            Probe number, must be 1, 2, 3, or 4
-        starttime : datetime
-            Interval start time.
-        endtime : datetime
-            Interval end time.
+    probe : string
+        Probe number, must be 1, 2, 3, or 4
+    starttime : datetime
+        Interval start time.
+    endtime : datetime
+        Interval end time.
 
     Returns
     -------
-        data : DataFrame
-            Imported data.
+    data : DataFrame
+        Imported data.
     """
     # Directory relative to main MMS data directory
     relative_dir = os.path.join('mms' + probe,
