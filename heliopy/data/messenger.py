@@ -22,24 +22,17 @@ def mag_rtn(starttime, endtime):
 
     Parameters
     ----------
-        starttime : datetime
-            Interval start time.
-        endtime : datetime
-            Interval end time.
+    starttime : datetime
+        Interval start time.
+    endtime : datetime
+        Interval end time.
 
     Returns
     -------
-        data : DataFrame
+    data : DataFrame
     """
     # Directory relative to main WIND data directory
     relative_dir = 'rtn'
-    keys = {'B_normal': 'Bn',
-            'B_radial': 'Br',
-            'B_tangential': 'Bt',
-            'Epoch': 'Time',
-            'azimuth_ecliptic': 'sc_Az',
-            'latitude_ecliptic': 'sc_Lat',
-            'radialDistance': 'sc_r'}
 
     daylist = spacetime.daysplitinterval(starttime, endtime)
     data = []
@@ -67,6 +60,15 @@ def mag_rtn(starttime, endtime):
         remote_url = os.path.join(remote_mess_dir, this_relative_dir)
 
         cdf = helper.load(filename, local_dir, remote_url, guessversion=True)
+
+        keys = {'B_normal': 'Bn',
+                'B_radial': 'Br',
+                'B_tangential': 'Bt',
+                'Epoch': 'Time',
+                'azimuth_ecliptic': 'sc_Az',
+                'latitude_ecliptic': 'sc_Lat',
+                'radialDistance': 'sc_r',
+                'MissionElapsedTime': 'mission_time'}
         df = helper.cdf2df(cdf, index_key='Epoch', keys=keys)
 
         if use_hdf:
