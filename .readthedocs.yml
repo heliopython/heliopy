@@ -1,2 +1,4 @@
 python:
   version: 3
+conda:
+  file: doc/environment.yml
