@@ -2,8 +2,8 @@ from setuptools import setup
 
 setup(name='heliopy',
       version='0.1b3',
-      description='Python for Space Physics',
-      url='https://github.com/heliopy/heliopy',
+      description='Python for space physics',
+      url='https://github.com/heliopython/heliopy',
       author='David Stansby',
       author_email='dstansby@gmail.com',
       license='GPL-3.0',
