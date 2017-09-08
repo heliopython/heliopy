@@ -1,13 +1,25 @@
-"""heliopy configuration utility"""
+"""
+heliopy configuration utility
+"""
 import configparser
 import os
 import heliopy
 
 
-def load_config():
-    """Read in configuration file"""
+def get_config_file():
+    """
+    Return location of configuration file. This looks in the following places
+    in order:
+
+    1. ~/.heliopy/heliopyrc
+    2. The installation folder of heliopy
+
+    Returns
+    -------
+    loc : string
+        Filepath of the ``heliopyrc`` configuration file
+    """
     config_filename = 'heliopyrc'
-    config = configparser.ConfigParser()
 
     # Get user configuration location
     home_dir = os.path.expanduser("~")
@@ -18,15 +30,31 @@ def load_config():
 
     for f in [config_file_1, config_file_2]:
         if os.path.isfile(f):
-            config.read(f)
-            break
+            return f
+
+
+def load_config():
+    """
+    Read in configuration file. This looks in the following places in order:
+
+    1. ~/.heliopy/heliopyrc
+    2. The installation folder of heliopy
+
+    Returns
+    -------
+    config : dict
+        Dictionary containing configuration options read from ``heliopyrc``
+    """
+    config_location = get_config_file()
+    config = configparser.ConfigParser()
+    config.read(config_location)
 
     # Set data download directory
     download_dir = os.path.expanduser(config['DEFAULT']['download_dir'])
     config['DEFAULT']['download_dir'] = download_dir
     # Create data download if not created
     if not os.path.isdir(download_dir):
-        print('Creating download directory %s' % download_dir)
+        print('Creating download directory {}'.format(download_dir))
         os.makedirs(download_dir)
 
     # Set cluster cookie
