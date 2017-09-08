@@ -175,8 +175,8 @@ except ImportError:
     import io as StringIO
 
 import numpy
-from . import toolbox
-from . import time as spt
+from pycdf import toolbox
+from pycdf import time as spt
 
 
 __contact__ = 'Steve Morley, smorley@lanl.gov'
@@ -404,7 +404,7 @@ def dmfilled(shape, fillval=0, dtype=None, order='C', attrs=None):
            [ nan]])
     >>> a.attrs
     {'units': 'nT'}
-        
+
     """
     a = dmarray(numpy.empty(shape, dtype, order), attrs=attrs)
     try:
@@ -437,7 +437,7 @@ class SpaceData(dict):
         This allows one to make a SpaceData indexed with an iterable of keys to return a new spacedata
         made of the subset of keys
         """
-        try: 
+        try:
             return super(SpaceData, self).__getitem__(key)
         except (KeyError, TypeError):
             if isinstance(key, (tuple, list)):
@@ -497,7 +497,7 @@ class SpaceData(dict):
 #        sys.stdout = sys_stdout_save
 #        dum.seek(0)
 #        return ''.join(dum.readlines())
-    
+
     def tree(self, **kwargs):
         '''Print the contents of the SpaceData object in a visual tree
 
@@ -584,7 +584,7 @@ class SpaceData(dict):
         for key in flatobj:
             self[key] = copy.copy(flatobj[key])
 
-            
+
 
 def convertKeysToStr(SDobject):
     if isinstance(SDobject, SpaceData):
@@ -1088,7 +1088,7 @@ def toHDF5(fname, SDobject, **kwargs):
         import h5py as hdf
     except ImportError:
         raise ImportError('h5py is required to use HDF5 files')
-    
+
     try:
         assert isinstance(SDobject, SpaceData)
     except AssertionError:
@@ -1715,7 +1715,7 @@ def toJSONheadedASCII(fname, insd, metadata=None, depend0=None, order=None, **kw
 
 def fromRecArray(recarr):
     '''Takes a numpy recarray and returns each field as a dmarray in a SpaceData container
-    
+
     Parameters
     ----------
     recarr : numpy record array
@@ -1889,7 +1889,7 @@ def createISTPattrs(datatype, ndims=1, vartype=None, units=None, NRV=False):
 def _getVarLengths(data):
     """
     get the length of all the variables
-    
+
     Parameters
     ----------
     data : SpaceData
@@ -1932,7 +1932,7 @@ def resample(data, time=[], winsize=0, overlap=0, st_time=None, outtimename='Epo
 
     Returns
     -------
-    ans : SpaceData 
+    ans : SpaceData
         Resampled data, included keys are in the input keys (with the data caveats above)
         and Epoch which contains the output time
 
@@ -1957,7 +1957,7 @@ def resample(data, time=[], winsize=0, overlap=0, st_time=None, outtimename='Epo
     # Things to note:
     #    - attributes are preserved
     #    - the output variables have their DEPEND_0 changed to Epoch (or outtimename)
-    #    - each dimension of a 2d array is resampled individually 
+    #    - each dimension of a 2d array is resampled individually
     """
     # check for SpaceData or dmarray input before going to a bunch of work
     if not isinstance(data, (SpaceData, dmarray)):
@@ -1980,7 +1980,7 @@ def resample(data, time=[], winsize=0, overlap=0, st_time=None, outtimename='Epo
 
     ans = SpaceData()
     ans.attrs = data.attrs
-    
+
     for k in keys:
         if len(data[k].shape) > 1:
             if len(data[k].shape) > 2:
@@ -2001,8 +2001,5 @@ def resample(data, time=[], winsize=0, overlap=0, st_time=None, outtimename='Epo
             pass
         ans[k].attrs['DEPEND_0'] = outtimename
     ans[outtimename] = dmarray(t)
-        
+
     return ans
-
-
-    

@@ -37,12 +37,12 @@ except:
 
 import numpy as np
 
-from .. import time as spt
+from pycdf import time as spt
 
 #Try to pull in the C version. Assumption is that if you import this module,
 #you want to do some association analysis, so the overhead in the import
 #is OK.
-from .. import lib
+from pycdf import lib
 if lib.have_libspacepy:
     import ctypes
 
