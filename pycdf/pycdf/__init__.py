@@ -64,10 +64,10 @@ import weakref
 
 import numpy
 import numpy.ma
-from .. import datamodel
+from pycdf import datamodel
 
 #Import const AFTER library loaded, so failed load doesn't leave half-imported
-#from . import const
+#from pycdf import const
 
 try:
     str_classes = (str, bytes, unicode)

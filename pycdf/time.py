@@ -101,7 +101,7 @@ import warnings
 import dateutil.parser as dup
 import numpy as np
 
-from . import datamodel
+from pycdf import datamodel
 
 __contact__ = 'Steve Morley, smorley@lanl.gov'
 
