@@ -43,8 +43,14 @@ extensions = [
     'sphinx.ext.coverage',
     'sphinx.ext.mathjax',
     'sphinx.ext.napoleon',
-    'sphinx.ext.intersphinx'
+    'sphinx.ext.intersphinx',
+    'nbsphinx'
 ]
+
+# List of patterns, relative to source directory, that match files and
+# directories to ignore when looking for source files.
+# This patterns also effect to html_static_path and html_extra_path
+exclude_patterns = ['_build', '**.ipynb_checkpoints']
 
 intersphinx_mapping = {'matplotlib': ('http://matplotlib.org', None),
                        'python': ('https://docs.python.org/3', None),
@@ -95,11 +101,6 @@ language = None
 # Else, today_fmt is used as the format for a strftime call.
 #
 # today_fmt = '%B %d, %Y'
-
-# List of patterns, relative to source directory, that match files and
-# directories to ignore when looking for source files.
-# This patterns also effect to html_static_path and html_extra_path
-exclude_patterns = []
 
 # The reST default role (used for this markup: `text`) to use for all
 # documents.
