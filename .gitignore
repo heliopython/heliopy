@@ -2,7 +2,6 @@
 .cache*
 .coverage
 doc/build*
-doc/Makefile
 heliopy.egg-info*
 *.DS_Store*
 build/*
