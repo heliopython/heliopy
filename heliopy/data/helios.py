@@ -922,6 +922,18 @@ def ion_dist_single(probe, year, doy, hour, minute, second,
     return dist
 
 
+def _merged_localdir(probe):
+    return os.path.join(helios_dir,
+                        'helios{}'.format(probe),
+                        'merged',
+                        'he{}_40sec'.format(probe))
+
+
+def _merged_fname(probe, year, doy):
+    # Return merged filename WITHOUT extension
+    return 'H{}{}_{:03}'.format(probe, year - 1900, doy)
+
+
 def merged(probe, starttime, endtime, verbose=True, try_download=True):
     """
     Read in merged data set
@@ -946,10 +958,7 @@ def merged(probe, starttime, endtime, verbose=True, try_download=True):
 
     daylist = spacetime.daysplitinterval(starttime, endtime)
     data = []
-    floc = os.path.join(helios_dir,
-                        'helios' + probe,
-                        'merged',
-                        'he' + probe + '_40sec')
+    floc = _merged_localdir(probe)
     for day in daylist:
         this_date = day[0]
         # Check that data for this day exists
@@ -963,9 +972,7 @@ def merged(probe, starttime, endtime, verbose=True, try_download=True):
         doy = int(this_date.strftime('%j'))
         year = this_date.year
 
-        hdfloc = os.path.join(floc,
-                              'H' + probe + str(year - 1900) + '_' +
-                              str(doy).zfill(3) + '.hdf')
+        hdfloc = os.path.join(floc, _merged_fname(probe, year, doy) + '.hdf')
         # Data not processed yet, try to process and load it
         if not os.path.isfile(hdfloc):
             try:
@@ -1014,14 +1021,10 @@ def _merged_fromascii(probe, year, doy, try_download):
         Merged data set
     """
     probe = _check_probe(probe)
-    local_dir = os.path.join(helios_dir,
-                             'helios' + probe,
-                             'merged',
-                             'he' + probe + '_40sec/')
-    remote_url = 'ftp://cdaweb.gsfc.nasa.gov/pub/data/helios/helios' +\
-        probe + '/' + 'merged/he' + probe + '_40sec'
-    filename = 'H' + probe + str(year - 1900) + '_' +\
-        str(doy).zfill(3) + '.dat'
+    local_dir = _merged_localdir(probe)
+    remote_url = ('ftp://cdaweb.gsfc.nasa.gov/pub/data/helios/'
+                  'helios{}/merged/he{}_40sec'.format(probe, probe))
+    filename = _merged_fname(probe, year, doy) + '.dat'
     asciiloc = os.path.join(local_dir, filename)
 
     # Make sure file is downloaded
@@ -1045,7 +1048,8 @@ def _merged_fromascii(probe, year, doy, try_download):
 
     # Save data to a hdf store
     if use_hdf:
-        _save_hdf(data, local_dir, filename[:-4])
+        _save_hdf(
+            data, _merged_localdir(probe), _merged_fname(probe, year, doy))
     return(data)
 
 
