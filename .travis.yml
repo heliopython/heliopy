@@ -13,7 +13,7 @@ before_install:
 - source activate testenv
 - conda install --yes scipy pytest pytest-cov pandas pytables
 # Install doc requirements
-- conda install sphinx
+- conda install --yes sphinx
 - pip install sphinx_rtd_theme
 # Install CDF library
 - wget http://cdaweb.gsfc.nasa.gov/pub/software/cdf/dist/cdf36_3_1/linux/cdf36_3_1-dist-all.tar.gz
