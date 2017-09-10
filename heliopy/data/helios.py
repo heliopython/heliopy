@@ -1074,24 +1074,22 @@ def mag_4hz(probe, starttime, endtime, verbose=True, try_download=True):
         4Hz magnetic field data set
     """
     probe = _check_probe(probe)
-    startdate = starttime.date()
-    enddate = endtime.date()
 
     data = []
     # Loop through years
-    for year in range(startdate.year, enddate.year + 1):
+    for year in range(starttime.year, endtime.year + 1):
         floc = os.path.join(helios_dir,
                             'helios' + probe,
                             'mag',
                             '4hz')
         # Calculate start day of year
-        if year == startdate.year:
-            startdoy = int(startdate.strftime('%j'))
+        if year == starttime.year:
+            startdoy = int(starttime.strftime('%j'))
         else:
             startdoy = 1
         # Calculate end day of year
-        if year == enddate.year:
-            enddoy = int(enddate.strftime('%j'))
+        if year == endtime.year:
+            enddoy = int(endtime.strftime('%j'))
         else:
             enddoy = 366
 
