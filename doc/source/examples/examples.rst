@@ -5,3 +5,4 @@ Examples
    :maxdepth: 2
 
    importing.rst
+   multiindex.rst

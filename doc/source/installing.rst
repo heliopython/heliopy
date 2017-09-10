@@ -3,11 +3,19 @@ Installing heliopy
 
 heliopy is built on the Python programming language. The easiest way to install
 Python with the various required scientific python modules is to use Anaconda.
-Installation instructions can be found [here](https://docs.continuum.io/anaconda/install/).
+Installation instructions can be found `here <https://docs.continuum.io/anaconda/install/>`_.
 
 Once you have a Python distribution installed, heliopy can be installed using::
 
   pip install heliopy
+
+Optional dependencies
+---------------------
+
+CDF Library
+^^^^^^^^^^^
+Reading in any data that is stored in .cdf files requires an installation of
+the CDF library: https://cdf.gsfc.nasa.gov/
 
 Installing from source
 ----------------------
