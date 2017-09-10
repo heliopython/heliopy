@@ -1,5 +1,5 @@
-pycdf
-=====
+Reading cdf files - pycdf
+=========================
 
 pycdf is a module for reading CDF files into python. It is forked directly
 without change from the `spacepy`_ project.
