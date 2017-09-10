@@ -9,6 +9,14 @@ Once you have a Python distribution installed, heliopy can be installed using::
 
   pip install heliopy
 
+Optional dependencies
+---------------------
+
+CDF Library
+^^^^^^^^^^^
+Reading in any data that is stored in .cdf files requires an installation of
+the CDF library: https://cdf.gsfc.nasa.gov/
+
 Installing from source
 ----------------------
 The latest source code is available at
