@@ -1199,6 +1199,16 @@ def _fourHz_fromascii(probe, year, doy, try_download=True):
     return(data)
 
 
+def _ness_localdir(probe, year):
+    return os.path.join(helios_dir, 'helios{}'.format(probe),
+                        'mag', '6sec_ness', '{}'.format(year))
+
+
+def _ness_fname(probe, year, doy):
+    # Returns ness magnetic field filename WITHOUT extension
+    return 'h{}{}{:03}'.format(probe, year - 1900, doy)
+
+
 def mag_ness(probe, starttime, endtime, verbose=True, try_download=True):
     """
     Read in 6 second magnetic field data.
@@ -1250,11 +1260,7 @@ def mag_ness(probe, starttime, endtime, verbose=True, try_download=True):
     # Loop through years
     for year in range(startdate.year, enddate.year + 1):
 
-        floc = os.path.join(helios_dir,
-                            'helios' + probe,
-                            'mag',
-                            '6sec_ness',
-                            str(year))
+        floc = _ness_localdir(probe, year)
         # Calculate start day
         startdoy = 1
         if year == startdate.year:
@@ -1273,9 +1279,7 @@ def mag_ness(probe, starttime, endtime, verbose=True, try_download=True):
                     print(nodatastr)
                 continue
 
-            hdfloc = os.path.join(floc, 'h{}{}{:03}.hdf'.format(probe,
-                                                                year - 1900,
-                                                                doy))
+            hdfloc = os.path.join(floc, _ness_fname(probe, year, doy) + 'hdf')
             if os.path.isfile(hdfloc):
                 # Load data from already processed file
                 data.append(pd.read_hdf(hdfloc, 'table'))
@@ -1293,7 +1297,8 @@ def mag_ness(probe, starttime, endtime, verbose=True, try_download=True):
                     print(nodatastr)
 
     if data == []:
-        raise ValueError('No 6s mag data avaialble between {} and {}'.format(starttime, endtime))
+        raise ValueError('No 6s mag data avaialble between '
+                         '{} and {}'.format(starttime, endtime))
     return helper.timefilter(data, starttime, endtime)
 
 
@@ -1319,14 +1324,10 @@ def _mag_ness_fromascii(probe, year, doy, try_download=True):
         6 second magnetic field data set
     """
     probe = _check_probe(probe)
-    local_dir = os.path.join(helios_dir,
-                             'helios' + probe,
-                             'mag',
-                             '6sec_ness',
-                             str(year))
+    local_dir = _ness_localdir(probe, year)
     remote_url = ('ftp://spdf.sci.gsfc.nasa.gov/pub/data/helios/helios' +
                   probe + '/mag/6sec_ness/' + str(year) + '/')
-    fname = 'h' + probe + str(year - 1900) + str(doy).zfill(3) + '.asc'
+    fname = _ness_fname(probe, year, doy) + '.asc'
     f = helper.load(fname, local_dir, remote_url, try_download=try_download)
 
     # Read in data
@@ -1352,7 +1353,7 @@ def _mag_ness_fromascii(probe, year, doy, try_download=True):
 
     # Save data to a hdf store
     if use_hdf:
-        _save_hdf(data, local_dir, fname[:-4])
+        _save_hdf(data, local_dir, _ness_fname(probe, year, doy))
     return(data)
 
 
