@@ -1061,8 +1061,12 @@ def mag_4hz(probe, starttime, endtime, verbose=True, try_download=True):
         Interval start time
     endtime : datetime
         Interval end time
-    verbose : bool
-        If ``True``, print more information as data is loading
+    verbose : bool, optional
+        If ``True``, print more information as data is loading.
+        Default is ``True``.
+    try_download : bool, optional
+        If ``False`` don't try to download data if it is missing locally.
+        Default is ``False``.
 
     Returns
     -------
