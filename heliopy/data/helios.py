@@ -1049,6 +1049,10 @@ def _merged_fromascii(probe, year, doy, try_download):
     return(data)
 
 
+def _4hz_localdir(probe):
+    return os.path.join(helios_dir, 'helios{}'.format(probe), 'mag', '4hz')
+
+
 def mag_4hz(probe, starttime, endtime, verbose=True, try_download=True):
     """
     Read in 4Hz magnetic field data.
@@ -1078,10 +1082,7 @@ def mag_4hz(probe, starttime, endtime, verbose=True, try_download=True):
     data = []
     # Loop through years
     for year in range(starttime.year, endtime.year + 1):
-        floc = os.path.join(helios_dir,
-                            'helios' + probe,
-                            'mag',
-                            '4hz')
+        floc = _4hz_localdir(probe)
         # Calculate start day of year
         if year == starttime.year:
             startdoy = int(starttime.strftime('%j'))
@@ -1146,10 +1147,7 @@ def _fourHz_fromascii(probe, year, doy, try_download=True):
         4Hz magnetic field data set
     """
     probe = _check_probe(probe)
-    local_dir = os.path.join(helios_dir,
-                             'helios' + probe,
-                             'mag',
-                             '4hz')
+    local_dir = _4hz_localdir(probe)
     fname_prefix = 'he' + probe + '1s' + str(year - 1900) + str(doy).zfill(3)
     # For some reason the last number in the filename is the hour at which
     # data starts from on that day... this means a loop to check each hour
