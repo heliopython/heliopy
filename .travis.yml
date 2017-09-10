@@ -1,8 +1,9 @@
 dist: trusty
 language: python
 python:
-- '3.6'
+  - '3.6'
 before_install:
+# Install conda
 - wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
 - chmod +x miniconda.sh
 - "./miniconda.sh -b -p $HOME/miniconda"
@@ -11,6 +12,10 @@ before_install:
 - conda create --yes -n testenv python=$TRAVIS_PYTHON_VERSION
 - source activate testenv
 - conda install --yes scipy pytest pytest-cov pandas pytables
+# Install doc requirements
+- conda install sphinx
+- pip install sphinx_rtd_theme
+# Install CDF library
 - wget http://cdaweb.gsfc.nasa.gov/pub/software/cdf/dist/cdf36_3_1/linux/cdf36_3_1-dist-all.tar.gz
 - tar -zxvf cdf36_3_1-dist-all.tar.gz
 - cd cdf36_3-dist
@@ -18,8 +23,13 @@ before_install:
 - sudo make INSTALLDIR=/usr/local/cdf install
 - cd ../
 script:
+# Check that unit tests work
 - pytest heliopy/ --cov=heliopy/ -v --durations=5
+# Check building a source distribution works
 - python setup.py sdist
+# Check that building docs works
+- cd doc
+- make html
 after_success:
 - pip install codecov
 - codecov
