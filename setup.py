@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='heliopy',
-      version='0.1b3',
+      version='0.1b4',
       description='Python for space physics',
       url='https://github.com/heliopython/heliopy',
       author='David Stansby',
