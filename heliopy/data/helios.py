@@ -1054,9 +1054,7 @@ def _merged_fromascii(probe, year, doy, try_download):
 
 
 def _4hz_localdir(probe):
-    return os.path.join(helios_dir, 'E2_experiment',
-                        'Data_Cologne_Nov2016_bestdata',
-                        'HR', 'helios{}'.format(probe))
+    return os.path.join(helios_dir, 'helios{}'.format(probe), 'mag', '4hz')
 
 
 def _4hz_filename(probe, year, doy):
