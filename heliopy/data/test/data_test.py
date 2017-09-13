@@ -18,7 +18,7 @@ try:
     from pycdf import pycdf
     no_pycdf = False
 except Exception:
-    no_pycdf = False
+    no_pycdf = True
 
 
 def check_datetime_index(df):
