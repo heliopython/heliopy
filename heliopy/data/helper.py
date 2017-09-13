@@ -1,12 +1,22 @@
 """Helper methods for importing data"""
 import os
 import sys
-from pycdf import pycdf
 from urllib.error import URLError
 from urllib.request import urlretrieve
 import ftplib
 import pandas as pd
 import numpy as np
+
+try:
+    from pycdf import pycdf
+    has_pycdf = True
+except Exception:
+    has_pycdf = False
+
+
+def _no_cdf_error():
+    raise RuntimeError('Error importing pycdf. From a python sesion run
+                       '"from pycdf import pycdf" for more detail.')
 
 
 def _cart2sph(x, y, z):
@@ -200,6 +210,8 @@ def load(filename, local_dir, remote_url, guessversion=False,
     # Check if file is cdf
     if filename[-4:] == '.cdf':
         filetype = 'cdf'
+        if not has_pycdf:
+            _no_cdf_error()
     # If not a cdf file assume ascii file
     else:
         filetype = 'ascii'
@@ -286,6 +298,8 @@ def pitchdist_cdf2df(cdf, distkeys, energykey, timekey, anglelabels):
     df : DataFrame
         Data frame with read in data.
     """
+    if not has_pycdf:
+        _no_cdf_error()
     times = cdf[timekey][...]
     ntimesteps = times.size
     energies = cdf[energykey][...]
@@ -348,6 +362,8 @@ def cdf2df(cdf, index_key, keys, dtimeindex=True, badvalues=None):
     df : DataFrame
         Data frame with read in data
     """
+    if not has_pycdf:
+        _no_cdf_error()
     try:
         index = cdf[index_key][...][:, 0]
     except IndexError:
