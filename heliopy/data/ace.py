@@ -40,12 +40,9 @@ def mfi_h0(starttime, endtime):
     data = []
     for day in daylist:
         date = day[0]
-        filename = 'ac_h0_mfi_' +\
-            str(date.year) +\
-            str(date.month).zfill(2) +\
-            str(date.day).zfill(2) +\
-            '_v06.cdf'
-        this_relative_dir = os.path.join(relative_dir, str(day[0].year))
+        filename = 'ac_h0_mfi_{}{:02}{:02}_v06.cdf'.format(
+            date.year, date.month, date.day)
+        this_relative_dir = os.path.join(relative_dir, str(date.year))
         # Absolute path to local directory for this data file
         local_dir = os.path.join(ace_dir, this_relative_dir)
         helper.checkdir(local_dir)
