@@ -19,8 +19,6 @@ from heliopy import config
 from heliopy.time import daysplitinterval
 from heliopy.data.helper import reporthook, checkdir, cdf2df, timefilter
 
-from pycdf import pycdf
-
 data_dir = config['DEFAULT']['download_dir']
 cda_cookie = config['DEFAULT']['cluster_cookie']
 csa_url = 'https://csa.esac.esa.int/csa/aio/product-action?'
@@ -63,6 +61,7 @@ def _load(probe, starttime, endtime, instrument, product_id, cdfkeys):
                 print(str(err), '\n')
                 continue
 
+        from pycdf import pycdf
         cdf = pycdf.CDF(os.path.join(local_dir, local_fname))
         for key, value in cdfkeys.items():
             if value == 'Time':
