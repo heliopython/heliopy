@@ -756,7 +756,7 @@ def ion_dists(probe, starttime, endtime, remove_advect=False, verbose=False):
     starttime_orig = starttime
     while starttime < endtime:
         year = starttime.year
-        doy = starttime.strftime('%j')
+        doy = int(starttime.strftime('%j'))
         if verbose:
             print('Loading ion dists from year', year, 'doy', doy)
         # Directory for today's distribution files
