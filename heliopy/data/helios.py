@@ -44,12 +44,11 @@ def _check_probe(probe):
 
 
 def _dist_file_dir(probe, year, doy):
-    yearstring = str(year)[-2:]
     return os.path.join(helios_dir,
-                        'helios' + probe,
+                        'helios{}'.format(probe),
                         'dist',
-                        'h' + probe + yearstring,
-                        'Y' + yearstring + 'D' + str(doy).zfill(3))
+                        '{}'.format(year),
+                        '{}'.format(int(doy)))
 
 
 def _loaddistfile(probe, year, doy, hour, minute, second):
