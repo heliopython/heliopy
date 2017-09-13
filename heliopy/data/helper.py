@@ -9,6 +9,14 @@ import pandas as pd
 import numpy as np
 
 
+def fix_url(url):
+    '''
+    Given a url possibly constructued using an os.path.join method,
+    replace all backlslashes with forward slashes to make the url valid
+    '''
+    return url.replace(r'\\', r'/')
+
+
 def _cart2sph(x, y, z):
     """
     Given cartesian co-ordinates returns shperical co-ordinates.
@@ -215,6 +223,7 @@ def load(filename, local_dir, remote_url, guessversion=False,
 
     # Loading locally failed, but directory has been made so try to download
     # file.
+    remote_url = fix_url(remote_url)
     if guessversion:
         # Split remote url into a server name and directory
         for i, c in enumerate(remote_url[6:]):
