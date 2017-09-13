@@ -269,7 +269,7 @@ def integrated_dists(probe, starttime, endtime, verbose=False):
         for key in todays_dists:
             todays_dists[key] = pd.concat(todays_dists[key])
             if use_hdf:
-                todays_dists[key].to_hdf(hdffile, key=key, mode='w')
+                todays_dists[key].to_hdf(hdffile, key=key, mode='a')
             distlist[key].append(todays_dists[key])
         starttime += timedelta(days=1)
 
