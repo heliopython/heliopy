@@ -44,12 +44,11 @@ def _check_probe(probe):
 
 
 def _dist_file_dir(probe, year, doy):
-    yearstring = str(year)[-2:]
     return os.path.join(helios_dir,
-                        'helios' + probe,
+                        'helios{}'.format(probe),
                         'dist',
-                        'h' + probe + yearstring,
-                        'Y' + yearstring + 'D' + str(doy).zfill(3))
+                        '{}'.format(year),
+                        '{}'.format(int(doy)))
 
 
 def _loaddistfile(probe, year, doy, hour, minute, second):
@@ -269,7 +268,7 @@ def integrated_dists(probe, starttime, endtime, verbose=False):
         for key in todays_dists:
             todays_dists[key] = pd.concat(todays_dists[key])
             if use_hdf:
-                todays_dists[key].to_hdf(hdffile, key=key, mode='w')
+                todays_dists[key].to_hdf(hdffile, key=key, mode='a')
             distlist[key].append(todays_dists[key])
         starttime += timedelta(days=1)
 
@@ -756,7 +755,7 @@ def ion_dists(probe, starttime, endtime, remove_advect=False, verbose=False):
     starttime_orig = starttime
     while starttime < endtime:
         year = starttime.year
-        doy = starttime.strftime('%j')
+        doy = int(starttime.strftime('%j'))
         if verbose:
             print('Loading ion dists from year', year, 'doy', doy)
         # Directory for today's distribution files
