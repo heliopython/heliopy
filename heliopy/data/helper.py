@@ -1,7 +1,6 @@
 """Helper methods for importing data"""
 import os
 import sys
-from pycdf import pycdf
 from urllib.error import URLError
 from urllib.request import urlretrieve
 import ftplib
@@ -150,6 +149,7 @@ def checkdir(directory):
 def _load_local(local_dir, filename, filetype):
     # Import local file
     if filetype == 'cdf':
+        from pycdf import pycdf
         cdf = pycdf.CDF(os.path.join(local_dir, filename))
         return cdf
     elif filetype == 'ascii':
