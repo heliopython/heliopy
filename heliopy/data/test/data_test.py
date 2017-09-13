@@ -26,7 +26,7 @@ def check_datetime_index(df):
     assert type(df.index[0]) == pd.Timestamp
 
 
-@pytest.mark.skipif(no_pycdf)
+@pytest.mark.skipif(no_pycdf, reason='Importing pycdf failed')
 @pytest.mark.data
 class TestMessenger:
     @classmethod
@@ -39,7 +39,7 @@ class TestMessenger:
         check_datetime_index(df)
 
 
-@pytest.mark.skipif(no_pycdf)
+@pytest.mark.skipif(no_pycdf, reason='Importing pycdf failed')
 @pytest.mark.data
 class TestUlysses:
     @classmethod
@@ -56,7 +56,7 @@ class TestUlysses:
         check_datetime_index(df)
 
 
-@pytest.mark.skipif(no_pycdf)
+@pytest.mark.skipif(no_pycdf, reason='Importing pycdf failed')
 @pytest.mark.data
 class TestArtemis:
     @classmethod
@@ -77,7 +77,7 @@ class TestArtemis:
             artemis.fgm('1', 'h', '123', self.starttime, self.endtime)
 
 
-@pytest.mark.skipif(no_pycdf)
+@pytest.mark.skipif(no_pycdf, reason='Importing pycdf failed')
 @pytest.mark.data
 class TestAce:
     @classmethod
@@ -94,7 +94,7 @@ class TestAce:
         check_datetime_index(df)
 
 
-@pytest.mark.skipif(no_pycdf)
+@pytest.mark.skipif(no_pycdf, reason='Importing pycdf failed')
 @pytest.mark.data
 class TestImp:
     @classmethod
@@ -120,7 +120,7 @@ class TestImp:
         check_datetime_index(df)
 
 
-@pytest.mark.skipif(no_pycdf)
+@pytest.mark.skipif(no_pycdf, reason='Importing pycdf failed')
 @pytest.mark.data
 @pytest.mark.skipif(config['DEFAULT']['cluster_cookie'] == 'none',
                     reason='Cluster download cookie not set')
@@ -154,7 +154,7 @@ class TestCluster():
         check_datetime_index(df)
 
 
-@pytest.mark.skipif(no_pycdf)
+@pytest.mark.skipif(no_pycdf, reason='Importing pycdf failed')
 @pytest.mark.data
 class TestWind:
     @classmethod
@@ -178,7 +178,7 @@ class TestWind:
         df = wind.swe_h3(self.starttime, self.endtime)
 
 
-@pytest.mark.skipif(no_pycdf)
+@pytest.mark.skipif(no_pycdf, reason='Importing pycdf failed')
 @pytest.mark.data
 class TestMMS:
     @classmethod
