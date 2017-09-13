@@ -15,7 +15,7 @@ except Exception:
 
 
 def _no_cdf_error():
-    raise RuntimeError('Error importing pycdf. From a python sesion run
+    raise RuntimeError('Error importing pycdf. From a python sesion run '
                        '"from pycdf import pycdf" for more detail.')
 
 
