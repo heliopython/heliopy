@@ -13,7 +13,7 @@ def fix_url(url):
     Given a url possibly constructued using an os.path.join method,
     replace all backlslashes with forward slashes to make the url valid
     '''
-    return url.replace(r'\\', r'/')
+    return url.replace('\\', '/')
 
 
 def _cart2sph(x, y, z):
@@ -166,7 +166,7 @@ def _load_local(local_dir, filename, filetype):
 
 
 def _load_remote(remote_url, filename, local_dir, filetype):
-    print('Downloading', os.path.join(remote_url, filename))
+    print('Downloading', remote_url + '/' + filename)
     urlretrieve(remote_url + '/' + filename,
                 filename=os.path.join(local_dir, filename),
                 reporthook=reporthook)
