@@ -52,7 +52,8 @@ def load_config():
 
     # Set data download directory
     download_dir = os.path.expanduser(config['DEFAULT']['download_dir'])
-    download_dir = os.path.join(*download_dir.split('/'))
+    if os.name == 'nt':
+        download_dir = download_dir.replace('/', '\\')
     config_dict['download_dir'] = download_dir
     # Create data download if not created
     if not os.path.isdir(download_dir):
