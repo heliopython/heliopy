@@ -122,7 +122,7 @@ class TestImp:
 
 @pytest.mark.skipif(no_pycdf, reason='Importing pycdf failed')
 @pytest.mark.data
-@pytest.mark.skipif(config['DEFAULT']['cluster_cookie'] == 'none',
+@pytest.mark.skipif(config['cluster_cookie'] == 'none',
                     reason='Cluster download cookie not set')
 class TestCluster():
     @classmethod

@@ -15,7 +15,7 @@ import heliopy.time as spacetime
 from heliopy.data import helper
 from heliopy import config
 
-data_dir = config['DEFAULT']['download_dir']
+data_dir = config['download_dir']
 mms_dir = os.path.join(data_dir, 'mms')
 remote_mms_dir = 'https://lasp.colorado.edu/mms/sdc/public/data/'
 

@@ -12,8 +12,8 @@ import heliopy.time as heliotime
 from heliopy.data import helper
 from heliopy import config
 
-use_hdf = config['DEFAULT']['use_hdf']
-data_dir = config['DEFAULT']['download_dir']
+use_hdf = config['use_hdf']
+data_dir = config['download_dir']
 
 ulysses_dir = os.path.join(data_dir, 'ulysses')
 ulysses_url = 'http://ufa.esac.esa.int/ufa-sl-server/data-action?'

@@ -11,8 +11,8 @@ import heliopy.time as spacetime
 from heliopy.data import helper
 from heliopy import config
 
-data_dir = config['DEFAULT']['download_dir']
-use_hdf = config['DEFAULT']['use_hdf']
+data_dir = config['download_dir']
+use_hdf = config['use_hdf']
 imp_url = 'ftp://cdaweb.gsfc.nasa.gov/pub/data/imp/'
 imp_dir = os.path.join(data_dir, 'imp')
 valid_probes = ['1', '2', '3', '4', '5', '6', '7', '8']

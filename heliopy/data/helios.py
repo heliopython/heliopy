@@ -32,8 +32,8 @@ from heliopy.data import helper
 import heliopy.time as spacetime
 import heliopy.constants as constants
 
-data_dir = config['DEFAULT']['download_dir']
-use_hdf = config['DEFAULT']['use_hdf']
+data_dir = config['download_dir']
+use_hdf = config['use_hdf']
 helios_dir = os.path.join(data_dir, 'helios')
 
 

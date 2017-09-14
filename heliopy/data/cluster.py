@@ -19,8 +19,8 @@ from heliopy import config
 from heliopy.time import daysplitinterval
 from heliopy.data.helper import reporthook, checkdir, cdf2df, timefilter
 
-data_dir = config['DEFAULT']['download_dir']
-cda_cookie = config['DEFAULT']['cluster_cookie']
+data_dir = config['download_dir']
+cda_cookie = config['cluster_cookie']
 csa_url = 'https://csa.esac.esa.int/csa/aio/product-action?'
 cluster_dir = os.path.join(data_dir, 'cluster')
 
