@@ -48,10 +48,13 @@ def load_config():
     config_location = get_config_file()
     config = configparser.ConfigParser()
     config.read(config_location)
+    config_dict = {}
 
     # Set data download directory
     download_dir = os.path.expanduser(config['DEFAULT']['download_dir'])
-    config['DEFAULT']['download_dir'] = download_dir
+    if os.name == 'nt':
+        download_dir = download_dir.replace('/', '\\')
+    config_dict['download_dir'] = download_dir
     # Create data download if not created
     if not os.path.isdir(download_dir):
         print('Creating download directory {}'.format(download_dir))
@@ -62,5 +65,8 @@ def load_config():
     if os.environ.get('CLUSTERCOOKIE') is not None and\
             config['DEFAULT']['cluster_cookie'] == 'none':
         config['DEFAULT']['cluster_cookie'] = os.environ.get('CLUSTERCOOKIE')
+    config_dict['cluster_cookie'] = config['DEFAULT']['cluster_cookie']
 
-    return config
+    config_dict['use_hdf'] = config['DEFAULT']['use_hdf'] == 'True'
+
+    return config_dict

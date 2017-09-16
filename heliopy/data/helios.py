@@ -32,8 +32,8 @@ from heliopy.data import helper
 import heliopy.time as spacetime
 import heliopy.constants as constants
 
-data_dir = config['DEFAULT']['download_dir']
-use_hdf = config['DEFAULT']['use_hdf']
+data_dir = config['download_dir']
+use_hdf = config['use_hdf']
 helios_dir = os.path.join(data_dir, 'helios')
 
 
@@ -1166,13 +1166,17 @@ def _fourHz_fromascii(probe, year, doy, try_download=True):
             asciiloc = testloc
             break
     if asciiloc is not None:
-        fname = asciiloc.split('/')[-1]
+        if os.name == 'nt':
+            splitchar = '\\'
+        else:
+            splitchar = '/'
+        fname = asciiloc.split(splitchar)[-1]
         remote_url = None
     elif try_download is not False:
         ftpsite = 'apollo.ssl.berkeley.edu'
         remote_dir = ('pub/helios-data/E2_experiment/'
                       'Data_Cologne_Nov2016_bestdata/'
-                      'HR/helios{}/'.format(probe))
+                      'HR/helios{}'.format(probe))
         remote_url = 'ftp://' + ftpsite + '/' + remote_dir
 
         fname = None
@@ -1200,7 +1204,7 @@ def _fourHz_fromascii(probe, year, doy, try_download=True):
 
     # Save data to a hdf store
     if use_hdf:
-        fname = 'he{}1s{}{:03}'.format(probe, year - 1900, doy)
+        fname = _4hz_filename(probe, year, doy)
         _save_hdf(data, local_dir, fname)
     return(data)
 

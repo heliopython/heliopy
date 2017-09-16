@@ -13,7 +13,10 @@ def fix_url(url):
     Given a url possibly constructued using an os.path.join method,
     replace all backlslashes with forward slashes to make the url valid
     '''
-    return url.replace('\\', '/')
+    if url is not None:
+        return url.replace('\\', '/')
+    else:
+        return url
 
 
 def _cart2sph(x, y, z):
