@@ -1172,7 +1172,7 @@ def _fourHz_fromascii(probe, year, doy, try_download=True):
         ftpsite = 'apollo.ssl.berkeley.edu'
         remote_dir = ('pub/helios-data/E2_experiment/'
                       'Data_Cologne_Nov2016_bestdata/'
-                      'HR/helios{}/'.format(probe))
+                      'HR/helios{}'.format(probe))
         remote_url = 'ftp://' + ftpsite + '/' + remote_dir
 
         fname = None
