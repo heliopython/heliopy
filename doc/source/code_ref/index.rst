@@ -7,4 +7,3 @@ API reference
    data/index
    plasma
    plot/index
-   time

@@ -7,7 +7,6 @@ import os
 import pandas as pd
 import numpy as np
 
-import heliopy.time as spacetime
 from heliopy.data import helper
 from heliopy import config
 
@@ -35,7 +34,7 @@ def swe_h3(starttime, endtime):
     # Directory relative to main WIND data directory
     relative_dir = os.path.join('swe', 'swe_h3')
 
-    daylist = spacetime.daysplitinterval(starttime, endtime)
+    daylist = helper.daysplitinterval(starttime, endtime)
     data = []
     for day in daylist:
         date = day[0]
@@ -123,7 +122,7 @@ def _mfi(starttime, endtime, version):
     # Directory relative to main WIND data directory
     relative_dir = os.path.join('mfi', 'mfi_' + version)
 
-    daylist = spacetime.daysplitinterval(starttime, endtime)
+    daylist = helper.daysplitinterval(starttime, endtime)
     data = []
     for day in daylist:
         date = day[0]
@@ -186,7 +185,7 @@ def threedp_pm(starttime, endtime):
     # Directory relative to main WIND data directory
     relative_dir = os.path.join('3dp', '3dp_pm')
 
-    daylist = spacetime.daysplitinterval(starttime, endtime)
+    daylist = helper.daysplitinterval(starttime, endtime)
     data = []
     for day in daylist:
         date = day[0]

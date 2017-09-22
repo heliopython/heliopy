@@ -7,7 +7,6 @@ ACE spacecraft homepage can be found at http://www.srl.caltech.edu/ACE/.
 import os
 import pandas as pd
 
-import heliopy.time as spacetime
 from heliopy.data import helper
 from heliopy import config
 
@@ -36,7 +35,7 @@ def mfi_h0(starttime, endtime):
     # Directory relative to main WIND data directory
     relative_dir = os.path.join('mag', 'level_2_cdaweb', 'mfi_h0')
 
-    daylist = spacetime.daysplitinterval(starttime, endtime)
+    daylist = helper.daysplitinterval(starttime, endtime)
     data = []
     for day in daylist:
         date = day[0]
@@ -85,7 +84,7 @@ def swe_h0(starttime, endtime):
     # Directory relative to main WIND data directory
     relative_dir = os.path.join('swepam', 'level_2_cdaweb', 'swe_h0')
 
-    daylist = spacetime.daysplitinterval(starttime, endtime)
+    daylist = helper.daysplitinterval(starttime, endtime)
     data = []
     for day in daylist:
         date = day[0]

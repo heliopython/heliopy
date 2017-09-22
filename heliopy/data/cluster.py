@@ -16,8 +16,7 @@ from urllib.request import urlretrieve
 import numpy as np
 
 from heliopy import config
-from heliopy.time import daysplitinterval
-from heliopy.data.helper import reporthook, checkdir, cdf2df, timefilter
+from heliopy.data import helper
 
 data_dir = config['download_dir']
 cda_cookie = config['cluster_cookie']
@@ -36,7 +35,7 @@ cda_time_fmt = '%Y-%m-%dT%H:%M:%SZ'
 
 
 def _load(probe, starttime, endtime, instrument, product_id, cdfkeys):
-    daylist = daysplitinterval(starttime, endtime)
+    daylist = helper.daysplitinterval(starttime, endtime)
     data = []
     for day in daylist:
         date = day[0]
@@ -67,17 +66,17 @@ def _load(probe, starttime, endtime, instrument, product_id, cdfkeys):
             if value == 'Time':
                 index_key = key
                 break
-        data.append(cdf2df(cdf, index_key, cdfkeys))
+        data.append(helper.cdf2df(cdf, index_key, cdfkeys))
     if len(data) == 0:
         raise RuntimeError('No data available to download during requested '
                            'times')
-    return timefilter(data, starttime, endtime)
+    return helper.timefilter(data, starttime, endtime)
 
 
 def _download(probe, starttime, endtime, instrument, product_id):
     if cda_cookie == 'none':
         raise RuntimeError('Cluster download cookie not set')
-    daylist = daysplitinterval(starttime, endtime)
+    daylist = helper.daysplitinterval(starttime, endtime)
     for day in daylist:
         date = day[0]
         start = datetime.combine(date, time.min)
@@ -114,10 +113,10 @@ def _download(probe, starttime, endtime, instrument, product_id):
             day + '.tar.gz'
         print(request_url)
         # Download data
-        checkdir(local_dir)
+        helper.checkdir(local_dir)
         urlretrieve(request_url,
                     filename=os.path.join(local_dir, filename),
-                    reporthook=reporthook)
+                    reporthook=helper.reporthook)
         print('\n')
         # Extract tar.gz file
         tar = tarfile.open(os.path.join(local_dir, filename))

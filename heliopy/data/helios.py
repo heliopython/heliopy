@@ -29,7 +29,6 @@ from ftplib import FTP
 
 from heliopy import config
 from heliopy.data import helper
-import heliopy.time as spacetime
 import heliopy.constants as constants
 
 data_dir = config['download_dir']
@@ -513,7 +512,7 @@ def distparams_single(probe, year, doy, hour, minute, second):
     probe = _check_probe(probe)
     f, _ = _loaddistfile(probe, year, doy, hour, minute, second)
 
-    _, month, day = spacetime.doy2ymd(year, doy)
+    _, month, day = helper.doy2ymd(year, doy)
     dtime = datetime(year, month, day, hour, minute, second)
     distparams = pd.Series(dtime, index=['Time'])
     # Ignore the Pizzo et. al. correction at top of file
@@ -955,7 +954,7 @@ def merged(probe, starttime, endtime, verbose=True, try_download=True):
     """
     probe = _check_probe(probe)
 
-    daylist = spacetime.daysplitinterval(starttime, endtime)
+    daylist = helper.daysplitinterval(starttime, endtime)
     data = []
     floc = _merged_localdir(probe)
     for day in daylist:

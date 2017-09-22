@@ -6,7 +6,6 @@ All data is publically available at ftp://spdf.gsfc.nasa.gov/pub/data/messenger
 import os
 import pandas as pd
 
-import heliopy.time as spacetime
 from heliopy.data import helper
 from heliopy import config
 
@@ -34,7 +33,7 @@ def mag_rtn(starttime, endtime):
     # Directory relative to main WIND data directory
     relative_dir = 'rtn'
 
-    daylist = spacetime.daysplitinterval(starttime, endtime)
+    daylist = helper.daysplitinterval(starttime, endtime)
     data = []
     for day in daylist:
         date = day[0]

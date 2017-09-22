@@ -7,7 +7,6 @@ import os
 import pandas as pd
 from datetime import datetime
 
-import heliopy.time as spacetime
 from heliopy.data import helper
 from heliopy import config
 
@@ -152,7 +151,7 @@ def mitplasma_h0(probe, starttime, endtime):
             Requested data.
     """
     data = []
-    dtimes = spacetime.daysplitinterval(starttime, endtime)
+    dtimes = helper.daysplitinterval(starttime, endtime)
     # Loop through years
     for dtime in dtimes:
         date = dtime[0]
@@ -211,7 +210,7 @@ def mag320ms(probe, startTime, endTime):
             Requested data.
     """
     data = []
-    dtimes = spacetime.daysplitinterval(startTime, endTime)
+    dtimes = helper.daysplitinterval(startTime, endTime)
     # Loop through years
     for dtime in dtimes:
         date = dtime[0]
@@ -269,12 +268,12 @@ def mag15s(probe, starttime, endtime, verbose=False):
             Requested data.
     """
     data = []
-    dtimes = spacetime.daysplitinterval(starttime, endtime)
+    dtimes = helper.daysplitinterval(starttime, endtime)
     # Loop through years
     for dtime in dtimes:
         startdt = dtime[0]
         year = startdt.year
-        doy = spacetime.dtime2doy(startdt)
+        doy = helper.dtime2doy(startdt)
         if verbose:
             print('Loading IMP 15s mag probe {}, {:03d}/{}'.format(probe,
                                                                    doy,

@@ -11,7 +11,6 @@ import pandas as pd
 import os
 import urllib
 
-import heliopy.time as spacetime
 from heliopy.data import helper
 from heliopy import config
 
@@ -46,7 +45,7 @@ def fpi_dis_moms(probe, mode, starttime, endtime):
     # Directory relative to main MMS data directory
     relative_dir = os.path.join('mms' + probe, 'fpi', mode, 'l2', 'dis-moms')
 
-    daylist = spacetime.daysplitinterval(starttime, endtime)
+    daylist = helper.daysplitinterval(starttime, endtime)
     data = []
     for day in daylist:
         date = day[0]
@@ -122,7 +121,7 @@ def fgm_survey(probe, starttime, endtime):
     # Directory relative to main MMS data directory
     relative_dir = os.path.join('mms' + probe, 'fgm', 'srvy', 'l2')
 
-    daylist = spacetime.daysplitinterval(starttime, endtime)
+    daylist = helper.daysplitinterval(starttime, endtime)
     data = []
     for day in daylist:
         date = day[0]
