@@ -2,7 +2,7 @@
 
 A python library for Space Physics. The primary goal of this python package is
 to make it really easy to import common data sets used in Space Physics.
-Full documentation can be found [here](http://heliopy.readthedocs.io/en/latest/).
+Full documentation can be found [here](https://heliopy.readthedocs.io/).
 
 A quick example shows how easy it is to import and view data:
 
