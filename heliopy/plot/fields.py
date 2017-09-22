@@ -2,8 +2,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-import heliopy.time as heliotime
-
 
 def jointdists(data, title=None, sharelims=True, **kwargs):
     """
