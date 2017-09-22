@@ -31,6 +31,22 @@ def daysplitinterval(starttime, endtime):
     return _daysplitintervalhelper(starttime, endtime, out)
 
 
+def _daysplitintervalhelper(starttime, endtime, out):
+    # If two datetimes are on the same day, append current date and
+    # start/end times
+    if starttime.date() == endtime.date():
+        out.append([starttime.date(), starttime.time(), endtime.time()])
+        return out
+
+    # Append current date, start time, and maximum time
+    out.append([starttime.date(), starttime.time(), time.max])
+    # Set new start time to 00:00 on the next day
+    newstarttime = datetime.combine(starttime.date(), time.min) +\
+        timedelta(days=1)
+    # Recurse
+    return _daysplitintervalhelper(newstarttime, endtime, out)
+
+
 def doy2ymd(y, doy):
     """
     Converts day of year and year to year, month, day
@@ -72,23 +88,7 @@ def dtime2doy(dt):
     return int(dt.strftime('%j'))
 
 
-def _daysplitintervalhelper(starttime, endtime, out):
-    # If two datetimes are on the same day, append current date and
-    # start/end times
-    if starttime.date() == endtime.date():
-        out.append([starttime.date(), starttime.time(), endtime.time()])
-        return out
-
-    # Append current date, start time, and maximum time
-    out.append([starttime.date(), starttime.time(), time.max])
-    # Set new start time to 00:00 on the next day
-    newstarttime = datetime.combine(starttime.date(), time.min) +\
-        timedelta(days=1)
-    # Recurse
-    return _daysplitintervalhelper(newstarttime, endtime, out)
-
-
-def fix_url(url):
+def _fix_url(url):
     '''
     Given a url possibly constructued using an os.path.join method,
     replace all backlslashes with forward slashes to make the url valid
