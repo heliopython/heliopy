@@ -8,7 +8,6 @@ import os
 import pandas as pd
 import numpy as np
 
-import heliopy.time as spacetime
 from heliopy.data import helper
 from heliopy import config
 
@@ -60,7 +59,7 @@ def fgm(probe, rate, coords, starttime, endtime):
     # Directory relative to main THEMIS data directory
     relative_dir = os.path.join('th' + probe, 'l2', 'fgm')
 
-    daylist = spacetime.daysplitinterval(starttime, endtime)
+    daylist = helper.daysplitinterval(starttime, endtime)
     data = []
     for day in daylist:
         date = day[0]

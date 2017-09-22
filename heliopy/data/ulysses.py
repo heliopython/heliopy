@@ -8,7 +8,6 @@ import pandas as pd
 from datetime import datetime, date
 from urllib.error import HTTPError
 
-import heliopy.time as heliotime
 from heliopy.data import helper
 from heliopy import config
 
@@ -43,7 +42,7 @@ def fgm_hires(starttime, endtime):
                 'delim_whitespace': True}
 
     data = []
-    dtimes = heliotime.daysplitinterval(starttime, endtime)
+    dtimes = helper.daysplitinterval(starttime, endtime)
     # Loop through years
     for dtime in dtimes:
         date = dtime[0]
@@ -100,7 +99,7 @@ def swoops_ions(starttime, endtime):
 
     data = []
     months_loaded = []
-    dtimes = heliotime.daysplitinterval(starttime, endtime)
+    dtimes = helper.daysplitinterval(starttime, endtime)
     # Loop through individual days
     for dtime in dtimes:
         thisdate = dtime[0]
