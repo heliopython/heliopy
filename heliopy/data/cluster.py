@@ -16,7 +16,7 @@ from urllib.request import urlretrieve
 import numpy as np
 
 from heliopy import config
-from heliopy.data.helper import reporthook, checkdir, cdf2df, timefilter
+from heliopy.data import helper
 
 data_dir = config['download_dir']
 cda_cookie = config['cluster_cookie']
@@ -66,11 +66,11 @@ def _load(probe, starttime, endtime, instrument, product_id, cdfkeys):
             if value == 'Time':
                 index_key = key
                 break
-        data.append(cdf2df(cdf, index_key, cdfkeys))
+        data.append(helper.cdf2df(cdf, index_key, cdfkeys))
     if len(data) == 0:
         raise RuntimeError('No data available to download during requested '
                            'times')
-    return timefilter(data, starttime, endtime)
+    return helper.timefilter(data, starttime, endtime)
 
 
 def _download(probe, starttime, endtime, instrument, product_id):
@@ -113,10 +113,10 @@ def _download(probe, starttime, endtime, instrument, product_id):
             day + '.tar.gz'
         print(request_url)
         # Download data
-        checkdir(local_dir)
+        helper.checkdir(local_dir)
         urlretrieve(request_url,
                     filename=os.path.join(local_dir, filename),
-                    reporthook=reporthook)
+                    reporthook=helper.reporthook)
         print('\n')
         # Extract tar.gz file
         tar = tarfile.open(os.path.join(local_dir, filename))
