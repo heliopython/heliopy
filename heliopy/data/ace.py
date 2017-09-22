@@ -107,7 +107,7 @@ def swe_h0(starttime, endtime):
                 'SC_pos_GSM': ['sc_gsm_x', 'sc_gsm_y', 'sc_gsm_z'],
                 'V_GSE': ['vp_gse_x', 'vp_gse_y', 'vp_gse_z'],
                 'V_GSM': ['vp_gsm_x', 'vp_gsm_y', 'vp_gsm_z'],
-                'V_RTN': ['vp_gse_r', 'vp_gse_t', 'vp_gse_n'],
+                'V_RTN': ['vp_rtn_r', 'vp_rtn_t', 'vp_rtn_n'],
                 'Vp': '|vp|',
                 'alpha_ratio': 'n_a/n_p',
                 'Epoch': 'Time'}
