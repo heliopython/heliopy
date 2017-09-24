@@ -126,7 +126,7 @@ def fgm_survey(probe, starttime, endtime):
                                          str(date.year),
                                          str(date.month).zfill(2))
         filename = 'mms{}_fgm_srvy_l2_{}{:02}{:02}_v4.18.0.cdf'.format(
-            date.year, date.month, date.day)
+            probe, date.year, date.month, date.day)
 
         # Absolute path to local directory for this data file
         local_dir = os.path.join(mms_dir, this_relative_dir)
