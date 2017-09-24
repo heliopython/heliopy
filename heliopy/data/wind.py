@@ -16,6 +16,52 @@ wind_dir = os.path.join(data_dir, 'wind')
 remote_wind_dir = 'ftp://spdf.gsfc.nasa.gov/pub/data/wind/'
 
 
+def swe_h1(starttime, endtime):
+    """
+    Import 'h1' (Bi-Maxwellian, Anisotropic Analysis of Protons and Alphas)
+    solar wind ion data product from WIND.
+
+    Parameters
+    ----------
+    starttime : datetime
+        Interval start time.
+    endtime : datetime
+        Interval end time.
+
+    Returns
+    -------
+    data : DataFrame
+    """
+    # Directory relative to main WIND data directory
+    relative_dir = os.path.join('swe', 'swe_h1')
+
+    daylist = helper.daysplitinterval(starttime, endtime)
+    data = []
+    for day in daylist:
+        date = day[0]
+        filename = 'wi_h1_swe_{}{:02}{:02}_v01'.format(
+            date.year, date.month, date.day)
+        local_dir = os.path.join(wind_dir, relative_dir, str(date.year))
+
+        hdfname = filename + 'hdf'
+        hdfloc = os.path.join(local_dir, hdfname)
+        if os.path.isfile(hdfloc):
+            df = pd.read_hdf(hdfloc)
+            data.append(df)
+            continue
+
+        helper.checkdir(local_dir)
+        remote_url = '{}swe/swe_h1/{}'.format(remote_wind_dir, date.year)
+        cdf = helper.load(filename + '.cdf', local_dir, remote_url)
+
+        df = helper.cdf2df(cdf, index_key='Epoch')
+        if use_hdf:
+            df.to_hdf(hdfloc, 'pm', mode='w', format='f')
+        data.append(df)
+
+    return helper.timefilter(data, starttime, endtime)
+
+
 def swe_h3(starttime, endtime):
     """
     Import 'h3' solar wind electron data product from WIND.
