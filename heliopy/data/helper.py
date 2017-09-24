@@ -414,7 +414,7 @@ def pitchdist_cdf2df(cdf, distkeys, energykey, timekey, anglelabels):
     return data
 
 
-def cdf2df(cdf, index_key, keys, dtimeindex=True, badvalues=None):
+def cdf2df(cdf, index_key, keys=None, dtimeindex=True, badvalues=None):
     """
     Converts a cdf file to a pandas dataframe.
 
@@ -424,15 +424,15 @@ def cdf2df(cdf, index_key, keys, dtimeindex=True, badvalues=None):
         Opened cdf file
     index_key : string
         The key to use as indexing in the output dataframe
-    keys : dict
+    keys : dict, optional
         A dictionary that maps keys in the cdf file to the corresponding
         desired keys in the ouput dataframe. If a particular cdf key has
         multiple columns, the mapped keys must be in a list.
-    dtimeindex : bool
-        If True, dataframe index is parsed as a datetime
-    badvalues : dict
+    dtimeindex : bool, optional
+        If ``True``, DataFrame index is parsed as a datetime.
+        Default is ``True``.
+    badvalues : dict, optional
         A dictionary that maps the new DataFrame keys to a list of bad
-
         values to replace with nans.
 
     Returns
@@ -440,13 +440,23 @@ def cdf2df(cdf, index_key, keys, dtimeindex=True, badvalues=None):
     df : DataFrame
         Data frame with read in data
     """
+    # Extract index values
     try:
         index = cdf[index_key][...][:, 0]
     except IndexError:
         index = cdf[index_key][...]
+    # Parse datetime index
     if dtimeindex:
         index = pd.DatetimeIndex(index)
     df = pd.DataFrame(index=index)
+
+    if keys is None:
+        keys = {}
+        for key in cdf.keys():
+            if key == 'Epoch':
+                keys['Epoch'] = 'Time'
+            else:
+                keys[key] = key
 
     for key in keys:
         df_key = keys[key]
