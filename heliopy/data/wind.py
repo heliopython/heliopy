@@ -2,6 +2,8 @@
 Methods for importing data from the WIND spacecraft.
 
 All data is publically available at ftp://spdf.gsfc.nasa.gov/pub/data/wind.
+See https://wind.nasa.gov/data_sources.php for more information on different
+data products.
 """
 import os
 import pandas as pd
