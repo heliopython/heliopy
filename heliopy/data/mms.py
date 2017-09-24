@@ -21,7 +21,7 @@ remote_mms_dir = 'https://lasp.colorado.edu/mms/sdc/public/data/'
 
 def fpi_dis_moms(probe, mode, starttime, endtime):
     """
-    Import fpi distribution moment data.
+    Import fpi ion distribution moment data.
 
     Parameters
     ----------
@@ -59,12 +59,9 @@ def fpi_dis_moms(probe, mode, starttime, endtime):
             this_relative_dir = os.path.join(relative_dir,
                                              str(date.year),
                                              str(date.month).zfill(2))
-            filename = 'mms' + probe + '_fpi_' + mode + '_l2_dis-moms_' +\
-                str(date.year) +\
-                str(date.month).zfill(2) +\
-                str(date.day).zfill(2) +\
-                str(h).zfill(2) + '0000' + \
-                '_v3.1.1.cdf'
+            filename = ('mms{}_fpi_{}_l2_dis-moms_'
+                        '{}{:02}{:02}{:02}0000_v3.1.1.cdf').format(
+                            probe, mode, date.year, date.month, date.day, h)
 
             # Absolute path to local directory for this data file
             local_dir = os.path.join(mms_dir, this_relative_dir)
@@ -102,7 +99,7 @@ def fpi_dis_moms(probe, mode, starttime, endtime):
 
 def fgm_survey(probe, starttime, endtime):
     """
-    Import fgm survey mode data.
+    Import fgm survey mode magnetic field data.
 
     Parameters
     ----------
@@ -128,11 +125,8 @@ def fgm_survey(probe, starttime, endtime):
         this_relative_dir = os.path.join(relative_dir,
                                          str(date.year),
                                          str(date.month).zfill(2))
-        filename = 'mms' + probe + '_fgm_srvy_l2_' +\
-            str(date.year) +\
-            str(date.month).zfill(2) +\
-            str(date.day).zfill(2) +\
-            '_v4.18.0.cdf'
+        filename = 'mms{}_fgm_srvy_l2_{}{:02}{:02}_v4.18.0.cdf'.format(
+            probe, date.year, date.month, date.day)
 
         # Absolute path to local directory for this data file
         local_dir = os.path.join(mms_dir, this_relative_dir)
