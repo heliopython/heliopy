@@ -55,8 +55,41 @@ def swe_h1(starttime, endtime):
         helper.checkdir(local_dir)
         remote_url = '{}swe/swe_h1/{}'.format(remote_wind_dir, date.year)
         cdf = helper.load(filename + '.cdf', local_dir, remote_url)
-
-        df = helper.cdf2df(cdf, index_key='Epoch')
+        badvalues = {'Proton_V_nonlin': 99999.9,
+                     'Proton_sigmaV_nonlin': 99999.9,
+                     'Proton_VY_nonlin': 99999.9,
+                     'Proton_sigmaVY_nonlin': 99999.9,
+                     'Proton_W_nonlin': 99999.9,
+                     'Proton_sigmaW_nonlin': 99999.9,
+                     'Proton_Wperp_nonlin': 99999.9,
+                     'Proton_sigmaWperp_nonlin': 99999.9,
+                     'Proton_Wpar_nonlin': 99999.9,
+                     'Proton_sigmaWpar_nonlin': 99999.9,
+                     'EW_flowangle': 99999.9,
+                     'SigmaEW_flowangle': 99999.9,
+                     'NS_flowangle': 99999.9,
+                     'SigmaNS_flowangle': 99999.9,
+                     'Alpha_V_nonlin': 99999.9,
+                     'Alpha_sigmaV_nonlin': 99999.9,
+                     'Alpha_VX_nonlin': 99999.9,
+                     'Alpha_sigmaVX_nonlin': 99999.9,
+                     'Alpha_VY_nonlin': 99999.9,
+                     'Alpha_sigmaVY_nonlin': 99999.9,
+                     'Alpha_VZ_nonlin': 99999.9,
+                     'Alpha_sigmaVZ_nonlin': 99999.9,
+                     'Alpha_W_nonlin': 99999.9,
+                     'Alpha_sigmaW_nonlin': 99999.9,
+                     'Alpha_Wperp_nonlin': 99999.9,
+                     'Alpha_sigmaWperp_nonlin': 99999.9,
+                     'Alpha_Wpar_nonlin': 99999.9,
+                     'Alpha_sigmaWpar_nonlin': 99999.9,
+                     'Alpha_Na_nonlin': 99999.9,
+                     'Alpha_sigmaNa_nonlin': 99999.9,
+                     'Proton_Wperp_moment': 99999.9,
+                     'Proton_Wpar_moment': 99999.9,
+                     'Alpha_Na_nonlin': 100000.0,
+                     'Alpha_sigmaNa_nonlin': 100000.0}
+        df = helper.cdf2df(cdf, 'Epoch', badvalues=badvalues)
         if use_hdf:
             df.to_hdf(hdfloc, 'pm', mode='w', format='f')
         data.append(df)
