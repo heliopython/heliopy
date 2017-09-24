@@ -177,6 +177,9 @@ class TestWind:
     def test_swe_h3(self):
         df = wind.swe_h3(self.starttime, self.endtime)
 
+    def test_swe_h1(self):
+        df = wind.swe_h1(self.starttime, self.endtime)
+
 
 @pytest.mark.skipif(no_pycdf, reason='Importing pycdf failed')
 @pytest.mark.data
