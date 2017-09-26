@@ -115,81 +115,6 @@ def _dist_filename_to_hms(path):
     return hour, minute, second
 
 
-def _ion_fitparams(probe, starttime, endtime, D, verbose=False):
-    """
-    Wrapper funciton to load fitting distribution parameters
-    """
-    starttime_orig = starttime
-    paramlist = []
-    starttime_orig = starttime
-    while starttime < endtime + timedelta(days=1):
-        year = str(starttime.year)
-        doy = starttime.strftime('%j')
-        fname = 'h' + probe + '_' + year + '_' + doy + '_' + D + 'D_fits.h5'
-        saveloc = os.path.join(helios_dir,
-                               'helios' + probe,
-                               'fits',
-                               year,
-                               fname)
-        try:
-            params = pd.read_hdf(saveloc, 'fits')
-        except FileNotFoundError:
-            starttime += timedelta(days=1)
-            if verbose:
-                print('{}/{} corefit data not available'.format(year, doy))
-            continue
-        paramlist.append(params)
-        starttime += timedelta(days=1)
-        if verbose:
-            print('{}/{} corefit data loaded'.format(year, doy))
-    paramlist = pd.concat(paramlist)
-    if not paramlist.index.name == 'Time':
-        paramlist = paramlist.set_index('Time', drop=False)
-    return helper.timefilter(paramlist, starttime_orig, endtime)
-
-
-def ion_fitparams_3D(probe, starttime, endtime, verbose=False):
-    """
-    Returns parameters from 3D fitting to ion distribution functions.
-
-    Parameters
-    ----------
-    probe : int
-        Helios probe to import data from. Must be 1 or 2.
-    starttime : datetime
-        Start of interval
-    endtime : datetime
-        End of interval
-
-    Returns
-    -------
-    distinfo : DataFrame
-        Parameters from 3D fitting.
-    """
-    return _ion_fitparams(probe, starttime, endtime, '3', verbose)
-
-
-def _ion_fitparams_1D(probe, starttime, endtime):
-    """
-    Returns parameters from 1D fitting to ion distribution functions.
-
-    Parameters
-    ----------
-    probe : int
-        Helios probe to import data from. Must be 1 or 2.
-    starttime : datetime
-        Start of interval
-    endtime : datetime
-        End of interval
-
-    Returns
-    -------
-    distinfo : DataFrame
-        Parameters from 1D fitting.
-    """
-    return _ion_fitparams(probe, starttime, endtime, '1')
-
-
 def integrated_dists(probe, starttime, endtime, verbose=False):
     """
     Returns the integrated distributions from experiments i1a and i1b in Helios
@@ -920,6 +845,95 @@ def ion_dist_single(probe, year, doy, hour, minute, second,
     return dist
 
 
+def _corefit_localdir(probe, year):
+    return os.path.join(helios_dir,
+                        'helios{}'.format(probe),
+                        'plasma',
+                        '{}'.format(year))
+
+
+def _corefit_fname(probe, year, doy):
+    # Return merged filename WITHOUT extension
+    return 'h{}_{}_{:03}_corefit'.format(probe, year, doy)
+
+
+def corefit(probe, starttime, endtime, verbose=True, try_download=True):
+    """
+    Read in merged data set
+
+    Parameters
+    ----------
+    probe : int, string
+        Helios probe to import data from. Must be 1 or 2.
+    starttime : datetime
+        Interval start time
+    endtime : datetime
+        Interval end time
+    verbose : bool, optional
+        If ``True``, print information as data is loading.
+        Default is ``True``.
+
+    Returns
+    -------
+    data : DataFrame
+        Data set
+    """
+    probe = _check_probe(probe)
+
+    daylist = helper.daysplitinterval(starttime, endtime)
+    data = []
+    for day in daylist:
+        this_date = day[0]
+        # Check that data for this day exists
+        if probe == '1':
+            if this_date < date(1974, 12, 12) or this_date > date(1985, 9, 4):
+                continue
+        if probe == '2':
+            if this_date < date(1976, 1, 17) or this_date > date(1980, 3, 8):
+                continue
+
+        doy = int(this_date.strftime('%j'))
+        year = this_date.year
+        floc = _corefit_localdir(probe, year)
+
+        hdfloc = os.path.join(floc, _corefit_fname(probe, year, doy) + '.hdf')
+        # If a hdf file exists
+        if os.path.isfile(hdfloc):
+            # Load data from already processed file
+            data.append(pd.read_hdf(hdfloc, 'table'))
+            if verbose:
+                print(year, doy)
+            continue
+        else:
+            try:
+                ascii_fname = _corefit_fname(probe, year, doy) + '.csv'
+                remote_folder = (
+                    'ftp://apollo.ssl.berkeley.edu/pub/helios-data/'
+                    'E1_experiment/New_proton_corefit_data_2017/ascii/')
+                remote_folder = remote_folder + 'helios{}/{}'.format(
+                    probe, year)
+
+                f = helper.load(ascii_fname, floc, remote_folder)
+                data.append(pd.read_csv(f, parse_dates=['Time']))
+                data[-1] = data[-1].set_index('Time')
+            except (FileNotFoundError, URLError) as err:
+                if verbose:
+                    print(str(err))
+                    print(year, doy, 'No raw corefit data available')
+
+        if use_hdf:
+            _save_hdf(data[-1], _corefit_localdir(probe, year),
+                      _corefit_fname(probe, year, doy))
+
+    if data == []:
+        fmt = '%d-%m-%Y'
+        raise ValueError(
+            'No data to import for probe {} between {} and {}'.format(
+                probe, starttime, endtime))
+
+    return helper.timefilter(data, starttime, endtime)
+
+
 def _merged_localdir(probe):
     return os.path.join(helios_dir,
                         'helios{}'.format(probe),
@@ -934,7 +948,7 @@ def _merged_fname(probe, year, doy):
 
 def merged(probe, starttime, endtime, verbose=True, try_download=True):
     """
-    Read in merged data set
+    Read in merged data set.
 
     Parameters
     ----------
@@ -944,13 +958,18 @@ def merged(probe, starttime, endtime, verbose=True, try_download=True):
         Interval start time
     endtime : datetime
         Interval end time
-    verbose : bool
-        If ``True``, print more information as data is loading
+    verbose : bool, optional
+        If ``True``, print information as data is loading.
+        Default is ``True``.
 
     Returns
     -------
     data : DataFrame
         Merged data set
+
+    Notes
+    -----
+    This is an old dataset, and it is recommended to use `corefit` instead.
     """
     probe = _check_probe(probe)
 
