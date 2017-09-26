@@ -1023,7 +1023,7 @@ def _merged_fname(probe, year, doy):
 
 def merged(probe, starttime, endtime, verbose=True, try_download=True):
     """
-    Read in merged data set
+    Read in merged data set.
 
     Parameters
     ----------
@@ -1033,13 +1033,18 @@ def merged(probe, starttime, endtime, verbose=True, try_download=True):
         Interval start time
     endtime : datetime
         Interval end time
-    verbose : bool
-        If ``True``, print more information as data is loading
+    verbose : bool, optional
+        If ``True``, print information as data is loading.
+        Default is ``True``.
 
     Returns
     -------
     data : DataFrame
         Merged data set
+
+    Notes
+    -----
+    This is an old dataset, and it is recommended to use `corefit` instead.
     """
     probe = _check_probe(probe)
 
