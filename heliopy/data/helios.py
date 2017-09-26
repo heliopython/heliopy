@@ -920,6 +920,95 @@ def ion_dist_single(probe, year, doy, hour, minute, second,
     return dist
 
 
+def _corefit_localdir(probe, year):
+    return os.path.join(helios_dir,
+                        'helios{}'.format(probe),
+                        'plasma',
+                        '{}'.format(year))
+
+
+def _corefit_fname(probe, year, doy):
+    # Return merged filename WITHOUT extension
+    return 'h{}_{}_{:03}_corefit'.format(probe, year, doy)
+
+
+def corefit(probe, starttime, endtime, verbose=True, try_download=True):
+    """
+    Read in merged data set
+
+    Parameters
+    ----------
+    probe : int, string
+        Helios probe to import data from. Must be 1 or 2.
+    starttime : datetime
+        Interval start time
+    endtime : datetime
+        Interval end time
+    verbose : bool, optional
+        If ``True``, print information as data is loading.
+        Default is ``True``.
+
+    Returns
+    -------
+    data : DataFrame
+        Data set
+    """
+    probe = _check_probe(probe)
+
+    daylist = helper.daysplitinterval(starttime, endtime)
+    data = []
+    for day in daylist:
+        this_date = day[0]
+        # Check that data for this day exists
+        if probe == '1':
+            if this_date < date(1974, 12, 12) or this_date > date(1985, 9, 4):
+                continue
+        if probe == '2':
+            if this_date < date(1976, 1, 17) or this_date > date(1980, 3, 8):
+                continue
+
+        doy = int(this_date.strftime('%j'))
+        year = this_date.year
+        floc = _corefit_localdir(probe, year)
+
+        hdfloc = os.path.join(floc, _corefit_fname(probe, year, doy) + '.hdf')
+        # If a hdf file exists
+        if os.path.isfile(hdfloc):
+            # Load data from already processed file
+            data.append(pd.read_hdf(hdfloc, 'table'))
+            if verbose:
+                print(year, doy)
+            continue
+        else:
+            try:
+                ascii_fname = _corefit_fname(probe, year, doy) + '.csv'
+                remote_folder = (
+                    'ftp://apollo.ssl.berkeley.edu/pub/helios-data/'
+                    'E1_experiment/New_proton_corefit_data_2017/ascii/')
+                remote_folder = remote_folder + 'helios{}/{}'.format(
+                    probe, year)
+
+                f = helper.load(ascii_fname, floc, remote_folder)
+                data.append(pd.read_csv(f, parse_dates=['Time']))
+                data[-1] = data[-1].set_index('Time')
+            except (FileNotFoundError, URLError) as err:
+                if verbose:
+                    print(str(err))
+                    print(year, doy, 'No raw corefit data available')
+
+        if use_hdf:
+            _save_hdf(data[-1], _corefit_localdir(probe, year),
+                      _corefit_fname(probe, year, doy))
+
+    if data == []:
+        fmt = '%d-%m-%Y'
+        raise ValueError(
+            'No data to import for probe {} between {} and {}'.format(
+                probe, starttime, endtime))
+
+    return helper.timefilter(data, starttime, endtime)
+
+
 def _merged_localdir(probe):
     return os.path.join(helios_dir,
                         'helios{}'.format(probe),

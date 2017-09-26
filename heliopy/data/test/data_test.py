@@ -216,6 +216,15 @@ class TestHelios:
         with pytest.raises(ValueError):
             helios.merged(self.probe, starttime, endtime)
 
+    def test_corefit(self):
+        df = helios.corefit(self.probe, self.starttime, self.endtime)
+        check_datetime_index(df)
+
+        starttime = datetime(2000, 1, 1, 0, 0, 0)
+        endtime = datetime(2000, 1, 2, 0, 0, 0)
+        with pytest.raises(ValueError):
+            helios.corefit(self.probe, starttime, endtime)
+
     def test_6sec_ness(self):
         df = helios.mag_ness(self.probe, self.starttime, self.endtime)
         df = helios.mag_ness(self.probe, self.starttime, self.endtime)
