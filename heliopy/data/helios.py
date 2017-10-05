@@ -857,7 +857,7 @@ def _corefit_fname(probe, year, doy):
     return 'h{}_{}_{:03}_corefit'.format(probe, year, doy)
 
 
-def corefit(probe, starttime, endtime, verbose=True, try_download=True):
+def corefit(probe, starttime, endtime, verbose=False, try_download=True):
     """
     Read in merged data set
 
@@ -871,7 +871,7 @@ def corefit(probe, starttime, endtime, verbose=True, try_download=True):
         Interval end time
     verbose : bool, optional
         If ``True``, print information as data is loading.
-        Default is ``True``.
+        Default is ``False``.
 
     Returns
     -------
