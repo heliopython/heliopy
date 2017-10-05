@@ -28,7 +28,20 @@ def daysplitinterval(starttime, endtime):
     """
     assert starttime < endtime, 'Start datetime must be before end datetime'
     out = []
-    return _daysplitintervalhelper(starttime, endtime, out)
+    starttime_orig = starttime
+    while starttime < endtime:
+        if starttime.date() == starttime_orig.date():
+            stime = starttime.time()
+        else:
+            stime = time.min
+        if starttime.date() == endtime.date():
+            etime = endtime.time()
+        else:
+            etime = time.max
+
+        out.append([starttime.date(), stime, etime])
+        starttime += timedelta(days=1)
+    return out
 
 
 def doy2ymd(y, doy):
@@ -70,22 +83,6 @@ def dtime2doy(dt):
         Day of year
     """
     return int(dt.strftime('%j'))
-
-
-def _daysplitintervalhelper(starttime, endtime, out):
-    # If two datetimes are on the same day, append current date and
-    # start/end times
-    if starttime.date() == endtime.date():
-        out.append([starttime.date(), starttime.time(), endtime.time()])
-        return out
-
-    # Append current date, start time, and maximum time
-    out.append([starttime.date(), starttime.time(), time.max])
-    # Set new start time to 00:00 on the next day
-    newstarttime = datetime.combine(starttime.date(), time.min) +\
-        timedelta(days=1)
-    # Recurse
-    return _daysplitintervalhelper(newstarttime, endtime, out)
 
 
 def fix_url(url):
