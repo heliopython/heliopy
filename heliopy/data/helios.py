@@ -913,7 +913,8 @@ def corefit(probe, starttime, endtime, verbose=True, try_download=True):
                 remote_folder = remote_folder + 'helios{}/{}'.format(
                     probe, year)
 
-                f = helper.load(ascii_fname, floc, remote_folder)
+                f = helper.load(ascii_fname, floc, remote_folder,
+                                try_download=try_download)
                 data.append(pd.read_csv(f, parse_dates=['Time']))
                 data[-1] = data[-1].set_index('Time')
             except (FileNotFoundError, URLError) as err:
