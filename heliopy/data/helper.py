@@ -199,7 +199,7 @@ def timefilter(data, starttime, endtime):
 def reporthook(blocknum, blocksize, totalsize):
     readsofar = blocknum * blocksize
     if totalsize > 0:
-        percent = readsofar * 1e2 / totalsize
+        percent = max(100, readsofar * 1e2 / totalsize)
         s = "\r%5.1f%% %*d / %d" % (
             percent, len(str(totalsize)), readsofar, totalsize)
         sys.stderr.write(s)
@@ -326,7 +326,7 @@ def load(filename, local_dir, remote_url, guessversion=False,
         try:
             return _load_remote(remote_url, filename, local_dir, filetype)
         except URLError:
-            raise ValueError('File {}{} not available'.format(remote_url,
+            raise ValueError('File {}/{} not available'.format(remote_url,
                                                               filename))
     else:
         return []
