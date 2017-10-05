@@ -857,7 +857,7 @@ def _corefit_fname(probe, year, doy):
     return 'h{}_{}_{:03}_corefit'.format(probe, year, doy)
 
 
-def corefit(probe, starttime, endtime, verbose=True, try_download=True):
+def corefit(probe, starttime, endtime, verbose=False, try_download=True):
     """
     Read in merged data set
 
@@ -871,7 +871,7 @@ def corefit(probe, starttime, endtime, verbose=True, try_download=True):
         Interval end time
     verbose : bool, optional
         If ``True``, print information as data is loading.
-        Default is ``True``.
+        Default is ``False``.
 
     Returns
     -------
@@ -913,10 +913,11 @@ def corefit(probe, starttime, endtime, verbose=True, try_download=True):
                 remote_folder = remote_folder + 'helios{}/{}'.format(
                     probe, year)
 
-                f = helper.load(ascii_fname, floc, remote_folder)
+                f = helper.load(ascii_fname, floc, remote_folder,
+                                try_download=try_download)
                 data.append(pd.read_csv(f, parse_dates=['Time']))
                 data[-1] = data[-1].set_index('Time')
-            except (FileNotFoundError, URLError) as err:
+            except (FileNotFoundError, URLError, ValueError) as err:
                 if verbose:
                     print(str(err))
                     print(year, doy, 'No raw corefit data available')
