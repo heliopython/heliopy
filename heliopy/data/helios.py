@@ -917,7 +917,7 @@ def corefit(probe, starttime, endtime, verbose=True, try_download=True):
                                 try_download=try_download)
                 data.append(pd.read_csv(f, parse_dates=['Time']))
                 data[-1] = data[-1].set_index('Time')
-            except (FileNotFoundError, URLError) as err:
+            except (FileNotFoundError, URLError, ValueError) as err:
                 if verbose:
                     print(str(err))
                     print(year, doy, 'No raw corefit data available')
