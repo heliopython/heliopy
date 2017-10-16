@@ -101,6 +101,10 @@ def swe_h3(starttime, endtime):
     """
     Import 'h3' solar wind electron data product from WIND.
 
+    Electron pitch angle files providing electron fluxes at 30 directional bins
+    relative to the instantaneous magnetic field direction at 13 different
+    energy levels
+
     Parameters
     ----------
     starttime : datetime
@@ -170,6 +174,9 @@ def mfi_h0(starttime, endtime):
 def mfi_h2(starttime, endtime):
     """
     Import 'mfi_h2' magnetic field data product from WIND.
+
+    The highest time resolution data (11 vectors/sec usually, and
+    22 vectors/sec when near Earth)
 
     Parameters
     ----------
@@ -251,6 +258,9 @@ def _mfi(starttime, endtime, version):
 def threedp_pm(starttime, endtime):
     """
     Import 'pm' wind data.
+
+    3 second time resolution solar wind proton and alpha particle moments from
+    the PESA LOW sensor, computed on-board the spacecraft
 
     Parameters
     ----------
