@@ -1392,60 +1392,31 @@ def _save_hdf(data, fdir, fname):
 
 
 def trajectory(probe, starttime, endtime):
-    """
-    Read in trajectory data.
+    '''
+    Position vectors are in AU
+    Velocities are in km/s
+    '''
+    local_dir = os.path.join(helios_dir, 'helios{}'.format(probe), 'traj')
+    fname = 'helios{}_eclipJ2000.txt'.format(probe)
+    remote_url = ('ftp://apollo.ssl.berkeley.edu/pub/helios-data/'
+                  'Helios_orbital_information')
+    # Read in data
+    f = helper.load(fname, local_dir, remote_url)
+    names = ['Probe', 'Year', 'Month', 'Day', 'Hour', 'Spice time',
+             'sc_pos_x', 'sc_pos_y', 'sc_pos_z',
+             'sc_vel_x', 'sc_vel_y', 'sc_vel_z',
+             'earth_pos_x', 'earth_pos_y', 'earth_pos_z',
+             'earth_vel_x', 'earth_vel_y', 'earth_vel_z']
+    data = pd.read_table(f, names=names, comment='%', delim_whitespace=True)
 
-    Parameters
-    ----------
-    probe : int, string
-        Helios probe to import data from. Must be 1 or 2.
-    startdate : datetime
-        Interval start date
-    enddate : datetime
-        Interval end date
+    # Set time index
+    data['Time'] = pd.to_datetime(data[['Year', 'Month', 'Day', 'Hour']])
+    data = data.set_index('Time')
+    data = data.drop(['Year', 'Month', 'Day', 'Hour'], axis=1)
 
-    Returns
-    -------
-    data : DataFrame
-        Trajectory data set
-    """
-    probe = _check_probe(probe)
-    data = []
-    headings = ['Year', 'doy', 'Hour', 'Carrrot', 'r', 'selat', 'selon',
-                'hellat', 'hellon', 'hilon', 'escang', 'code']
-    colspecs = [(0, 3), (4, 7), (8, 10), (11, 15), (16, 22), (23, 30),
-                (31, 37), (38, 44), (45, 51), (52, 58), (59, 65), (66, 67)]
-    # Loop through years
-    for i in range(starttime.year, endtime.year + 1):
-        floc = os.path.join(helios_dir,
-                            'helios' + probe,
-                            'traj')
-        fname = 'he' + probe + 'trj' + str(i - 1900) + '.asc'
-
-        # Read in data
-        try:
-            thisdata = pd.read_fwf(os.path.join(floc, fname),
-                                   names=headings,
-                                   header=None,
-                                   colspecs=colspecs)
-        except OSError:
-            continue
-
-        thisdata['Year'] += 1900
-
-        # Convert date info to datetime
-        thisdata['Time'] = pd.to_datetime(thisdata['Year'], format='%Y') + \
-            pd.to_timedelta(thisdata['doy'] - 1, unit='d') + \
-            pd.to_timedelta(thisdata['Hour'], unit='h')
-
-        # Calculate cartesian positions
-        thisdata['x'] = thisdata['r'] * np.cos(thisdata['selat']) *\
-            np.cos(thisdata['selon'])
-        thisdata['y'] = thisdata['r'] * np.cos(thisdata['selat']) *\
-            np.sin(thisdata['selon'])
-        thisdata['z'] = thisdata['r'] * np.sin(thisdata['selat'])
-
-        thisdata = thisdata.drop(['Year', 'doy', 'Hour'], axis=1)
-        data.append(thisdata)
-
+    # Convert from km to AU
+    for body in ['sc', 'earth']:
+        for comp in ['x', 'y', 'z']:
+            label = '{}_pos_{}'.format(body, comp)
+            data[label] = data[label] / constants.AU_km
     return helper.timefilter(data, starttime, endtime)
