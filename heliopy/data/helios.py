@@ -1393,8 +1393,23 @@ def _save_hdf(data, fdir, fname):
 
 def trajectory(probe, starttime, endtime):
     '''
-    Position vectors are in AU
-    Velocities are in km/s
+    Read in trajectory data for Helios (and the Earth)
+    - Position vectors are in AU
+    - Velocities are in km/s
+
+    Parameters
+    ----------
+    probe : int, string
+        Helios probe to import data from. Must be 1 or 2.
+    year : int
+        Year
+    doy : int
+        Day of year
+
+    Returns
+    -------
+    data : DataFrame
+        Helios trajectory data
     '''
     local_dir = os.path.join(helios_dir, 'helios{}'.format(probe), 'traj')
     fname = 'helios{}_eclipJ2000.txt'.format(probe)
