@@ -26,6 +26,18 @@ def check_datetime_index(df):
     assert type(df.index[0]) == pd.Timestamp
 
 
+@pytest.mark.data
+class TestCassini:
+    @classmethod
+    def setup_class(self):
+        self.starttime = datetime(2008, 6, 1, 0, 0, 0)
+        self.endtime = datetime(2008, 6, 2, 1, 0, 0)
+
+    def test_mag(self):
+        df = cassini.mag_hires(self.starttime, self.endtime)
+        check_datetime_index(df)
+
+
 @pytest.mark.skipif(no_pycdf, reason='Importing pycdf failed')
 @pytest.mark.data
 class TestMessenger:
