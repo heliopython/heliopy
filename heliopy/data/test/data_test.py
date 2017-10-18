@@ -7,6 +7,7 @@ import heliopy.data.artemis as artemis
 import heliopy.data.imp as imp
 import heliopy.data.ulysses as ulysses
 import heliopy.data.messenger as messenger
+import heliopy.data.cassini as cassini
 from heliopy import config
 
 import pandas as pd
