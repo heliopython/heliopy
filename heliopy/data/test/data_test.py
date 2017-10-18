@@ -7,6 +7,7 @@ import heliopy.data.artemis as artemis
 import heliopy.data.imp as imp
 import heliopy.data.ulysses as ulysses
 import heliopy.data.messenger as messenger
+import heliopy.data.cassini as cassini
 from heliopy import config
 
 import pandas as pd
@@ -24,6 +25,18 @@ except Exception:
 def check_datetime_index(df):
     'Helper funciton to check all dataframes have a datetime index'
     assert type(df.index[0]) == pd.Timestamp
+
+
+@pytest.mark.data
+class TestCassini:
+    @classmethod
+    def setup_class(self):
+        self.starttime = datetime(2008, 6, 1, 0, 0, 0)
+        self.endtime = datetime(2008, 6, 2, 1, 0, 0)
+
+    def test_mag(self):
+        df = cassini.mag_hires(self.starttime, self.endtime)
+        check_datetime_index(df)
 
 
 @pytest.mark.skipif(no_pycdf, reason='Importing pycdf failed')
