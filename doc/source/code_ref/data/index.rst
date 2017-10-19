@@ -10,6 +10,7 @@ own module:
 
    ace
    artemis
+   cassini
    cluster
    helios
    imp
