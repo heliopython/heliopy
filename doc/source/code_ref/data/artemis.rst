@@ -1,5 +1,5 @@
-heliopy.data.artemis package
-----------------------------
+ARTEMIS
+-------
 
 .. automodule:: heliopy.data.artemis
    :members:

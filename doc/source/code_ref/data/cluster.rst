@@ -1,5 +1,5 @@
-heliopy.data.cluster package
-----------------------------
+Cluster
+-------
 
 .. automodule:: heliopy.data.cluster
    :members:

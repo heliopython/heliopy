@@ -1,7 +1,7 @@
 .. _data-index:
 
-heliopy.data package
------------------------
+Data importing
+--------------
 
 Methods for automatically importing data to python. Each spacecraft has its
 own module:

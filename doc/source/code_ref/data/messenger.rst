@@ -1,5 +1,5 @@
-heliopy.data.messenger package
-------------------------------
+MESSENGER
+---------
 
 .. automodule:: heliopy.data.messenger
    :members:

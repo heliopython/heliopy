@@ -1,5 +1,5 @@
-heliopy.plot package
---------------------
+Plotting
+--------
 
 Methods for plotting data.
 
