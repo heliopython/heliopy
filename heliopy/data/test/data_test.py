@@ -44,7 +44,7 @@ class TestCassini:
         df = cassini.mag_hires(starttime, endtime)
         check_datetime_index(df)
 
-        df = cassini.mag_1min(self.starttime, self.endtime)
+        df = cassini.mag_1min(self.starttime, self.endtime, 'KSO')
         check_datetime_index(df)
 
 
