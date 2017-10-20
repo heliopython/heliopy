@@ -92,8 +92,7 @@ def mag_1min(starttime, endtime, coords):
         if 'error_message' in f.readline():
             f.close()
             os.remove(os.path.join(local_dir, fname + '.TAB'))
-            raise RuntimeError(
-                'No file named {} exits on remote server'.format(fname))
+            continue
 
         df = pd.read_table(f, names=['Time', 'Bx', 'By', 'Bz', '|B|',
                                      'X', 'Y', 'Z', 'Local hour', 'n points'],
