@@ -41,7 +41,7 @@ class TestCassini:
         # Check that a RTN co-ordinate download works too
         starttime = datetime(2004, 5, 1)
         endtime = datetime(2004, 5, 2)
-        df = cassini.mag_hires(tarttime, endtime)
+        df = cassini.mag_hires(starttime, endtime)
         check_datetime_index(df)
 
 
