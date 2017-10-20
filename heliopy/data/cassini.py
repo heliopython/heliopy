@@ -113,6 +113,7 @@ def _mag_hires_helper(year, doy, local_dir, url, coords):
 
     f = helper.load(fname + '.TAB', local_dir, url)
     if 'error_message' in f.readline():
+        f.close()
         os.remove(os.path.join(local_dir, fname + '.TAB'))
         raise RuntimeError(
             'No file named {} exits on remote server'.format(fname))
