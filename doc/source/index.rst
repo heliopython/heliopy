@@ -13,7 +13,7 @@ in the :ref:`data-index`.
    configuring.rst
    pycdf.rst
    examples/examples.rst
-   development/release.rst
+   development.rst
    code_ref/index.rst
 
 * :ref:`genindex`
