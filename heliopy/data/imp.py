@@ -33,20 +33,20 @@ def merged(probe, starttime, endtime, verbose=False):
 
     Parameters
     ----------
-        probe : string
-            Probe number.
-        starttime : datetime
-            Start of interval.
-        endtime : datetime
-            End of interval.
-        verbose : bool, optional
-            If ``True``, print information whilst loading. Default is
-            ``False``.
+    probe : string
+        Probe number.
+    starttime : datetime
+        Start of interval.
+    endtime : datetime
+        End of interval.
+    verbose : bool, optional
+        If ``True``, print information whilst loading. Default is
+        ``False``.
 
     Returns
     -------
-        data : DataFrame
-            Requested data.
+    data : DataFrame
+        Requested data.
     """
     _check_probe(probe, ['8'])
     data = []
@@ -138,17 +138,17 @@ def mitplasma_h0(probe, starttime, endtime):
 
     Parameters
     ----------
-        probe : string
-            Probe number.
-        starttime : datetime
-            Start of interval.
-        endtime : datetime
-            End of interval.
+    probe : string
+        Probe number.
+    starttime : datetime
+        Start of interval.
+    endtime : datetime
+        End of interval.
 
     Returns
     -------
-        data : DataFrame
-            Requested data.
+    data : DataFrame
+        Requested data.
     """
     data = []
     dtimes = helper.daysplitinterval(starttime, endtime)
