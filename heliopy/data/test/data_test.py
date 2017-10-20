@@ -44,6 +44,12 @@ class TestCassini:
         df = cassini.mag_hires(starttime, endtime)
         check_datetime_index(df)
 
+        # Check that no data raises an error
+        starttime = datetime(2040, 5, 1)
+        endtime = datetime(2040, 5, 2)
+        with pytest.raises(RuntimeError):
+            df = cassini.mag_hires(starttime, endtime)
+
         df = cassini.mag_1min(self.starttime, self.endtime, 'KSO')
         check_datetime_index(df)
 
