@@ -84,23 +84,45 @@ def mag_hires(starttime, endtime):
         url = '{}/{}'.format(url, monthstr)
 
         doy = day.strftime('%j')
-        fname = str(year)[2:] + doy + '_FGM_KRTP'
-
         local_dir = os.path.join(cassini_dir, 'mag', 'hires', str(year))
 
-        hdfloc = os.path.join(local_dir, fname + '.hdf')
-        if os.path.isfile(hdfloc):
-            df = pd.read_hdf(hdfloc)
-            data.append(df)
-            continue
+        # No way to work out co-ordinates, so guess Kronian and then RTN
+        try:
+            coords = 'KRTP'
+            df = _mag_hires_helper(year, doy, local_dir, url, coords)
 
-        f = helper.load(fname + '.TAB', local_dir, url)
-        df = pd.read_table(f, names=['Time', 'Bx', 'By', 'Bz'],
-                           delim_whitespace=True,
-                           parse_dates=[0], index_col=0)
-
-        if use_hdf:
-            df.to_hdf(hdfloc, key='data', mode='w')
+        except RuntimeError:
+            try:
+                coords = 'RTN'
+                df = _mag_hires_helper(year, doy, local_dir, url, coords)
+            except RuntimeError:
+                continue
+        df['coords'] = coords
 
         data.append(df)
     return helper.timefilter(data, starttime, endtime)
+
+
+def _mag_hires_helper(year, doy, local_dir, url, coords):
+    fname = str(year)[2:] + doy + '_FGM_' + coords
+
+    hdf_fname = '{}_{}.hdf'.format(year, doy)
+    hdfloc = os.path.join(local_dir, hdf_fname)
+    if os.path.isfile(hdfloc):
+        return pd.read_hdf(hdfloc)
+
+    f = helper.load(fname + '.TAB', local_dir, url)
+    if 'error_message' in f.readline():
+        f.close()
+        os.remove(os.path.join(local_dir, fname + '.TAB'))
+        raise RuntimeError(
+            'No file named {} exits on remote server'.format(fname))
+
+    df = pd.read_table(f, names=['Time', 'Bx', 'By', 'Bz'],
+                       delim_whitespace=True,
+                       parse_dates=[0], index_col=0)
+
+    if use_hdf:
+        df.to_hdf(hdfloc, key='data', mode='w')
+
+    return df
