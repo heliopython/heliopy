@@ -1,5 +1,5 @@
-heliopy.data.imp package
-------------------------
+IMP
+---
 
 .. automodule:: heliopy.data.imp
    :members:

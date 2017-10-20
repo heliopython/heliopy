@@ -1,5 +1,5 @@
-heliopy.data.ulysses package
-----------------------------
+Ulysses
+-------
 
 .. automodule:: heliopy.data.ulysses
    :members:

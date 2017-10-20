@@ -1,5 +1,5 @@
-heliopy.data.wind package
--------------------------
+WIND
+----
 
 .. automodule:: heliopy.data.wind
    :members:

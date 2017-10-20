@@ -1,5 +1,5 @@
-heliopy.data.helper package
----------------------------
+Helper methods
+--------------
 
 .. automodule:: heliopy.data.helper
    :members:

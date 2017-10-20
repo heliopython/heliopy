@@ -1,5 +1,5 @@
-heliopy.plasma package
-----------------------
+Plasma physics
+--------------
 
 .. automodule:: heliopy.plasma
    :members:

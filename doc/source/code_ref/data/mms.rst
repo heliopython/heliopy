@@ -1,5 +1,5 @@
-heliopy.data.mms package
--------------------------
+MMS
+---
 
 .. automodule:: heliopy.data.mms
    :members:

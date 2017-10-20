@@ -1,5 +1,5 @@
-heliopy.data.ace package
-------------------------
+ACE
+---
 
 .. automodule:: heliopy.data.ace
    :members:

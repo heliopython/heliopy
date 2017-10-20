@@ -1,5 +1,5 @@
-heliopy.data.helios package
----------------------------
+Helios
+------
 
 .. automodule:: heliopy.data.helios
    :members:
