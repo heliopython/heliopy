@@ -176,6 +176,9 @@ def timefilter(data, starttime, endtime):
     out : DataFrame
         Filtered data.
     """
+    if data == []:
+        raise RuntimeError(
+            'No data available between {} and {}'.format(starttime, endtime))
     if isinstance(data, list):
         data = pd.concat(data)
     # Get time values
