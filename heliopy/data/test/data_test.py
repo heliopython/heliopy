@@ -44,6 +44,9 @@ class TestCassini:
         df = cassini.mag_hires(starttime, endtime)
         check_datetime_index(df)
 
+        df = cassini.mag_1min(self.starttime, self.endtime)
+        check_datetime_index(df)
+
 
 @pytest.mark.skipif(no_pycdf, reason='Importing pycdf failed')
 @pytest.mark.data
