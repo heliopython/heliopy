@@ -202,7 +202,7 @@ def timefilter(data, starttime, endtime):
 def reporthook(blocknum, blocksize, totalsize):
     readsofar = blocknum * blocksize
     if totalsize > 0:
-        percent = max(100, readsofar * 1e2 / totalsize)
+        percent = min(100, readsofar * 1e2 / totalsize)
         s = "\r%5.1f%% %*d / %d" % (
             percent, len(str(totalsize)), readsofar, totalsize)
         sys.stderr.write(s)
