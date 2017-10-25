@@ -921,6 +921,7 @@ def corefit(probe, starttime, endtime, verbose=False, try_download=True):
                 if verbose:
                     print(str(err))
                     print(year, doy, 'No raw corefit data available')
+                continue
 
         if use_hdf:
             _save_hdf(data[-1], _corefit_localdir(probe, year),
