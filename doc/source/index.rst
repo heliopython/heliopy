@@ -8,14 +8,17 @@ space physics data sets.
 The various data download/reading methods can be found in the :ref:`data-index`.
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    installing.rst
    configuring.rst
    pycdf.rst
    examples/examples.rst
    development.rst
+
    code_ref/index.rst
+
+   whatsnew.rst
 
 * :ref:`genindex`
 * :ref:`modindex`
