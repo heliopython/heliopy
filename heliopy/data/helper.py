@@ -188,21 +188,6 @@ def timefilter(data, starttime, endtime):
     return data
 
 
-def reporthook(blocknum, blocksize, totalsize):
-    readsofar = blocknum * blocksize
-    if totalsize > 0:
-        percent = min(100, readsofar * 1e2 / totalsize)
-        s = "\r%5.1f%% %*d / %d" % (
-            percent, len(str(totalsize)), readsofar, totalsize)
-        sys.stderr.write(s)
-        # Near the end
-        if readsofar >= totalsize:
-            sys.stderr.write("\n")
-    # Total size is unknown
-    else:
-        sys.stderr.write("\rRead %d" % (readsofar,))
-
-
 def checkdir(directory):
     """
     Checks if directory exists, if not creates directory.
@@ -237,11 +222,26 @@ def _load_local(local_dir, filename, filetype):
         return f
 
 
+def _reporthook(blocknum, blocksize, totalsize):
+    readsofar = blocknum * blocksize
+    if totalsize > 0:
+        percent = min(100, readsofar * 1e2 / totalsize)
+        s = "\r%5.1f%% %*d / %d" % (
+            percent, len(str(totalsize)), readsofar, totalsize)
+        sys.stderr.write(s)
+        # Near the end
+        if readsofar >= totalsize:
+            sys.stderr.write("\n")
+    # Total size is unknown
+    else:
+        sys.stderr.write("\rRead %d" % (readsofar,))
+
+
 def _load_remote(remote_url, filename, local_dir, filetype):
     print('Downloading', remote_url + '/' + filename)
     urlretrieve(remote_url + '/' + filename,
                 filename=os.path.join(local_dir, filename),
-                reporthook=reporthook)
+                reporthook=_reporthook)
     print('\n')
     return _load_local(local_dir, filename, filetype)
 
