@@ -44,7 +44,7 @@ def mfi_h0(starttime, endtime):
         this_relative_dir = os.path.join(relative_dir, str(date.year))
         # Absolute path to local directory for this data file
         local_dir = os.path.join(ace_dir, this_relative_dir)
-        helper.checkdir(local_dir)
+        helper._checkdir(local_dir)
 
         remote_url = remote_ace_dir + this_relative_dir
         cdf = helper.load(filename, local_dir, remote_url, guessversion=True)
@@ -96,7 +96,7 @@ def swe_h0(starttime, endtime):
         this_relative_dir = os.path.join(relative_dir, str(day[0].year))
         # Absolute path to local directory for this data file
         local_dir = os.path.join(ace_dir, this_relative_dir)
-        helper.checkdir(local_dir)
+        helper._checkdir(local_dir)
 
         remote_url = remote_cda_dir + this_relative_dir
         cdf = helper.load(filename, local_dir, remote_url, guessversion=True)

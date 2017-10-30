@@ -71,7 +71,7 @@ def fgm(probe, rate, coords, starttime, endtime):
             '_v01.cdf'
         # Absolute path to local directory for this data file
         local_dir = os.path.join(themis_dir, this_relative_dir)
-        helper.checkdir(local_dir)
+        helper._checkdir(local_dir)
 
         remote_url = remote_themis_dir + this_relative_dir
 

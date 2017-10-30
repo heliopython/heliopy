@@ -65,7 +65,7 @@ def fpi_dis_moms(probe, mode, starttime, endtime):
 
             # Absolute path to local directory for this data file
             local_dir = os.path.join(mms_dir, this_relative_dir)
-            helper.checkdir(local_dir)
+            helper._checkdir(local_dir)
 
             remote_url = remote_mms_dir + this_relative_dir
             # Load cdf file
@@ -130,7 +130,7 @@ def fgm_survey(probe, starttime, endtime):
 
         # Absolute path to local directory for this data file
         local_dir = os.path.join(mms_dir, this_relative_dir)
-        helper.checkdir(local_dir)
+        helper._checkdir(local_dir)
 
         remote_url = remote_mms_dir + this_relative_dir
         # Load cdf file

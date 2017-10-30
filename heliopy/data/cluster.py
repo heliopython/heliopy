@@ -113,7 +113,7 @@ def _download(probe, starttime, endtime, instrument, product_id):
             day + '.tar.gz'
         print(request_url)
         # Download data
-        helper.checkdir(local_dir)
+        helper._checkdir(local_dir)
         urlretrieve(request_url,
                     filename=os.path.join(local_dir, filename),
                     reporthook=helper.reporthook)
