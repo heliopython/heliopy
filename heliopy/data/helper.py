@@ -50,10 +50,10 @@ def doy2ymd(y, doy):
 
     Parameters
     ----------
-        y : int
-            Year.
-        doy : int
-            Day of year.
+    y : int
+        Year
+    doy : int
+        Day of year
 
     Returns
     -------
@@ -102,23 +102,23 @@ def _cart2sph(x, y, z):
 
     Parameters
     ----------
-        x : array_like
-            x values
-        y : array_like
-            y values
-        z : array_like
-            z values
+    x : array_like
+        x values
+    y : array_like
+        y values
+    z : array_like
+        z values
 
     Returns
     -------
-        r : array_like
-            r values
-        theta : array_like
-            Elevation angles defined from the x-y plane towards the z-axis.
-            Angles are in the range [-pi/2, pi/2].
-        phi : array_like
-            Azimuthal angles defined in the x-y plane, clockwise about the
-            z-axis, from the x-axis. Angles are in the range [-pi, pi].
+    r : array_like
+        r values
+    theta : array_like
+        Elevation angles defined from the x-y plane towards the z-axis.
+        Angles are in the range [-pi/2, pi/2].
+    phi : array_like
+        Azimuthal angles defined in the x-y plane, clockwise about the
+        z-axis, from the x-axis. Angles are in the range [-pi, pi].
     """
     xy = x**2 + y**2
     r = np.sqrt(xy + z**2)
@@ -133,23 +133,22 @@ def _sph2cart(r, theta, phi):
 
     Parameters
     ----------
-        r : array_like
-            r values
-        theta : array_like
-            Elevation angles defined from the x-y plane towards the z-axis
-        phi : array_like
-            Azimuthal angles defined in the x-y plane, clockwise about the
-            z-axis, from the x-axis.
+    r : array_like
+        r values
+    theta : array_like
+        Elevation angles defined from the x-y plane towards the z-axis
+    phi : array_like
+        Azimuthal angles defined in the x-y plane, clockwise about the
+        z-axis, from the x-axis.
 
     Returns
     -------
-        x : array_like
-            x values
-        y : array_like
-            y values
-        z : array_like
-            z values
-
+    x : array_like
+        x values
+    y : array_like
+        y values
+    z : array_like
+        z values
     """
     x = r * np.cos(theta) * np.cos(phi)
     y = r * np.cos(theta) * np.sin(phi)
@@ -163,7 +162,7 @@ def timefilter(data, starttime, endtime):
 
     Parameters
     ----------
-    data : DataFrame or list
+    data : :class:`pandas.DataFrame` or list
         Input data. If a list, ``pd.concat(data)`` will be run to put it in
         a DataFrame.
     starttime : datetime
@@ -173,7 +172,7 @@ def timefilter(data, starttime, endtime):
 
     Returns
     -------
-    out : DataFrame
+    out : :class:`pandas.DataFrame`
         Filtered data.
     """
     if len(data) == 0:
@@ -375,7 +374,7 @@ def pitchdist_cdf2df(cdf, distkeys, energykey, timekey, anglelabels):
 
     Returns
     -------
-    df : DataFrame
+    df : :class:`pandas.DataFrame`
         Data frame with read in data.
     """
     times = cdf[timekey][...]
@@ -437,7 +436,7 @@ def cdf2df(cdf, index_key, keys=None, dtimeindex=True, badvalues=None):
 
     Returns
     -------
-    df : DataFrame
+    df : :class:`pandas.DataFrame`
         Data frame with read in data
     """
     # Extract index values
