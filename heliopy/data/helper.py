@@ -31,6 +31,7 @@ def listdata(probes=None):
 
     Example output ::
 
+        Scanning files in /Users/dstansby/Data/
         ----------------------------------------
         |      Probe |        Raw |        HDF |
         |--------------------------------------|
@@ -97,6 +98,7 @@ def listdata(probes=None):
     rowfmt = '| {} | {} | {} |'
     divider = '|' + '-' * (total_len - 2) + '|'
     # Do actual printing
+    print('Scanning files in {}'.format(data_dir))
     # Header column
     print('-' * total_len)
     # Each probe in turn
