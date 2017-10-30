@@ -188,29 +188,6 @@ def timefilter(data, starttime, endtime):
     return data
 
 
-def checkdir(directory):
-    """
-    Checks if directory exists, if not creates directory.
-
-    Parameters
-    ----------
-    directory : string
-        Directory to check.
-
-    Returns
-    -------
-    isdir : bool
-        True if directory exists, False if directory didn't exist when
-        function was called.
-    """
-    if not os.path.exists(directory):
-        print('Creating new directory', directory)
-        os.makedirs(directory)
-        return False
-    else:
-        return True
-
-
 def _load_local(local_dir, filename, filetype):
     # Import local file
     if filetype == 'cdf':
@@ -257,6 +234,29 @@ def _fix_url(url):
         return url
 
 
+def _checkdir(directory):
+    """
+    Checks if directory exists, if not creates directory.
+
+    Parameters
+    ----------
+    directory : string
+        Directory to check.
+
+    Returns
+    -------
+    isdir : bool
+        True if directory exists, False if directory didn't exist when
+        function was called.
+    """
+    if not os.path.exists(directory):
+        print('Creating new directory', directory)
+        os.makedirs(directory)
+        return False
+    else:
+        return True
+
+
 def load(filename, local_dir, remote_url, guessversion=False,
          try_download=True):
     """
@@ -298,7 +298,7 @@ def load(filename, local_dir, remote_url, guessversion=False,
             raise RuntimeError('Cannot guess version for ascii files')
 
     # Try to load locally
-    if checkdir(local_dir):
+    if _checkdir(local_dir):
         for f in os.listdir(local_dir):
             if f == filename or guessversion and (f[:-6] == filename[:-6]):
                 filename = f
