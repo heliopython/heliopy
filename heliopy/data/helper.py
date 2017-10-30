@@ -85,17 +85,6 @@ def dtime2doy(dt):
     return int(dt.strftime('%j'))
 
 
-def fix_url(url):
-    '''
-    Given a url possibly constructued using an os.path.join method,
-    replace all backlslashes with forward slashes to make the url valid
-    '''
-    if url is not None:
-        return url.replace('\\', '/')
-    else:
-        return url
-
-
 def _cart2sph(x, y, z):
     """
     Given cartesian co-ordinates returns shperical co-ordinates.
@@ -257,6 +246,17 @@ def _load_remote(remote_url, filename, local_dir, filetype):
     return _load_local(local_dir, filename, filetype)
 
 
+def _fix_url(url):
+    '''
+    Given a url possibly constructued using an os.path.join method,
+    replace all backlslashes with forward slashes to make the url valid
+    '''
+    if url is not None:
+        return url.replace('\\', '/')
+    else:
+        return url
+
+
 def load(filename, local_dir, remote_url, guessversion=False,
          try_download=True):
     """
@@ -306,7 +306,7 @@ def load(filename, local_dir, remote_url, guessversion=False,
 
     # Loading locally failed, but directory has been made so try to download
     # file.
-    remote_url = fix_url(remote_url)
+    remote_url = _fix_url(remote_url)
     if guessversion:
         # Split remote url into a server name and directory
         for i, c in enumerate(remote_url[6:]):
