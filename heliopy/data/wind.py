@@ -37,7 +37,7 @@ def swe_h1(starttime, endtime):
     # Directory relative to main WIND data directory
     relative_dir = os.path.join('swe', 'swe_h1')
 
-    daylist = helper.daysplitinterval(starttime, endtime)
+    daylist = helper._daysplitinterval(starttime, endtime)
     data = []
     for day in daylist:
         date = day[0]
@@ -119,7 +119,7 @@ def swe_h3(starttime, endtime):
     # Directory relative to main WIND data directory
     relative_dir = os.path.join('swe', 'swe_h3')
 
-    daylist = helper.daysplitinterval(starttime, endtime)
+    daylist = helper._daysplitinterval(starttime, endtime)
     data = []
     for day in daylist:
         date = day[0]
@@ -210,7 +210,7 @@ def _mfi(starttime, endtime, version):
     # Directory relative to main WIND data directory
     relative_dir = os.path.join('mfi', 'mfi_' + version)
 
-    daylist = helper.daysplitinterval(starttime, endtime)
+    daylist = helper._daysplitinterval(starttime, endtime)
     data = []
     for day in daylist:
         date = day[0]
@@ -276,7 +276,7 @@ def threedp_pm(starttime, endtime):
     # Directory relative to main WIND data directory
     relative_dir = os.path.join('3dp', '3dp_pm')
 
-    daylist = helper.daysplitinterval(starttime, endtime)
+    daylist = helper._daysplitinterval(starttime, endtime)
     data = []
     for day in daylist:
         date = day[0]

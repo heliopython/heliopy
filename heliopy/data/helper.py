@@ -9,7 +9,7 @@ import pandas as pd
 import numpy as np
 
 
-def daysplitinterval(starttime, endtime):
+def _daysplitinterval(starttime, endtime):
     """
     Splits an interval into a list of dates, start times and end times
 

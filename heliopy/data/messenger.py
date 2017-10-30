@@ -33,7 +33,7 @@ def mag_rtn(starttime, endtime):
     # Directory relative to main WIND data directory
     relative_dir = 'rtn'
 
-    daylist = helper.daysplitinterval(starttime, endtime)
+    daylist = helper._daysplitinterval(starttime, endtime)
     data = []
     for day in daylist:
         date = day[0]

@@ -59,7 +59,7 @@ def fgm(probe, rate, coords, starttime, endtime):
     # Directory relative to main THEMIS data directory
     relative_dir = os.path.join('th' + probe, 'l2', 'fgm')
 
-    daylist = helper.daysplitinterval(starttime, endtime)
+    daylist = helper._daysplitinterval(starttime, endtime)
     data = []
     for day in daylist:
         date = day[0]

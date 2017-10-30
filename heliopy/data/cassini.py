@@ -135,7 +135,7 @@ def mag_hires(starttime, endtime):
     base_url = ('http://pds-ppi.igpp.ucla.edu/ditdos/download?id='
                 'pds://PPI/CO-E_SW_J_S-MAG-3-RDR-FULL-RES-V1.0/DATA')
 
-    daylist = helper.daysplitinterval(starttime, endtime)
+    daylist = helper._daysplitinterval(starttime, endtime)
     data = []
     for [day, stime, etime] in daylist:
         year = day.year

@@ -35,7 +35,7 @@ def mfi_h0(starttime, endtime):
     # Directory relative to main WIND data directory
     relative_dir = os.path.join('mag', 'level_2_cdaweb', 'mfi_h0')
 
-    daylist = helper.daysplitinterval(starttime, endtime)
+    daylist = helper._daysplitinterval(starttime, endtime)
     data = []
     for day in daylist:
         date = day[0]
@@ -84,7 +84,7 @@ def swe_h0(starttime, endtime):
     # Directory relative to main WIND data directory
     relative_dir = os.path.join('swepam', 'level_2_cdaweb', 'swe_h0')
 
-    daylist = helper.daysplitinterval(starttime, endtime)
+    daylist = helper._daysplitinterval(starttime, endtime)
     data = []
     for day in daylist:
         date = day[0]
