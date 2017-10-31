@@ -1,5 +1,7 @@
 # heliopy
 
+[![Join the chat at https://gitter.im/heliopython/heliopy](https://badges.gitter.im/heliopython/heliopy.svg)](https://gitter.im/heliopython/heliopy?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 A python library for Space Physics. The primary goal of this python package is
 to make it really easy to import common data sets used in Space Physics.
 Full documentation can be found [here](http://docs.heliopy.org/).
