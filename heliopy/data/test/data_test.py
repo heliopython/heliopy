@@ -8,6 +8,7 @@ import heliopy.data.imp as imp
 import heliopy.data.ulysses as ulysses
 import heliopy.data.messenger as messenger
 import heliopy.data.cassini as cassini
+import heliopy.data.helper as helper
 from heliopy import config
 
 import pandas as pd
@@ -266,3 +267,8 @@ class TestHelios:
     def test_trajectory(self):
         df = helios.trajectory(self.probe, self.starttime, self.endtime)
         check_datetime_index(df)
+
+
+class TestHelper:
+    def test_listdata(self):
+        helper.listdata()
