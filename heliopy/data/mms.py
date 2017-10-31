@@ -45,7 +45,7 @@ def fpi_dis_moms(probe, mode, starttime, endtime):
     # Directory relative to main MMS data directory
     relative_dir = os.path.join('mms' + probe, 'fpi', mode, 'l2', 'dis-moms')
 
-    daylist = helper.daysplitinterval(starttime, endtime)
+    daylist = helper._daysplitinterval(starttime, endtime)
     data = []
     for day in daylist:
         date = day[0]
@@ -65,7 +65,7 @@ def fpi_dis_moms(probe, mode, starttime, endtime):
 
             # Absolute path to local directory for this data file
             local_dir = os.path.join(mms_dir, this_relative_dir)
-            helper.checkdir(local_dir)
+            helper._checkdir(local_dir)
 
             remote_url = remote_mms_dir + this_relative_dir
             # Load cdf file
@@ -118,7 +118,7 @@ def fgm_survey(probe, starttime, endtime):
     # Directory relative to main MMS data directory
     relative_dir = os.path.join('mms' + probe, 'fgm', 'srvy', 'l2')
 
-    daylist = helper.daysplitinterval(starttime, endtime)
+    daylist = helper._daysplitinterval(starttime, endtime)
     data = []
     for day in daylist:
         date = day[0]
@@ -130,7 +130,7 @@ def fgm_survey(probe, starttime, endtime):
 
         # Absolute path to local directory for this data file
         local_dir = os.path.join(mms_dir, this_relative_dir)
-        helper.checkdir(local_dir)
+        helper._checkdir(local_dir)
 
         remote_url = remote_mms_dir + this_relative_dir
         # Load cdf file

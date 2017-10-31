@@ -33,7 +33,7 @@ def mag_rtn(starttime, endtime):
     # Directory relative to main WIND data directory
     relative_dir = 'rtn'
 
-    daylist = helper.daysplitinterval(starttime, endtime)
+    daylist = helper._daysplitinterval(starttime, endtime)
     data = []
     for day in daylist:
         date = day[0]
@@ -54,7 +54,7 @@ def mag_rtn(starttime, endtime):
         filename = hdffile[:-4] + '.cdf'
         # Absolute path to local directory for this data file
         local_dir = os.path.join(mess_dir, this_relative_dir)
-        helper.checkdir(local_dir)
+        helper._checkdir(local_dir)
 
         remote_url = os.path.join(remote_mess_dir, this_relative_dir)
 

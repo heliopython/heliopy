@@ -42,7 +42,7 @@ def fgm_hires(starttime, endtime):
                 'delim_whitespace': True}
 
     data = []
-    dtimes = helper.daysplitinterval(starttime, endtime)
+    dtimes = helper._daysplitinterval(starttime, endtime)
     # Loop through years
     for dtime in dtimes:
         date = dtime[0]
@@ -99,7 +99,7 @@ def swoops_ions(starttime, endtime):
 
     data = []
     months_loaded = []
-    dtimes = helper.daysplitinterval(starttime, endtime)
+    dtimes = helper._daysplitinterval(starttime, endtime)
     # Loop through individual days
     for dtime in dtimes:
         thisdate = dtime[0]

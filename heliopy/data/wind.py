@@ -37,7 +37,7 @@ def swe_h1(starttime, endtime):
     # Directory relative to main WIND data directory
     relative_dir = os.path.join('swe', 'swe_h1')
 
-    daylist = helper.daysplitinterval(starttime, endtime)
+    daylist = helper._daysplitinterval(starttime, endtime)
     data = []
     for day in daylist:
         date = day[0]
@@ -52,7 +52,7 @@ def swe_h1(starttime, endtime):
             data.append(df)
             continue
 
-        helper.checkdir(local_dir)
+        helper._checkdir(local_dir)
         remote_url = '{}swe/swe_h1/{}'.format(remote_wind_dir, date.year)
         cdf = helper.load(filename + '.cdf', local_dir, remote_url)
         badvalues = {'Proton_V_nonlin': 99999.9,
@@ -119,7 +119,7 @@ def swe_h3(starttime, endtime):
     # Directory relative to main WIND data directory
     relative_dir = os.path.join('swe', 'swe_h3')
 
-    daylist = helper.daysplitinterval(starttime, endtime)
+    daylist = helper._daysplitinterval(starttime, endtime)
     data = []
     for day in daylist:
         date = day[0]
@@ -131,7 +131,7 @@ def swe_h3(starttime, endtime):
         this_relative_dir = os.path.join(relative_dir, str(day[0].year))
         # Absolute path to local directory for this data file
         local_dir = os.path.join(wind_dir, this_relative_dir)
-        helper.checkdir(local_dir)
+        helper._checkdir(local_dir)
 
         remote_url = remote_wind_dir + this_relative_dir
 
@@ -210,7 +210,7 @@ def _mfi(starttime, endtime, version):
     # Directory relative to main WIND data directory
     relative_dir = os.path.join('mfi', 'mfi_' + version)
 
-    daylist = helper.daysplitinterval(starttime, endtime)
+    daylist = helper._daysplitinterval(starttime, endtime)
     data = []
     for day in daylist:
         date = day[0]
@@ -229,7 +229,7 @@ def _mfi(starttime, endtime, version):
             data.append(df)
             continue
 
-        helper.checkdir(local_dir)
+        helper._checkdir(local_dir)
         remote_url = remote_wind_dir + this_relative_dir
         cdf = helper.load(filename, local_dir, remote_url, guessversion=True)
 
@@ -276,7 +276,7 @@ def threedp_pm(starttime, endtime):
     # Directory relative to main WIND data directory
     relative_dir = os.path.join('3dp', '3dp_pm')
 
-    daylist = helper.daysplitinterval(starttime, endtime)
+    daylist = helper._daysplitinterval(starttime, endtime)
     data = []
     for day in daylist:
         date = day[0]
@@ -295,7 +295,7 @@ def threedp_pm(starttime, endtime):
             data.append(df)
             continue
 
-        helper.checkdir(local_dir)
+        helper._checkdir(local_dir)
         remote_url = remote_wind_dir + this_relative_dir
         cdf = helper.load(filename, local_dir, remote_url, guessversion=True)
 

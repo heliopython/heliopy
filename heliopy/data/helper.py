@@ -9,7 +9,7 @@ import pandas as pd
 import numpy as np
 
 
-def daysplitinterval(starttime, endtime):
+def _daysplitinterval(starttime, endtime):
     """
     Splits an interval into a list of dates, start times and end times
 
@@ -83,17 +83,6 @@ def dtime2doy(dt):
         Day of year
     """
     return int(dt.strftime('%j'))
-
-
-def fix_url(url):
-    '''
-    Given a url possibly constructued using an os.path.join method,
-    replace all backlslashes with forward slashes to make the url valid
-    '''
-    if url is not None:
-        return url.replace('\\', '/')
-    else:
-        return url
 
 
 def _cart2sph(x, y, z):
@@ -199,7 +188,18 @@ def timefilter(data, starttime, endtime):
     return data
 
 
-def reporthook(blocknum, blocksize, totalsize):
+def _load_local(local_dir, filename, filetype):
+    # Import local file
+    if filetype == 'cdf':
+        from pycdf import pycdf
+        cdf = pycdf.CDF(os.path.join(local_dir, filename))
+        return cdf
+    elif filetype == 'ascii':
+        f = open(os.path.join(local_dir, filename))
+        return f
+
+
+def _reporthook(blocknum, blocksize, totalsize):
     readsofar = blocknum * blocksize
     if totalsize > 0:
         percent = min(100, readsofar * 1e2 / totalsize)
@@ -214,7 +214,27 @@ def reporthook(blocknum, blocksize, totalsize):
         sys.stderr.write("\rRead %d" % (readsofar,))
 
 
-def checkdir(directory):
+def _load_remote(remote_url, filename, local_dir, filetype):
+    print('Downloading', remote_url + '/' + filename)
+    urlretrieve(remote_url + '/' + filename,
+                filename=os.path.join(local_dir, filename),
+                reporthook=_reporthook)
+    print('\n')
+    return _load_local(local_dir, filename, filetype)
+
+
+def _fix_url(url):
+    '''
+    Given a url possibly constructued using an os.path.join method,
+    replace all backlslashes with forward slashes to make the url valid
+    '''
+    if url is not None:
+        return url.replace('\\', '/')
+    else:
+        return url
+
+
+def _checkdir(directory):
     """
     Checks if directory exists, if not creates directory.
 
@@ -235,26 +255,6 @@ def checkdir(directory):
         return False
     else:
         return True
-
-
-def _load_local(local_dir, filename, filetype):
-    # Import local file
-    if filetype == 'cdf':
-        from pycdf import pycdf
-        cdf = pycdf.CDF(os.path.join(local_dir, filename))
-        return cdf
-    elif filetype == 'ascii':
-        f = open(os.path.join(local_dir, filename))
-        return f
-
-
-def _load_remote(remote_url, filename, local_dir, filetype):
-    print('Downloading', remote_url + '/' + filename)
-    urlretrieve(remote_url + '/' + filename,
-                filename=os.path.join(local_dir, filename),
-                reporthook=reporthook)
-    print('\n')
-    return _load_local(local_dir, filename, filetype)
 
 
 def load(filename, local_dir, remote_url, guessversion=False,
@@ -298,7 +298,7 @@ def load(filename, local_dir, remote_url, guessversion=False,
             raise RuntimeError('Cannot guess version for ascii files')
 
     # Try to load locally
-    if checkdir(local_dir):
+    if _checkdir(local_dir):
         for f in os.listdir(local_dir):
             if f == filename or guessversion and (f[:-6] == filename[:-6]):
                 filename = f
@@ -306,7 +306,7 @@ def load(filename, local_dir, remote_url, guessversion=False,
 
     # Loading locally failed, but directory has been made so try to download
     # file.
-    remote_url = fix_url(remote_url)
+    remote_url = _fix_url(remote_url)
     if guessversion:
         # Split remote url into a server name and directory
         for i, c in enumerate(remote_url[6:]):

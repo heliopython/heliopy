@@ -151,7 +151,7 @@ def mitplasma_h0(probe, starttime, endtime):
         Requested data.
     """
     data = []
-    dtimes = helper.daysplitinterval(starttime, endtime)
+    dtimes = helper._daysplitinterval(starttime, endtime)
     # Loop through years
     for dtime in dtimes:
         date = dtime[0]
@@ -210,7 +210,7 @@ def mag320ms(probe, startTime, endTime):
             Requested data.
     """
     data = []
-    dtimes = helper.daysplitinterval(startTime, endTime)
+    dtimes = helper._daysplitinterval(startTime, endTime)
     # Loop through years
     for dtime in dtimes:
         date = dtime[0]
@@ -268,7 +268,7 @@ def mag15s(probe, starttime, endtime, verbose=False):
             Requested data.
     """
     data = []
-    dtimes = helper.daysplitinterval(starttime, endtime)
+    dtimes = helper._daysplitinterval(starttime, endtime)
     # Loop through years
     for dtime in dtimes:
         startdt = dtime[0]

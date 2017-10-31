@@ -880,7 +880,7 @@ def corefit(probe, starttime, endtime, verbose=False, try_download=True):
     """
     probe = _check_probe(probe)
 
-    daylist = helper.daysplitinterval(starttime, endtime)
+    daylist = helper._daysplitinterval(starttime, endtime)
     data = []
     for day in daylist:
         this_date = day[0]
@@ -975,7 +975,7 @@ def merged(probe, starttime, endtime, verbose=True, try_download=True):
     """
     probe = _check_probe(probe)
 
-    daylist = helper.daysplitinterval(starttime, endtime)
+    daylist = helper._daysplitinterval(starttime, endtime)
     data = []
     floc = _merged_localdir(probe)
     for day in daylist:

@@ -35,7 +35,7 @@ cda_time_fmt = '%Y-%m-%dT%H:%M:%SZ'
 
 
 def _load(probe, starttime, endtime, instrument, product_id, cdfkeys):
-    daylist = helper.daysplitinterval(starttime, endtime)
+    daylist = helper._daysplitinterval(starttime, endtime)
     data = []
     for day in daylist:
         date = day[0]
@@ -76,7 +76,7 @@ def _load(probe, starttime, endtime, instrument, product_id, cdfkeys):
 def _download(probe, starttime, endtime, instrument, product_id):
     if cda_cookie == 'none':
         raise RuntimeError('Cluster download cookie not set')
-    daylist = helper.daysplitinterval(starttime, endtime)
+    daylist = helper._daysplitinterval(starttime, endtime)
     for day in daylist:
         date = day[0]
         start = datetime.combine(date, time.min)
@@ -113,7 +113,7 @@ def _download(probe, starttime, endtime, instrument, product_id):
             day + '.tar.gz'
         print(request_url)
         # Download data
-        helper.checkdir(local_dir)
+        helper._checkdir(local_dir)
         urlretrieve(request_url,
                     filename=os.path.join(local_dir, filename),
                     reporthook=helper.reporthook)
