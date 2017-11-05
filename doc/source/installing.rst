@@ -12,6 +12,11 @@ Once you have a Python distribution installed, heliopy can be installed using::
 Optional dependencies
 ---------------------
 
+HDF file reader/writer
+^^^^^^^^^^^^^^^^^^^^^^
+Saving data to hdf files for quicker access requires PyTables.
+(see :doc:`/examples/fast_file_loading` for more information)
+
 CDF Library
 ^^^^^^^^^^^
 Reading in any data that is stored in .cdf files requires an installation of
