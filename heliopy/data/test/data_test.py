@@ -209,7 +209,7 @@ class TestWind:
         df = wind.threedp_sfpd(starttime, endtime)
 
     def test_swe_h3(self):
-        df = wind.swe_h3(self.starttime, self.starttime)
+        df = wind.swe_h3(self.starttime, self.endtime)
 
     def test_swe_h1(self):
         df = wind.swe_h1(self.starttime, self.endtime)
