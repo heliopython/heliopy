@@ -208,7 +208,9 @@ class TestWind:
         check_datetime_index(df)
 
     def test_swe_h3(self):
-        df = wind.swe_h3(self.starttime, self.endtime)
+        starttime = datetime(2002, 1, 1, 0, 0, 0)
+        endtime = datetime(2002, 1, 1, 23, 59, 59)
+        df = wind.swe_h3(starttime, endtime)
 
     def test_swe_h1(self):
         df = wind.swe_h1(self.starttime, self.endtime)
