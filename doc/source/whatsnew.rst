@@ -12,6 +12,7 @@ New features
 ^^^^^^^^^^^^
 
 - Added :meth:`heliopy.data.helper.listdata` method for easily viewing the amount of data heliopy is storing locally
+- Added :meth:`heliopy.data.wind.threedp_sfpd` method for importing WIND 3DP sfpd data
 
 Version 0.1.3
 -------------

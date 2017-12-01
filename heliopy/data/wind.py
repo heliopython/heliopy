@@ -308,7 +308,74 @@ def threedp_pm(starttime, endtime):
                 'Epoch': 'Time'}
         df = helper.cdf2df(cdf, index_key='Epoch', keys=keys)
         if use_hdf:
-            df.to_hdf(hdfloc, 'pm', mode='w', format='f')
+            df.to_hdf(hdfloc, 'pm', mode='w')
         data.append(df)
 
     return helper.timefilter(data, starttime, endtime)
+
+
+def threedp_sfpd(starttime, endtime):
+    """
+    Import 'sfpd' wind data.
+
+    12 second energetic electron pitch-angle energy spectra from the foil SST
+
+    Parameters
+    ----------
+    starttime : datetime
+        Interval start time.
+    endtime : datetime
+        Interval end time.
+
+    Returns
+    -------
+    data : DataFrame
+    """
+    # Directory relative to main WIND data directory
+    relative_dir = os.path.join('3dp', '3dp_sfpd')
+
+    daylist = helper._daysplitinterval(starttime, endtime)
+    data = []
+    mag = []
+    for (date, _, _) in daylist:
+        this_relative_dir = os.path.join(relative_dir, str(date.year))
+        # Absolute path to local directory for this data file
+        local_dir = os.path.join(wind_dir, this_relative_dir)
+        filename = 'wi_sfpd_3dp_{:{dfmt}}_v02'.format(
+            date, dfmt='%Y%m%d')
+        hdfname = filename + '.hdf'
+        hdfloc = os.path.join(local_dir, hdfname)
+        if os.path.isfile(hdfloc):
+            df = pd.read_hdf(hdfloc)
+            data.append(df)
+            continue
+
+        helper._checkdir(local_dir)
+        remote_url = remote_wind_dir + this_relative_dir
+        cdf = helper.load(filename + '.cdf', local_dir, remote_url,
+                          guessversion=True)
+
+        data_today = []
+        # Loop through each timestamp to build up fluxes
+        for i, time in enumerate(cdf['Epoch'][...]):
+            energies = cdf['ENERGY'][i, :]
+            angles = cdf['PANGLE'][i, :]
+            fluxes = cdf['FLUX'][i, :, :]
+            magfield = cdf['MAGF'][i, :]
+            index = pd.MultiIndex.from_product(
+                ([time], energies, angles),
+                names=['Time', 'Energy', 'Pitch angle'])
+            df = pd.DataFrame(fluxes.ravel(), index=index, columns=['Flux'])
+            df['Bx'] = magfield[0]
+            df['By'] = magfield[1]
+            df['Bz'] = magfield[2]
+            data_today.append(df)
+        data_today = pd.concat(data_today)
+        data_today = data_today.sort_index()
+
+        if use_hdf:
+            data_today.to_hdf(hdfloc, 'sfpd', mode='w')
+        data.append(data_today)
+
+    data = helper.timefilter(data, starttime, endtime)
+    return data

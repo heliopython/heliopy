@@ -203,6 +203,11 @@ class TestWind:
         df = wind.threedp_pm(self.starttime, self.endtime)
         check_datetime_index(df)
 
+    def test_threedp_sfpd(self):
+        starttime = datetime(2002, 1, 1, 0, 0, 0)
+        endtime = datetime(2002, 1, 1, 23, 59, 59)
+        df = wind.threedp_sfpd(starttime, endtime)
+
     def test_swe_h3(self):
         df = wind.swe_h3(self.starttime, self.endtime)
 
