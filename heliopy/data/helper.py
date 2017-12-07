@@ -138,7 +138,7 @@ def _daysplitinterval(starttime, endtime):
     assert starttime < endtime, 'Start datetime must be before end datetime'
     out = []
     starttime_orig = starttime
-    while starttime < endtime:
+    while starttime.date() <= endtime.date():
         if starttime.date() == starttime_orig.date():
             stime = starttime.time()
         else:
