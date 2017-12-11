@@ -1,6 +1,6 @@
 Development
 ===========
-Useful information for contributing to heliopy
+Useful information for contributing to HelioPy
 
 .. toctree::
    :maxdepth: 1

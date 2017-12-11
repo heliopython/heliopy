@@ -1,4 +1,4 @@
-# heliopy
+# HelioPy
 
 [![Join the chat at https://gitter.im/heliopython/heliopy](https://badges.gitter.im/heliopython/heliopy.svg)](https://gitter.im/heliopython/heliopy?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
@@ -25,7 +25,7 @@ plt.plot(data['Bz_gse'])
 plt.show()
 ```
 
-**If heliopy is missing a method to import a dataset you are interested in,
+**If HelioPy is missing a method to import a dataset you are interested in,
 please submit a request at https://github.com/heliopython/heliopy/issues.**
 
 

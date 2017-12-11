@@ -1,11 +1,11 @@
-Installing heliopy
+Installing HelioPy
 ==================
 
-heliopy is built on the Python programming language. The easiest way to install
+HelioPy is built on the Python programming language. The easiest way to install
 Python with the various required scientific python modules is to use Anaconda.
 Installation instructions can be found `here <https://docs.continuum.io/anaconda/install/>`_.
 
-Once you have a Python distribution installed, heliopy can be installed using::
+Once you have a Python distribution installed, HelioPy can be installed using::
 
   pip install heliopy
 
@@ -32,4 +32,4 @@ https://github.com/heliopython/heliopy/. To install from source follow these ste
 3. ``cd heliopy``
 4. ``sudo pip install .``
 
-This will install heliopy from source and it's required dependancies.
+This will install HelioPy from source and it's required dependancies.
