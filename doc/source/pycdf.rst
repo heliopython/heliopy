@@ -6,7 +6,7 @@ without change from the `spacepy`_ project.
 However, this is a minimal-dependency version which should be much
 easier to install compared to the full spacepy distribution.
 
-To use pycdf after installing heliopy do
+To use pycdf after installing HelioPy do
 
 .. code-block:: python
 

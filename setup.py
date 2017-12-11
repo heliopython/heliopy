@@ -10,7 +10,7 @@ if on_rtd:
                              '/home/docs/heliopy/data')
     print(ret)
 
-setup(name='heliopy',
+setup(name='HelioPy',
       version='0.1.3',
       description='Python for space physics',
       url='http://heliopy.org/',

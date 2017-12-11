@@ -1,7 +1,7 @@
-heliopy documentation
+HelioPy documentation
 =====================
 
-heliopy is a free and open source set of tools for analysing space physics data
+HelioPy is a free and open source set of tools for analysing space physics data
 in python. The main purpose is to make it easy to download and read in various
 space physics data sets.
 
