@@ -1,5 +1,5 @@
-heliopy.data.cassini package
-----------------------------
+Cassini
+-------
 
 .. automodule:: heliopy.data.cassini
    :members:
