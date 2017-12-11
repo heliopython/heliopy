@@ -6,16 +6,6 @@ deps-run: &deps-install
     . venv/bin/activate
     pip install --user -r doc-requirements.txt
 
-cdf-run: &cdf-install
-  name: Install CDF library
-  command: |
-    wget http://cdaweb.gsfc.nasa.gov/pub/software/cdf/dist/cdf36_3_1/linux/cdf36_3_1-dist-all.tar.gz
-    tar -zxvf cdf36_3_1-dist-all.tar.gz
-    cd cdf36_3-dist
-    make OS=linux ENV=gnu all
-    sudo make INSTALLDIR=/usr/local/cdf install
-    cd ../
-
 doc-run: &doc-build
   name: Build documentation
   command: make html
@@ -29,5 +19,4 @@ jobs:
     steps:
       - checkout
       - run: *deps-install
-      - run: *cdf-install
       - run: *doc-build
