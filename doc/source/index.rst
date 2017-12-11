@@ -13,7 +13,7 @@ The various data download/reading methods can be found in the :ref:`data-index`.
    installing.rst
    configuring.rst
    pycdf.rst
-   examples/examples.rst
+   auto_examples/index.rst
    development.rst
 
    code_ref/index.rst

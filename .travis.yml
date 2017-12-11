@@ -27,10 +27,6 @@ script:
 - pytest heliopy/ --cov=heliopy/ -v --durations=5
 # Check building a source distribution works
 - python setup.py sdist
-# Check that building docs works
-- cd doc
-- make html
-- cd ../
 after_success:
 - pip install codecov
 - codecov

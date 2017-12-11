@@ -1,20 +1,24 @@
+'''
 Local data inventory
 ====================
 
 :mod:`heliopy.data.helper` contains the method
 :meth:`heliopy.data.helper.listdata` that can be useful for working out how
-much data is stored locally. It can be run using::
+much data is stored locally. It can be run using
+'''
 
-  from heliopy.data import helper as heliohelper
-  heliohelper.listdata()
+from heliopy.data import helper as heliohelper
+heliohelper.listdata()
 
-This will print a table with each probe and the total raw data stored
-along with the total *.hdf* file data stored
-(*.hdf* files are binary files that are much faster for python to read than
-raw data).
+###############################################################################
+# This will print a table with each probe and the total raw data stored
+# along with the total *.hdf* file data stored
+# (*.hdf* files are binary files that are much faster for python to read than
+# raw data).
+#
+# Example output is:
 
-Example output is::
-
+'''
   Scanning files in /Users/dstansby/Data/
   ----------------------------------------
   |      Probe |        Raw |        HDF |
@@ -32,3 +36,4 @@ Example output is::
   |--------------------------------------|
   |      Total |    2.96 GB |    1.57 GB |
   ----------------------------------------
+'''

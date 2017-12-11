@@ -2,7 +2,8 @@
 .cache*
 .coverage
 doc/build*
-doc/source*
+doc/auto_examples
+doc/source/auto_examples
 heliopy.egg-info*
 *.DS_Store*
 build/*
