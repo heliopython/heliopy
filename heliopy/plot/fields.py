@@ -27,13 +27,6 @@ def jointdists(data, title=None, sharelims=True, **kwargs):
         If *False*, each distribution will automatically scale it's own axis.
 
         Default is *True*
-
-    Examples
-    --------
-    A joint distribution plot for a single day of WIND magnetic field data:
-
-    .. literalinclude:: /scripts/plot_jointdists.py
-    .. image:: /figures/plot_jointdists.png
     """
     if sharelims:
         # Set the same axis limits for each plot
@@ -80,19 +73,12 @@ def thetaphi(x, y, z):
 
     Parameters
     ----------
-        x: array_like
-            x data values
-        y: array_like
-            y data values
-        z: array_like
-            z data values
-
-    Examples
-    --------
-    A theta-phi plot for a single day of WIND magnetic field data:
-
-    .. literalinclude:: /scripts/plot_thetaphi.py
-    .. image:: /figures/plot_thetaphi.png
+    x: array_like
+        x data values
+    y: array_like
+        y data values
+    z: array_like
+        z data values
     """
     phi = np.atan2(y, x)
     theta = np.atan2(z, np.sqrt(x**2 + y**2))

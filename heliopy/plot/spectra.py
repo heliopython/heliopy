@@ -12,27 +12,20 @@ def loglog(fs, power, title=None, xlabel=None, ylabel=None, legend=None,
 
     Parameters
     ----------
-        fs : array_like
-            Frequencies
-        power : array_like
-            Power at given frequencies
-        title : string
-            Plot title
-        xlabel : string
-            x-axis label
-        ylabel : string
-            y-axis label
-        legend : string
-            Legend entry
-        ax : matplotlib axis instance
-            Axis to plot on.
-
-    Examples
-    --------
-    A simple log-log plot:
-
-    .. literalinclude:: /scripts/plot_loglog.py
-    .. image:: /figures/plot_loglog.png
+    fs : array_like
+        Frequencies
+    power : array_like
+        Power at given frequencies
+    title : string
+        Plot title
+    xlabel : string
+        x-axis label
+    ylabel : string
+        y-axis label
+    legend : string
+        Legend entry
+    ax : matplotlib axis instance
+        Axis to plot on.
     """
     if ax is None:
         ax = plt.gca()

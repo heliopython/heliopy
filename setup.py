@@ -1,4 +1,14 @@
 from setuptools import setup
+import os
+
+# Config for read the docs
+on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
+if on_rtd:
+    from distutils import dir_util
+    from os import listdir
+    ret = dir_util.copy_tree('examples/data',
+                             '/home/docs/heliopy/data')
+    print(ret)
 
 setup(name='heliopy',
       version='0.1.3',

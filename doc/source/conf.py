@@ -21,14 +21,16 @@ import os
 import sys
 import sphinx_rtd_theme
 import unittest.mock as mock
+import matplotlib
+matplotlib.use('agg')
 sys.path.insert(0, os.path.abspath('../../'))
 
+'''
 # Pretend these modules exits so readthedocs builds
-MOCK_MODULES = ['numpy', 'scipy', 'scipy.optimize', 'scipy.stats',
-                'matplotlib', 'matplotlib.pyplot', 'mpl_toolkits.mplot3d',
-                'pandas', 'pycdf', 'pycdf.pycdf']
+MOCK_MODULES = []
 for mod_name in MOCK_MODULES:
     sys.modules[mod_name] = mock.Mock()
+'''
 # -- General configuration ------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
@@ -43,14 +45,22 @@ extensions = [
     'sphinx.ext.coverage',
     'sphinx.ext.mathjax',
     'sphinx.ext.napoleon',
-    'sphinx.ext.intersphinx'
+    'sphinx.ext.intersphinx',
+    'sphinx_gallery.gen_gallery',
 ]
 
-intersphinx_mapping = {'matplotlib': ('http://matplotlib.org', None),
-                       'python': ('https://docs.python.org/3', None),
-                       'numpy': ('https://docs.scipy.org/doc/numpy', None),
-                       'scipy': ('https://docs.scipy.org/doc/scipy/reference/', None),
-                       'pandas': ('http://pandas.pydata.org/pandas-docs/stable/', None)}
+intersphinx_mapping = {
+    'matplotlib': ('http://matplotlib.org', None),
+    'python': ('https://docs.python.org/3', None),
+    'numpy': ('https://docs.scipy.org/doc/numpy', None),
+    'scipy': ('https://docs.scipy.org/doc/scipy/reference/', None),
+    'pandas': ('http://pandas.pydata.org/pandas-docs/stable/', None)}
+
+
+sphinx_gallery_conf = {
+    'examples_dirs': '../../examples',
+    'gallery_dirs': 'auto_examples',
+    'backreferences_dir': False}
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
