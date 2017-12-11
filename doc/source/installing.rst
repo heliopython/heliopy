@@ -15,7 +15,7 @@ Optional dependencies
 HDF file reader/writer
 ^^^^^^^^^^^^^^^^^^^^^^
 Saving data to hdf files for quicker access requires PyTables.
-(see :doc:`/examples/fast_file_loading` for more information)
+(see :ref:`sphx_glr_auto_examples_fast_file_loading.py` for more information)
 
 CDF Library
 ^^^^^^^^^^^
