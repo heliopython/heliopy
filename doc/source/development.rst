@@ -6,3 +6,4 @@ Useful information for contributing to heliopy
    :maxdepth: 1
 
    development/release.rst
+   development/testing.rst

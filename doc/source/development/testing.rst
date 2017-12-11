@@ -11,5 +11,5 @@ run on the following services every time a pull request is submitted, or a
 pull request is merged.
 
 - Linux: https://travis-ci.org/heliopython/heliopy
-- Windows:
-- Documentation: 
+- Windows: https://ci.appveyor.com/
+- Documentation: https://circleci.com/gh/heliopython/heliopy
