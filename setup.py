@@ -36,4 +36,4 @@ setup(name='HelioPy',
                 'heliopy.data',
                 'heliopy.plot',
                 'heliopy.util'],
-      data_files={'heliopy': ['heliopyrc']})
+      package_files={'heliopy': ['heliopyrc']})
