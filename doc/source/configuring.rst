@@ -7,10 +7,6 @@ The default contents of the file are:
 
 .. literalinclude:: ../../heliopy/heliopyrc
 
-.. only:: builder_html
-
-   A copy can be downloaded :download:`here <../../heliopy/heliopyrc>`
-
 Alternatively the copy included with HelioPy can be directly edited.
 To get the location of the configuration file in a python session run
 

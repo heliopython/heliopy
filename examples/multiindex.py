@@ -7,11 +7,11 @@ The data sets imported by heliopy are returned in a
 single variable for the :class:`DataFrame` index. In this case DataFrame can be
 thought of as storing multiple variables, each of which depend on the same
 dependent variable. For example the x component of magnetic field depends only
-on time ie. :math:`B_{x} \left (t \right )`.
+on time.
 
 Particle distribution functions have more than one dependent variable however.
 Typically the distribution is measured as a function of time, energy, and two
-angles, ie. :math:`f \left ( t, E, \theta, \phi \right )`.
+angles.
 """
 
 import pandas as pd
