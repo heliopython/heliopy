@@ -11,7 +11,7 @@ if on_rtd:
     print(ret)
 
 setup(name='HelioPy',
-      version='0.1.3',
+      version='0.2',
       description='Python for space physics',
       url='http://heliopy.org/',
       author='David Stansby',
