@@ -1,1 +1,3 @@
 include heliopy/heliopyrc LICENSE
+include versioneer.py
+include heliopy/_version.py
