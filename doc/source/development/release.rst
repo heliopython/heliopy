@@ -10,20 +10,28 @@ Creating a release
 
 
 2. Run ``git clean -xfd`` to clean out any old builds
-3. Create a source distribution
+3. Tag the current version using
+
+.. code-block:: bash
+
+  git tag version-number
+  git push
+  git push --tags
+
+4. Create a source distribution
 
 .. code-block:: bash
 
   python setup.py sdist
 
 
-4. Create a python wheel
+5. Create a python wheel
 
 .. code-block:: bash
 
   python setup.py bdist_wheel
 
-5. Upload created wheels to pypi
+6. Upload created wheels to pypi
 
 .. code-block:: bash
 
