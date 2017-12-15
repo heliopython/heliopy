@@ -1,1 +1,4 @@
-include heliopy/heliopyrc LICENSE
+include heliopy/heliopyrc
+include LICENSE
+include versioneer.py
+include heliopy/_version.py

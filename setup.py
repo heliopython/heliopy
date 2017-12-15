@@ -1,5 +1,6 @@
 from setuptools import setup
 import os
+import versioneer
 
 # Config for read the docs
 on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
@@ -11,7 +12,8 @@ if on_rtd:
     print(ret)
 
 setup(name='HelioPy',
-      version='0.2',
+      version=versioneer.get_version(),
+      cmdclass=versioneer.get_cmdclass(),
       description='Python for space physics',
       url='http://heliopy.org/',
       author='David Stansby',
