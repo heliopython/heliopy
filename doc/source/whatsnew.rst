@@ -4,8 +4,18 @@ What's new
 .. contents:: :local:
    :depth: 1
 
+Version 0.3
+-----------
 
-version 0.2
+New features
+^^^^^^^^^^^^
+
+Removed
+^^^^^^^
+
+- The `heliopy.plasma` module has been removed (see http://www.plasmapy.org/ for an alternative)
+
+Version 0.2
 -----------
 
 New features
