@@ -14,6 +14,7 @@ Removed
 ^^^^^^^
 
 - The `heliopy.plasma` module has been removed (see http://www.plasmapy.org/ for an alternative)
+- `heliopy.plot.spectra` code removed
 
 Version 0.2
 -----------
