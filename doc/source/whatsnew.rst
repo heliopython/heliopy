@@ -10,6 +10,9 @@ Version 0.3
 New features
 ^^^^^^^^^^^^
 
+- `heliopy.data.spice` module for downloading spice kernels
+- `heliopy.spice` module for automatically processing spice kernels
+
 Removed
 ^^^^^^^
 
