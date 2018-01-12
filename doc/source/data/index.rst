@@ -1,10 +1,12 @@
-.. _data-index:
+.. _heliopy-data:
 
-Data importing
---------------
+Data import
+-----------
+
+.. currentmodule:: heliopy.data
 
 Methods for automatically importing data to python. Each spacecraft has its
-own module:
+own sub-module:
 
 .. toctree::
    :maxdepth: 1
