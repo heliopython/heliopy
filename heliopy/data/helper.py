@@ -2,7 +2,7 @@
 import os
 import sys
 from urllib.error import URLError
-from urllib.request import urlretrieve
+import urllib.request as urlreq
 import ftplib
 from datetime import datetime, time, timedelta
 
@@ -324,9 +324,9 @@ def _reporthook(blocknum, blocksize, totalsize):
 
 def _load_remote(remote_url, filename, local_dir, filetype):
     print('Downloading', remote_url + '/' + filename)
-    urlretrieve(remote_url + '/' + filename,
-                filename=os.path.join(local_dir, filename),
-                reporthook=_reporthook)
+    urlreq.urlretrieve(remote_url + '/' + filename,
+                       filename=os.path.join(local_dir, filename),
+                       reporthook=_reporthook)
     print('\n')
     return _load_local(local_dir, filename, filetype)
 

@@ -12,7 +12,7 @@ https://csa.esac.esa.int/csa/aio/html/wget.shtml.
 import os
 import tarfile
 from datetime import datetime, time
-from urllib.request import urlretrieve
+import urllib.request as urlreq
 import numpy as np
 
 from heliopy import config
@@ -114,9 +114,9 @@ def _download(probe, starttime, endtime, instrument, product_id):
         print(request_url)
         # Download data
         helper._checkdir(local_dir)
-        urlretrieve(request_url,
-                    filename=os.path.join(local_dir, filename),
-                    reporthook=helper.reporthook)
+        urlreq.urlretrieve(request_url,
+                           filename=os.path.join(local_dir, filename),
+                           reporthook=helper.reporthook)
         print('\n')
         # Extract tar.gz file
         tar = tarfile.open(os.path.join(local_dir, filename))

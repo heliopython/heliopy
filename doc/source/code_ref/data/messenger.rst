@@ -1,5 +1,4 @@
 MESSENGER
----------
+=========
 
-.. automodule:: heliopy.data.messenger
-   :members:
+.. automodapi:: heliopy.data.messenger

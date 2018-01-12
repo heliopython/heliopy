@@ -5,3 +5,4 @@ sphinx-rtd-theme
 numpy
 pillow
 pandas
+sphinx-automodapi

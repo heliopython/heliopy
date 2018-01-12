@@ -1,5 +1,4 @@
 ARTEMIS
--------
+=======
 
-.. automodule:: heliopy.data.artemis
-   :members:
+.. automodapi:: heliopy.data.artemis

@@ -1,5 +1,4 @@
 Cluster
--------
+=======
 
-.. automodule:: heliopy.data.cluster
-   :members:
+.. automodapi:: heliopy.data.cluster

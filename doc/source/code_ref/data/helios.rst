@@ -1,5 +1,4 @@
 Helios
-------
+======
 
-.. automodule:: heliopy.data.helios
-   :members:
+.. automodapi:: heliopy.data.helios
