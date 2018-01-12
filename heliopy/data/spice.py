@@ -46,6 +46,8 @@ def get_kernel(name):
     url = available_kernels[name]
     fname = url.split('/')[-1]
     local_loc = os.path.join(spice_dir, fname)
+    if not os.path.exists(spice_dir):
+        os.makedirs(spice_dir)
     if not os.path.exists(local_loc):
         print('Downloading {}'.format(url))
         urlretrieve(url, local_loc, reporthook=helper._reporthook)
