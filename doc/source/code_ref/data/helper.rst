@@ -1,5 +1,4 @@
 Helper methods
---------------
+==============
 
-.. automodule:: heliopy.data.helper
-   :members:
+.. automodapi:: heliopy.data.helper

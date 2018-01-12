@@ -1,5 +1,4 @@
 Ulysses
--------
+=======
 
-.. automodule:: heliopy.data.ulysses
-   :members:
+.. automodapi:: heliopy.data.ulysses

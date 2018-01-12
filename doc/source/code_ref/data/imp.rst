@@ -1,5 +1,4 @@
 IMP
----
+===
 
-.. automodule:: heliopy.data.imp
-   :members:
+.. automodapi:: heliopy.data.imp

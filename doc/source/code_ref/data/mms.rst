@@ -1,5 +1,4 @@
 MMS
----
+===
 
-.. automodule:: heliopy.data.mms
-   :members:
+.. automodapi:: heliopy.data.mms

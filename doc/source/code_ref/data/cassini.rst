@@ -1,5 +1,4 @@
 Cassini
--------
+=======
 
-.. automodule:: heliopy.data.cassini
-   :members:
+.. automodapi:: heliopy.data.cassini

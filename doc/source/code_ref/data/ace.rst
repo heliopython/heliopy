@@ -1,5 +1,4 @@
 ACE
----
+===
 
-.. automodule:: heliopy.data.ace
-   :members:
+.. automodapi:: heliopy.data.ace

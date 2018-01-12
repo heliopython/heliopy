@@ -1,5 +1,4 @@
 WIND
-----
+====
 
-.. automodule:: heliopy.data.wind
-   :members:
+.. automodapi:: heliopy.data.wind
