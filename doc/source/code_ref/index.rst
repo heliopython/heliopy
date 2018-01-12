@@ -6,3 +6,4 @@ API reference
 
    data/index
    plot/index
+   spice

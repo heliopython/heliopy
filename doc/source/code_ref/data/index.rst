@@ -20,7 +20,13 @@ own module:
    ulysses
    wind
 
-The helper methods that much of the data import uses are also available in the
+There is also a module for downloading SPICE kernels:
+
+.. toctree::
+
+   spice
+
+and helper methods that much of the data import uses are also available in the
 helper module:
 
 .. toctree::

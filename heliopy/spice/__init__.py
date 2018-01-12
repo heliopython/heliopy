@@ -41,18 +41,19 @@ class SpiceKernel:
 
     Parameters
     ----------
+    spacecraft : str
+        Name of the target.
     fname : str, optional
         Filename of a spice kernel to load.
-    spacecraft : str, optional
-        Name of the spacecraft to automatically load. For a list of
-        supported spacecraft TODO!
 
     Attributes
     ----------
+    target : str
+        The body whose coordinates are being calculated.
     generated : bool
         ``True`` if positions have been generated, ``False`` otherwise.
     times : list
-        The list of `datetime`s at which positions were last sampled.
+        The list of `datetime` at which positions were last sampled.
     n : int
         The number of samples.
     positions :

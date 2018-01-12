@@ -1,0 +1,2 @@
+.. automodule:: heliopy.spice
+   :members:
