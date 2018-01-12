@@ -9,6 +9,7 @@ import heliopy.data.ulysses as ulysses
 import heliopy.data.messenger as messenger
 import heliopy.data.cassini as cassini
 import heliopy.data.helper as helper
+import heliopy.data.spice as spice
 from heliopy import config
 
 import pandas as pd
@@ -26,6 +27,13 @@ except Exception:
 def check_datetime_index(df):
     'Helper funciton to check all dataframes have a datetime index'
     assert type(df.index[0]) == pd.Timestamp
+
+
+@pytest.mark.data
+class TestSpice:
+    def test_built_in(self):
+        for kernel in spice.available_kernels:
+            spice.get_kernel(kernel)
 
 
 @pytest.mark.data

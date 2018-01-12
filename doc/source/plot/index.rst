@@ -8,4 +8,3 @@ Methods for plotting data.
 
    fields
    particles
-   spectra

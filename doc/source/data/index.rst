@@ -1,10 +1,12 @@
-.. _data-index:
+.. _heliopy-data:
 
-Data importing
---------------
+Data import
+-----------
+
+.. currentmodule:: heliopy.data
 
 Methods for automatically importing data to python. Each spacecraft has its
-own module:
+own sub-module:
 
 .. toctree::
    :maxdepth: 1
@@ -20,7 +22,13 @@ own module:
    ulysses
    wind
 
-The helper methods that much of the data import uses are also available in the
+There is also a module for downloading SPICE kernels:
+
+.. toctree::
+
+   spice
+
+and helper methods that much of the data import uses are also available in the
 helper module:
 
 .. toctree::
