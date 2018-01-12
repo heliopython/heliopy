@@ -31,7 +31,7 @@ def check_datetime_index(df):
 
 @pytest.mark.data
 class TestSpice:
-    def test_built_in():
+    def test_built_in(self):
         for kernel in spice.available_kernels:
             spice.get_kernel(kernel)
 
