@@ -1,3 +1,12 @@
+"""
+SPICE orbit plotting
+====================
+
+How to plot orbits from SPICE kernels. In this example we download the Solar
+Orbiter SPICE kernel, and plot it's orbit from 2020 to 2028.
+"""
+
+
 import heliopy.data.spice as spicedata
 import heliopy.spice as spice
 from datetime import datetime
