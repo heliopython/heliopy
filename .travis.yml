@@ -25,7 +25,8 @@ before_install:
 - cd spice
 - wget http://naif.jpl.nasa.gov/pub/naif/toolkit//C/PC_Linux_GCC_64bit/packages/cspice.tar.Z
 - wget http://naif.jpl.nasa.gov/pub/naif/toolkit//C/PC_Linux_GCC_64bit/packages/importCSpice.csh
-- /bin/csh -f importCSpice.csh
+- csh -f importCSpice.csh
+- cd ../
 script:
 # Check that unit tests work
 - pytest heliopy/ --cov=heliopy/ -v --durations=5
