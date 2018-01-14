@@ -4,7 +4,7 @@ import astropy.units as u
 import pytest
 
 try:
-    import heliopy.spice as spice
+    import spiceypy
     has_spice = True
 except ModuleNotFoundError:
     has_spice = False
