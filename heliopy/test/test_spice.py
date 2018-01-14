@@ -20,4 +20,3 @@ def test_spice():
     nsteps = 1000
 
     orbiter.generate_positions(starttime, endtime, nsteps, 'Sun', 'ECLIPJ2000')
-    orbiter.positions = orbiter.positions.to(u.au)
