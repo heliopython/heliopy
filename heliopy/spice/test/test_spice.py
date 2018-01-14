@@ -6,7 +6,7 @@ import pytest
 try:
     import heliopy.spice as spice
     has_spice = True
-except ImportError:
+except ModuleNotFoundError:
     has_spice = False
 
 
