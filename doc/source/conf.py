@@ -157,7 +157,9 @@ html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 # further.  For a list of options available for each theme, see the
 # documentation.
 #
-# html_theme_options = {}
+html_theme_options = {'canonical_url': 'http://docs.heliopy.org/en/stable/',
+                      'analytics_id': 'UA-112461508-1',
+                      'prev_next_buttons_location': 'None'}
 
 # Add any paths that contain custom themes here, relative to this directory.
 # html_theme_path = []
