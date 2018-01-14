@@ -5,6 +5,7 @@ import pytest
 
 try:
     import spiceypy
+    import heliopy.spice as spice
     has_spice = True
 except ModuleNotFoundError:
     has_spice = False
