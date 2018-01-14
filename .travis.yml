@@ -12,7 +12,8 @@ before_install:
 - conda create --yes -n testenv python=$TRAVIS_PYTHON_VERSION
 - source activate testenv
 # - conda install --yes scipy pytest pytest-cov pandas pytables astropy
-- pip install scipy pytest pytest-cov pandas tables astropy spiceypy
+- pip install scipy pytest pytest-cov pandas tables astropy
+- pip install spiceypy --no-cache-di
 # Install CDF library
 - wget http://cdaweb.gsfc.nasa.gov/pub/software/cdf/dist/cdf36_3_1/linux/cdf36_3_1-dist-all.tar.gz
 - tar -zxvf cdf36_3_1-dist-all.tar.gz
