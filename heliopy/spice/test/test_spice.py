@@ -1,6 +1,7 @@
 import heliopy.data.spice as spicedata
 from datetime import datetime
 import astropy.units as u
+import pytest
 
 try:
     import heliopy.spice as spice
