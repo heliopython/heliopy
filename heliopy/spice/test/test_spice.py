@@ -1,9 +1,15 @@
-import heliopy.spice as spice
 import heliopy.data.spice as spicedata
 from datetime import datetime
 import astropy.units as u
 
+try:
+    import heliopy.spice as spice
+    has_spice = True
+except Exception:
+    has_spice = False
 
+
+@pytest.mark.skipif(not has_spice, reason='Importing spice module failed')
 def test_spice():
     orbiter_kernel = spicedata.get_kernel('solar orbiter 2020')
     orbiter = spice.SpiceKernel('Solar Orbiter', orbiter_kernel)
