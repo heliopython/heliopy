@@ -1,11 +1,3 @@
-"""
-SPICE
------
-
-A module for loading SPICE kernels.
-
-TODO: improve this docstring.
-"""
 from heliopy import config
 import heliopy.data.helper as helper
 import heliopy.data.spice as dataspice
@@ -39,33 +31,28 @@ class SpiceKernel:
     """
     A generic class for a single spice kernel.
 
+    Objects are initially created using only the body and filename. To perform
+    the actual trajectory calculation run `generate_positions`. This generated
+    positions are then available via. the attributes :attr:`times` and
+    :attr:`positions`.
+
+
     Parameters
     ----------
     spacecraft : str
         Name of the target.
     fname : str, optional
-        Filename of a spice kernel to load.
-
-    Attributes
-    ----------
-    target : str
-        The body whose coordinates are being calculated.
-    generated : bool
-        ``True`` if positions have been generated, ``False`` otherwise.
-    times : list
-        The list of `datetime` at which positions were last sampled.
-    n : int
-        The number of samples.
-    positions :
-        Generated positions.
-    observing_body : str
-        Observing body
+        Filename of a spice kernel to load. If ``None``,
+        :meth:`heliopy.data.spice.get_kernel` will be used to attempt to find
+        or download a kernel corresponding to *spacecraft*.
     """
     def __init__(self, target, fname=None):
         local_reqs = _setup_spice()
+        if fname is None:
+            fname = dataspice.get_kernel(target)
         spice.furnsh(fname)
-        self.target = target
-        self.generated = False
+        self._target = target
+        self._generated = False
 
     def generate_positions(self, starttime, endtime, n, observing_body, frame):
         """
@@ -101,7 +88,50 @@ class SpiceKernel:
             self.target, spice_times, frame, 'NONE', observing_body)
         positions = np.array(positions) * u.km
 
-        self.n = n
-        self.times = times
-        self.positions = positions
-        self.generated = True
+        self._n = n
+        self._times = times
+        self._positions = positions
+        self._generated = True
+        self._observing_body = observing_body
+
+    @property
+    def observing_body(self):
+        '''
+        Observing body
+        '''
+        return self._observing_body
+
+    @property
+    def n(self):
+        '''
+        The number of samples.
+        '''
+        return self._n
+
+    @property
+    def times(self):
+        '''
+        The list of `datetime` at which positions were last sampled.
+        '''
+        return self._times
+
+    @property
+    def positions(self):
+        '''
+        Generated positions.
+        '''
+        return self._positions
+
+    @property
+    def generated(self):
+        '''
+        ``True`` if positions have been generated, ``False`` otherwise.
+        '''
+        return self._generated
+
+    @property
+    def target(self):
+        '''
+        The body whose coordinates are being calculated.
+        '''
+        return self._target
