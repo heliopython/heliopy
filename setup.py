@@ -37,6 +37,5 @@ setup(name='HelioPy',
                 'pycdf.pycdf',
                 'heliopy',
                 'heliopy.data',
-                'heliopy.plot',
                 'heliopy.util'],
       package_data={'heliopy': ['heliopyrc']})

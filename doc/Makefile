@@ -48,6 +48,7 @@ help:
 clean:
 	rm -rf $(BUILDDIR)/*
 	rm -rf $(BUILDDIR)/../source/api/*
+	rm -rf $(BUILDDIR)/../source/auto_examples/*
 
 .PHONY: html
 html:

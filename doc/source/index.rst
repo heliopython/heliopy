@@ -25,7 +25,6 @@ Module documentation
    :maxdepth: 1
 
    data/index
-   plot/index
    spice
 
 Development
