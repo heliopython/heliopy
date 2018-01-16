@@ -61,7 +61,8 @@ intersphinx_mapping = {
 sphinx_gallery_conf = {
     'examples_dirs': '../../examples',
     'gallery_dirs': 'auto_examples',
-    'backreferences_dir': False}
+    'backreferences_dir': False,
+    'min_reported_time': 0}
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
