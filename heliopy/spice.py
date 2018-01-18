@@ -19,33 +19,51 @@ def _setup_spice():
     '''
     for kernel in ['lsk', 'planets']:
         loc = dataspice.get_kernel(kernel)
-        spice.furnsh(loc)
+        spiceypy.furnsh(loc)
 
 
-class SpiceKernel:
+def furnish(fname):
     """
-    A generic class for a single spice kernel.
+    Furnish SPICE with a kernel.
 
-    Objects are initially created using only the body and filename. To perform
+    Parameters
+    ----------
+    fname : Filename of a spice kernel to load.
+
+    See also
+    --------
+    heliopy.data.spice.get_kernel : For attempting to automatically download
+                                    kernels based on spacecraft name.
+
+    """
+    spiceypy.furnsh(fname)
+
+
+class Trajectory:
+    """
+    A generic class for the trajectory of a single body.
+
+    Objects are initially created using only the body. To perform
     the actual trajectory calculation run `generate_positions`. This generated
     positions are then available via. the attributes :attr:`times` and
     :attr:`positions`.
 
-
     Parameters
     ----------
     spacecraft : str
-        Name of the target.
-    fname : str, optional
-        Filename of a spice kernel to load. If ``None``,
-        :meth:`heliopy.data.spice.get_kernel` will be used to attempt to find
-        or download a kernel corresponding to *spacecraft*.
+        Name of the target. The name must be present in the loaded kernels.
+
+    Notes
+    -----
+    When an instance of this class is created, a leapseconds kernel and a
+    planets kernel are both automatically loaded.
+
+    See also
+    --------
+    furnish : for loading in local spice kernels.
     """
-    def __init__(self, target, fname=None):
+    def __init__(self, target):
         _setup_spice()
-        if fname is None:
-            fname = dataspice.get_kernel(target)
-        spice.furnsh(fname)
         self._target = target
         self._generated = False
 
@@ -76,16 +94,15 @@ class SpiceKernel:
         times = [starttime + (x * dt / n) for x in range(n)]
         # Spice needs a funny set of times
         fmt = '%b %d, %Y'
-        etOne = spice.str2et(starttime.strftime(fmt))
-        etTwo = spice.str2et(endtime.strftime(fmt))
+        etOne = spiceypy.str2et(starttime.strftime(fmt))
+        etTwo = spiceypy.str2et(endtime.strftime(fmt))
         spice_times = [x * (etTwo - etOne) / n + etOne for x in range(n)]
         observing_body = observing_body
         # 'None' specifies no light-travel time correction
-        positions, lightTimes = spice.spkpos(
+        positions, lightTimes = spiceypy.spkpos(
             self.target, spice_times, frame, 'None', observing_body)
         positions = np.array(positions) * u.km
 
-        self._n = n
         self._times = times
         self._positions = positions
         self._generated = True
@@ -94,16 +111,17 @@ class SpiceKernel:
     @property
     def observing_body(self):
         '''
-        Observing body
+        Observing body. The position vectors are all specified relative to
+        this body.
         '''
         return self._observing_body
 
     @property
     def n(self):
         '''
-        The number of samples.
+        The number of position samples.
         '''
-        return self._n
+        return len(times)
 
     @property
     def times(self):

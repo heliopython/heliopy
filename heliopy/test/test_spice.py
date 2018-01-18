@@ -13,7 +13,8 @@ except ModuleNotFoundError:
 @pytest.mark.skipif(not has_spice, reason='Importing spice module failed')
 def test_spice():
     orbiter_kernel = spicedata.get_kernel('solar orbiter 2020')
-    orbiter = spice.SpiceKernel('Solar Orbiter', orbiter_kernel)
+    spice.furnish(orbiter_kernel)
+    orbiter = spice.Trajectory('Solar Orbiter')
 
     starttime = datetime(2020, 3, 1)
     endtime = datetime(2028, 1, 1)
