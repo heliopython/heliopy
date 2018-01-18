@@ -3,18 +3,13 @@ import heliopy.data.helper as helper
 import heliopy.data.spice as dataspice
 
 import os
-from urllib.request import urlretrieve
 
 import numpy as np
-import spiceypy as spice
+import spiceypy
 import astropy.units as u
 
 data_dir = config['download_dir']
 spice_dir = os.path.join(data_dir, 'spice')
-
-# Required files for all spice calculations
-_reqs = ['https://naif.jpl.nasa.gov/pub/naif/generic_kernels/lsk/naif0012.tls',
-         'https://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/planets/de432s.bsp']
 
 
 def _setup_spice():
