@@ -32,7 +32,7 @@ nsteps = 1000
 ###############################################################################
 # Generate positions
 orbiter.generate_positions(starttime, endtime, nsteps, 'Sun', 'ECLIPJ2000')
-positions = orbiter.positions.to(u.au)
+orbiter.change_units(u.au)
 
 ###############################################################################
 # Plot the orbit. The orbit is plotted in 3D
@@ -46,18 +46,17 @@ times_float = [(t - orbiter.times[0]).total_seconds() for t in orbiter.times]
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
 kwargs = {'s': 3, 'c': times_float}
-ax.scatter(positions[:, 0], positions[:, 1], positions[:, 2], **kwargs)
+ax.scatter(orbiter.x, orbiter.y, orbiter.z, **kwargs)
 ax.set_xlim(-1, 1)
 ax.set_ylim(-1, 1)
 ax.set_zlim(-1, 1)
 
 ###############################################################################
 # Plot radial distance and elevation as a function of time
-distance = np.linalg.norm(positions, axis=1) * positions.unit
-elevation = np.rad2deg(np.arcsin(positions[:, 2] / distance))
+elevation = np.rad2deg(np.arcsin(orbiter.z / orbiter.r))
 
 fig, axs = plt.subplots(2, 1, sharex=True)
-axs[0].plot(orbiter.times, distance)
+axs[0].plot(orbiter.times, orbiter.r)
 axs[0].set_ylim(0, 1.1)
 axs[0].set_ylabel('r (AU)')
 

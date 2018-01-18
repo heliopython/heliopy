@@ -105,6 +105,9 @@ class Trajectory:
 
         self._times = times
         self._positions = positions
+        self._x = positions[:, 0]
+        self._y = positions[:, 1]
+        self._z = positions[:, 2]
         self._generated = True
         self._observing_body = observing_body
 
@@ -131,11 +134,32 @@ class Trajectory:
         return self._times
 
     @property
-    def positions(self):
+    def x(self):
         '''
-        Generated positions.
+        x coordinates of position.
         '''
-        return self._positions
+        return self._x
+
+    @property
+    def y(self):
+        '''
+        y coordinates of position.
+        '''
+        return self._y
+
+    @property
+    def z(self):
+        '''
+        z coordinates of position.
+        '''
+        return self._z
+
+    @property
+    def r(self):
+        '''
+        Magnitude of position vectors.
+        '''
+        return np.sqrt(self.x**2 + self.y**2 + self.z**2)
 
     @property
     def generated(self):
@@ -150,3 +174,17 @@ class Trajectory:
         The body whose coordinates are being calculated.
         '''
         return self._target
+
+    def change_units(self, unit):
+        """
+        Convert the position units.
+
+        Parameters
+        ----------
+        unit : astropy.units.Quantity
+            Must be a unit of length (e.g. km, m, AU).
+        """
+        self._x = self._x.to(unit)
+        self._y = self._y.to(unit)
+        self._z = self._z.to(unit)
+        self._positions = self._positions.to(unit)
