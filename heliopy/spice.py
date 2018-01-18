@@ -44,9 +44,9 @@ class Trajectory:
     A generic class for the trajectory of a single body.
 
     Objects are initially created using only the body. To perform
-    the actual trajectory calculation run `generate_positions`. This generated
-    positions are then available via. the attributes :attr:`times` and
-    :attr:`positions`.
+    the actual trajectory calculation run :meth:`generate_positions`.
+    The generated positions are then available via. the attributes
+    :attr:`times`, :attr:`x`, :attr:`y`, and :attr:`z`.
 
     Parameters
     ----------
@@ -177,7 +177,7 @@ class Trajectory:
 
     def change_units(self, unit):
         """
-        Convert the position units.
+        Convert the positions to different units.
 
         Parameters
         ----------
