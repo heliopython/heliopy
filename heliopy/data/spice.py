@@ -19,7 +19,7 @@ data_dir = config['download_dir']
 spice_dir = os.path.join(data_dir, 'spice')
 # Mapping of kernel name to remote location
 available_kernels = {'lsk': 'https://naif.jpl.nasa.gov/pub/naif/generic_kernels/lsk/naif0012.tls',
-                     'planets': 'https://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/planets/de432s.bsp',
+                     'planets': 'https://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/planets/de430.bsp',
                      'solar orbiter 2020': 'https://issues.cosmos.esa.int/solarorbiterwiki/download/attachments/7274724/solo_ANC_soc-orbit_20200207-20300902_V01.bsp'}
 
 

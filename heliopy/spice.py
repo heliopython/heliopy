@@ -47,7 +47,7 @@ class SpiceKernel:
         or download a kernel corresponding to *spacecraft*.
     """
     def __init__(self, target, fname=None):
-        local_reqs = _setup_spice()
+        _setup_spice()
         if fname is None:
             fname = dataspice.get_kernel(target)
         spice.furnsh(fname)
@@ -67,12 +67,14 @@ class SpiceKernel:
         n : int
             Number of positions to generate betweens *starttime* and *endtime*.
         observing_body : str
-            The observing body. See https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/naif_ids.html
-            for a list of allowable bodies.
+            The observing body. Output position vectors are given relative to
+            the position of this body.
+            See https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/naif_ids.html
+            for a list of bodies.
         frame : str
             The coordinate system to return the positions in.
             See https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/frames.html
-            for a list of allowable frames.
+            for a list of frames.
         """
         dt = (endtime - starttime)
         # Generate individual times within range
@@ -83,9 +85,9 @@ class SpiceKernel:
         etTwo = spice.str2et(endtime.strftime(fmt))
         spice_times = [x * (etTwo - etOne) / n + etOne for x in range(n)]
         observing_body = observing_body
-        # TODO: Work out what "NONE" does here
+        # 'None' specifies no light-travel time correction
         positions, lightTimes = spice.spkpos(
-            self.target, spice_times, frame, 'NONE', observing_body)
+            self.target, spice_times, frame, 'None', observing_body)
         positions = np.array(positions) * u.km
 
         self._n = n
