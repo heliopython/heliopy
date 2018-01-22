@@ -29,7 +29,9 @@ from ftplib import FTP
 
 from heliopy import config
 from heliopy.data import helper
-import heliopy.constants as constants
+
+import astropy.constants as constants
+import astropy.units as u
 
 data_dir = config['download_dir']
 use_hdf = config['use_hdf']
@@ -334,7 +336,7 @@ def electron_dist_single(probe, year, doy, hour, minute, second,
     dist['|v|'], _, dist['phi'] =\
         helper._cart2sph(dist['vx'], dist['vy'], 0)
     # Calculate bin energy assuming particles are electrons
-    dist['E_electron'] = 0.5 * constants.m_e *\
+    dist['E_electron'] = 0.5 * constants.m_e.value *\
         ((dist['|v|']) ** 2)
 
     # Convert to multi-index using Azimuth and energy bin
@@ -838,7 +840,7 @@ def ion_dist_single(probe, year, doy, hour, minute, second,
     dist['|v|'], dist['theta'], dist['phi'] =\
         helper._cart2sph(dist['vx'], dist['vy'], dist['vz'])
     # Calculate bin energy assuming particles are protons
-    dist['E_proton'] = 0.5 * constants.m_p * ((dist['|v|']) ** 2)
+    dist['E_proton'] = 0.5 * constants.m_p.value * ((dist['|v|']) ** 2)
 
     # Convert to multi-index using azimuth, elevation, and energy bins
     dist = dist.set_index(['E_bin', 'El', 'Az'])
@@ -1434,5 +1436,5 @@ def trajectory(probe, starttime, endtime):
     for body in ['sc', 'earth']:
         for comp in ['x', 'y', 'z']:
             label = '{}_pos_{}'.format(body, comp)
-            data[label] = data[label] / constants.AU_km
+            data[label] = data[label] / constants.au.to(u.km).value
     return helper.timefilter(data, starttime, endtime)
