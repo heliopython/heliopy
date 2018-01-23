@@ -22,6 +22,11 @@ CDF Library
 Reading in any data that is stored in .cdf files requires an installation of
 the CDF library: https://cdf.gsfc.nasa.gov/
 
+SPICE Toolkit
+^^^^^^^^^^^^^
+Working with spice kernels using the :mod:`heliopy.spice` module requires
+the python package `spiceypy <https://spiceypy.readthedocs.io>`_.
+
 Installing from source
 ----------------------
 The latest source code is available at
@@ -30,6 +35,6 @@ https://github.com/heliopython/heliopy/. To install from source follow these ste
 1. Install `git <https://git-scm.com/book/en/v2/Getting-Started-Installing-Git>`_
 2. ``git clone https://github.com/heliopython/heliopy.git``
 3. ``cd heliopy``
-4. ``sudo pip install .``
+4. ``pip install .``
 
 This will install HelioPy from source and it's required dependancies.
