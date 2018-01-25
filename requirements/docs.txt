@@ -1,3 +1,4 @@
+astropy
 matplotlib
 sphinx-gallery
 sphinx
