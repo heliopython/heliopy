@@ -5,3 +5,4 @@ sphinx
 sphinx-bootstrap-theme
 pillow
 sphinx-automodapi
+spiceypy
