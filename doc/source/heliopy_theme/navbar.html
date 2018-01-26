@@ -6,49 +6,10 @@
 	      <span class="icon-bar"></span>
 	      <span class="icon-bar"></span>
 	    </button>
-	    <a class="navbar-brand" href="{{ theme_logo_url }}">SunPy</a>
+	    <a class="navbar-brand" href="{{ theme_logo_url }}">HelioPy</a>
 	  </div>
 	  <div class="collapse navbar-collapse nav-collapse">
 	    <ul class="nav navbar-nav">
-		    {% if theme_navbar_links %}
-		    <div class="collapse navbar-collapse nav-collapse">
-			    <ul class="nav navbar-nav navbar-left">
-			    	<li class="dropdown">
-			    	 <a role="button" id="dLabelGlobalToc" data-toggle="dropdown" data-target="#" href="#">About<b class="caret"></b></a>
-              <ul class="dropdown-menu">
-                <li class="dropdown-submenu">
-                  <a href="http://sunpy.org/about.html">About</a>
-                </li>
-                <li class="dropdown-submenu">
-                  <a href="http://sunpy.org/about.html#acknowledging-sunpy">Acknowledge</a>
-            		</li>
-            		<li class="dropdown-submenu">
-                  <a href="http://docs.sunpy.org/en/stable/coc.html">Code of Conduct</a>
-            		</li>
-              </ul>
-			      </li>
-			      <li><a href="http://sunpy.org/blog.html">Blog</a></li>
-			      <li class="dropdown">
-			    	 <a role="button" id="dLabelGlobalToc" data-toggle="dropdown" data-target="#" href="#">Documentation<b class="caret"></b></a>
-              <ul class="dropdown-menu">
-                <li class="dropdown-submenu">
-                  <a href="http://docs.sunpy.org/en/stable/">SunPy</a>
-                </li>
-                <li class="dropdown-submenu">
-                  <a href="http://docs.sunpy.org/projects/irispy/en/latest/">IRISPy</a>
-            		</li>
-            		<li class="dropdown-submenu">
-                  <a href="http://docs.sunpy.org/projects/solarbextrapolation/en/latest/">SolarBExtrapolation</a>
-            		</li>
-            		<li class="dropdown-submenu">
-                  <a href="http://docs.sunpy.org/projects/sunkit-sst/en/latest/index.html">sunkit-sst</a>
-            		</li>
-              </ul>
-			      </li>
-			      {%- for link in theme_navbar_links %}
-			      <li><a href="{{ pathto(*link[1:]) }}">{{ link[0] }}</a></li>
-			      {%- endfor %}
-	    	{% endif %}
 	        </ul>
 	    </div>
       </ul>

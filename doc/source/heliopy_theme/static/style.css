@@ -37,7 +37,7 @@ p.content.noheader {
   padding-top: 15px;
 }
 
-.sunpy-logo {
+.heliopy-logo {
   width: 70%;
   margin-top: 5%;
 }
@@ -511,7 +511,7 @@ div.figure p.caption span.caption-text {
 
 @media only screen and (max-width: 510px) {
 
-  .sunpy-logo {
+  .heliopy-logo {
     width: 75%;
   }
 
@@ -656,7 +656,7 @@ div.figure p.caption span.caption-text {
   height: 2.4em;
 }
 
-.section#sunpy-board {
+.section#heliopy-board {
   margin-left: -15px;
   margin-right: -15px;
   margin-top: 30px;
