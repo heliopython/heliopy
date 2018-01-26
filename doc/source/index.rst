@@ -21,6 +21,7 @@ Module documentation
    :maxdepth: 1
 
    data/index
+   coords
    spice
    pycdf
 
