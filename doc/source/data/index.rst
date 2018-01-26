@@ -1,7 +1,7 @@
 .. _heliopy-data:
 
-Data import
------------
+Data import (:mod:`heliopy.data`)
+---------------------------------
 
 .. currentmodule:: heliopy.data
 

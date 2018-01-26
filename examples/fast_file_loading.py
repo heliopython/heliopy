@@ -12,7 +12,7 @@ To enable this option, make sure PyTables is installed using::
   pip install pytables
 
 And then edit your heliopyrc file to enable hdf file saving
-(see :doc:`/configuring` for more information).
+(see :doc:`/guide/configuring` for more information).
 
 To check how much data is stored in both it's original format and hdf format
 see :ref:`sphx_glr_auto_examples_data_inventory.py`.

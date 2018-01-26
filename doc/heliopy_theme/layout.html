@@ -1,0 +1,96 @@
+{# Import the theme's layout. #}
+{% extends "bootstrap/layout.html" %}
+{# Custom CSS overrides #}
+{% set css_files = css_files + ['_static/style.css'] %}
+{% set script_files = script_files + ['_static/copybutton.js'] + ['_static/version.js']%}
+{# Add some extra stuff before and use existing with 'super()' call. #}
+
+{%- set render_sidebar = (not embedded) and (not theme_nosidebar|tobool) and sidebars %}
+
+{%- set bs_content_width2 = render_sidebar and "8" or "12"%}
+
+{% macro seo_title() -%}
+  {% if ishome -%}
+    {{ docstitle|striptags|e }}
+  {%- else -%}
+    {{ title|striptags|e }} | {{ docstitle|striptags|e }}
+  {%- endif %}
+{%- endmacro %}
+
+{%- macro description() -%}
+  {{ (seo_description or theme_seo_description )|striptags|e }}
+{%- endmacro -%}
+
+{%- block extrahead -%}
+  <!-- Facebook OpenGraph -->
+  <meta property="og:title" content="{{ seo_title() }}" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="{{ pathto(theme_base_url + '/' + pagename, 1) }}.html" />
+  <meta property="og:image" content="{{ pathto(theme_base_url + '/_static/' + theme_opengraph_image, 1) }}" />
+  <meta property="og:description" content="{{ description() }}" />
+  <meta property="og:site_name" content="{{ docstitle|striptags|e }}" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+{%- endblock %}
+
+
+{%- block content %}
+  {{ navBar() }}
+  <div class="container">
+    <div class="row">
+      {%- block sidebar1 %}
+        {%- if render_sidebar and sidebars %}
+          <div class="{{ bs_span_prefix }}4" id="sidebar">
+            <div id="sidebar" class="bs-sidenav" role="complementary">
+              {%- for sidebartemplate in sidebars %}
+                {%- include sidebartemplate %}
+              {%- endfor %}
+            </div>
+          </div>
+        {%- endif %}
+      {% endblock %}
+      <div class="{{ bs_span_prefix }}{{ bs_content_width2 }} content">
+        {% block body %}{% endblock %}
+      </div>
+      {% block sidebar2 %} {# possible location for sidebar #} {% endblock %}
+    </div>
+  </div>
+{%- endblock %}
+
+{% block footer %}
+  <footer class="footer">
+    <div class="container">
+      <div class="left-footer">
+          <p>
+            {%- if show_copyright %}
+              {%- if hasdoc('copyright') %}
+                {% trans path=pathto('copyright'), copyright=copyright|e %}&copy; <a href="{{ path }}"></a> {{ copyright }}{% endtrans %}
+              {%- else %}
+                {% trans copyright=copyright|e %}&copy; {{ copyright }}  {% endtrans %}
+              {%- endif %}
+            {%- endif %}
+            {{ theme_copyright_html }}
+        </p>
+      </div>
+      <div class="right-footer">
+        {%- if last_updated %}
+          {% trans last_updated=last_updated|e %}Updated on {{ last_updated }}{% endtrans %}
+        {%- if show_sphinx %}
+          {% trans sphinx_version=sphinx_version|e %}, built with <a href="http://sphinx-doc.org/">Sphinx {{ sphinx_version }}</a>{% endtrans %}
+        {%- else %}
+          .
+        {%- endif %}
+        {%- endif %}
+        {%- if show_sphinx and not last_updated %}
+          {% trans sphinx_version=sphinx_version|e %}Built with <a href="http://sphinx-doc.org/">Sphinx {{ sphinx_version }}.</a>{% endtrans %}
+        {%- endif %}
+      </div>
+      <div class="center-footer ">
+        <a href="https://github.com/heliopython/heliopy">Github</a>
+        <span> • </span>
+        <a href="https://riot.im/app/#/room/#heliopy:matrix.org">Matrix</a>
+      </div>
+    </div>
+  </footer>
+{% endblock %}
