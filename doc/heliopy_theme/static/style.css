@@ -245,12 +245,12 @@ p.whatsnew {
 
 .bs-sidenav .nav > li > a:hover,
 .bs-sidenav .nav > li > a:focus {
-  background-color: #;
+  background-color: #ffc425;
 }
 
 .bs-sidenav .nav > li > a.current {
   color: white;
-  background-color: rgba(230, 124, 25, 1);
+  background-color: #ffc425;
 }
 
 .bs-sidenav .nav .nav > li > a {
@@ -262,8 +262,16 @@ p.whatsnew {
   font-size: 100%;
 }
 
+.bs-sidenav .nav .nav > li > a > code {
+  color: #444;
+}
+
 .bs-sidenav .nav .nav > li > a.current {
-  background-color: rgba(230, 124, 25, 1);
+  background-color: #ffc425;
+  color: white;
+}
+
+.bs-sidenav .nav .nav > li > a.current > code {
   color: white;
 }
 
@@ -386,6 +394,10 @@ code {
   background-color: transparent;
 }
 
+code:hover {
+  color: #fe7900;
+}
+
 code.descname {
   font-size: 17px;
 }
@@ -432,13 +444,14 @@ dt:target,
 /* Button */
 
 div.sphx-glr-download a {
+  color: black;
   background-color: white;
   background-image: none !important;
   border: 1px solid #ffc425;
 }
 
 div.sphx-glr-download a:hover {
-  background-color: #ffc425;
+  background-color: transparent;
 }
 
 blockquote {
