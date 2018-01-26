@@ -22,7 +22,7 @@ jobs:
       - run: *deps-install
       - run: *doc-build
       - store_artifacts:
-          path: build/html
+          path: doc/build/html
       - run:
           name: "Built documentation is available at:"
-          command: echo "${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}/${CIRCLE_WORKING_DIRECTORY/#\~/$HOME}/build/html/index.html"
+          command: echo "${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}/${CIRCLE_WORKING_DIRECTORY/#\~/$HOME}/doc/build/html/index.html"
