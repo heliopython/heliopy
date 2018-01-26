@@ -26,6 +26,9 @@ import heliopy
 matplotlib.use('agg')
 sys.path.insert(0, os.path.abspath('../../'))
 
+
+html_sidebars = {'**': ['docsidebar.html']}
+
 # Pretend these modules exits so readthedocs builds
 MOCK_MODULES = ['spiceypy']
 for mod_name in MOCK_MODULES:

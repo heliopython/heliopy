@@ -18,11 +18,11 @@ h4 {
 }
 
 a {
-  color: #fe7900;
+  color: #ffc425;
 }
 
 a:hover {
-  color: #dd2c00;
+  color: #fe7900;
 }
 
 p.content {
@@ -72,11 +72,11 @@ div.section::before {
 
 .navbar-default .navbar-brand:focus,
 .navbar-default .navbar-brand:hover {
-  color: #fe7900;
+  color: #ffc425;
 }
 
 .navbar-default .navbar-brand {
-  color: #fe7900;
+  color: #ffc425;
   font-size: 20px;
   font-weight: bold;
   margin-right: 10px;
@@ -85,12 +85,12 @@ div.section::before {
 .navbar-default .navbar-nav > li > a:hover,
 .navbar-default .navbar-nav > li > a:focus,
 .navbar-default .navbar-nav > li > a:active {
-  color: #fe7900;
+  color: #ffc425;
 }
 
 div#navbar {
   border-bottom: 3px;
-  border-bottom-color: #fe7900;
+  border-bottom-color: #ffc425;
   border-bottom-style: solid;
 }
 
@@ -106,7 +106,7 @@ div#navbar {
 }
 
 .dropdown-menu > li > a:hover {
-  background-color: #fe7900;
+  background-color: #ffc425;
 }
 
 .caret {
@@ -120,7 +120,7 @@ div#navbar {
 }
 
 .icon-text {
-  color: #fe7900;
+  color: #ffc425;
   font-size: 120px;
   font-weight: bold;
 }
@@ -141,15 +141,15 @@ div#navbar {
 }
 
 .btn.btn-default.btn1 {
-  background-color: #fe7900;
-  border-color: #fe7900;
+  background-color: #ffc425;
+  border-color: #ffc425;
   text-transform: uppercase;
   margin-top: 20px;
   padding: 10px 21px;
 }
 
 a.btn.btn-default.btn1:hover {
-  color: #fe7900;
+  color: #ffc425;
   background-color: white;
 }
 
@@ -187,7 +187,7 @@ p.whatsnew {
 }
 
 .whatsnew a {
-  color: #fe7900;
+  color: #ffc425;
   font-weight: bold;
   text-decoration: none;
 }
@@ -212,11 +212,11 @@ p.whatsnew {
   position: fixed;
   width: 300px;
   max-height: 80%;
-  border-left: 3px solid #fe7900;
+  border-left: 3px solid #ffc425;
 }
 
 .bs-sidenav h2 {
-  color: #fe7900;
+  color: #ffc425;
   padding-left: 10px;
 }
 
@@ -225,7 +225,7 @@ p.whatsnew {
 }
 
 .bs-sidenav .nav > li {
-  color: #fe7900;
+  color: #ffc425;
 }
 
 .bs-sidenav .nav > li > span {
@@ -238,9 +238,14 @@ p.whatsnew {
   padding-top: 8px;
 }
 
+.bs-sidenav .nav > li > a > code {
+  color: white;
+  padding-top: 8px;
+}
+
 .bs-sidenav .nav > li > a:hover,
 .bs-sidenav .nav > li > a:focus {
-  background-color: rgba(230, 124, 25, 1);
+  background-color: #;
 }
 
 .bs-sidenav .nav > li > a.current {
@@ -284,7 +289,7 @@ p.whatsnew {
 }
 
 .bs-sidenav ul > li#comments > a {
-  color: #fe7900;
+  color: #ffc425;
 }
 
 .bs-sidenav ul > li#comments > a:hover {
@@ -320,7 +325,7 @@ input {
 }
 
 .doc-title {
-  color: #fe7900;
+  color: #ffc425;
   text-align: center;
   font-weight: bold;
 }
@@ -357,7 +362,7 @@ div.admonition {
 
 .alert-warning {
   background-color: #fff3e0;
-  border: 1px solid #fe7900;
+  border: 1px solid #ffc425;
 }
 
 p.admonition-title {
@@ -376,7 +381,7 @@ a code {
 }
 
 code {
-  color: #0d47a1;
+  color: #ffc425;
   padding: 2px;
   background-color: transparent;
 }
@@ -388,7 +393,7 @@ code.descname {
 /* Highlight */
 
 .highlight .o {
-  color: #fe7900;
+  color: #ffc425;
 }
 
 .highlight .nb,
@@ -429,11 +434,11 @@ dt:target,
 div.sphx-glr-download a {
   background-color: white;
   background-image: none !important;
-  border: 1px solid #fe7900;
+  border: 1px solid #ffc425;
 }
 
 div.sphx-glr-download a:hover {
-  background-color: #fe7900;
+  background-color: #ffc425;
 }
 
 blockquote {
@@ -562,7 +567,7 @@ div.figure p.caption span.caption-text {
     margin: 0 auto;
     padding: 5px 20px;
     color: white;
-    background-color: #fe7900;
+    background-color: #ffc425;
     text-align: center;
     cursor: pointer;
     font-size: 25px;
@@ -632,7 +637,7 @@ div.figure p.caption span.caption-text {
   margin-bottom: 20px;
   border-radius: 5px;
   color: white;
-  background-color: #fe7900;
+  background-color: #ffc425;
   text-align: center;
   cursor: pointer;
   font-size: 17px;
