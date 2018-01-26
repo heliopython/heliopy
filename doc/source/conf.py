@@ -19,7 +19,7 @@
 """
 import os
 import sys
-import sphinx_rtd_theme
+import sphinx_bootstrap_theme
 import unittest.mock as mock
 import matplotlib
 import heliopy
@@ -152,16 +152,16 @@ todo_include_todos = False
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'sphinx_rtd_theme'
-html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+html_theme = 'heliopy_theme'
+html_theme_path = ['.']
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
 #
-html_theme_options = {'canonical_url': 'http://docs.heliopy.org/en/stable/',
-                      'analytics_id': 'UA-112461508-1',
-                      'prev_next_buttons_location': 'None'}
+# html_theme_options = {'canonical_url': 'http://docs.heliopy.org/en/stable/',
+#                      'analytics_id': 'UA-112461508-1',
+#                      'prev_next_buttons_location': 'None'}
 
 # Add any paths that contain custom themes here, relative to this directory.
 # html_theme_path = []

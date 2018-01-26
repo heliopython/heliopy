@@ -1,7 +1,7 @@
 matplotlib
 sphinx-gallery
 sphinx
-sphinx-rtd-theme
+sphinx-bootstrap-theme
 numpy
 pillow
 pandas

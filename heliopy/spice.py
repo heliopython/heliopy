@@ -19,6 +19,7 @@ def _setup_spice():
     '''
     for kernel in ['lsk', 'planets']:
         loc = dataspice.get_kernel(kernel)
+        print(loc)
         spiceypy.furnsh(loc)
 
 
