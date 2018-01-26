@@ -10,7 +10,7 @@ Getting started
 ===============
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
 
    guide/index
    auto_examples/index
