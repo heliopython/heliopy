@@ -12,10 +12,7 @@ Getting started
 .. toctree::
    :maxdepth: 1
 
-   installing
-   whatsnew
-   configuring
-   pycdf
+   guide/index
    auto_examples/index
 
 Module documentation
@@ -26,6 +23,7 @@ Module documentation
 
    data/index
    spice
+   pycdf
 
 Development
 ===========
@@ -33,5 +31,4 @@ Development
 .. toctree::
    :maxdepth: 1
 
-   dev/testing
-   dev/release
+   development/index
