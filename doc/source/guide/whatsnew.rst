@@ -4,6 +4,16 @@ What's new
 .. contents:: :local:
    :depth: 2
 
+Version 0.4
+-----------
+
+New features
+^^^^^^^^^^^^
+
+- :meth:`~heliopy.data.ulysses.swics_abundances` and
+  :meth:`~heliopy.data.ulysses.swics_heavy_ions`
+  methods added for loading SWICS data from the Ulysses mission.
+
 Version 0.3
 -----------
 

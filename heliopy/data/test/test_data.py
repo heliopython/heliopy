@@ -76,7 +76,6 @@ class TestMessenger:
         check_datetime_index(df)
 
 
-@pytest.mark.skipif(no_pycdf, reason='Importing pycdf failed')
 @pytest.mark.data
 class TestUlysses:
     @classmethod
@@ -90,6 +89,14 @@ class TestUlysses:
 
     def test_swoops_ions(self):
         df = ulysses.swoops_ions(self.starttime, self.endtime)
+        check_datetime_index(df)
+
+    def test_swics_heavy_ions(self):
+        df = ulysses.swics_heavy_ions(self.starttime, self.endtime)
+        check_datetime_index(df)
+
+    def test_swics_abundances(self):
+        df = ulysses.swics_abundances(self.starttime, self.endtime)
         check_datetime_index(df)
 
 
