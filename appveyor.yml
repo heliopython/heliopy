@@ -6,7 +6,6 @@ environment:
     # /E:ON and /V:ON options are not enabled in the batch script intepreter
     # See: http://stackoverflow.com/a/13751649/163740
     CMD_IN_ENV: "cmd /E:ON /V:ON /C .\\ci-helpers\\appveyor\\windows_sdk.cmd"
-    CONDA_DEPENDENCIES: "mock pandas pytest pytest-mock pytables astropy"
     NUMPY_VERSION: "stable"
 
   matrix:
@@ -23,6 +22,9 @@ install:
   - "powershell ci-helpers/appveyor/install-miniconda.ps1"
   - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
   - "activate test"
+  - "pip install --quiet -r requirements/base.txt"
+  - "pip install --quiet -r requirements/test.txt"
+  - "pip install --quiet spiceypy --no-cache-di"
 
 
 # Not a .NET project, we build heliopy in the install step instead
