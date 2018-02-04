@@ -4,7 +4,8 @@ deps-run: &deps-install
   command: |
     python3 -m venv venv
     . venv/bin/activate
-    pip install --user --quiet -r doc-requirements.txt
+    pip install --user --quiet -r requirements/base.txt
+    pip install --user --quiet -r requirements/docs.txt
     pip install --user --quiet .
 
 doc-run: &doc-build
