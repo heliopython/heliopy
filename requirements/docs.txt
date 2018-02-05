@@ -2,7 +2,5 @@ matplotlib
 sphinx-gallery
 sphinx
 sphinx-bootstrap-theme
-numpy
 pillow
-pandas
 sphinx-automodapi
