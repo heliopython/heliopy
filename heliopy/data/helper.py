@@ -22,6 +22,20 @@ def _bytes2str(num):
         num /= 1024.0
 
 
+def cdfpeek(cdf_loc):
+    """
+    List all the variables present in a CDF file, along with their size.
+
+    Parameters
+    ----------
+    cdf_loc : string
+        Local location of the cdf file.
+    """
+    from pycdf import pycdf
+    cdf = pycdf.CDF(cdf_loc)
+    print(cdf)
+
+
 def listdata(probes=None):
     """
     Print amount of data stored locally in the heliopy data directory.
