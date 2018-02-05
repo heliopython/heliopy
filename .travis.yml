@@ -12,7 +12,6 @@ before_install:
 - conda create --yes -n testenv python=$TRAVIS_PYTHON_VERSION
 - source activate testenv
 # - conda install --yes scipy pytest pytest-cov pandas pytables astropy
-- pip install --quiet -r requirements/base.txt
 - pip install --quiet -r requirements/test.txt
 - pip install --quiet spiceypy --no-cache-di
 # Install CDF library

@@ -22,7 +22,6 @@ install:
   - "powershell ci-helpers/appveyor/install-miniconda.ps1"
   - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
   - "activate test"
-  - "pip install --quiet -r requirements/base.txt"
   - "pip install --quiet -r requirements/test.txt"
   - "pip install --quiet spiceypy --no-cache-di"
 
