@@ -23,9 +23,13 @@ spice.furnish(orbiter_kernel)
 orbiter = spice.Trajectory('Solar Orbiter')
 
 ###############################################################################
-# Set the times at which to sample the orbit
+# Generate a time for every day between starttime and endtime
 starttime = datetime(2020, 3, 1)
-times = [starttime + (n * timedelta(days=1)) for n in range(1000)]
+endtime = datetime(2028, 1, 1)
+times = []
+while starttime < endtime:
+    times.append(starttime)
+    starttime += timedelta(days=1)
 
 ###############################################################################
 # Generate positions
