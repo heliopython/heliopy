@@ -1,5 +1,6 @@
 import heliopy.data.spice as spicedata
-from datetime import datetime
+from datetime import datetime, timedelta
+import numpy as np
 import pytest
 
 try:
@@ -16,8 +17,13 @@ def test_spice():
     spice.furnish(orbiter_kernel)
     orbiter = spice.Trajectory('Solar Orbiter')
 
+    # Generate 1000 days of data
     starttime = datetime(2020, 3, 1)
-    endtime = datetime(2028, 1, 1)
-    nsteps = 1000
+    times = [starttime + n * timedelta(days=1) for n in range(1000)]
 
-    orbiter.generate_positions(starttime, endtime, nsteps, 'Sun', 'ECLIPJ2000')
+    orbiter.generate_positions(times, 'Sun', 'ECLIPJ2000')
+    assert orbiter.times == times
+
+    # Check it works with numpy arrays too
+    times = np.array(times)
+    orbiter.generate_positions(times, 'Sun', 'ECLIPJ2000')

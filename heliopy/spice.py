@@ -67,18 +67,15 @@ class Trajectory:
         self._target = target
         self._generated = False
 
-    def generate_positions(self, starttime, endtime, n, observing_body, frame):
+    def generate_positions(self, times, observing_body, frame):
         """
         Generate positions from a spice kernel.
 
         Parameters
         ----------
-        starttime : datetime
-            Start time of positions.
-        endtime : datetime
-            End time of positions.
-        n : int
-            Number of positions to generate betweens *starttime* and *endtime*.
+        times : iterable of `datetime`
+            An iterable (e.g. a `list`) of `datetime` objects at which the
+            positions are calculated.
         observing_body : str
             The observing body. Output position vectors are given relative to
             the position of this body.
@@ -89,14 +86,9 @@ class Trajectory:
             See https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/frames.html
             for a list of frames.
         """
-        dt = (endtime - starttime)
-        # Generate individual times within range
-        times = [starttime + (x * dt / n) for x in range(n)]
         # Spice needs a funny set of times
         fmt = '%b %d, %Y'
-        etOne = spiceypy.str2et(starttime.strftime(fmt))
-        etTwo = spiceypy.str2et(endtime.strftime(fmt))
-        spice_times = [x * (etTwo - etOne) / n + etOne for x in range(n)]
+        spice_times = [spiceypy.str2et(time.strftime(fmt)) for time in times]
         observing_body = observing_body
         # 'None' specifies no light-travel time correction
         positions, lightTimes = spiceypy.spkpos(
@@ -120,16 +112,9 @@ class Trajectory:
         return self._observing_body
 
     @property
-    def n(self):
-        '''
-        The number of position samples.
-        '''
-        return len(times)
-
-    @property
     def times(self):
         '''
-        The list of `datetime` at which positions were last sampled.
+        The `list` of `datetime` at which positions were last sampled.
         '''
         return self._times
 

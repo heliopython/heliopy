@@ -11,7 +11,7 @@ from 2020 to 2028.
 
 import heliopy.data.spice as spicedata
 import heliopy.spice as spice
-from datetime import datetime
+from datetime import datetime, timedelta
 import astropy.units as u
 import numpy as np
 
@@ -23,15 +23,13 @@ spice.furnish(orbiter_kernel)
 orbiter = spice.Trajectory('Solar Orbiter')
 
 ###############################################################################
-# Choose a starttime, endtime, and the number of points on the orbit to
-# generate.
+# Set the times at which to sample the orbit
 starttime = datetime(2020, 3, 1)
-endtime = datetime(2028, 1, 1)
-nsteps = 1000
+times = [starttime + (n * timedelta(days=1)) for n in range(1000)]
 
 ###############################################################################
 # Generate positions
-orbiter.generate_positions(starttime, endtime, nsteps, 'Sun', 'ECLIPJ2000')
+orbiter.generate_positions(times, 'Sun', 'ECLIPJ2000')
 orbiter.change_units(u.au)
 
 ###############################################################################

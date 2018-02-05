@@ -10,6 +10,14 @@ New features
 - :meth:`~heliopy.data.helper.cdfpeek` method added for peeking inside
   CDF files.
 
+Backwards incompatible changes
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+- :meth:`heliopy.spice.Trajectory.generate_positions` now takes a list of
+  dates/times at which to generate orbital positions, instead of a start time,
+  stop time, and number of steps. The old behaviour can be recovered by
+  manually generating an evenly spaced list of times.
+
 Version 0.3
 -----------
 
