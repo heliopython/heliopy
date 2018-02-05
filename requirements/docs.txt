@@ -1,6 +1,7 @@
 -r base.txt
 
 matplotlib
+mock
 sphinx-gallery
 sphinx
 sphinx-bootstrap-theme
