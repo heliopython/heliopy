@@ -6,6 +6,7 @@ deps-run: &deps-install
     . venv/bin/activate
     pip install --user --quiet -r requirements/base.txt
     pip install --user --quiet -r requirements/docs.txt
+    pip install --user --quiet spiceypy --no-cache-di
     pip install --user --quiet .
 
 doc-run: &doc-build

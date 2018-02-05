@@ -1,8 +1,6 @@
-astropy
 matplotlib
 sphinx-gallery
 sphinx
 sphinx-bootstrap-theme
 pillow
 sphinx-automodapi
-spiceypy
