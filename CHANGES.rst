@@ -7,6 +7,8 @@ New features
 - :meth:`~heliopy.data.ulysses.swics_abundances` and
   :meth:`~heliopy.data.ulysses.swics_heavy_ions`
   methods added for loading SWICS data from the Ulysses mission.
+- :meth:`~heliopy.data.helper.cdfpeek` method added for peeking inside
+  CDF files.
 
 Version 0.3
 -----------
