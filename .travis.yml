@@ -5,6 +5,7 @@ matrix:
   include:
     - python: 3.5
     - python: 3.6
+      env: RUN_PEP8=--pep8
     - python: 'nightly'
       env: PRE=--pre
 
@@ -35,7 +36,7 @@ before_install:
 
 script:
 # Check that unit tests work
-- pytest heliopy/ --cov=heliopy/ -v --durations=5
+- pytest heliopy/ --cov=heliopy/ -v --durations=5 $RUN_PEP8
 # Check building a source distribution works
 - python setup.py sdist
 after_success:
