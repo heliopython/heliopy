@@ -284,10 +284,6 @@ class TestHelios:
         df = helios.mag_4hz(self.probe, self.starttime, self.endtime)
         check_datetime_index(df)
 
-    def test_trajectory(self):
-        df = helios.trajectory(self.probe, self.starttime, self.endtime)
-        check_datetime_index(df)
-
 
 class TestHelper:
     def test_listdata(self):

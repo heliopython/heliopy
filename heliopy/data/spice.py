@@ -18,16 +18,19 @@ import heliopy.data.helper as helper
 data_dir = config['download_dir']
 spice_dir = os.path.join(data_dir, 'spice')
 # Mapping of kernel name to remote location
-available_kernels = {'lsk': 'https://naif.jpl.nasa.gov/pub/naif/generic_kernels/lsk/naif0012.tls',
-                     'planets': 'https://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/planets/de430.bsp',
-                     'solar orbiter 2020': 'https://issues.cosmos.esa.int/solarorbiterwiki/download/attachments/7274724/solo_ANC_soc-orbit_20200207-20300902_V01.bsp'}
+available_kernels = {'lsk': ['https://naif.jpl.nasa.gov/pub/naif/generic_kernels/lsk/naif0012.tls'],
+                     'planets': ['https://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/planets/de430.bsp'],
+                     'solar orbiter 2020': ['https://issues.cosmos.esa.int/solarorbiterwiki/download/attachments/7274724/solo_ANC_soc-orbit_20200207-20300902_V01.bsp'],
+                     'Helios 1': ['https://naif.jpl.nasa.gov/pub/naif/HELIOS/kernels/spk/100528R_helios1_74345_81272.bsp'],
+                     'Heliios 2': ['https://naif.jpl.nasa.gov/pub/naif/HELIOS/kernels/spk/100607R_helios2_76016_80068.bsp',
+                                   'https://naif.jpl.nasa.gov/pub/naif/HELIOS/kernels/spk/160707AP_helios1_81272_86074.bsp']}
 
 
 def get_kernel(name):
     """
     Get the local location of a kernel.
 
-    If a kernel isn't available locally, it is download.
+    If a kernel isn't available locally, it is downloaded.
 
     Parameters
     ----------
@@ -36,19 +39,21 @@ def get_kernel(name):
 
     Returns
     -------
-    str
-        Local location of kernel.
+    list
+        List of the locations of kernels that have been downloaded.
     """
     if name not in available_kernels:
         raise ValueError(
             'Provided name {} not in list of supported names: {}'.format(
                 name, available_kernels))
-    url = available_kernels[name]
-    fname = url.split('/')[-1]
-    local_loc = os.path.join(spice_dir, fname)
-    if not os.path.exists(spice_dir):
-        os.makedirs(spice_dir)
-    if not os.path.exists(local_loc):
-        print('Downloading {}'.format(url))
-        urlretrieve(url, local_loc, reporthook=helper._reporthook)
-    return local_loc
+    locs = []
+    for url in available_kernels[name]:
+        fname = url.split('/')[-1]
+        local_loc = os.path.join(spice_dir, fname)
+        locs.append(local_loc)
+        if not os.path.exists(spice_dir):
+            os.makedirs(spice_dir)
+        if not os.path.exists(local_loc):
+            print('Downloading {}'.format(url))
+            urlretrieve(url, local_loc, reporthook=helper._reporthook)
+    return locs

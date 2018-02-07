@@ -28,7 +28,8 @@ def furnish(fname):
 
     Parameters
     ----------
-    fname : Filename of a spice kernel to load.
+    fname : str or list
+        Filename of a spice kernel to load, or list of filenames to load.
 
     See also
     --------
@@ -36,7 +37,10 @@ def furnish(fname):
                                     kernels based on spacecraft name.
 
     """
-    spiceypy.furnsh(fname)
+    if isinstance(fname, str):
+        fname = [fname]
+    for f in fname:
+        spiceypy.furnsh(f)
 
 
 class Trajectory:
