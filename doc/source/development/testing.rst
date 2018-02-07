@@ -8,6 +8,10 @@ Then from the :file:`heliopy` directory run::
 
   pytest
 
+To run all tests apart from the ones that require data to be downloaded run::
+
+   pytest -m "not data"
+
 Continuous integration tests
 ----------------------------
 To continuously check the codebase is working properly, tests are automatically
