@@ -23,7 +23,7 @@ before_install:
 - conda create --yes -n testenv python=$TRAVIS_PYTHON_VERSION
 - source activate testenv
 
-- pip install --quiet -r $PRE requirements/test.txt
+- pip install --quiet $PRE -r requirements/test.txt
 - pip install --quiet spiceypy --no-cache-di
 
 # Install CDF library
