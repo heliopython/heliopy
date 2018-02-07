@@ -15,6 +15,13 @@ Backwards incompatible changes
 - :meth:`heliopy.data.spice.get_kernel` now returns a list of filenames instead
   of a single filename string.
 
+Removed features
+^^^^^^^^^^^^^^^^
+
+- :meth:`heliopy.data.helios.trajectory` has been removed. To get Helios
+  trajectory data use the :mod:`heliopy.spice` and :mod:`heliopy.data.spice`
+  modules.
+
 Version 0.4
 -----------
 

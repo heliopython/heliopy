@@ -7,14 +7,11 @@ with 'helios2' in url to change probe):
 * Distribution functions - Not publically available
 * Merged plasma/mangetic field - |merged_url|
 * 6 second cadence magnetic field - |6s_mag_url|
-* Trajectory - |traj_url|
 
 .. |merged_url| replace::
     ftp://cdaweb.gsfc.nasa.gov/pub/data/helios/helios1/merged/
 .. |6s_mag_url| replace::
     ftp://cdaweb.gsfc.nasa.gov/pub/data/helios/helios1/mag/6sec_ness/
-.. |traj_url| replace::
-    ftp://cdaweb.gsfc.nasa.gov/pub/data/helios/helios1/traj/
 
 If the data is publically available, it will be dowloaded automatically if it
 doesn't exist locally.
@@ -1392,49 +1389,3 @@ def _mag_ness_fromascii(probe, year, doy, try_download=True):
 def _save_hdf(data, fdir, fname):
     saveloc = os.path.join(fdir, fname + '.hdf')
     data.to_hdf(saveloc, 'table', format='fixed', mode='w')
-
-
-def trajectory(probe, starttime, endtime):
-    '''
-    Read in trajectory data for Helios (and the Earth)
-    - Position vectors are in AU
-    - Velocities are in km/s
-
-    Parameters
-    ----------
-    probe : int, string
-        Helios probe to import data from. Must be 1 or 2.
-    year : int
-        Year
-    doy : int
-        Day of year
-
-    Returns
-    -------
-    data : DataFrame
-        Helios trajectory data
-    '''
-    local_dir = os.path.join(helios_dir, 'helios{}'.format(probe), 'traj')
-    fname = 'helios{}_eclipJ2000.txt'.format(probe)
-    remote_url = ('ftp://apollo.ssl.berkeley.edu/pub/helios-data/'
-                  'Helios_orbital_information')
-    # Read in data
-    f = helper.load(fname, local_dir, remote_url)
-    names = ['Probe', 'Year', 'Month', 'Day', 'Hour', 'Spice time',
-             'sc_pos_x', 'sc_pos_y', 'sc_pos_z',
-             'sc_vel_x', 'sc_vel_y', 'sc_vel_z',
-             'earth_pos_x', 'earth_pos_y', 'earth_pos_z',
-             'earth_vel_x', 'earth_vel_y', 'earth_vel_z']
-    data = pd.read_table(f, names=names, comment='%', delim_whitespace=True)
-
-    # Set time index
-    data['Time'] = pd.to_datetime(data[['Year', 'Month', 'Day', 'Hour']])
-    data = data.set_index('Time')
-    data = data.drop(['Year', 'Month', 'Day', 'Hour'], axis=1)
-
-    # Convert from km to AU
-    for body in ['sc', 'earth']:
-        for comp in ['x', 'y', 'z']:
-            label = '{}_pos_{}'.format(body, comp)
-            data[label] = data[label] / constants.au.to(u.km).value
-    return helper.timefilter(data, starttime, endtime)
