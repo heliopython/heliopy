@@ -37,7 +37,6 @@ def _ace(starttime, endtime, instrument, product, fname, keys, version='01'):
         remote_url = remote_ace_dir + this_relative_dir
         cdf = helper.load(filename, local_dir, remote_url, guessversion=True)
 
-        badvalues = {}
         df = helper.cdf2df(cdf,
                            index_key='Epoch',
                            keys=keys)
@@ -45,6 +44,7 @@ def _ace(starttime, endtime, instrument, product, fname, keys, version='01'):
 
     data = helper.timefilter(data, starttime, endtime)
     return data
+
 
 def mfi_h0(starttime, endtime):
     """
