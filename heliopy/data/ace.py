@@ -110,4 +110,71 @@ def swe_h0(starttime, endtime):
                  'T_pr': [-1e31]}
     return _ace(starttime, endtime, instrument, product, fname, keys, version,
                 badvalues)
+
+
+def swi_h2(starttime, endtime):
+    """
+    Import hourly SWICS data.
+
+    See https://cdaweb.sci.gsfc.nasa.gov/misc/NotesA.html#AC_H2_SWI for more
+    information.
+
+    Parameters
+    ----------
+    starttime : datetime
+        Interval start time.
+    endtime : datetime
+        Interval end time.
+
+    Returns
+    -------
+    data : DataFrame
+    """
+    instrument = 'swics'
+    product = 'swi_h2'
+    fname = 'h2_swi'
+    keys = {'Epoch': 'Time',
+            'C5_qual': 'C5_qual',
+            'C6to4': 'C6to4',
+            'C6to4_err': 'C6to4_err',
+            'C6to4_qual': 'C6to4_qual',
+            'C6to5': 'C6to5',
+            'C6to5_err': 'C6to5_err',
+            'C6to5_qual': 'C6to5_qual',
+            'Fe10_qual': 'Fe10_qual',
+            'FetoO': 'FetoO',
+            'FetoO_err': 'FetoO_err',
+            'FetoO_qual': 'FetoO_qual',
+            'He_qual': 'He_qual',
+            'O6_qual': 'O6_qual',
+            'O7to6': 'O7to6',
+            'O7to6_err': 'O7to6_err',
+            'O7to6_qual': 'O7to6_qual',
+            'SW_type': 'SW_type',
+            'avqC': 'avqC',
+            'avqC_err': 'avqC_err',
+            'avqC_qual': 'avqC_qual',
+            'avqFe': 'avqFe',
+            'avqFe_err': 'avqFe_err',
+            'avqFe_qual': 'avqFe_qual',
+            'avqMg': 'avqMg',
+            'avqMg_err': 'avqMg_err',
+            'avqMg_qual': 'avqMg_qual',
+            'avqO': 'avqO',
+            'avqO_err': 'avqO_err',
+            'avqO_qual': 'avqO_qual',
+            'avqSi': 'avqSi',
+            'avqSi_err': 'avqSi_err',
+            'avqSi_qual': 'avqSi_qual',
+            'nHe2': 'nHe2',
+            'nHe2_err': 'nHe2_err',
+            'vC5': 'vC5',
+            'vFe10': 'vFe10',
+            'vHe2': 'vHe2',
+            'vO6': 'vO6',
+            'vthC5': 'vthC5',
+            'vthFe10': 'vthFe10',
+            'vthHe2': 'vthHe2',
+            'vthO6': 'vthO6'}
+    version = '09'
     return _ace(starttime, endtime, instrument, product, fname, keys, version)
