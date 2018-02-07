@@ -1,8 +1,17 @@
 dist: trusty
 language: python
-python:
-  - '3.5'
-  - '3.6'
+
+matrix:
+  include:
+    - python: 3.5
+    - python: 3.6
+    - python: 'nightly'
+      env: PRE=--pre
+
+  allow_failures:
+    - python: "nightly"
+
+
 before_install:
 # Install conda
 - wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
@@ -12,9 +21,10 @@ before_install:
 - conda update --yes conda
 - conda create --yes -n testenv python=$TRAVIS_PYTHON_VERSION
 - source activate testenv
-# - conda install --yes scipy pytest pytest-cov pandas pytables astropy
-- pip install --quiet -r requirements/test.txt
+
+- pip install --quiet -r $PRE requirements/test.txt
 - pip install --quiet spiceypy --no-cache-di
+
 # Install CDF library
 - wget http://cdaweb.gsfc.nasa.gov/pub/software/cdf/dist/cdf36_3_1/linux/cdf36_3_1-dist-all.tar.gz
 - tar -zxvf cdf36_3_1-dist-all.tar.gz
@@ -22,6 +32,7 @@ before_install:
 - make OS=linux ENV=gnu all
 - sudo make INSTALLDIR=/usr/local/cdf install
 - cd ../
+
 script:
 # Check that unit tests work
 - pytest heliopy/ --cov=heliopy/ -v --durations=5
