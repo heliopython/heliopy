@@ -16,7 +16,8 @@ remote_ace_dir = 'ftp://spdf.gsfc.nasa.gov/pub/data/ace/'
 remote_cda_dir = 'ftp://cdaweb.gsfc.nasa.gov/pub/data/ace/'
 
 
-def _ace(starttime, endtime, instrument, product, fname, keys, version='01'):
+def _ace(starttime, endtime, instrument, product, fname, keys, version='01',
+         badvalues={}):
     """
     Generic method for downloading ACE data from cdaweb.
     """
@@ -39,7 +40,8 @@ def _ace(starttime, endtime, instrument, product, fname, keys, version='01'):
 
         df = helper.cdf2df(cdf,
                            index_key='Epoch',
-                           keys=keys)
+                           keys=keys,
+                           badvalues=badvalues)
         data.append(df)
 
     data = helper.timefilter(data, starttime, endtime)
@@ -104,4 +106,8 @@ def swe_h0(starttime, endtime):
             'alpha_ratio': 'n_a/n_p',
             'Epoch': 'Time'}
     version = '06'
+    badvalues = {'n_p': [-1e31],
+                 'T_pr': [-1e31]}
+    return _ace(starttime, endtime, instrument, product, fname, keys, version,
+                badvalues)
     return _ace(starttime, endtime, instrument, product, fname, keys, version)
