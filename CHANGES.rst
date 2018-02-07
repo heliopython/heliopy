@@ -1,3 +1,20 @@
+Version 0.5
+-----------
+
+New features
+^^^^^^^^^^^^
+
+- The inventory of spice kernels in :mod:`heliopy.data.spice` now includes
+  "Helios 1" and "Helios 2".
+- :meth:`heliopy.spice.furnish` now accepts a list of filenames as well as
+  individual filenames.
+
+Backwards incompatible changes
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+- :meth:`heliopy.data.spice.get_kernel` now returns a list of filenames instead
+  of a single filename string.
+
 Version 0.4
 -----------
 
