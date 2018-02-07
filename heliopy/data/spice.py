@@ -27,7 +27,7 @@ def get_kernel(name):
     """
     Get the local location of a kernel.
 
-    If a kernel isn't available locally, it is download.
+    If a kernel isn't available locally, it is downloaded.
 
     Parameters
     ----------
@@ -36,19 +36,21 @@ def get_kernel(name):
 
     Returns
     -------
-    str
-        Local location of kernel.
+    list
+        List of the locations of kernels that have been downloaded.
     """
     if name not in available_kernels:
         raise ValueError(
             'Provided name {} not in list of supported names: {}'.format(
                 name, available_kernels))
-    url = available_kernels[name]
-    fname = url.split('/')[-1]
-    local_loc = os.path.join(spice_dir, fname)
-    if not os.path.exists(spice_dir):
-        os.makedirs(spice_dir)
-    if not os.path.exists(local_loc):
-        print('Downloading {}'.format(url))
-        urlretrieve(url, local_loc, reporthook=helper._reporthook)
-    return local_loc
+    locs = []
+    for url in available_kernels[name]:
+        fname = url.split('/')[-1]
+        local_loc = os.path.join(spice_dir, fname)
+        locs.append(local_loc)
+        if not os.path.exists(spice_dir):
+            os.makedirs(spice_dir)
+        if not os.path.exists(local_loc):
+            print('Downloading {}'.format(url))
+            urlretrieve(url, local_loc, reporthook=helper._reporthook)
+    return locs
