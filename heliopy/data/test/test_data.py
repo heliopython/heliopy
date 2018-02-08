@@ -138,7 +138,7 @@ class TestAce:
         check_datetime_index(df)
 
     def test_swi_h2(self):
-        df = ace.swe_h0(self.starttime, self.endtime)
+        df = ace.swi_h2(self.starttime, self.endtime)
         check_datetime_index(df)
 
 
