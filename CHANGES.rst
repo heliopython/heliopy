@@ -33,6 +33,7 @@ New features
   methods added for loading SWICS data from the Ulysses mission.
 - :meth:`~heliopy.data.helper.cdfpeek` method added for peeking inside
   CDF files.
+- :meth:`~heliopy.data.ace.swi_h2` data import method added for ACE SWICS data.
 
 Backwards incompatible changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
