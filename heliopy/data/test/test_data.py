@@ -126,8 +126,8 @@ class TestArtemis:
 class TestAce:
     @classmethod
     def setup_class(self):
-        self.starttime = datetime(2016, 1, 1, 0, 0, 0)
-        self.endtime = datetime(2016, 1, 2, 0, 0, 0)
+        self.starttime = datetime(2010, 1, 1, 0, 0, 0)
+        self.endtime = datetime(2010, 1, 2, 0, 0, 0)
 
     def test_mfi_h0(self):
         df = ace.mfi_h0(self.starttime, self.endtime)
