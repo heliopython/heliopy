@@ -37,6 +37,10 @@ def _ace(starttime, endtime, instrument, product, fname, keys, version='01',
 
         remote_url = remote_ace_dir + this_relative_dir
         cdf = helper.load(filename, local_dir, remote_url, guessversion=True)
+        if cdf is None:
+            print('File {}/{} not available\n'.format(
+                remote_url, filename))
+            continue
 
         df = helper.cdf2df(cdf,
                            index_key='Epoch',

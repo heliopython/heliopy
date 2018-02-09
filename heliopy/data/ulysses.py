@@ -133,6 +133,10 @@ def _swics(starttime, endtime, names, product):
             for key in swics_options:
                 remote_url += key + '=' + swics_options[key] + '&'
             f = helper.load(swics_options['FILE_NAME'], local_dir, remote_url)
+            if f is None:
+                print('File {}/{} not available\n'.format(
+                    remote_url, filename))
+                continue
 
             # Read in data
             thisdata = pd.read_table(f, **readargs)
