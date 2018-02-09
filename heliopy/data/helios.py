@@ -914,7 +914,7 @@ def corefit(probe, starttime, endtime, verbose=False, try_download=True):
 
                 f = helper.load(ascii_fname, floc, remote_folder,
                                 try_download=try_download)
-                if cdf is None:
+                if f is None:
                     print('File {}/{} not available\n'.format(
                         remote_url, filename))
                     continue
