@@ -177,7 +177,11 @@ def _mag_hires_helper(year, doy, local_dir, url, coords):
         return pd.read_hdf(hdfloc)
 
     f = helper.load(fname + '.TAB', local_dir, url)
-    if 'error_message' in f.readline():
+    if f is None:
+        print('File {}/{} not available\n'.format(
+            remote_url, filename))
+        continue
+    elif 'error_message' in f.readline():
         f.close()
         os.remove(os.path.join(local_dir, fname + '.TAB'))
         raise RuntimeError(
