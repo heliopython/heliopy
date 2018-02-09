@@ -19,7 +19,7 @@ remote_wind_dir = 'ftp://spdf.gsfc.nasa.gov/pub/data/wind/'
 
 
 def _load_wind_cdf(starttime, endtime, instrument,
-                   data_product, fname, badvalues):
+                   data_product, fname, badvalues={}):
     relative_dir = os.path.join(instrument, data_product)
     daylist = helper._daysplitinterval(starttime, endtime)
     data = []
@@ -42,7 +42,8 @@ def _load_wind_cdf(starttime, endtime, instrument,
 
         cdf = helper.load(filename + '.cdf', local_dir, remote_url)
         if cdf is None:
-            print('File {}/{}.cdf not available\n'.format(remote_url, filename))
+            print('File {}/{}.cdf not available\n'.format(
+                remote_url, filename))
             continue
 
         df = helper.cdf2df(cdf, 'Epoch', badvalues=badvalues)
