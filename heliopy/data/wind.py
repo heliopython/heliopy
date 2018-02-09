@@ -18,39 +18,103 @@ wind_dir = os.path.join(data_dir, 'wind')
 remote_wind_dir = 'ftp://spdf.gsfc.nasa.gov/pub/data/wind/'
 
 
+def _process(dirs, fnames, extension, local_base_dir, remote_base_url,
+             download_func, processing_func, starttime, endtime):
+    """
+    Parameters
+    ----------
+    dirs : list
+        A list of directories relative to *local_base_dir*.
+    fnames : list
+        A list of filenames **without** their extension. Must be the
+        same length as *dirs.
+    extension : str
+        File extension of the raw files.
+    local_base_dir : str
+        Local base directory.
+    remote_base_url : str
+        Remote base URL.
+    download_func
+        Method that takes ``(remote_base_url, local_base_dir, directory, fname, extension)``
+        and downloads the remote file.
+    processing_func
+        Method that takes the location of the local raw file, and
+        returns a pandas `DataFrame` with the converted data.
+    starttime : datetime
+    endtime : datetime
+
+    Returns
+    -------
+    DataFrame
+        Requested data
+    """
+    data = []
+    for directory, fname in zip(dirs, fnames):
+        local_dir = os.path.join(local_base_dir, directory)
+        local_file = os.path.join(local_base_dir, directory, fname)
+        # Fist try to load local HDF file
+        hdf_loc = local_file + '.hdf'
+        if os.path.exists(hdf_loc):
+            data.append(pd.read_hdf(hdf_loc))
+            continue
+        # Now try raw file
+        raw_loc = local_file + extension
+        # If we can't find local file, try downloading
+        if not os.path.exists(raw_loc):
+            helper._checkdir(local_dir)
+            downloaded = download_func(remote_base_url, local_base_dir, directory, fname, extension)
+        if not downloaded:
+            continue
+        # Convert raw file to a dataframe
+        df = processing_func(local_base_dir, directory, fname, extension)
+
+        # Save dataframe to disk
+        df.to_hdf(hdfloc, '', mode='w', format='f')
+        data.append(df)
+    return helper.timefilter(data, starttime, endtime)
+
+
 def _load_wind_cdf(starttime, endtime, instrument,
                    data_product, fname, badvalues={}):
     relative_dir = os.path.join(instrument, data_product)
+    # Get directories and filenames
+    dirs = []
+    fnames = []
     daylist = helper._daysplitinterval(starttime, endtime)
-    data = []
     for day in daylist:
         date = day[0]
         filename = 'wi_{}_{}{:02}{:02}_v01'.format(
             fname, date.year, date.month, date.day)
-        local_dir = os.path.join(wind_dir, relative_dir, str(date.year))
+        fnames.append(filename)
+        local_dir = os.path.join(relative_dir, str(date.year))
+        dirs.append(local_dir)
+    extension = '.cdf'
+    local_base_dir = wind_dir
+    remote_base_url = remote_wind_dir
 
-        hdfname = filename + '.hdf'
-        hdfloc = os.path.join(local_dir, hdfname)
-        if os.path.isfile(hdfloc):
-            df = pd.read_hdf(hdfloc)
-            data.append(df)
-            continue
+    def download_func(remote_base_url, local_base_dir, directory,
+                      fname, extension):
+        remote_url = '{}{}'.format(remote_base_url, directory)
+        f = helper.load(fname + extension, os.path.join(local_base_dir, directory), remote_url)
+        if f is None:
+            return False
+        return True
 
-        helper._checkdir(local_dir)
-        remote_url = '{}{}/{}/{}'.format(
-            remote_wind_dir, instrument, data_product, date.year)
-
-        cdf = helper.load(filename + '.cdf', local_dir, remote_url)
+    def processing_func(local_base_dir, directory, fname, extension):
+        fname = fname + extension
+        directory = os.path.join(local_base_dir, directory)
+        print(directory)
+        exit()
+        cdf = helper.load(fname, directory, '')
         if cdf is None:
             print('File {}/{}.cdf not available\n'.format(
                 remote_url, filename))
-            continue
+            return None
 
-        df = helper.cdf2df(cdf, 'Epoch', badvalues=badvalues)
-        if use_hdf:
-            df.to_hdf(hdfloc, data_product, mode='w', format='f')
-        data.append(df)
-    return helper.timefilter(data, starttime, endtime)
+        return helper.cdf2df(cdf, 'Epoch', badvalues=badvalues)
+
+    return _process(dirs, fnames, extension, local_base_dir, remote_base_url,
+                    download_func, processing_func, starttime, endtime)
 
 
 def swe_h1(starttime, endtime):
