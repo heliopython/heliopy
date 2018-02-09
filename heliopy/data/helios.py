@@ -915,7 +915,7 @@ def corefit(probe, starttime, endtime, verbose=False, try_download=True):
                 f = helper.load(ascii_fname, floc, remote_folder,
                                 try_download=try_download)
                 if cdf is None:
-                    print('File {}/{}.cdf not available\n'.format(
+                    print('File {}/{} not available\n'.format(
                         remote_url, filename))
                     continue
                 data.append(pd.read_csv(f, parse_dates=['Time']))

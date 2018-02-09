@@ -150,7 +150,7 @@ def swe_h3(starttime, endtime):
 
         cdf = helper.load(filename, local_dir, remote_url)
         if cdf is None:
-            print('File {} not available\n'.format(remote_url))
+            print('File {}/{} not available\n'.format(remote_url, filename))
             continue
 
         distkeys = []
@@ -250,7 +250,7 @@ def _mfi(starttime, endtime, version):
         remote_url = remote_wind_dir + this_relative_dir
         cdf = helper.load(filename, local_dir, remote_url, guessversion=True)
         if cdf is None:
-            print('File {} not available\n'.format(remote_url))
+            print('File {}/{} not available\n'.format(remote_url, filename))
             continue
 
         epoch_dict = {'h0': 'Epoch3', 'h2': 'Epoch'}
@@ -319,7 +319,7 @@ def threedp_pm(starttime, endtime):
         remote_url = remote_wind_dir + this_relative_dir
         cdf = helper.load(filename, local_dir, remote_url, guessversion=True)
         if cdf is None:
-            print('File {} not available\n'.format(remote_url))
+            print('File {}/{} not available\n'.format(remote_url, filename))
             continue
 
         keys = {'A_DENS': 'n_a',
@@ -378,7 +378,7 @@ def threedp_sfpd(starttime, endtime):
         cdf = helper.load(filename + '.cdf', local_dir, remote_url,
                           guessversion=True)
         if cdf is None:
-            print('File {} not available\n'.format(remote_url))
+            print('File {}/{} not available\n'.format(remote_url, filename))
             continue
 
         data_today = []
