@@ -379,8 +379,12 @@ def _checkdir(directory):
         return True
 
 
+class RemoteFileNotPresentError(RuntimeError):
+    pass
+
+
 def load(filename, local_dir, remote_url, guessversion=False,
-         try_download=True):
+         try_download=True, remote_error=False):
     """
     Try to load a file from *local_dir*.
 
@@ -400,15 +404,22 @@ def load(filename, local_dir, remote_url, guessversion=False,
     try_download : bool
         If a file isn't available locally, try to downloaded it. Default is
         *True*.
+    remote_error : bool
+        If ``True``, raise an error if the requested file isn't present
+        locally or remotely. If ``False``, the method returns ``None`` if
+        the file can't be found.
 
     Returns
     -------
-    file : CDF or open file
+    file : CDF, open file, None
         If *filename* ends in *.cdf* the CDF file will be opened and
         returned.
 
         Otherwise it is assumed that the file is an ascii file, and
         *filename* will be opened using python's :func:`open` method.
+
+        If the file can't be found locally or remotely, and *remote_errror* is
+        ``False``, ``None`` is returned.
     """
     # Check if file is cdf
     if filename[-4:] == '.cdf':
@@ -451,10 +462,13 @@ def load(filename, local_dir, remote_url, guessversion=False,
         try:
             return _load_remote(remote_url, filename, local_dir, filetype)
         except URLError:
-            raise ValueError('File {}/{} not available'.format(remote_url,
-                                                               filename))
+            if remote_error:
+                raise RemoteFileNotFoundError(
+                    'File {}/{} not available'.format(remote_url, filename))
+            else:
+                return None
     else:
-        return []
+        return None
 
 
 def pitchdist_cdf2df(cdf, distkeys, energykey, timekey, anglelabels):
