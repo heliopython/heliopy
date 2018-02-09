@@ -55,6 +55,10 @@ def swe_h1(starttime, endtime):
         helper._checkdir(local_dir)
         remote_url = '{}swe/swe_h1/{}'.format(remote_wind_dir, date.year)
         cdf = helper.load(filename + '.cdf', local_dir, remote_url)
+        if cdf is None:
+            print('File {} not available\n'.format(remote_url))
+            continue
+
         badvalues = {'Proton_V_nonlin': 99999.9,
                      'Proton_sigmaV_nonlin': 99999.9,
                      'Proton_VY_nonlin': 99999.9,
@@ -136,6 +140,10 @@ def swe_h3(starttime, endtime):
         remote_url = remote_wind_dir + this_relative_dir
 
         cdf = helper.load(filename, local_dir, remote_url)
+        if cdf is None:
+            print('File {} not available\n'.format(remote_url))
+            continue
+
         distkeys = []
         for i in range(0, 13):
             distkeys.append('f_pitch_E' + str(i).zfill(2))
@@ -232,6 +240,9 @@ def _mfi(starttime, endtime, version):
         helper._checkdir(local_dir)
         remote_url = remote_wind_dir + this_relative_dir
         cdf = helper.load(filename, local_dir, remote_url, guessversion=True)
+        if cdf is None:
+            print('File {} not available\n'.format(remote_url))
+            continue
 
         epoch_dict = {'h0': 'Epoch3', 'h2': 'Epoch'}
         mag_dict = {'h0': 'B3GSE', 'h2': 'BGSE'}
@@ -298,6 +309,9 @@ def threedp_pm(starttime, endtime):
         helper._checkdir(local_dir)
         remote_url = remote_wind_dir + this_relative_dir
         cdf = helper.load(filename, local_dir, remote_url, guessversion=True)
+        if cdf is None:
+            print('File {} not available\n'.format(remote_url))
+            continue
 
         keys = {'A_DENS': 'n_a',
                 'A_TEMP': 'T_a',
@@ -354,6 +368,9 @@ def threedp_sfpd(starttime, endtime):
         remote_url = remote_wind_dir + this_relative_dir
         cdf = helper.load(filename + '.cdf', local_dir, remote_url,
                           guessversion=True)
+        if cdf is None:
+            print('File {} not available\n'.format(remote_url))
+            continue
 
         data_today = []
         # Loop through each timestamp to build up fluxes
