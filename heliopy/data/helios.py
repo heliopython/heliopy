@@ -914,6 +914,10 @@ def corefit(probe, starttime, endtime, verbose=False, try_download=True):
 
                 f = helper.load(ascii_fname, floc, remote_folder,
                                 try_download=try_download)
+                if cdf is None:
+                    print('File {}/{}.cdf not available\n'.format(
+                        remote_url, filename))
+                    continue
                 data.append(pd.read_csv(f, parse_dates=['Time']))
                 data[-1] = data[-1].set_index('Time')
             except (FileNotFoundError, URLError, ValueError) as err:
@@ -1021,7 +1025,7 @@ def _merged_fromascii(probe, year, doy, try_download):
     """
     Read in a single day of merged data.
 
-    Data is loaded from orignal ascii files. and saved to a hdf file for faster
+    Data is loaded from orignal ascii files, and saved to a hdf file for faster
     access after first read in.
 
     Parameters

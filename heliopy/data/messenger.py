@@ -59,6 +59,10 @@ def mag_rtn(starttime, endtime):
         remote_url = os.path.join(remote_mess_dir, this_relative_dir)
 
         cdf = helper.load(filename, local_dir, remote_url, guessversion=True)
+        if cdf is None:
+            print('File {}/{} not available\n'.format(
+                remote_url, filename))
+            continue
 
         keys = {'B_normal': 'Bn',
                 'B_radial': 'Br',

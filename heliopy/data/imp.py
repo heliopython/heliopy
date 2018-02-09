@@ -77,13 +77,17 @@ def merged(probe, starttime, endtime, verbose=False):
                                         'merged')
 
             local_dir = os.path.join(imp_dir, relative_loc)
-            hdffile = os.path.join(local_dir, filename[:-3] + 'hdf')
+            hdffile = os.path.join(local_dir, filename[:-4] + '.hdf')
             if os.path.isfile(hdffile):
                 data.append(pd.read_hdf(hdffile))
                 continue
 
             remote_url = imp_url + relative_loc
             f = helper.load(filename, local_dir, remote_url)
+            if f is None:
+                print('File {}/{} not available\n'.format(
+                    remote_url, filename))
+                continue
             readargs = {'names': ['Year', 'doy', 'Hour', 'Minute', 'sw_flag',
                                   'x_gse', 'y_gse', 'z_gse', 'y_gsm', 'z_gsm',
                                   'Nm', 'FCm', 'DWm',

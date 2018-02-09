@@ -74,8 +74,11 @@ def fgm(probe, rate, coords, starttime, endtime):
         helper._checkdir(local_dir)
 
         remote_url = remote_themis_dir + this_relative_dir
-
         cdf = helper.load(filename, local_dir, remote_url)
+        if cdf is None:
+            print('File {}/{}.cdf not available\n'.format(
+                remote_url, filename))
+            continue
 
         probestr = 'th' + probe
         ratestr = '_fg' + rate + '_'
