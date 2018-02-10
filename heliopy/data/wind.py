@@ -70,7 +70,8 @@ def _process(dirs, fnames, extension, local_base_dir, remote_base_url,
         df = processing_func(local_base_dir, directory, fname, extension)
 
         # Save dataframe to disk
-        df.to_hdf(hdfloc, '', mode='w', format='f')
+        if use_hdf:
+            df.to_hdf(hdf_loc, '', mode='w', format='f')
         data.append(df)
     return helper.timefilter(data, starttime, endtime)
 
