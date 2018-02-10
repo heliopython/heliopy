@@ -64,14 +64,14 @@ def _process(dirs, fnames, extension, local_base_dir, remote_base_url,
             helper._checkdir(local_dir)
             downloaded = download_func(remote_base_url, local_base_dir,
                                        directory, fname, extension)
-        if not downloaded:
-            continue
+            if not downloaded:
+                continue
         # Convert raw file to a dataframe
         df = processing_func(local_base_dir, directory, fname, extension)
 
         # Save dataframe to disk
         if use_hdf:
-            df.to_hdf(hdf_loc, '', mode='w', format='f')
+            df.to_hdf(hdf_loc, 'data', mode='w', format='f')
         data.append(df)
     return helper.timefilter(data, starttime, endtime)
 
