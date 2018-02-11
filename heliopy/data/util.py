@@ -13,6 +13,9 @@ import urllib.request as urlreq
 import numpy as np
 import pandas as pd
 
+from heliopy import config
+use_hdf = config['use_hdf']
+
 
 def process(dirs, fnames, extension, local_base_dir, remote_base_url,
             download_func, processing_func, starttime, endtime):
