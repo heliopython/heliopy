@@ -3,7 +3,7 @@ Utility functions for data downloading.
 
 **Note**: these methods are liable to change at any time.
 """
-from datetime import date, time, timedelta
+import datetime as dt
 import ftplib
 import os
 import sys
@@ -23,7 +23,7 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
         A list of directories relative to *local_base_dir*.
     fnames : list
         A list of filenames **without** their extension. Must be the
-        same length as *dirs.
+        same length as *dirs*.
     extension : str
         File extension of the raw files.
     local_base_dir : str
@@ -436,14 +436,14 @@ def _daysplitinterval(starttime, endtime):
         if starttime.date() == starttime_orig.date():
             stime = starttime.time()
         else:
-            stime = time.min
+            stime = dt.time.min
         if starttime.date() == endtime.date():
             etime = endtime.time()
         else:
-            etime = time.max
+            etime = dt.time.max
 
         out.append([starttime.date(), stime, etime])
-        starttime += timedelta(days=1)
+        starttime += dt.timedelta(days=1)
     return out
 
 
