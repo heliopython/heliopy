@@ -14,6 +14,11 @@ Backwards incompatible changes
 
 - :meth:`heliopy.data.spice.get_kernel` now returns a list of filenames instead
   of a single filename string.
+- Most of the functions that were in :mod:`heliopy.data.helper` have been
+  moved to :mod:`heliopy.data.util`. The ones the remain in
+  :mod:`heliopy.data.helper` are useful for users, and the ones in
+  :mod:`heliopy.data.util` are used internally as utility functions for
+  data import.
 
 Removed features
 ^^^^^^^^^^^^^^^^

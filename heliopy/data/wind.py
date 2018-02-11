@@ -57,8 +57,9 @@ def _load_wind_cdf(starttime, endtime, instrument,
 
         return util.cdf2df(cdf, 'Epoch', badvalues=badvalues)
 
-    return util.process(dirs, fnames, extension, local_base_dir, remote_base_url,
-                        download_func, processing_func, starttime, endtime)
+    return util.process(dirs, fnames, extension, local_base_dir,
+                        remote_base_url, download_func, processing_func,
+                        starttime, endtime)
 
 
 def swe_h1(starttime, endtime):
@@ -171,7 +172,7 @@ def swe_h3(starttime, endtime):
         energykey = 'Ve'
 
         df = util.pitchdist_cdf2df(cdf, distkeys, energykey, timekey,
-                                     anglelabels)
+                                   anglelabels)
 
         data.append(df)
 
@@ -272,10 +273,8 @@ def _mfi(starttime, endtime, version):
         badvalues = {'Bx_gse': -1e+31,
                      'By_gse': -1e+31,
                      'Bz_gse': -1e+31}
-        df = util.cdf2df(cdf,
-                           index_key=epoch_key,
-                           keys=keys,
-                           badvalues=badvalues)
+        df = util.cdf2df(cdf, index_key=epoch_key, keys=keys,
+                         badvalues=badvalues)
         if use_hdf:
             df.to_hdf(hdfloc, 'mag', mode='w', format='f')
         data.append(df)
@@ -384,7 +383,7 @@ def threedp_sfpd(starttime, endtime):
         util._checkdir(local_dir)
         remote_url = remote_wind_dir + this_relative_dir
         cdf = util.load(filename + '.cdf', local_dir, remote_url,
-                          guessversion=True)
+                        guessversion=True)
         if cdf is None:
             print('File {}/{} not available\n'.format(remote_url, filename))
             continue

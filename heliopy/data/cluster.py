@@ -116,7 +116,7 @@ def _download(probe, starttime, endtime, instrument, product_id):
         util._checkdir(local_dir)
         urlreq.urlretrieve(request_url,
                            filename=os.path.join(local_dir, filename),
-                           reporthook=util.reporthook)
+                           reporthook=util._reporthook)
         print('\n')
         # Extract tar.gz file
         tar = tarfile.open(os.path.join(local_dir, filename))
