@@ -138,30 +138,33 @@ def swe_h3(starttime, endtime):
     -------
     data : DataFrame
     """
-    # Directory relative to main WIND data directory
     relative_dir = os.path.join('swe', 'swe_h3')
-
+    # Get directories and filenames
+    dirs = []
+    fnames = []
     daylist = util._daysplitinterval(starttime, endtime)
-    data = []
     for day in daylist:
         date = day[0]
-        filename = 'wi_h3_swe_' +\
-            str(date.year) +\
-            str(date.month).zfill(2) +\
-            str(date.day).zfill(2) +\
-            '_v01.cdf'
-        this_relative_dir = os.path.join(relative_dir, str(day[0].year))
-        # Absolute path to local directory for this data file
-        local_dir = os.path.join(wind_dir, this_relative_dir)
-        util._checkdir(local_dir)
+        filename = 'wi_h3_swe_{}{:02}{:02}_v01'.format(
+            date.year, date.month, date.day)
+        fnames.append(filename)
+        local_dir = os.path.join(relative_dir, str(date.year))
+        dirs.append(local_dir)
+    extension = '.cdf'
+    local_base_dir = wind_dir
+    remote_base_url = remote_wind_dir
 
-        remote_url = remote_wind_dir + this_relative_dir
+    def download_func(remote_base_url, local_base_dir, directory,
+                      fname, extension):
+        remote_url = '{}{}'.format(remote_base_url, directory)
+        f = util.load(fname + extension,
+                      os.path.join(local_base_dir, directory),
+                      remote_url)
+        if f is None:
+            return False
+        return True
 
-        cdf = util.load(filename, local_dir, remote_url)
-        if cdf is None:
-            print('File {}/{} not available\n'.format(remote_url, filename))
-            continue
-
+    def processing_func(local_base_dir, directory, fname, extension):
         distkeys = []
         for i in range(0, 13):
             distkeys.append('f_pitch_E' + str(i).zfill(2))
@@ -171,12 +174,20 @@ def swe_h3(starttime, endtime):
         timekey = 'Epoch'
         energykey = 'Ve'
 
+        fname = fname + extension
+        directory = os.path.join(local_base_dir, directory)
+        cdf = util.load(fname, directory, '')
+        if cdf is None:
+            print('File {}/{}.cdf not available\n'.format(
+                remote_url, filename))
+            return None
         df = util.pitchdist_cdf2df(cdf, distkeys, energykey, timekey,
                                    anglelabels)
+        return df
 
-        data.append(df)
-
-    return util.timefilter(data, starttime, endtime)
+    return util.process(dirs, fnames, extension, local_base_dir,
+                        remote_base_url, download_func, processing_func,
+                        starttime, endtime)
 
 
 def mfi_h0(starttime, endtime):
