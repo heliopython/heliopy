@@ -35,7 +35,8 @@ def _process(dirs, fnames, extension, local_base_dir, remote_base_url,
     remote_base_url : str
         Remote base URL.
     download_func
-        Method that takes ``(remote_base_url, local_base_dir, directory, fname, extension)``
+        Method that takes
+        ``(remote_base_url, local_base_dir, directory, fname, extension)``
         and downloads the remote file.
     processing_func
         Method that takes the location of the local raw file, and
