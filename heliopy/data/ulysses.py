@@ -8,7 +8,7 @@ import pandas as pd
 from datetime import datetime, date
 from urllib.error import HTTPError
 
-from heliopy.data import helper
+from heliopy.data import util
 from heliopy import config
 
 use_hdf = config['use_hdf']
@@ -114,7 +114,7 @@ def _swics(starttime, endtime, names, product):
                 'delim_whitespace': True}
 
     data = []
-    dtimes = helper._daysplitinterval(starttime, endtime)
+    dtimes = util._daysplitinterval(starttime, endtime)
     # Loop through years
     for year in range(starttime.year, endtime.year + 1):
         swics_options['FILE_NAME'] = '{}{}.dat'.format(product,
@@ -132,7 +132,7 @@ def _swics(starttime, endtime, names, product):
             remote_url = ulysses_url
             for key in swics_options:
                 remote_url += key + '=' + swics_options[key] + '&'
-            f = helper.load(swics_options['FILE_NAME'], local_dir, remote_url)
+            f = util.load(swics_options['FILE_NAME'], local_dir, remote_url)
             if f is None:
                 print('File {}/{} not available\n'.format(
                     remote_url, filename))
@@ -145,7 +145,7 @@ def _swics(starttime, endtime, names, product):
             if use_hdf:
                 thisdata.to_hdf(local_hdf, 'swics')
         data.append(thisdata)
-    return helper.timefilter(data, starttime, endtime)
+    return util.timefilter(data, starttime, endtime)
 
 
 def fgm_hires(starttime, endtime):
@@ -170,7 +170,7 @@ def fgm_hires(starttime, endtime):
                 'delim_whitespace': True}
 
     data = []
-    dtimes = helper._daysplitinterval(starttime, endtime)
+    dtimes = util._daysplitinterval(starttime, endtime)
     # Loop through years
     for dtime in dtimes:
         date = dtime[0]
@@ -190,7 +190,7 @@ def fgm_hires(starttime, endtime):
             remote_url = ulysses_url
             for key in fgm_options:
                 remote_url += key + '=' + fgm_options[key] + '&'
-            f = helper.load(fgm_options['FILE_NAME'], local_dir, remote_url)
+            f = util.load(fgm_options['FILE_NAME'], local_dir, remote_url)
 
             # Read in data
             thisdata = pd.read_table(f, **readargs)
@@ -199,7 +199,7 @@ def fgm_hires(starttime, endtime):
             if use_hdf:
                 thisdata.to_hdf(local_hdf, 'fgm_hires')
         data.append(thisdata)
-    return helper.timefilter(data, starttime, endtime)
+    return util.timefilter(data, starttime, endtime)
 
 
 def swoops_ions(starttime, endtime):
@@ -227,7 +227,7 @@ def swoops_ions(starttime, endtime):
 
     data = []
     months_loaded = []
-    dtimes = helper._daysplitinterval(starttime, endtime)
+    dtimes = util._daysplitinterval(starttime, endtime)
     # Loop through individual days
     for dtime in dtimes:
         thisdate = dtime[0]
@@ -256,7 +256,7 @@ def swoops_ions(starttime, endtime):
 
         # Load data
         try:
-            f = helper.load(swoops_options['FILE_NAME'], local_dir, remote_url)
+            f = util.load(swoops_options['FILE_NAME'], local_dir, remote_url)
         except HTTPError:
             print('No SWOOPS ion data available for date %s' % first_day)
             continue
@@ -268,7 +268,7 @@ def swoops_ions(starttime, endtime):
         data.append(thisdata)
         months_loaded.append(first_day)
 
-    return helper.timefilter(data, starttime, endtime)
+    return util.timefilter(data, starttime, endtime)
 
 
 def _convert_ulysses_time(data):

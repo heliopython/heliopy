@@ -6,7 +6,7 @@ All data is publically available at ftp://spdf.gsfc.nasa.gov/pub/data/messenger
 import os
 import pandas as pd
 
-from heliopy.data import helper
+from heliopy.data import util
 from heliopy import config
 
 data_dir = config['download_dir']
@@ -33,7 +33,7 @@ def mag_rtn(starttime, endtime):
     # Directory relative to main WIND data directory
     relative_dir = 'rtn'
 
-    daylist = helper._daysplitinterval(starttime, endtime)
+    daylist = util._daysplitinterval(starttime, endtime)
     data = []
     for day in daylist:
         date = day[0]
@@ -54,11 +54,11 @@ def mag_rtn(starttime, endtime):
         filename = hdffile[:-4] + '.cdf'
         # Absolute path to local directory for this data file
         local_dir = os.path.join(mess_dir, this_relative_dir)
-        helper._checkdir(local_dir)
+        util._checkdir(local_dir)
 
         remote_url = os.path.join(remote_mess_dir, this_relative_dir)
 
-        cdf = helper.load(filename, local_dir, remote_url, guessversion=True)
+        cdf = util.load(filename, local_dir, remote_url, guessversion=True)
         if cdf is None:
             print('File {}/{} not available\n'.format(
                 remote_url, filename))
@@ -72,11 +72,11 @@ def mag_rtn(starttime, endtime):
                 'latitude_ecliptic': 'sc_Lat',
                 'radialDistance': 'sc_r',
                 'MissionElapsedTime': 'mission_time'}
-        df = helper.cdf2df(cdf, index_key='Epoch', keys=keys)
+        df = util.cdf2df(cdf, index_key='Epoch', keys=keys)
 
         if use_hdf:
             hdffile = filename[:-4] + '.hdf'
             df.to_hdf(hdfloc, key='data', mode='w')
         data.append(df)
 
-    return helper.timefilter(data, starttime, endtime)
+    return util.timefilter(data, starttime, endtime)

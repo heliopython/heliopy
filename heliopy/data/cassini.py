@@ -7,7 +7,7 @@ import os
 import pandas as pd
 import calendar
 
-from heliopy.data import helper
+from heliopy.data import util
 from heliopy import config
 
 data_dir = config['download_dir']
@@ -88,7 +88,7 @@ def mag_1min(starttime, endtime, coords):
             data.append(df)
             continue
 
-        f = helper.load(fname + '.TAB', local_dir, url)
+        f = util.load(fname + '.TAB', local_dir, url)
         if 'error_message' in f.readline():
             f.close()
             os.remove(os.path.join(local_dir, fname + '.TAB'))
@@ -103,7 +103,7 @@ def mag_1min(starttime, endtime, coords):
         if use_hdf:
             df.to_hdf(hdfloc, key='data', mode='w')
 
-    return helper.timefilter(data, starttime, endtime)
+    return util.timefilter(data, starttime, endtime)
 
 
 def mag_hires(starttime, endtime):
@@ -135,7 +135,7 @@ def mag_hires(starttime, endtime):
     base_url = ('http://pds-ppi.igpp.ucla.edu/ditdos/download?id='
                 'pds://PPI/CO-E_SW_J_S-MAG-3-RDR-FULL-RES-V1.0/DATA')
 
-    daylist = helper._daysplitinterval(starttime, endtime)
+    daylist = util._daysplitinterval(starttime, endtime)
     data = []
     for [day, stime, etime] in daylist:
         year = day.year
@@ -165,7 +165,7 @@ def mag_hires(starttime, endtime):
         df['coords'] = coords
 
         data.append(df)
-    return helper.timefilter(data, starttime, endtime)
+    return util.timefilter(data, starttime, endtime)
 
 
 def _mag_hires_helper(year, doy, local_dir, url, coords):
@@ -176,7 +176,7 @@ def _mag_hires_helper(year, doy, local_dir, url, coords):
     if os.path.isfile(hdfloc):
         return pd.read_hdf(hdfloc)
 
-    f = helper.load(fname + '.TAB', local_dir, url)
+    f = util.load(fname + '.TAB', local_dir, url)
     if f is None:
         raise RuntimeError(
             'No file named {} exits on remote server'.format(fname))
