@@ -7,7 +7,7 @@ import os
 import pandas as pd
 from datetime import datetime
 
-from heliopy.data import helper
+from heliopy.data import util
 from heliopy import config
 
 data_dir = config['download_dir']
@@ -83,7 +83,7 @@ def merged(probe, starttime, endtime, verbose=False):
                 continue
 
             remote_url = imp_url + relative_loc
-            f = helper.load(filename, local_dir, remote_url)
+            f = util.load(filename, local_dir, remote_url)
             if f is None:
                 print('File {}/{} not available\n'.format(
                     remote_url, filename))
@@ -133,7 +133,7 @@ def merged(probe, starttime, endtime, verbose=False):
                 thisdata.to_hdf(hdffile, key='distparams', mode='w')
             data.append(thisdata)
 
-    return helper.timefilter(data, starttime, endtime)
+    return util.timefilter(data, starttime, endtime)
 
 
 def mitplasma_h0(probe, starttime, endtime):
@@ -155,7 +155,7 @@ def mitplasma_h0(probe, starttime, endtime):
         Requested data.
     """
     data = []
-    dtimes = helper._daysplitinterval(starttime, endtime)
+    dtimes = util._daysplitinterval(starttime, endtime)
     # Loop through years
     for dtime in dtimes:
         date = dtime[0]
@@ -170,7 +170,7 @@ def mitplasma_h0(probe, starttime, endtime):
         local_dir = os.path.join(imp_dir, relative_loc)
         remote_url = imp_url + relative_loc
 
-        cdf = helper.load(filename, local_dir, remote_url)
+        cdf = util.load(filename, local_dir, remote_url)
         keys = {'EW_flowangle_best': 'EW_flowangle_best',
                 'EW_flowangle_mom': 'EW_flowangle_best',
                 'Epoch': 'Time',
@@ -187,7 +187,7 @@ def mitplasma_h0(probe, starttime, endtime):
                 'xyzgse': ['x_gse', 'y_gse', 'z_gse'],
                 'ygsm': 'ygsm',
                 'zgsm': 'zgsm'}
-        thisdata = helper.cdf2df(cdf, 'Epoch', keys)
+        thisdata = util.cdf2df(cdf, 'Epoch', keys)
         data.append(thisdata)
 
     data = pd.concat(data)
@@ -214,7 +214,7 @@ def mag320ms(probe, startTime, endTime):
             Requested data.
     """
     data = []
-    dtimes = helper._daysplitinterval(startTime, endTime)
+    dtimes = util._daysplitinterval(startTime, endTime)
     # Loop through years
     for dtime in dtimes:
         date = dtime[0]
@@ -235,13 +235,13 @@ def mag320ms(probe, startTime, endTime):
             continue
 
         remote_url = imp_url + relative_loc
-        cdf = helper.load(filename, local_dir, remote_url)
+        cdf = util.load(filename, local_dir, remote_url)
         keys = {'B': '|B|',
                 'BX': 'Bx',
                 'BY': 'By',
                 'BZ': 'Bz',
                 'Epoch': 'Time'}
-        thisdata = helper.cdf2df(cdf, 'Epoch', keys)
+        thisdata = util.cdf2df(cdf, 'Epoch', keys)
         data.append(thisdata)
         if use_hdf:
             thisdata.to_hdf(hdffile, key='merged', mode='w')
@@ -272,12 +272,12 @@ def mag15s(probe, starttime, endtime, verbose=False):
             Requested data.
     """
     data = []
-    dtimes = helper._daysplitinterval(starttime, endtime)
+    dtimes = util._daysplitinterval(starttime, endtime)
     # Loop through years
     for dtime in dtimes:
         startdt = dtime[0]
         year = startdt.year
-        doy = helper.dtime2doy(startdt)
+        doy = util.dtime2doy(startdt)
         if verbose:
             print('Loading IMP 15s mag probe {}, {:03d}/{}'.format(probe,
                                                                    doy,
@@ -298,7 +298,7 @@ def mag15s(probe, starttime, endtime, verbose=False):
             continue
 
         remote_url = imp_url + relative_loc
-        f = helper.load(filename, local_dir, remote_url)
+        f = util.load(filename, local_dir, remote_url)
         readargs = {'names': ['Year', 'doy', 'Second', 'Source flag',
                               'n points', 'x gse', 'y gse', 'z gsm',
                               'y gsm', 'z gsm',
@@ -327,4 +327,4 @@ def mag15s(probe, starttime, endtime, verbose=False):
         if use_hdf:
             thisdata.to_hdf(hdffile, key='distparams', mode='w')
         data.append(thisdata)
-    return helper.timefilter(data, starttime, endtime)
+    return util.timefilter(data, starttime, endtime)

@@ -25,7 +25,7 @@ from urllib.error import URLError
 from ftplib import FTP
 
 from heliopy import config
-from heliopy.data import helper
+from heliopy.data import util
 
 import astropy.constants as constants
 import astropy.units as u
@@ -196,8 +196,7 @@ def integrated_dists(probe, starttime, endtime, verbose=False):
         starttime += timedelta(days=1)
 
     for key in distlist:
-        distlist[key] = helper.timefilter(distlist[key], starttime_orig,
-                                          endtime)
+        distlist[key] = util.timefilter(distlist[key], starttime_orig, endtime)
     return distlist
 
 
@@ -331,7 +330,7 @@ def electron_dist_single(probe, year, doy, hour, minute, second,
     dist['pdf'] *= 1e12
     # Calculate spherical coordinates of energy bins
     dist['|v|'], _, dist['phi'] =\
-        helper._cart2sph(dist['vx'], dist['vy'], 0)
+        util._cart2sph(dist['vx'], dist['vy'], 0)
     # Calculate bin energy assuming particles are electrons
     dist['E_electron'] = 0.5 * constants.m_e.value *\
         ((dist['|v|']) ** 2)
@@ -406,7 +405,7 @@ def distparams(probe, starttime, endtime, verbose=False):
         paramlist.append(todays_params)
         starttime += timedelta(days=1)
 
-    return helper.timefilter(paramlist, starttime_orig, endtime)
+    return util.timefilter(paramlist, starttime_orig, endtime)
 
 
 def distparams_single(probe, year, doy, hour, minute, second):
@@ -436,7 +435,7 @@ def distparams_single(probe, year, doy, hour, minute, second):
     probe = _check_probe(probe)
     f, _ = _loaddistfile(probe, year, doy, hour, minute, second)
 
-    _, month, day = helper.doy2ymd(year, doy)
+    _, month, day = util.doy2ymd(year, doy)
     dtime = datetime(year, month, day, hour, minute, second)
     distparams = pd.Series(dtime, index=['Time'])
     # Ignore the Pizzo et. al. correction at top of file
@@ -640,7 +639,7 @@ def electron_dists(probe, starttime, endtime, remove_advect=False,
     if distlist == []:
         raise RuntimeError('No electron data available for times ' +
                            str(starttime_orig) + ' to ' + str(endtime))
-    return helper.timefilter(distlist, starttime_orig, endtime)
+    return util.timefilter(distlist, starttime_orig, endtime)
 
 
 def ion_dists(probe, starttime, endtime, remove_advect=False, verbose=False):
@@ -735,7 +734,7 @@ def ion_dists(probe, starttime, endtime, remove_advect=False, verbose=False):
     if distlist == []:
         raise RuntimeError('No data available for times ' +
                            str(starttime_orig) + ' to ' + str(endtime))
-    return helper.timefilter(distlist, starttime_orig, endtime)
+    return util.timefilter(distlist, starttime_orig, endtime)
 
 
 def ion_dist_single(probe, year, doy, hour, minute, second,
@@ -835,7 +834,7 @@ def ion_dist_single(probe, year, doy, hour, minute, second,
     dist['pdf'] *= 1e12
     # Calculate magnitude, elevation and azimuth of energy bins
     dist['|v|'], dist['theta'], dist['phi'] =\
-        helper._cart2sph(dist['vx'], dist['vy'], dist['vz'])
+        util._cart2sph(dist['vx'], dist['vy'], dist['vz'])
     # Calculate bin energy assuming particles are protons
     dist['E_proton'] = 0.5 * constants.m_p.value * ((dist['|v|']) ** 2)
 
@@ -879,7 +878,7 @@ def corefit(probe, starttime, endtime, verbose=False, try_download=True):
     """
     probe = _check_probe(probe)
 
-    daylist = helper._daysplitinterval(starttime, endtime)
+    daylist = util._daysplitinterval(starttime, endtime)
     data = []
     for day in daylist:
         this_date = day[0]
@@ -912,8 +911,8 @@ def corefit(probe, starttime, endtime, verbose=False, try_download=True):
                 remote_folder = remote_folder + 'helios{}/{}'.format(
                     probe, year)
 
-                f = helper.load(ascii_fname, floc, remote_folder,
-                                try_download=try_download)
+                f = util.load(ascii_fname, floc, remote_folder,
+                              try_download=try_download)
                 if f is None:
                     print('File {}/{} not available\n'.format(
                         remote_url, filename))
@@ -936,7 +935,7 @@ def corefit(probe, starttime, endtime, verbose=False, try_download=True):
             'No data to import for probe {} between {} and {}'.format(
                 probe, starttime, endtime))
 
-    return helper.timefilter(data, starttime, endtime)
+    return util.timefilter(data, starttime, endtime)
 
 
 def _merged_localdir(probe):
@@ -978,7 +977,7 @@ def merged(probe, starttime, endtime, verbose=True, try_download=True):
     """
     probe = _check_probe(probe)
 
-    daylist = helper._daysplitinterval(starttime, endtime)
+    daylist = util._daysplitinterval(starttime, endtime)
     data = []
     floc = _merged_localdir(probe)
     for day in daylist:
@@ -1018,7 +1017,7 @@ def merged(probe, starttime, endtime, verbose=True, try_download=True):
                          ' between ' + starttime.strftime(fmt) + ' and ' +
                          endtime.strftime(fmt))
 
-    return helper.timefilter(data, starttime, endtime)
+    return util.timefilter(data, starttime, endtime)
 
 
 def _merged_fromascii(probe, year, doy, try_download):
@@ -1050,7 +1049,7 @@ def _merged_fromascii(probe, year, doy, try_download):
     asciiloc = os.path.join(local_dir, filename)
 
     # Make sure file is downloaded
-    helper.load(filename, local_dir, remote_url, try_download=try_download)
+    util.load(filename, local_dir, remote_url, try_download=try_download)
 
     # Load data
     data = pd.read_table(asciiloc, delim_whitespace=True)
@@ -1150,7 +1149,7 @@ def mag_4hz(probe, starttime, endtime, verbose=True, try_download=True):
     if data == []:
         raise ValueError('No raw 4Hz mag data available')
 
-    data = helper.timefilter(data, starttime, endtime)
+    data = util.timefilter(data, starttime, endtime)
 
     if data.empty:
         raise ValueError('No 4Hz raw mag data available for entire interval')
@@ -1213,7 +1212,7 @@ def _fourHz_fromascii(probe, year, doy, try_download=True):
     if fname is None:
         raise ValueError('No mag data available locally or remotely')
 
-    asciiloc = helper.load(fname, local_dir, remote_url)
+    asciiloc = util.load(fname, local_dir, remote_url)
 
     # Read in data
     headings = ['Time', 'Bx', 'By', 'Bz', '|B|']
@@ -1332,7 +1331,7 @@ def mag_ness(probe, starttime, endtime, verbose=True, try_download=True):
     if data == []:
         raise ValueError('No 6s mag data avaialble between '
                          '{} and {}'.format(starttime, endtime))
-    return helper.timefilter(data, starttime, endtime)
+    return util.timefilter(data, starttime, endtime)
 
 
 def _mag_ness_fromascii(probe, year, doy, try_download=True):
@@ -1361,7 +1360,7 @@ def _mag_ness_fromascii(probe, year, doy, try_download=True):
     remote_url = ('ftp://spdf.sci.gsfc.nasa.gov/pub/data/helios/helios' +
                   probe + '/mag/6sec_ness/' + str(year) + '/')
     fname = _ness_fname(probe, year, doy) + '.asc'
-    f = helper.load(fname, local_dir, remote_url, try_download=try_download)
+    f = util.load(fname, local_dir, remote_url, try_download=try_download)
 
     # Read in data
     headings = ['probe', 'year', 'doy', 'hour', 'minute', 'second', 'naverage',

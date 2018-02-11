@@ -9,7 +9,7 @@ import os
 import pandas as pd
 import numpy as np
 
-from heliopy.data import helper
+from heliopy.data import util
 from heliopy import config
 
 data_dir = config['download_dir']
@@ -18,72 +18,13 @@ wind_dir = os.path.join(data_dir, 'wind')
 remote_wind_dir = 'ftp://spdf.gsfc.nasa.gov/pub/data/wind/'
 
 
-def _process(dirs, fnames, extension, local_base_dir, remote_base_url,
-             download_func, processing_func, starttime, endtime):
-    """
-    Parameters
-    ----------
-    dirs : list
-        A list of directories relative to *local_base_dir*.
-    fnames : list
-        A list of filenames **without** their extension. Must be the
-        same length as *dirs.
-    extension : str
-        File extension of the raw files.
-    local_base_dir : str
-        Local base directory.
-    remote_base_url : str
-        Remote base URL.
-    download_func
-        Method that takes
-        ``(remote_base_url, local_base_dir, directory, fname, extension)``
-        and downloads the remote file.
-    processing_func
-        Method that takes the location of the local raw file, and
-        returns a pandas `DataFrame` with the converted data.
-    starttime : datetime
-    endtime : datetime
-
-    Returns
-    -------
-    DataFrame
-        Requested data
-    """
-    data = []
-    for directory, fname in zip(dirs, fnames):
-        local_dir = os.path.join(local_base_dir, directory)
-        local_file = os.path.join(local_base_dir, directory, fname)
-        # Fist try to load local HDF file
-        hdf_loc = local_file + '.hdf'
-        if os.path.exists(hdf_loc):
-            data.append(pd.read_hdf(hdf_loc))
-            continue
-        # Now try raw file
-        raw_loc = local_file + extension
-        # If we can't find local file, try downloading
-        if not os.path.exists(raw_loc):
-            helper._checkdir(local_dir)
-            downloaded = download_func(remote_base_url, local_base_dir,
-                                       directory, fname, extension)
-            if not downloaded:
-                continue
-        # Convert raw file to a dataframe
-        df = processing_func(local_base_dir, directory, fname, extension)
-
-        # Save dataframe to disk
-        if use_hdf:
-            df.to_hdf(hdf_loc, 'data', mode='w', format='f')
-        data.append(df)
-    return helper.timefilter(data, starttime, endtime)
-
-
 def _load_wind_cdf(starttime, endtime, instrument,
                    data_product, fname, badvalues={}):
     relative_dir = os.path.join(instrument, data_product)
     # Get directories and filenames
     dirs = []
     fnames = []
-    daylist = helper._daysplitinterval(starttime, endtime)
+    daylist = util._daysplitinterval(starttime, endtime)
     for day in daylist:
         date = day[0]
         filename = 'wi_{}_{}{:02}{:02}_v01'.format(
@@ -98,9 +39,9 @@ def _load_wind_cdf(starttime, endtime, instrument,
     def download_func(remote_base_url, local_base_dir, directory,
                       fname, extension):
         remote_url = '{}{}'.format(remote_base_url, directory)
-        f = helper.load(fname + extension,
-                        os.path.join(local_base_dir, directory),
-                        remote_url)
+        f = util.load(fname + extension,
+                      os.path.join(local_base_dir, directory),
+                      remote_url)
         if f is None:
             return False
         return True
@@ -108,16 +49,16 @@ def _load_wind_cdf(starttime, endtime, instrument,
     def processing_func(local_base_dir, directory, fname, extension):
         fname = fname + extension
         directory = os.path.join(local_base_dir, directory)
-        cdf = helper.load(fname, directory, '')
+        cdf = util.load(fname, directory, '')
         if cdf is None:
             print('File {}/{}.cdf not available\n'.format(
                 remote_url, filename))
             return None
 
-        return helper.cdf2df(cdf, 'Epoch', badvalues=badvalues)
+        return util.cdf2df(cdf, 'Epoch', badvalues=badvalues)
 
-    return _process(dirs, fnames, extension, local_base_dir, remote_base_url,
-                    download_func, processing_func, starttime, endtime)
+    return util.process(dirs, fnames, extension, local_base_dir, remote_base_url,
+                        download_func, processing_func, starttime, endtime)
 
 
 def swe_h1(starttime, endtime):
@@ -199,7 +140,7 @@ def swe_h3(starttime, endtime):
     # Directory relative to main WIND data directory
     relative_dir = os.path.join('swe', 'swe_h3')
 
-    daylist = helper._daysplitinterval(starttime, endtime)
+    daylist = util._daysplitinterval(starttime, endtime)
     data = []
     for day in daylist:
         date = day[0]
@@ -211,11 +152,11 @@ def swe_h3(starttime, endtime):
         this_relative_dir = os.path.join(relative_dir, str(day[0].year))
         # Absolute path to local directory for this data file
         local_dir = os.path.join(wind_dir, this_relative_dir)
-        helper._checkdir(local_dir)
+        util._checkdir(local_dir)
 
         remote_url = remote_wind_dir + this_relative_dir
 
-        cdf = helper.load(filename, local_dir, remote_url)
+        cdf = util.load(filename, local_dir, remote_url)
         if cdf is None:
             print('File {}/{} not available\n'.format(remote_url, filename))
             continue
@@ -229,12 +170,12 @@ def swe_h3(starttime, endtime):
         timekey = 'Epoch'
         energykey = 'Ve'
 
-        df = helper.pitchdist_cdf2df(cdf, distkeys, energykey, timekey,
+        df = util.pitchdist_cdf2df(cdf, distkeys, energykey, timekey,
                                      anglelabels)
 
         data.append(df)
 
-    return helper.timefilter(data, starttime, endtime)
+    return util.timefilter(data, starttime, endtime)
 
 
 def mfi_h0(starttime, endtime):
@@ -294,7 +235,7 @@ def _mfi(starttime, endtime, version):
     # Directory relative to main WIND data directory
     relative_dir = os.path.join('mfi', 'mfi_' + version)
 
-    daylist = helper._daysplitinterval(starttime, endtime)
+    daylist = util._daysplitinterval(starttime, endtime)
     data = []
     for day in daylist:
         date = day[0]
@@ -313,9 +254,9 @@ def _mfi(starttime, endtime, version):
             data.append(df)
             continue
 
-        helper._checkdir(local_dir)
+        util._checkdir(local_dir)
         remote_url = remote_wind_dir + this_relative_dir
-        cdf = helper.load(filename, local_dir, remote_url, guessversion=True)
+        cdf = util.load(filename, local_dir, remote_url, guessversion=True)
         if cdf is None:
             print('File {}/{} not available\n'.format(remote_url, filename))
             continue
@@ -331,7 +272,7 @@ def _mfi(starttime, endtime, version):
         badvalues = {'Bx_gse': -1e+31,
                      'By_gse': -1e+31,
                      'Bz_gse': -1e+31}
-        df = helper.cdf2df(cdf,
+        df = util.cdf2df(cdf,
                            index_key=epoch_key,
                            keys=keys,
                            badvalues=badvalues)
@@ -339,7 +280,7 @@ def _mfi(starttime, endtime, version):
             df.to_hdf(hdfloc, 'mag', mode='w', format='f')
         data.append(df)
 
-    return helper.timefilter(data, starttime, endtime)
+    return util.timefilter(data, starttime, endtime)
 
 
 def threedp_pm(starttime, endtime):
@@ -363,7 +304,7 @@ def threedp_pm(starttime, endtime):
     # Directory relative to main WIND data directory
     relative_dir = os.path.join('3dp', '3dp_pm')
 
-    daylist = helper._daysplitinterval(starttime, endtime)
+    daylist = util._daysplitinterval(starttime, endtime)
     data = []
     for day in daylist:
         date = day[0]
@@ -382,9 +323,9 @@ def threedp_pm(starttime, endtime):
             data.append(df)
             continue
 
-        helper._checkdir(local_dir)
+        util._checkdir(local_dir)
         remote_url = remote_wind_dir + this_relative_dir
-        cdf = helper.load(filename, local_dir, remote_url, guessversion=True)
+        cdf = util.load(filename, local_dir, remote_url, guessversion=True)
         if cdf is None:
             print('File {}/{} not available\n'.format(remote_url, filename))
             continue
@@ -396,12 +337,12 @@ def threedp_pm(starttime, endtime):
                 'P_TEMP': 'T_p',
                 'P_VELS': ['vp_x', 'vp_y', 'vp_z'],
                 'Epoch': 'Time'}
-        df = helper.cdf2df(cdf, index_key='Epoch', keys=keys)
+        df = util.cdf2df(cdf, index_key='Epoch', keys=keys)
         if use_hdf:
             df.to_hdf(hdfloc, 'pm', mode='w')
         data.append(df)
 
-    return helper.timefilter(data, starttime, endtime)
+    return util.timefilter(data, starttime, endtime)
 
 
 def threedp_sfpd(starttime, endtime):
@@ -424,7 +365,7 @@ def threedp_sfpd(starttime, endtime):
     # Directory relative to main WIND data directory
     relative_dir = os.path.join('3dp', '3dp_sfpd')
 
-    daylist = helper._daysplitinterval(starttime, endtime)
+    daylist = util._daysplitinterval(starttime, endtime)
     data = []
     mag = []
     for (date, _, _) in daylist:
@@ -440,9 +381,9 @@ def threedp_sfpd(starttime, endtime):
             data.append(df)
             continue
 
-        helper._checkdir(local_dir)
+        util._checkdir(local_dir)
         remote_url = remote_wind_dir + this_relative_dir
-        cdf = helper.load(filename + '.cdf', local_dir, remote_url,
+        cdf = util.load(filename + '.cdf', local_dir, remote_url,
                           guessversion=True)
         if cdf is None:
             print('File {}/{} not available\n'.format(remote_url, filename))
@@ -470,5 +411,5 @@ def threedp_sfpd(starttime, endtime):
             data_today.to_hdf(hdfloc, 'sfpd', mode='w')
         data.append(data_today)
 
-    data = helper.timefilter(data, starttime, endtime)
+    data = util.timefilter(data, starttime, endtime)
     return data

@@ -8,7 +8,7 @@ import os
 import pandas as pd
 import numpy as np
 
-from heliopy.data import helper
+from heliopy.data import util
 from heliopy import config
 
 data_dir = config['download_dir']
@@ -59,7 +59,7 @@ def fgm(probe, rate, coords, starttime, endtime):
     # Directory relative to main THEMIS data directory
     relative_dir = os.path.join('th' + probe, 'l2', 'fgm')
 
-    daylist = helper._daysplitinterval(starttime, endtime)
+    daylist = util._daysplitinterval(starttime, endtime)
     data = []
     for day in daylist:
         date = day[0]
@@ -71,10 +71,10 @@ def fgm(probe, rate, coords, starttime, endtime):
             '_v01.cdf'
         # Absolute path to local directory for this data file
         local_dir = os.path.join(themis_dir, this_relative_dir)
-        helper._checkdir(local_dir)
+        util._checkdir(local_dir)
 
         remote_url = remote_themis_dir + this_relative_dir
-        cdf = helper.load(filename, local_dir, remote_url)
+        cdf = util.load(filename, local_dir, remote_url)
         if cdf is None:
             print('File {}/{} not available\n'.format(
                 remote_url, filename))
@@ -87,8 +87,8 @@ def fgm(probe, rate, coords, starttime, endtime):
                                               'By_' + coords,
                                               'Bz_' + coords],
                 probestr + ratestr + 'time': 'Time'}
-        df = helper.cdf2df(cdf, probestr + ratestr + 'time', keys,
-                           dtimeindex=False)
+        df = util.cdf2df(cdf, probestr + ratestr + 'time', keys,
+                         dtimeindex=False)
         df = df.set_index(pd.to_datetime(df.index.values, unit='s'))
         df['Time'] = df.index.values
         data.append(df)

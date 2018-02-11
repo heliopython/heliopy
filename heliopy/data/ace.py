@@ -7,7 +7,7 @@ ACE spacecraft homepage can be found at http://www.srl.caltech.edu/ACE/.
 import os
 import pandas as pd
 
-from heliopy.data import helper
+from heliopy.data import util
 from heliopy import config
 
 data_dir = config['download_dir']
@@ -24,7 +24,7 @@ def _ace(starttime, endtime, instrument, product, fname, keys, version='01',
     # Directory relative to main WIND data directory
     relative_dir = os.path.join(instrument, 'level_2_cdaweb', product)
 
-    daylist = helper._daysplitinterval(starttime, endtime)
+    daylist = util._daysplitinterval(starttime, endtime)
     data = []
     for day in daylist:
         date = day[0]
@@ -33,22 +33,20 @@ def _ace(starttime, endtime, instrument, product, fname, keys, version='01',
         this_relative_dir = os.path.join(relative_dir, str(date.year))
         # Absolute path to local directory for this data file
         local_dir = os.path.join(ace_dir, this_relative_dir)
-        helper._checkdir(local_dir)
+        util._checkdir(local_dir)
 
         remote_url = remote_ace_dir + this_relative_dir
-        cdf = helper.load(filename, local_dir, remote_url, guessversion=True)
+        cdf = util.load(filename, local_dir, remote_url, guessversion=True)
         if cdf is None:
             print('File {}/{} not available\n'.format(
                 remote_url, filename))
             continue
 
-        df = helper.cdf2df(cdf,
-                           index_key='Epoch',
-                           keys=keys,
-                           badvalues=badvalues)
+        df = util.cdf2df(cdf, index_key='Epoch',
+                         keys=keys, badvalues=badvalues)
         data.append(df)
 
-    data = helper.timefilter(data, starttime, endtime)
+    data = util.timefilter(data, starttime, endtime)
     return data
 
 

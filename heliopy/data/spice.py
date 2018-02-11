@@ -13,7 +13,7 @@ import os
 from urllib.request import urlretrieve
 
 from heliopy import config
-import heliopy.data.helper as helper
+import heliopy.data.util as util
 
 data_dir = config['download_dir']
 spice_dir = os.path.join(data_dir, 'spice')
@@ -55,5 +55,5 @@ def get_kernel(name):
             os.makedirs(spice_dir)
         if not os.path.exists(local_loc):
             print('Downloading {}'.format(url))
-            urlretrieve(url, local_loc, reporthook=helper._reporthook)
+            urlretrieve(url, local_loc, reporthook=util._reporthook)
     return locs
