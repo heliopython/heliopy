@@ -58,7 +58,7 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
         raw_loc = local_file + extension
         # If we can't find local file, try downloading
         if not os.path.exists(raw_loc):
-            helper._checkdir(local_dir)
+            _checkdir(local_dir)
             downloaded = download_func(remote_base_url, local_base_dir,
                                        directory, fname, extension)
             if not downloaded:
