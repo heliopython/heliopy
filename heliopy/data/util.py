@@ -18,7 +18,8 @@ use_hdf = config['use_hdf']
 
 
 def process(dirs, fnames, extension, local_base_dir, remote_base_url,
-            download_func, processing_func, starttime, endtime):
+            download_func, processing_func, starttime, endtime,
+            try_download=True):
     """
     Parameters
     ----------
@@ -28,7 +29,7 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
         A list of filenames **without** their extension. Must be the
         same length as *dirs*.
     extension : str
-        File extension of the raw files.
+        File extension of the raw files. **Must include leading dot**.
     local_base_dir : str
         Local base directory.
     remote_base_url : str
@@ -38,8 +39,8 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
         ``(remote_base_url, local_base_dir, directory, fname, extension)``
         and downloads the remote file.
     processing_func
-        Method that takes the location of the local raw file, and
-        returns a pandas `DataFrame` with the converted data.
+        Method that takes the directory of the local raw file, and the filename
+        of the local file and returns a pandas DataFrame.
     starttime : datetime
     endtime : datetime
 
@@ -61,20 +62,25 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
         raw_loc = local_file + extension
         # If we can't find local file, try downloading
         if not os.path.exists(raw_loc):
-            _checkdir(local_dir)
-            downloaded = download_func(remote_base_url, local_base_dir,
-                                       directory, fname, extension)
-            if not downloaded:
-                continue
-        # Convert raw file to a dataframe
-        df = processing_func(local_base_dir, directory, fname, extension)
-        if df is None:
-            continue
+            if try_download:
+                _checkdir(local_dir)
+                downloaded = download_func(remote_base_url, local_base_dir,
+                                           directory, fname, extension)
+                if not downloaded:
+                    print('File {}{}/{}{} not available\n'.format(
+                        remote_base_url, directory, fname, extension))
+                    continue
 
-        # Save dataframe to disk
-        if use_hdf:
-            df.to_hdf(hdf_loc, 'data', mode='w', format='f')
-        data.append(df)
+        if os.path.exists(raw_loc):
+            # Convert raw file to a dataframe
+            df = processing_func(local_dir, raw_loc)
+            if df is None:
+                continue
+
+            # Save dataframe to disk
+            if use_hdf:
+                df.to_hdf(hdf_loc, 'data', mode='w', format='f')
+            data.append(df)
     return timefilter(data, starttime, endtime)
 
 

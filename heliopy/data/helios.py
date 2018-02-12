@@ -901,21 +901,18 @@ def corefit(probe, starttime, endtime, verbose=False, try_download=True):
             return False
         return True
 
-    def processing_func(local_base_dir, directory, fname, extension):
-        fname = fname + extension
-        directory = os.path.join(local_base_dir, directory)
-        fname = os.path.join(directory, fname)
+    def processing_func(local_dir, fname):
+        fname = os.path.join(local_dir, fname)
         if not os.path.exists(fname):
             print('File {} not available\n'.format(fname))
             return None
-        df = pd.read_csv(fname,
-                         parse_dates=['Time'])
+        df = pd.read_csv(fname, parse_dates=['Time'])
 
         return df
 
     return util.process(dirs, fnames, extension, local_base_dir,
                         remote_base_url, download_func, processing_func,
-                        starttime, endtime)
+                        starttime, endtime, try_download)
 
 
 def _merged_localdir(probe):
