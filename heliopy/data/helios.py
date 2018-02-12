@@ -843,18 +843,6 @@ def ion_dist_single(probe, year, doy, hour, minute, second,
     return dist
 
 
-def _corefit_localdir(probe, year):
-    return os.path.join(helios_dir,
-                        'helios{}'.format(probe),
-                        'plasma',
-                        '{}'.format(year))
-
-
-def _corefit_fname(probe, year, doy):
-    # Return merged filename WITHOUT extension
-    return 'h{}_{}_{:03}_corefit'.format(probe, year, doy)
-
-
 def corefit(probe, starttime, endtime, verbose=False, try_download=True):
     """
     Read in merged data set
@@ -877,9 +865,9 @@ def corefit(probe, starttime, endtime, verbose=False, try_download=True):
         Data set
     """
     probe = _check_probe(probe)
-
+    dirs = []
+    fnames = []
     daylist = util._daysplitinterval(starttime, endtime)
-    data = []
     for day in daylist:
         this_date = day[0]
         # Check that data for this day exists
@@ -892,50 +880,39 @@ def corefit(probe, starttime, endtime, verbose=False, try_download=True):
 
         doy = int(this_date.strftime('%j'))
         year = this_date.year
-        floc = _corefit_localdir(probe, year)
+        floc = os.path.join('E1_experiment',
+                            'New_proton_corefit_data_2017', 'ascii',
+                            'helios{}'.format(probe), '{}'.format(year))
+        dirs.append(floc)
+        fname = 'h{}_{}_{:03}_corefit'.format(probe, year, doy)
+        fnames.append(fname)
 
-        hdfloc = os.path.join(floc, _corefit_fname(probe, year, doy) + '.hdf')
-        # If a hdf file exists
-        if os.path.isfile(hdfloc):
-            # Load data from already processed file
-            data.append(pd.read_hdf(hdfloc, 'table'))
-            if verbose:
-                print(year, doy)
-            continue
-        else:
-            try:
-                ascii_fname = _corefit_fname(probe, year, doy) + '.csv'
-                remote_folder = (
-                    'ftp://apollo.ssl.berkeley.edu/pub/helios-data/'
-                    'E1_experiment/New_proton_corefit_data_2017/ascii/')
-                remote_folder = remote_folder + 'helios{}/{}'.format(
-                    probe, year)
+    extension = '.csv'
+    local_base_dir = helios_dir
+    remote_base_url = 'ftp://apollo.ssl.berkeley.edu/pub/helios-data/'
 
-                f = util.load(ascii_fname, floc, remote_folder,
-                              try_download=try_download)
-                if f is None:
-                    print('File {}/{} not available\n'.format(
-                        remote_url, filename))
-                    continue
-                data.append(pd.read_csv(f, parse_dates=['Time']))
-                data[-1] = data[-1].set_index('Time')
-            except (FileNotFoundError, URLError, ValueError) as err:
-                if verbose:
-                    print(str(err))
-                    print(year, doy, 'No raw corefit data available')
-                continue
+    def download_func(remote_base_url, local_base_dir, directory,
+                      fname, extension):
+        remote_url = '{}{}'.format(remote_base_url, directory)
+        f = util.load(fname + extension,
+                      os.path.join(local_base_dir, directory),
+                      remote_url)
+        if f is None:
+            return False
+        return True
 
-        if use_hdf:
-            _save_hdf(data[-1], _corefit_localdir(probe, year),
-                      _corefit_fname(probe, year, doy))
+    def processing_func(local_dir, fname):
+        fname = os.path.join(local_dir, fname)
+        if not os.path.exists(fname):
+            print('File {} not available\n'.format(fname))
+            return None
+        df = pd.read_csv(fname, parse_dates=['Time'])
 
-    if data == []:
-        fmt = '%d-%m-%Y'
-        raise ValueError(
-            'No data to import for probe {} between {} and {}'.format(
-                probe, starttime, endtime))
+        return df
 
-    return util.timefilter(data, starttime, endtime)
+    return util.process(dirs, fnames, extension, local_base_dir,
+                        remote_base_url, download_func, processing_func,
+                        starttime, endtime, try_download)
 
 
 def _merged_localdir(probe):
