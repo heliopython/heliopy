@@ -172,12 +172,10 @@ def swe_h3(starttime, endtime):
         timekey = 'Epoch'
         energykey = 'Ve'
 
-        fname = fname + extension
-        directory = os.path.join(local_base_dir, directory)
         cdf = util.load(fname, local_dir, '')
         if cdf is None:
             print('File {}/{}.cdf not available\n'.format(
-                remote_url, filename))
+                local_dir, fname))
             return None
         df = util.pitchdist_cdf2df(cdf, distkeys, energykey, timekey,
                                    anglelabels)
