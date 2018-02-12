@@ -73,7 +73,7 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
 
         if os.path.exists(raw_loc):
             # Convert raw file to a dataframe
-            df = processing_func(local_dir, raw_loc)
+            df = processing_func(local_dir, fname + extension)
             if df is None:
                 continue
 

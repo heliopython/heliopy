@@ -50,7 +50,7 @@ def _load_wind_cdf(starttime, endtime, instrument,
         cdf = util.load(fname, directory, '')
         if cdf is None:
             print('File {}/{}.cdf not available\n'.format(
-                directory, filename))
+                directory, fname))
             return None
 
         return util.cdf2df(cdf, 'Epoch', badvalues=badvalues)
