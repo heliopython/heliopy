@@ -43,6 +43,9 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
         of the local file and returns a pandas DataFrame.
     starttime : datetime
     endtime : datetime
+    try_download : bool
+        If ``True``, try to download data. If ``False`` don't.
+        Default is ``True``.
 
     Returns
     -------
