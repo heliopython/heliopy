@@ -275,7 +275,7 @@ class TestHelios:
 
         starttime = datetime(2000, 1, 1, 0, 0, 0)
         endtime = datetime(2000, 1, 2, 0, 0, 0)
-        with pytest.raises(ValueError):
+        with pytest.raises(RuntimeError):
             helios.corefit(self.probe, starttime, endtime)
 
     def test_6sec_ness(self):
