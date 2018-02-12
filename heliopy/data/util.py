@@ -68,6 +68,8 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
                 continue
         # Convert raw file to a dataframe
         df = processing_func(local_base_dir, directory, fname, extension)
+        if df is None:
+            continue
 
         # Save dataframe to disk
         if use_hdf:
