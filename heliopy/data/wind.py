@@ -250,19 +250,11 @@ def _mfi(starttime, endtime, version):
     def download_func(remote_base_url, local_base_dir, directory,
                       fname, extension):
         remote_url = '{}{}'.format(remote_base_url, directory)
-        f = util.load(fname + extension,
-                      os.path.join(local_base_dir, directory),
-                      remote_url, guessversion=True)
-        if f is None:
-            return False
-        return True
+        util.load(fname + extension,
+                  os.path.join(local_base_dir, directory),
+                  remote_url, guessversion=True)
 
     def processing_func(directory, fname):
-        cdf = util.load(filename, local_dir, '')
-        if cdf is None:
-            print('File {}/{}.cdf not available\n'.format(
-                directory, fname))
-            return None
         cdf = util.load(fname, directory, '')
 
         epoch_dict = {'h0': 'Epoch3', 'h2': 'Epoch'}
