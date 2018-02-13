@@ -21,6 +21,9 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
             download_func, processing_func, starttime, endtime,
             try_download=True):
     """
+    The main utility method for systematically loading, downloading, and saving
+    data.
+
     Parameters
     ----------
     dirs : list
@@ -35,22 +38,39 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
     remote_base_url : str
         Remote base URL.
     download_func
-        Method that takes
-        ``(remote_base_url, local_base_dir, directory, fname, extension)``
-        and downloads the remote file.
+        Function that takes
+
+        - The remote base url
+        - The local base directory
+        - The relative directory (this is relative to the base url)
+        - A filename
+        - A file extension
+
+        and downloads the remote file. The signature must be::
+
+            def download_func(remote_base_url, local_base_dir,
+                              directory, fname, extension)
+
     processing_func
-        Method that takes the directory of the local raw file, and the filename
-        of the local file and returns a pandas DataFrame.
+        Function that takes the directory of the local raw file, and the
+        filename of the local file and returns a pandas DataFrame. The filename
+        given to *processing_func* includes the extension. The signature must
+        be::
+
+            def processing_func(local_dir, local_fname)
+
     starttime : datetime
+        Start of requested interval.
     endtime : datetime
+        End of requested interval.
     try_download : bool
         If ``True``, try to download data. If ``False`` don't.
         Default is ``True``.
 
     Returns
     -------
-    DataFrame
-        Requested data
+    :class:`~pandas.DataFrame`
+        Requested data.
     """
     data = []
     for directory, fname in zip(dirs, fnames):
