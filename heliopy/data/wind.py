@@ -258,7 +258,7 @@ def _mfi(starttime, endtime, version):
         return True
 
     def processing_func(directory, fname):
-        cdf = util.load(filename, local_dir, '', guessversion=True)
+        cdf = util.load(filename, local_dir, '')
         if cdf is None:
             print('File {}/{}.cdf not available\n'.format(
                 directory, fname))
