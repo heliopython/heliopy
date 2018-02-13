@@ -99,13 +99,14 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
         if os.path.exists(raw_loc):
             # Convert raw file to a dataframe
             df = processing_func(local_dir, fname + extension)
-            if df is None:
-                continue
 
             # Save dataframe to disk
             if use_hdf:
                 df.to_hdf(hdf_loc, 'data', mode='w', format='f')
             data.append(df)
+        else:
+            print('File {}/{}{} not available\n'.format(
+                local_dir, fname, extension))
     return timefilter(data, starttime, endtime)
 
 
