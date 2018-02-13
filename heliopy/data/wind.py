@@ -227,32 +227,42 @@ def _mfi(starttime, endtime, version):
     """
     # Directory relative to main WIND data directory
     relative_dir = os.path.join('mfi', 'mfi_' + version)
-
+    # Get directories and filenames
+    dirs = []
+    fnames = []
     daylist = util._daysplitinterval(starttime, endtime)
-    data = []
     for day in daylist:
         date = day[0]
-        this_relative_dir = os.path.join(relative_dir, str(day[0].year))
         # Absolute path to local directory for this data file
-        local_dir = os.path.join(wind_dir, this_relative_dir)
+        local_dir = os.path.join(wind_dir, relative_dir, str(day[0].year))
+        dirs.append(local_dir)
         filename = 'wi_' + version + '_mfi_' +\
             str(date.year) +\
             str(date.month).zfill(2) +\
             str(date.day).zfill(2) +\
-            '_v05.cdf'
-        hdfname = filename[:-4] + '.hdf'
-        hdfloc = os.path.join(local_dir, hdfname)
-        if os.path.isfile(hdfloc):
-            df = pd.read_hdf(hdfloc)
-            data.append(df)
-            continue
+            '_v05'
+        fnames.append(filename)
 
-        util._checkdir(local_dir)
-        remote_url = remote_wind_dir + this_relative_dir
-        cdf = util.load(filename, local_dir, remote_url, guessversion=True)
+    extension = '.cdf'
+    local_base_dir = wind_dir
+    remote_base_url = remote_wind_dir
+
+    def download_func(remote_base_url, local_base_dir, directory,
+                      fname, extension):
+        remote_url = '{}{}'.format(remote_base_url, directory)
+        f = util.load(fname + extension,
+                      os.path.join(local_base_dir, directory),
+                      remote_url, guessversion=True)
+        if f is None:
+            return False
+        return True
+
+    def processing_func(directory, fname):
+        cdf = util.load(filename, local_dir, '', guessversion=True)
         if cdf is None:
-            print('File {}/{} not available\n'.format(remote_url, filename))
-            continue
+            print('File {}/{}.cdf not available\n'.format(
+                directory, fname))
+            return None
 
         epoch_dict = {'h0': 'Epoch3', 'h2': 'Epoch'}
         mag_dict = {'h0': 'B3GSE', 'h2': 'BGSE'}
@@ -267,11 +277,11 @@ def _mfi(starttime, endtime, version):
                      'Bz_gse': -1e+31}
         df = util.cdf2df(cdf, index_key=epoch_key, keys=keys,
                          badvalues=badvalues)
-        if use_hdf:
-            df.to_hdf(hdfloc, 'mag', mode='w', format='f')
-        data.append(df)
+        return df
 
-    return util.timefilter(data, starttime, endtime)
+    return util.process(dirs, fnames, extension, local_base_dir,
+                        remote_base_url, download_func, processing_func,
+                        starttime, endtime)
 
 
 def threedp_pm(starttime, endtime):
