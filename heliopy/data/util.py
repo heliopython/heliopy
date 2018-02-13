@@ -59,6 +59,8 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
 
             def processing_func(local_dir, local_fname)
 
+        The files handed to *processing_func* are always guarenteed to exist.
+
     starttime : datetime
         Start of requested interval.
     endtime : datetime
