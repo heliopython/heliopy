@@ -234,7 +234,7 @@ def _mfi(starttime, endtime, version):
     for day in daylist:
         date = day[0]
         # Absolute path to local directory for this data file
-        local_dir = os.path.join(wind_dir, relative_dir, str(day[0].year))
+        local_dir = os.path.join(relative_dir, str(day[0].year))
         dirs.append(local_dir)
         filename = 'wi_' + version + '_mfi_' +\
             str(date.year) +\
@@ -263,6 +263,7 @@ def _mfi(starttime, endtime, version):
             print('File {}/{}.cdf not available\n'.format(
                 directory, fname))
             return None
+        cdf = util.load(fname, directory, '')
 
         epoch_dict = {'h0': 'Epoch3', 'h2': 'Epoch'}
         mag_dict = {'h0': 'B3GSE', 'h2': 'BGSE'}
