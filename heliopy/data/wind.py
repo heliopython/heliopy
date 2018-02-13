@@ -48,11 +48,6 @@ def _load_wind_cdf(starttime, endtime, instrument,
 
     def processing_func(directory, fname):
         cdf = util.load(fname, directory, '')
-        if cdf is None:
-            print('File {}/{}.cdf not available\n'.format(
-                directory, fname))
-            return None
-
         return util.cdf2df(cdf, 'Epoch', badvalues=badvalues)
 
     return util.process(dirs, fnames, extension, local_base_dir,
@@ -173,10 +168,6 @@ def swe_h3(starttime, endtime):
         energykey = 'Ve'
 
         cdf = util.load(fname, local_dir, '')
-        if cdf is None:
-            print('File {}/{}.cdf not available\n'.format(
-                local_dir, fname))
-            return None
         df = util.pitchdist_cdf2df(cdf, distkeys, energykey, timekey,
                                    anglelabels)
         return df
