@@ -894,12 +894,9 @@ def corefit(probe, starttime, endtime, verbose=False, try_download=True):
     def download_func(remote_base_url, local_base_dir, directory,
                       fname, extension):
         remote_url = '{}{}'.format(remote_base_url, directory)
-        f = util.load(fname + extension,
-                      os.path.join(local_base_dir, directory),
-                      remote_url)
-        if f is None:
-            return False
-        return True
+        util.load(fname + extension,
+                  os.path.join(local_base_dir, directory),
+                  remote_url)
 
     def processing_func(local_dir, fname):
         fname = os.path.join(local_dir, fname)
