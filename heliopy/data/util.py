@@ -89,9 +89,10 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
         if not os.path.exists(raw_loc):
             if try_download:
                 _checkdir(local_dir)
-                downloaded = download_func(remote_base_url, local_base_dir,
-                                           directory, fname, extension)
-                if not downloaded:
+                download_func(remote_base_url, local_base_dir,
+                              directory, fname, extension)
+                # Print a message if file hasn't been downloaded
+                if not os.path.exists(raw_loc):
                     print('File {}{}/{}{} not available\n'.format(
                         remote_base_url, directory, fname, extension))
                     continue
