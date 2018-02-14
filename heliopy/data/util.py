@@ -249,9 +249,10 @@ def cdf2df(cdf, index_key, keys=None, dtimeindex=True, badvalues=None):
     dtimeindex : bool, optional
         If ``True``, DataFrame index is parsed as a datetime.
         Default is ``True``.
-    badvalues : dict, optional
-        A dictionary that maps the new DataFrame keys to a list of bad
-        values to replace with nans.
+    badvalues : dict, list, optional
+        A dictionary that maps the new DataFrame column keys to a list of bad
+        values to replace with nans. Alternatively a list of numbers which are
+        replaced with nans in all columns.
 
     Returns
     -------

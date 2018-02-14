@@ -108,8 +108,7 @@ def swe_h0(starttime, endtime):
             'alpha_ratio': 'n_a/n_p',
             'Epoch': 'Time'}
     version = '06'
-    badvalues = {'n_p': [-1e31],
-                 'T_pr': [-1e31]}
+    badvalues = -1e31
     return _ace(starttime, endtime, instrument, product, fname, keys, version,
                 badvalues)
 
@@ -179,4 +178,6 @@ def swi_h2(starttime, endtime):
             'vthHe2': 'vthHe2',
             'vthO6': 'vthO6'}
     version = '09'
-    return _ace(starttime, endtime, instrument, product, fname, keys, version)
+    badvalues = -1e31
+    return _ace(starttime, endtime, instrument, product, fname,
+                keys, version, badvalues)
