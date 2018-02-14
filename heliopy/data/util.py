@@ -51,6 +51,9 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
             def download_func(remote_base_url, local_base_dir,
                               directory, fname, extension)
 
+        The function can also return the filename of the file it downloaded,
+        if this is different to the filename it is given.
+
     processing_func
         Function that takes the directory of the local raw file, and the
         filename of the local file and returns a pandas DataFrame. The filename
@@ -89,8 +92,14 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
         if not os.path.exists(raw_loc):
             if try_download:
                 _checkdir(local_dir)
-                download_func(remote_base_url, local_base_dir,
-                              directory, fname, extension)
+                new_fname = download_func(remote_base_url, local_base_dir,
+                                          directory, fname, extension)
+                if new_fname is not None:
+                    fname = new_fname
+                    local_file = os.path.join(local_base_dir, directory, fname)
+                    raw_loc = local_file + extension
+                    hdf_loc = local_file + '.hdf'
+                print(raw_loc)
                 # Print a message if file hasn't been downloaded
                 if not os.path.exists(raw_loc):
                     print('File {}{}/{}{} not available\n'.format(

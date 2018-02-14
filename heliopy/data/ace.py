@@ -41,6 +41,12 @@ def _ace(starttime, endtime, instrument, product, fname, keys, version='01',
         util.load(fname + extension,
                   os.path.join(local_base_dir, directory),
                   remote_base_url + directory, guessversion=True)
+        # Because the version might be different to the one we guess, work
+        # out the downloaded filename
+        for f in os.listdir(os.path.join(local_base_dir, directory)):
+            if (f[:-6] == (fname + extension)[:-6]):
+                # Return filename with '.cdf' stripped off the end
+                return f[:-4]
 
     def processing_func(local_dir, local_fname):
         cdf = util.load(local_fname, local_dir, '')
