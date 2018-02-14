@@ -25,29 +25,36 @@ def _ace(starttime, endtime, instrument, product, fname, keys, version='01',
     relative_dir = os.path.join(instrument, 'level_2_cdaweb', product)
 
     daylist = util._daysplitinterval(starttime, endtime)
-    data = []
+    dirs = []
+    fnames = []
+    extension = '.cdf'
     for day in daylist:
         date = day[0]
-        filename = 'ac_{}_{}{:02}{:02}_v{}.cdf'.format(
+        filename = 'ac_{}_{}{:02}{:02}_v{}'.format(
             fname, date.year, date.month, date.day, version)
+        fnames.append(filename)
         this_relative_dir = os.path.join(relative_dir, str(date.year))
-        # Absolute path to local directory for this data file
-        local_dir = os.path.join(ace_dir, this_relative_dir)
-        util._checkdir(local_dir)
+        dirs.append(this_relative_dir)
 
-        remote_url = remote_ace_dir + this_relative_dir
-        cdf = util.load(filename, local_dir, remote_url, guessversion=True)
-        if cdf is None:
-            print('File {}/{} not available\n'.format(
-                remote_url, filename))
-            continue
+    def download_func(remote_base_url, local_base_dir,
+                      directory, fname, extension):
+        util.load(fname + extension,
+                  os.path.join(local_base_dir, directory),
+                  remote_base_url + directory, guessversion=True)
+        # Because the version might be different to the one we guess, work
+        # out the downloaded filename
+        for f in os.listdir(os.path.join(local_base_dir, directory)):
+            if (f[:-6] == (fname + extension)[:-6]):
+                # Return filename with '.cdf' stripped off the end
+                return f[:-4]
 
-        df = util.cdf2df(cdf, index_key='Epoch',
-                         keys=keys, badvalues=badvalues)
-        data.append(df)
+    def processing_func(local_dir, local_fname):
+        cdf = util.load(local_fname, local_dir, '')
+        return util.cdf2df(cdf, index_key='Epoch',
+                           keys=keys, badvalues=badvalues)
 
-    data = util.timefilter(data, starttime, endtime)
-    return data
+    return util.process(dirs, fnames, extension, ace_dir, remote_ace_dir,
+                        download_func, processing_func, starttime, endtime)
 
 
 def mfi_h0(starttime, endtime):
