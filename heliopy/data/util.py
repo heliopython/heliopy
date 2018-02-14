@@ -5,6 +5,7 @@ Utility functions for data downloading.
 """
 import datetime as dt
 import ftplib
+import logging
 import os
 import sys
 import urllib.error as urlerror
@@ -15,6 +16,7 @@ import pandas as pd
 
 from heliopy import config
 use_hdf = config['use_hdf']
+logger = logging.getLogger(__name__)
 
 
 def process(dirs, fnames, extension, local_base_dir, remote_base_url,
@@ -93,8 +95,8 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
                               directory, fname, extension)
                 # Print a message if file hasn't been downloaded
                 if not os.path.exists(raw_loc):
-                    print('File {}{}/{}{} not available\n'.format(
-                        remote_base_url, directory, fname, extension))
+                    logger.info('File {}{}/{}{} not available\n'.format(
+                                remote_base_url, directory, fname, extension))
                     continue
 
         if os.path.exists(raw_loc):
@@ -106,8 +108,8 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
                 df.to_hdf(hdf_loc, 'data', mode='w', format='f')
             data.append(df)
         else:
-            print('File {}/{}{} not available\n'.format(
-                local_dir, fname, extension))
+            logger.info('File {}/{}{} not available\n'.format(
+                        local_dir, fname, extension))
     return timefilter(data, starttime, endtime)
 
 
