@@ -101,7 +101,10 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
                     local_file = os.path.join(local_base_dir, directory, fname)
                     raw_loc = local_file + extension
                     hdf_loc = local_file + '.hdf'
-                print(raw_loc)
+                    if os.path.exists(hdf_loc):
+                        data.append(pd.read_hdf(hdf_loc))
+                        continue
+
                 # Print a message if file hasn't been downloaded
                 if not os.path.exists(raw_loc):
                     logger.info('File {}{}/{}{} not available\n'.format(
