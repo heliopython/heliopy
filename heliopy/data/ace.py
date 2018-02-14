@@ -40,7 +40,7 @@ def _ace(starttime, endtime, instrument, product, fname, keys, version='01',
                       directory, fname, extension):
         util.load(fname + extension,
                   os.path.join(local_base_dir, directory),
-                  remote_url + directory, guessversion=True)
+                  remote_base_url + directory, guessversion=True)
 
     def processing_func(local_dir, local_fname):
         cdf = util.load(local_fname, local_dir, '')
