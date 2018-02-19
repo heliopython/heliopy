@@ -83,10 +83,12 @@
         {%- endif %}
         {%- endif %}
         {%- if show_sphinx and not last_updated %}
-          {% trans sphinx_version=sphinx_version|e %}Built with <a href="http://sphinx-doc.org/">Sphinx {{ sphinx_version }}.</a>{% endtrans %}
+          {% trans sphinx_version=sphinx_version|e %}Built with <a href="http://sphinx-doc.org/">Sphinx {{ sphinx_version }}</a>{% endtrans %}
         {%- endif %}
       </div>
       <div class="center-footer ">
+        <a href="http://docs.heliopy.org/en/stable/guide/code-of-conduct.html">Code of Conduct</a>
+        <span> • </span>
         <a href="https://github.com/heliopython/heliopy">Github</a>
         <span> • </span>
         <a href="https://riot.im/app/#/room/#heliopy:matrix.org">Matrix</a>

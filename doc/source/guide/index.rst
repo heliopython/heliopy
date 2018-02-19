@@ -7,3 +7,4 @@ HelioPy guide
    installing
    configuring
    whatsnew
+   code-of-conduct

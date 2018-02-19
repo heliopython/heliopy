@@ -497,7 +497,8 @@ div.figure p.caption span.caption-text {
 /* End Docs specific styling */
 
 .footer {
-  background-color: #fafafa;
+  background-color: #444;
+  color: white;
   bottom: 0;
   height: 3em;
   position: fixed;
