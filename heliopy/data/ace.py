@@ -16,8 +16,8 @@ remote_ace_dir = 'ftp://spdf.gsfc.nasa.gov/pub/data/ace/'
 remote_cda_dir = 'ftp://cdaweb.gsfc.nasa.gov/pub/data/ace/'
 
 
-def _ace(starttime, endtime, instrument, product, fname, keys={}, version='01',
-         badvalues={}):
+def _ace(starttime, endtime, instrument, product, fname, keys=None,
+         version='01', badvalues={}):
     """
     Generic method for downloading ACE data from cdaweb.
     """
