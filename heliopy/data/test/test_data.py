@@ -10,6 +10,7 @@ import heliopy.data.messenger as messenger
 import heliopy.data.cassini as cassini
 import heliopy.data.helper as helper
 import heliopy.data.spice as spice
+import heliopy.data.sunspot as sunspot
 from heliopy import config
 
 import pandas as pd
@@ -292,3 +293,16 @@ class TestHelios:
 class TestHelper:
     def test_listdata(self):
         helper.listdata()
+
+
+@pytest.mark.data
+class TestSunspot:
+
+    def test_daily(self):
+        assert len(sunspot.daily().columns) == 8
+
+    def test_monthly(self):
+        assert len(sunspot.monthly().columns) == 7
+
+    def test_yearly(self):
+        assert len(sunspot.yearly().columns) == 5

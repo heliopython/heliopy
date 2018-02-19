@@ -1,24 +1,63 @@
-#Obtain the data from http://www.sidc.be/silso/datafiles
-#Use CSV Format
-#Assuming the only data required by the user is the "Daily total sunspot number"
+import requests
+import datetime
+import pandas
+import os
 
-import requests #To download the CSV File
-import datetime #To get the current date time
-import pandas #To mess around with the CSV File 
-import os #Operating System re
+data_source_daily = 'http://www.sidc.be/silso/INFO/sndtotcsv.php'
+data_source_monthly = 'http://www.sidc.be/silso/INFO/snmtotcsv.php'
+data_source_yearly = 'http://www.sidc.be/silso/INFO/snytotcsv.php'
+head_d = ['Y', 'M', 'D', 'DecD', 'Daily', 'Std Dev', 'No Obs', 'Def/Prov Ind']
+head_m = ['Y', 'M', 'DecD', 'Monthly', 'Std Dev ', 'No Obs', 'Def/Prov Ind']
+head_y = ['Y', 'Y_Mean', 'Std Dev', 'No Obs', 'Def/Prov Ind']
+x = str(datetime.datetime.now())[:10]
 
-data_source = 'http://www.sidc.be/silso/INFO/sndtotcsv.php' #Link for the data source
 
-def data(): #If the user sends a 'get' string, the module executes
-    x = str(str(datetime.datetime.now())[:10]) +'_Sunspot_Data'+'.csv'    
-    if(os.path.exists(x) == True):
-        return pandas.read_csv(x, sep = ';', names = ['YY', 'MM', 'DD', 'DecDate', 'Daily SS.No.', 'Std. Dev.', 'No. Obs.', 'Def/Prov Ind.' ]) #Returning Pandas Dataframe
+def daily():
+    # For more info about the Daily Sunspot Number,
+    # Visit http://www.sidc.be/silso/infosndtot
+    data_source = data_source_daily
+    name = x + '_Sunspot_Data_Daily' + '.csv'
+    if(os.path.exists(name)):  # If already downloaded
+        return pandas.read_csv(name, sep=';', names=head_d)
     else:
-            source_csv = requests.get(data_source) #The file is downloaded into source_csv
-    if(source_csv.status_code != 200): #If the file has not been successfully downloaded
-        raise ValueError('URL is not a valid data source %s' %(data_source)) 
+            source_csv = requests.get(data_source)  # Downloading
+    if(source_csv.status_code != 200):  # File not found
+        raise ValueError('URL is not a valid data source %s' % (data_source))
     else:
-        with open(x, 'wb') as f: #Creating a .CSV file and exporting the data
+        with open(name, 'wb') as f:  # Write content into csv
             f.write(source_csv.content)
-            return pandas.read_csv(x, sep = ';', names = ['YY', 'MM', 'DD', 'DecDate', 'Daily SS.No.', 'Std. Dev.', 'No. Obs.', 'Def/Prov Ind.' ]) #Returning Pandas Dataframe
-         
+            return pandas.read_csv(name, sep=';', names=head_d)
+
+
+def monthly():
+    # For more info about the Monthly Sunspot Number,
+    # Visit http://www.sidc.be/silso/infosnmtot
+    data_source = data_source_monthly
+    name = x + '_Sunspot_Data_Monthly' + '.csv'
+    if(os.path.exists(name)):  # If already downloaded
+        return pandas.read_csv(name, sep=';', names=head_m)
+    else:
+            source_csv = requests.get(data_source)  # Downloading
+    if(source_csv.status_code != 200):  # File not found
+        raise ValueError('URL is not a valid data source %s' % (data_source))
+    else:
+        with open(name, 'wb') as f:  # Write content into csv
+            f.write(source_csv.content)
+            return pandas.read_csv(name, sep=';', names=head_m)
+
+
+def yearly():
+    # For more info about the Yearly Sunspot Number,
+    # Visit http://www.sidc.be/silso/infosnytot
+    data_source = data_source_yearly
+    name = x + '_Sunspot_Data_Yearly' + '.csv'
+    if(os.path.exists(name)):  # If already downloaded
+        return pandas.read_csv(name, sep=';', names=head_y)
+    else:
+            source_csv = requests.get(data_source)  # Downloading
+    if(source_csv.status_code != 200):  # File not found
+        raise ValueError('URL is not a valid data source %s' % (data_source))
+    else:
+        with open(name, 'wb') as f:  # Write content into csv
+            f.write(source_csv.content)
+            return pandas.read_csv(name, sep=';', names=head_y)
