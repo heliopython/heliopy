@@ -297,7 +297,10 @@ def cdf2df(cdf, index_key, keys=None, dtimeindex=True, badvalues=None):
             for i, subkey in enumerate(df_key):
                 df[subkey] = cdf[key][...][:, i]
         else:
-            df[df_key] = cdf[key][...]
+            try:
+                df[df_key] = cdf[key][...]
+            except Exception:
+                continue
     # Replace bad values with nans
     if badvalues is not None:
         df = df.replace(badvalues, np.nan)
