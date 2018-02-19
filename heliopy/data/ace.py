@@ -16,7 +16,7 @@ remote_ace_dir = 'ftp://spdf.gsfc.nasa.gov/pub/data/ace/'
 remote_cda_dir = 'ftp://cdaweb.gsfc.nasa.gov/pub/data/ace/'
 
 
-def _ace(starttime, endtime, instrument, product, fname, keys, version='01',
+def _ace(starttime, endtime, instrument, product, fname, keys={}, version='01',
          badvalues={}):
     """
     Generic method for downloading ACE data from cdaweb.
@@ -82,12 +82,9 @@ def mfi_h0(starttime, endtime):
     instrument = 'mag'
     product = 'mfi_h0'
     fname = 'h0_mfi'
-    keys = {'BGSEc': ['Bx_gse', 'By_gse', 'Bz_gse'],
-            'Magnitude': '|B|',
-            'SC_pos_GSE': ['sc_gse_x', 'sc_gse_y', 'sc_gse_z'],
-            'Epoch': 'Time'}
     version = '06'
-    return _ace(starttime, endtime, instrument, product, fname, keys, version)
+    return _ace(starttime, endtime, instrument, product,
+                fname, version=version)
 
 
 def swe_h0(starttime, endtime):
@@ -147,50 +144,7 @@ def swi_h2(starttime, endtime):
     instrument = 'swics'
     product = 'swi_h2'
     fname = 'h2_swi'
-    keys = {'Epoch': 'Time',
-            'C5_qual': 'C5_qual',
-            'C6to4': 'C6to4',
-            'C6to4_err': 'C6to4_err',
-            'C6to4_qual': 'C6to4_qual',
-            'C6to5': 'C6to5',
-            'C6to5_err': 'C6to5_err',
-            'C6to5_qual': 'C6to5_qual',
-            'Fe10_qual': 'Fe10_qual',
-            'FetoO': 'FetoO',
-            'FetoO_err': 'FetoO_err',
-            'FetoO_qual': 'FetoO_qual',
-            'He_qual': 'He_qual',
-            'O6_qual': 'O6_qual',
-            'O7to6': 'O7to6',
-            'O7to6_err': 'O7to6_err',
-            'O7to6_qual': 'O7to6_qual',
-            'SW_type': 'SW_type',
-            'avqC': 'avqC',
-            'avqC_err': 'avqC_err',
-            'avqC_qual': 'avqC_qual',
-            'avqFe': 'avqFe',
-            'avqFe_err': 'avqFe_err',
-            'avqFe_qual': 'avqFe_qual',
-            'avqMg': 'avqMg',
-            'avqMg_err': 'avqMg_err',
-            'avqMg_qual': 'avqMg_qual',
-            'avqO': 'avqO',
-            'avqO_err': 'avqO_err',
-            'avqO_qual': 'avqO_qual',
-            'avqSi': 'avqSi',
-            'avqSi_err': 'avqSi_err',
-            'avqSi_qual': 'avqSi_qual',
-            'nHe2': 'nHe2',
-            'nHe2_err': 'nHe2_err',
-            'vC5': 'vC5',
-            'vFe10': 'vFe10',
-            'vHe2': 'vHe2',
-            'vO6': 'vO6',
-            'vthC5': 'vthC5',
-            'vthFe10': 'vthFe10',
-            'vthHe2': 'vthHe2',
-            'vthO6': 'vthO6'}
     version = '09'
     badvalues = -1e31
     return _ace(starttime, endtime, instrument, product, fname,
-                keys, version, badvalues)
+                version=version, badvalues=badvalues)
