@@ -297,7 +297,10 @@ def cdf2df(cdf, index_key, keys=None, dtimeindex=True, badvalues=None):
             for i, subkey in enumerate(df_key):
                 df[subkey] = cdf[key][...][:, i]
         else:
-            df[df_key] = cdf[key][...]
+            try:
+                df[df_key] = cdf[key][...]
+            except Exception:
+                continue
     # Replace bad values with nans
     if badvalues is not None:
         df = df.replace(badvalues, np.nan)
@@ -400,7 +403,12 @@ def _load_local(local_dir, filename, filetype):
     # Import local file
     if filetype == 'cdf':
         from pycdf import pycdf
-        cdf = pycdf.CDF(os.path.join(local_dir, filename))
+        try:
+            cdf = pycdf.CDF(os.path.join(local_dir, filename))
+        except Exception as err:
+            print('Error whilst trying to load {}\n'.format(
+                os.path.join(local_dir, filename)))
+            raise err
         return cdf
     elif filetype == 'ascii':
         f = open(os.path.join(local_dir, filename))
