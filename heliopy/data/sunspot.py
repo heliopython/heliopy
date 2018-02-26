@@ -31,7 +31,7 @@ class _SunspotDownloader:
         if(source_csv.status_code != 200):  # File not found
             raise ValueError('Could not find source %s' % (self.data_source))
         else:
-            with open(name, 'wb') as f:  # Write content into csv
+            with open(self.fname, 'wb') as f:  # Write content into csv
                 f.write(source_csv.content)
                 return pandas.read_csv(self.fname, sep=';', names=self.header)
 
