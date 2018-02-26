@@ -1,3 +1,13 @@
+"""
+Sunspot
+-------
+
+Methods for automatically downloading sunspot number data.
+
+For more info about the sunspot number data, visit
+http://www.sidc.be/silso/infosndtot.
+"""
+
 import requests
 import datetime
 import pandas
@@ -13,8 +23,11 @@ x = str(datetime.datetime.now())[:10]
 
 
 def daily():
-    # For more info about the Daily Sunspot Number,
-    # Visit http://www.sidc.be/silso/infosndtot
+    """
+    Import daily sunspot number.
+
+    For more information, see http://www.sidc.be/silso/infosndtot.
+    """
     data_source = data_source_daily
     name = x + '_Sunspot_Data_Daily' + '.csv'
     if(os.path.exists(name)):  # If already downloaded
@@ -30,8 +43,11 @@ def daily():
 
 
 def monthly():
-    # For more info about the Monthly Sunspot Number,
-    # Visit http://www.sidc.be/silso/infosnmtot
+    """
+    Import monthly sunspot number.
+
+    For more information, see http://www.sidc.be/silso/infosnmtot.
+    """
     data_source = data_source_monthly
     name = x + '_Sunspot_Data_Monthly' + '.csv'
     if(os.path.exists(name)):  # If already downloaded
@@ -47,8 +63,11 @@ def monthly():
 
 
 def yearly():
-    # For more info about the Yearly Sunspot Number,
-    # Visit http://www.sidc.be/silso/infosnytot
+    """
+    Import yearly sunspot number.
+
+    For more information, see http://www.sidc.be/silso/infosnytot.
+    """
     data_source = data_source_yearly
     name = x + '_Sunspot_Data_Yearly' + '.csv'
     if(os.path.exists(name)):  # If already downloaded
