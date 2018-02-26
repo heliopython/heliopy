@@ -22,11 +22,13 @@ own sub-module:
    ulysses
    wind
 
-There is also a module for downloading SPICE kernels:
+There is also other modules for downloading SPICE kernels and sunspot number
+data:
 
 .. toctree::
 
    spice
+   sunspot
 
 a module with helper functions that apply generally to all data is available:
 
