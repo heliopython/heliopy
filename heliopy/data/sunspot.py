@@ -44,7 +44,8 @@ def daily():
     """
     data_source = 'http://www.sidc.be/silso/INFO/sndtotcsv.php'
     name = 'daily'
-    header = ['Y', 'M', 'D', 'DecD', 'Daily', 'Std Dev', 'No Obs', 'Def/Prov Ind']
+    header = ['Y', 'M', 'D', 'DecD', 'Daily',
+              'Std Dev', 'No Obs', 'Def/Prov Ind']
     Downloader = _SunspotDownloader(data_source, name, header)
     return Downloader.download()
 
@@ -57,7 +58,8 @@ def monthly():
     """
     data_source = 'http://www.sidc.be/silso/INFO/snmtotcsv.php'
     name = 'monthly'
-    header = ['Y', 'M', 'DecD', 'Monthly', 'Std Dev ', 'No Obs', 'Def/Prov Ind']
+    header = ['Y', 'M', 'DecD', 'Monthly',
+              'Std Dev ', 'No Obs', 'Def/Prov Ind']
     Downloader = _SunspotDownloader(data_source, name, header)
     return Downloader.download()
 
@@ -70,6 +72,7 @@ def yearly():
     """
     data_source = 'http://www.sidc.be/silso/INFO/snytotcsv.php'
     name = 'yearly'
-    header = ['Y', 'Y_Mean', 'Std Dev', 'No Obs', 'Def/Prov Ind']
+    header = ['Y', 'Y_Mean',
+              'Std Dev', 'No Obs', 'Def/Prov Ind']
     Downloader = _SunspotDownloader(data_source, name, header)
     return Downloader.download()
