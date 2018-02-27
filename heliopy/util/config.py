@@ -4,6 +4,7 @@ heliopy configuration utility
 import configparser
 import os
 import heliopy
+from pathlib import Path
 
 
 def get_config_file():
@@ -22,11 +23,11 @@ def get_config_file():
     config_filename = 'heliopyrc'
 
     # Get user configuration location
-    home_dir = os.path.expanduser("~")
-    config_file_1 = os.path.join(home_dir, '.heliopy', config_filename)
+    home_dir = Path(os.path.expanduser("~"))
+    config_file_1 = home_dir/'.heliopy'/config_filename
 
-    module_dir = os.path.dirname(heliopy.__file__)
-    config_file_2 = os.path.join(module_dir, config_filename)
+    module_dir = Path(os.path.dirname(heliopy.__file__))
+    config_file_2 = module_dir/config_filename
 
     for f in [config_file_1, config_file_2]:
         if os.path.isfile(f):
