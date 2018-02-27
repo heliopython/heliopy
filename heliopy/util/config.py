@@ -17,7 +17,7 @@ def get_config_file():
 
     Returns
     -------
-    loc : string
+    loc : Path
         Filepath of the ``heliopyrc`` configuration file
     """
     config_filename = 'heliopyrc'
