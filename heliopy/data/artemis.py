@@ -10,9 +10,10 @@ import numpy as np
 
 from heliopy.data import util
 from heliopy import config
+import pathlib
 
 data_dir = config['download_dir']
-themis_dir = data_dir + '/themis'
+themis_dir = data_dir / 'themis'
 remote_themis_dir = 'http://themis.ssl.berkeley.edu/data/themis/'
 valid_probes = ['a', 'b', 'c', 'd', 'e']
 
@@ -57,7 +58,7 @@ def fgm(probe, rate, coords, starttime, endtime):
                           'co-ordinate systems: %s') % (rate, valid_rates))
 
     # Directory relative to main THEMIS data directory
-    relative_dir = os.path.join('th' + probe, 'l2', 'fgm')
+    relative_dir = pathlib.Path('th'+probe)/'l2'/'fgm'
 
     daylist = util._daysplitinterval(starttime, endtime)
     data = []
