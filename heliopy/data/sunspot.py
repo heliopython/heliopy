@@ -5,7 +5,7 @@ Sunspot
 Methods for automatically downloading sunspot number data.
 
 For more info about the sunspot number data, visit
-http://www.sidc.be/silso/infosndtot.
+http://www.sidc.be/silso/datafiles.
 """
 
 import requests
