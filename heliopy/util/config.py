@@ -4,6 +4,7 @@ heliopy configuration utility
 import configparser
 import os
 import heliopy
+import pathlib
 
 
 def get_config_file():
@@ -22,14 +23,14 @@ def get_config_file():
     config_filename = 'heliopyrc'
 
     # Get user configuration location
-    home_dir = os.path.expanduser("~")
-    config_file_1 = os.path.join(home_dir, '.heliopy', config_filename)
+    home_dir = pathlib.Path.home()
+    config_file_1 = home_dir / '.heliopy' / config_filename
 
-    module_dir = os.path.dirname(heliopy.__file__)
-    config_file_2 = os.path.join(module_dir, config_filename)
+    module_dir = pathlib.Path(heliopy.__file__).parent
+    config_file_2 = module_dir / config_filename
 
     for f in [config_file_1, config_file_2]:
-        if os.path.isfile(f):
+        if pathlib.Path.is_file(f):
             return f
 
 
@@ -51,14 +52,12 @@ def load_config():
     config_dict = {}
 
     # Set data download directory
-    download_dir = os.path.expanduser(config['DEFAULT']['download_dir'])
-    if os.name == 'nt':
-        download_dir = download_dir.replace('/', '\\')
+    download_dir = pathlib.Path(config['DEFAULT']['download_dir']).expanduser()
     config_dict['download_dir'] = download_dir
     # Create data download if not created
-    if not os.path.isdir(download_dir):
+    if not pathlib.Path.is_dir(download_dir):
         print('Creating download directory {}'.format(download_dir))
-        os.makedirs(download_dir)
+        pathlib.Path(download_dir).mkdir(parents=True, exist_ok=True)
 
     # Set cluster cookie
     # Check environment variables for a cluster cookie
@@ -68,5 +67,5 @@ def load_config():
     config_dict['cluster_cookie'] = config['DEFAULT']['cluster_cookie']
 
     config_dict['use_hdf'] = config['DEFAULT']['use_hdf'] == 'True'
-
+    
     return config_dict
