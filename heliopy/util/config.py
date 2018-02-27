@@ -67,5 +67,4 @@ def load_config():
     config_dict['cluster_cookie'] = config['DEFAULT']['cluster_cookie']
 
     config_dict['use_hdf'] = config['DEFAULT']['use_hdf'] == 'True'
-    
     return config_dict
