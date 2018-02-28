@@ -17,7 +17,7 @@ def get_config_file():
 
     Returns
     -------
-    loc : Path
+    loc : String
         Filepath of the ``heliopyrc`` configuration file
     """
     config_filename = 'heliopyrc'
@@ -31,7 +31,7 @@ def get_config_file():
 
     for f in [config_file_1, config_file_2]:
         if pathlib.Path.is_file(f):
-            return f
+            return str(f)
 
 
 def load_config():
