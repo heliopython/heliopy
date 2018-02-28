@@ -15,7 +15,7 @@ from heliopy.data import util
 from heliopy import config
 
 data_dir = config['download_dir']
-mms_dir = os.path.join(data_dir, 'mms')
+mms_dir = data_dir / 'mms'
 remote_mms_dir = 'https://lasp.colorado.edu/mms/sdc/public/data/'
 
 
