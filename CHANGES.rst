@@ -8,6 +8,8 @@ New features
   "Helios 1" and "Helios 2".
 - :meth:`heliopy.spice.furnish` now accepts a list of filenames as well as
   individual filenames.
+- :meth:`heliopy.data.sunspot` added an additional functionality to import
+  sunspot data in three different timeframes - daily, monthly and yearly.
 
 Backwards incompatible changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -19,7 +21,9 @@ Backwards incompatible changes
   :mod:`heliopy.data.helper` are useful for users, and the ones in
   :mod:`heliopy.data.util` are used internally as utility functions for
   data import.
-
+- :meth:`get_config_file()` now returns a Path datatype instead
+  of a string.
+  
 Removed features
 ^^^^^^^^^^^^^^^^
 
@@ -47,6 +51,7 @@ Backwards incompatible changes
   dates/times at which to generate orbital positions, instead of a start time,
   stop time, and number of steps. The old behaviour can be recovered by
   manually generating an evenly spaced list of times.
+-
 
 Version 0.3
 -----------
