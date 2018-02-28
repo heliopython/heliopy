@@ -14,7 +14,7 @@ from heliopy import config
 
 data_dir = config['download_dir']
 use_hdf = config['use_hdf']
-wind_dir = os.path.join(data_dir, 'wind')
+wind_dir = data_dir / 'wind'
 remote_wind_dir = 'ftp://spdf.gsfc.nasa.gov/pub/data/wind/'
 
 
