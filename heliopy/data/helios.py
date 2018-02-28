@@ -32,7 +32,7 @@ import astropy.units as u
 
 data_dir = config['download_dir']
 use_hdf = config['use_hdf']
-helios_dir = os.path.join(data_dir, 'helios')
+helios_dir = data_dir / 'helios'
 
 
 def _check_probe(probe):
