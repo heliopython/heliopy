@@ -9,7 +9,7 @@ New features
 - :meth:`heliopy.spice.furnish` now accepts a list of filenames as well as
   individual filenames.
 - :meth:`heliopy.data.sunspot` added an additional functionality to import
-  in three different timeframes - daily, monthly and yearly.
+  sunspot data in three different timeframes - daily, monthly and yearly.
 
 Backwards incompatible changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
