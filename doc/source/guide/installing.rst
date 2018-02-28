@@ -5,6 +5,8 @@ HelioPy is built on the Python programming language. The easiest way to install
 Python with the various required scientific python modules is to use Anaconda.
 Installation instructions can be found `here <https://docs.continuum.io/anaconda/install/>`_.
 
+The supported versions of python are 3.5 and 3.6.
+
 Once you have a Python distribution installed, HelioPy can be installed using::
 
   pip install heliopy
