@@ -1,6 +1,7 @@
 *.pyc
 .cache*
 .coverage
+.pytest_cache
 
 doc/build*
 doc/auto_examples
