@@ -13,6 +13,9 @@ import datetime
 import pandas
 import os
 
+from heliopy import config
+data_dir = config['download_dir']
+
 
 class _SunspotDownloader:
     date_string = datetime.datetime.now().strftime('%Y-%m-%d')
@@ -22,18 +25,21 @@ class _SunspotDownloader:
         self.name = name
         self.header = header
         self.fname = self.date_string + '_sunspot_data_' + self.name + '.csv'
+        self.download_location = os.path.join(data_dir, 'sunspot', self.fname)
 
     def download(self):
-        if(os.path.exists(self.fname)):  # If already downloaded
-            return pandas.read_csv(self.fname, sep=';', names=self.header)
-        else:
-                source_csv = requests.get(self.data_source)  # Downloading
-        if(source_csv.status_code != 200):  # File not found
-            raise ValueError('Could not find source %s' % (self.data_source))
-        else:
-            with open(self.fname, 'wb') as f:  # Write content into csv
+        # If not already downloaded
+        if not os.path.exists(self.download_location):
+            source_csv = requests.get(self.data_source)  # Downloading
+            if(source_csv.status_code != 200):  # File not found
+                raise ValueError('Could not find source %s' %
+                                 (self.data_source))
+            # Write content into csv
+            with open(self.download_location, 'wb') as f:
                 f.write(source_csv.content)
-                return pandas.read_csv(self.fname, sep=';', names=self.header)
+
+        return pandas.read_csv(self.download_location,
+                               sep=';', names=self.header)
 
 
 def daily():
