@@ -8,6 +8,11 @@ This is essentially a library of SPICE kernels that are available online, so
 users don't have go go hunting for them. If you know a kernel is out of date,
 and HelioPy should be using a newer kernel please let us know at
 https://github.com/heliopython/heliopy/issues.
+
+.. csv-table:: Available kernels
+   :header: "Name", "URL"
+   :widths: 30, 70
+
 """
 import os
 from urllib.request import urlretrieve
@@ -26,6 +31,10 @@ available_kernels = {'lsk': ['https://naif.jpl.nasa.gov/pub/naif/generic_kernels
                      'Helios 2': ['https://naif.jpl.nasa.gov/pub/naif/HELIOS/kernels/spk/100607R_helios2_76016_80068.bsp'],
                      'Juno_Reconstructed': ['https://naif.jpl.nasa.gov/pub/naif/JUNO/kernels/spk/juno_rec_orbit.bsp'],
                      'Juno_Predicted': ['https://naif.jpl.nasa.gov/pub/naif/JUNO/kernels/spk/juno_pred_orbit.bsp']}
+
+
+for kernel in available_kernels:
+    __doc__ += '\n   {}, {}'.format(kernel, available_kernels[kernel])
 
 
 def get_kernel(name):
