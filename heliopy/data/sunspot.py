@@ -15,6 +15,7 @@ import os
 
 from heliopy import config
 data_dir = config['download_dir']
+download_dir = os.path.join(data_dir, 'sunspot')
 
 
 class _SunspotDownloader:
@@ -26,6 +27,8 @@ class _SunspotDownloader:
         self.header = header
         self.fname = self.date_string + '_sunspot_data_' + self.name + '.csv'
         self.download_location = os.path.join(data_dir, 'sunspot', self.fname)
+        if not os.path.exists(download_dir):
+            os.makedirs(download_dir)
 
     def download(self):
         # If not already downloaded
