@@ -588,7 +588,7 @@ def doy2ymd(y, doy):
     day : int
         Day of month
     """
-    d = datetime.strptime(str(y) + ':' + str(doy), '%Y:%j')
+    d = dt.datetime.strptime(str(y) + ':' + str(doy), '%Y:%j')
 
     return d.year, d.month, d.day
 
