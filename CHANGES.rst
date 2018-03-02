@@ -5,7 +5,7 @@ New features
 ^^^^^^^^^^^^
 
 - The inventory of spice kernels in :mod:`heliopy.data.spice` now includes
-  "Helios 1" and "Helios 2".
+  "Helios 1 Reconstructed", "Helios 1 Predicted", "Juno Reconstructed", "Juno Predicted" and "Helios 2" kernels
 - :meth:`heliopy.spice.furnish` now accepts a list of filenames as well as
   individual filenames.
 - :meth:`heliopy.data.sunspot` added an additional functionality to import
@@ -21,8 +21,6 @@ Backwards incompatible changes
   :mod:`heliopy.data.helper` are useful for users, and the ones in
   :mod:`heliopy.data.util` are used internally as utility functions for
   data import.
-- :meth:`get_config_file()` now returns a Path datatype instead
-  of a string.
   
 Removed features
 ^^^^^^^^^^^^^^^^
