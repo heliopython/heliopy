@@ -1155,10 +1155,7 @@ def _fourHz_fromascii(probe, year, doy, try_download=True):
             asciiloc = testloc
             break
     if asciiloc is not None:
-        if os.name == 'nt':
-            splitchar = '\\'
-        else:
-            splitchar = '/'
+        splitchar = '/'
         fname = str(asciiloc).split(splitchar)[-1]
         remote_url = None
     elif try_download is not False:

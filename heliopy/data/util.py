@@ -98,7 +98,7 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
                                           directory, fname, extension)
                 if new_fname is not None:
                     fname = new_fname
-                    local_file = os.path.join(local_base_dir, directory, fname)
+                    local_file = str(local_base_dir / directory / fname)
                     raw_loc = local_file + extension
                     hdf_loc = local_file + '.hdf'
                     if os.path.exists(hdf_loc):
@@ -362,7 +362,7 @@ def load(filename, local_dir, remote_url, guessversion=False,
     if _checkdir(local_dir):
         for f in local_dir.iterdir():
             if str(f) == filename or guessversion and \
-                    (str(f[:-6]) == filename[:-6]):
+                    (str(f)[:-6] == filename[:-6]):
                 filename = f
                 return _load_local(local_dir, f, filetype)
 
