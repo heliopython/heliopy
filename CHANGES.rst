@@ -4,13 +4,15 @@ Version 0.5
 New features
 ^^^^^^^^^^^^
 
+- :meth:`heliopy.data.sunspot` added an additional functionality to import
+  sunspot data in three different timeframes - daily, monthly and yearly.
 - The inventory of spice kernels in :mod:`heliopy.data.spice` now includes
-  "Helios 1 Reconstructed", "Helios 1 Predicted", "Juno Reconstructed", "Juno Predicted" and "Helios 2" kernels
+  "Helios 1 Reconstructed", "Helios 1 Predicted", "Juno Reconstructed",
+  "Juno Predicted" and "Helios 2" kernels.
 - :meth:`heliopy.spice.furnish` now accepts a list of filenames as well as
   individual filenames.
-- :meth:`heliopy.data.sunspot` adds new functionality to import
-  sunspot data in three different timeframes - daily, monthly and yearly.
-- :mod:`heliopy.data.ace` has a lot of new methods to download ACE data.
+- A lot of new functions for downloading ACE data have been added to
+  :mod:`heliopy.data.ace`.
 
 Backwards incompatible changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -41,7 +43,6 @@ New features
   methods added for loading SWICS data from the Ulysses mission.
 - :meth:`~heliopy.data.helper.cdfpeek` method added for peeking inside
   CDF files.
-- :meth:`~heliopy.data.ace.swi_h2` data import method added for ACE SWICS data.
 
 Backwards incompatible changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -50,7 +51,6 @@ Backwards incompatible changes
   dates/times at which to generate orbital positions, instead of a start time,
   stop time, and number of steps. The old behaviour can be recovered by
   manually generating an evenly spaced list of times.
--
 
 Version 0.3
 -----------
