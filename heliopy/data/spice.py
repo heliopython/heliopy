@@ -50,7 +50,7 @@ available_kernels = {'lsk': ['https://naif.jpl.nasa.gov/pub/naif/generic_kernels
 
 
 for kernel in available_kernels:
-    __doc__ += '\n   {}, {}'.format(kernel, available_kernels[kernel])
+    __doc__ += '\n   {}, {}'.format(kernel, str(available_kernels[kernel]).replace(',', 'and'))
 
 
 def get_kernel(name):
