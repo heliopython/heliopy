@@ -404,7 +404,7 @@ def _load_local(local_dir, filename, filetype):
     if filetype == 'cdf':
         from pycdf import pycdf
         try:
-            cdf = pycdf.CDF(local_dir / filename)
+            cdf = pycdf.CDF(str(local_dir / filename))
         except Exception as err:
             print('Error whilst trying to load {}\n'.format(
                 local_dir / filename))
@@ -456,7 +456,7 @@ def _checkdir(directory):
 
     Parameters
     ----------
-    directory : string
+    directory : PosixPath
         Directory to check.
 
     Returns

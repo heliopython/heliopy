@@ -78,7 +78,7 @@ def merged(probe, starttime, endtime, verbose=False):
 
             local_dir = imp_dir / relative_loc
             hdffile = local_dir / str(filename[:-4] + '.hdf')
-            if hdffile():
+            if hdffile.exists():
                 data.append(pd.read_hdf(hdffile))
                 continue
 

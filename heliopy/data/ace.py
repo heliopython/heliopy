@@ -41,15 +41,15 @@ def _ace(starttime, endtime, instrument, product, fname, keys=None,
         def check_exists():
             # Because the version might be different to the one we guess, work
             # out the downloaded filename
-            for f in os.listdir(os.path.join(local_base_dir, directory)):
-                if (f[:-6] == (fname + extension)[:-6]):
+            for f in (local_base_dir / directory).iterdir():
+                if (str(f)[:-6] == (fname + extension)[:-6]):
                     # Return filename with '.cdf' stripped off the end
                     return f[:-4]
         if check_exists() is not None:
             return check_exists()
         # Now load remotely
         util.load(fname + extension,
-                  os.path.join(local_base_dir, directory),
+                  (local_base_dir / directory),
                   remote_base_url + directory, guessversion=True)
         if check_exists() is not None:
             return check_exists()
