@@ -10,7 +10,7 @@ and HelioPy should be using a newer kernel please let us know at
 https://github.com/heliopython/heliopy/issues.
 
 .. csv-table:: Available kernels
-   :header: "Name", "URL"
+   :header: "Name", "URL(s)"
    :widths: 30, 70
 
 """
@@ -50,7 +50,10 @@ available_kernels = {'lsk': ['https://naif.jpl.nasa.gov/pub/naif/generic_kernels
 
 
 for kernel in available_kernels:
-    __doc__ += '\n   {}, {}'.format(kernel, str(available_kernels[kernel]).replace(',', ' and'))
+    __doc__ += '\n   {}, '.format(kernel)
+    for url in available_kernels[kernel]:
+        __doc__ += '{} '.format(url)
+
 
 
 def get_kernel(name):
