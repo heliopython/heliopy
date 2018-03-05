@@ -44,7 +44,7 @@ def _ace(starttime, endtime, instrument, product, fname, keys=None,
             for f in (local_base_dir / directory).iterdir():
                 if (str(f)[:-6] == (fname + extension)[:-6]):
                     # Return filename with '.cdf' stripped off the end
-                    return f[:-4]
+                    return str(f)[:-4]
         if check_exists() is not None:
             return check_exists()
         # Now load remotely
