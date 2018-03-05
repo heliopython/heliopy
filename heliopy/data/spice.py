@@ -55,7 +55,6 @@ for kernel in available_kernels:
         __doc__ += '{} '.format(url)
 
 
-
 def get_kernel(name):
     """
     Get the local location of a kernel.
