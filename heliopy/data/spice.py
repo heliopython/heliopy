@@ -10,6 +10,7 @@ and HelioPy should be using a newer kernel please let us know at
 https://github.com/heliopython/heliopy/issues.
 
 .. csv-table:: Available kernels
+   :name: data_spice_kernels
    :header: "Name", "URL(s)"
    :widths: 30, 70
 
@@ -48,7 +49,8 @@ def get_kernel(name):
     Parameters
     ----------
     name : str
-        Kernel name. See PUT LINK HERE for a list of available names.
+        Kernel name. See :ref:`data_spice_kernels` for a list of
+        available names.
 
     Returns
     -------
