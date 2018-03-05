@@ -65,7 +65,7 @@ def get_kernel(name):
     for url in available_kernels[name]:
         fname = url.split('/')[-1]
         local_loc = spice_dir / fname
-        locs.append(local_loc)
+        locs.append(str(local_loc))
         if not spice_dir.exists():
             spice_dir.mkdir()
         if not local_loc.exists():

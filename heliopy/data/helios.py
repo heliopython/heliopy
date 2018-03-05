@@ -1159,7 +1159,7 @@ def _fourHz_fromascii(probe, year, doy, try_download=True):
             splitchar = '\\'
         else:
             splitchar = '/'
-        fname = asciiloc.split(splitchar)[-1]
+        fname = str(asciiloc).split(splitchar)[-1]
         remote_url = None
     elif try_download is not False:
         ftpsite = 'apollo.ssl.berkeley.edu'
