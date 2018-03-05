@@ -21,7 +21,7 @@ from heliopy.data import util
 data_dir = config['download_dir']
 cda_cookie = config['cluster_cookie']
 csa_url = 'https://csa.esac.esa.int/csa/aio/product-action?'
-cluster_dir = os.path.join(data_dir, 'cluster')
+cluster_dir = data_dir / 'cluster'
 
 # Create request dictionary to which the data product, start time and end times
 # can be added to later.

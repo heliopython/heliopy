@@ -11,7 +11,7 @@ from heliopy.data import util
 from heliopy import config
 
 data_dir = config['download_dir']
-ace_dir = os.path.join(data_dir, 'ace')
+ace_dir = data_dir / 'ace'
 remote_ace_dir = 'ftp://spdf.gsfc.nasa.gov/pub/data/ace/'
 remote_cda_dir = 'ftp://cdaweb.gsfc.nasa.gov/pub/data/ace/'
 

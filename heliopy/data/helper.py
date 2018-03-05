@@ -65,7 +65,9 @@ def listdata(probes=None):
     """
     data_dir = config['download_dir']
     if probes is None:
-        probes = os.listdir(data_dir)
+        probes = list()
+        for dir in data_dir.iterdir():
+            probes.append(str(dir))
 
     # Remove directories that start with a .
     probes = [probe for probe in probes if probe[0] != '.']
@@ -73,7 +75,7 @@ def listdata(probes=None):
 
     sizes = np.zeros((len(probes), 2))
     for i, probe in enumerate(probes):
-        probe_dir = os.path.join(data_dir, probe)
+        probe_dir = str(data_dir / probe)
         for dirname, dirnames, filenames in os.walk(probe_dir):
             for f in filenames:
                 fsize = os.stat(os.path.join(dirname, f)).st_size

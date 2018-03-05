@@ -12,7 +12,7 @@ from heliopy.data import util
 from heliopy import config
 
 data_dir = config['download_dir']
-themis_dir = data_dir + '/themis'
+themis_dir = data_dir / 'themis'
 remote_themis_dir = 'http://themis.ssl.berkeley.edu/data/themis/'
 valid_probes = ['a', 'b', 'c', 'd', 'e']
 

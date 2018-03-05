@@ -35,7 +35,7 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
         same length as *dirs*.
     extension : str
         File extension of the raw files. **Must include leading dot**.
-    local_base_dir : str
+    local_base_dir : PosixPath
         Local base directory.
     remote_base_url : str
         Remote base URL.
@@ -81,15 +81,15 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
     """
     data = []
     for directory, fname in zip(dirs, fnames):
-        local_dir = os.path.join(local_base_dir, directory)
-        local_file = os.path.join(local_base_dir, directory, fname)
+        local_dir = local_base_dir / directory
+        local_file = local_base_dir / directory / fname
         # Fist try to load local HDF file
-        hdf_loc = local_file + '.hdf'
+        hdf_loc = str(local_file) + '.hdf'
         if os.path.exists(hdf_loc):
             data.append(pd.read_hdf(hdf_loc))
             continue
         # Now try raw file
-        raw_loc = local_file + extension
+        raw_loc = str(local_file) + extension
         # If we can't find local file, try downloading
         if not os.path.exists(raw_loc):
             if try_download:
@@ -322,7 +322,7 @@ def load(filename, local_dir, remote_url, guessversion=False,
     ----------
     filename : string
         Name of file
-    local_dir : string
+    local_dir : PosixPath
         Local location of file
     remote_url : string
         Remote location of file
@@ -360,7 +360,7 @@ def load(filename, local_dir, remote_url, guessversion=False,
 
     # Try to load locally
     if _checkdir(local_dir):
-        for f in os.listdir(local_dir):
+        for f in local_dir.iterdir():
             if f == filename or guessversion and (f[:-6] == filename[:-6]):
                 filename = f
                 return _load_local(local_dir, f, filetype)
@@ -404,14 +404,14 @@ def _load_local(local_dir, filename, filetype):
     if filetype == 'cdf':
         from pycdf import pycdf
         try:
-            cdf = pycdf.CDF(os.path.join(local_dir, filename))
+            cdf = pycdf.CDF(local_dir / filename)
         except Exception as err:
             print('Error whilst trying to load {}\n'.format(
-                os.path.join(local_dir, filename)))
+                local_dir / filename))
             raise err
         return cdf
     elif filetype == 'ascii':
-        f = open(os.path.join(local_dir, filename))
+        f = (local_dir / filename).open()
         return f
 
 
@@ -433,7 +433,7 @@ def _reporthook(blocknum, blocksize, totalsize):
 def _load_remote(remote_url, filename, local_dir, filetype):
     print('Downloading', remote_url + '/' + filename)
     urlreq.urlretrieve(remote_url + '/' + filename,
-                       filename=os.path.join(local_dir, filename),
+                       filename=str(local_dir / filename),
                        reporthook=_reporthook)
     print('\n')
     return _load_local(local_dir, filename, filetype)
@@ -465,9 +465,9 @@ def _checkdir(directory):
         True if directory exists, False if directory didn't exist when
         function was called.
     """
-    if not os.path.exists(directory):
+    if not directory.exists():
         print('Creating new directory', directory)
-        os.makedirs(directory)
+        directory.mkdir(exist_ok=True, parents=True)
         return False
     else:
         return True

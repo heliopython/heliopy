@@ -15,7 +15,7 @@ import os
 
 from heliopy import config
 data_dir = config['download_dir']
-download_dir = os.path.join(data_dir, 'sunspot')
+download_dir = data_dir / 'sunspot'
 
 
 class _SunspotDownloader:
@@ -26,19 +26,19 @@ class _SunspotDownloader:
         self.name = name
         self.header = header
         self.fname = self.date_string + '_sunspot_data_' + self.name + '.csv'
-        self.download_location = os.path.join(data_dir, 'sunspot', self.fname)
-        if not os.path.exists(download_dir):
-            os.makedirs(download_dir)
+        self.download_location = data_dir / 'sunspot' / self.fname
+        if not download_dir.exists():
+            download_dir.mkdir(exist_ok=True, parents=True)
 
     def download(self):
         # If not already downloaded
-        if not os.path.exists(self.download_location):
+        if not self.download_location.exists():
             source_csv = requests.get(self.data_source)  # Downloading
             if(source_csv.status_code != 200):  # File not found
                 raise ValueError('Could not find source %s' %
                                  (self.data_source))
             # Write content into csv
-            with open(self.download_location, 'wb') as f:
+            with self.download_location.open(mode='wb') as f:
                 f.write(source_csv.content)
 
         return pandas.read_csv(self.download_location,

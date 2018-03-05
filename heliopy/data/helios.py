@@ -32,7 +32,7 @@ import astropy.units as u
 
 data_dir = config['download_dir']
 use_hdf = config['use_hdf']
-helios_dir = os.path.join(data_dir, 'helios')
+helios_dir = data_dir / 'helios'
 
 
 def _check_probe(probe):
@@ -895,11 +895,11 @@ def corefit(probe, starttime, endtime, verbose=False, try_download=True):
                       fname, extension):
         remote_url = '{}{}'.format(remote_base_url, directory)
         util.load(fname + extension,
-                  os.path.join(local_base_dir, directory),
+                  local_base_dir / directory,
                   remote_url)
 
     def processing_func(local_dir, fname):
-        fname = os.path.join(local_dir, fname)
+        fname = local_dir / fname
         return pd.read_csv(fname, parse_dates=['Time'])
 
     return util.process(dirs, fnames, extension, local_base_dir,
@@ -908,10 +908,10 @@ def corefit(probe, starttime, endtime, verbose=False, try_download=True):
 
 
 def _merged_localdir(probe):
-    return os.path.join(helios_dir,
-                        'helios{}'.format(probe),
-                        'merged',
-                        'he{}_40sec'.format(probe))
+    return (helios_dir /
+            'helios{}'.format(probe) /
+            'merged' /
+            'he{}_40sec'.format(probe))
 
 
 def _merged_fname(probe, year, doy):
@@ -962,9 +962,9 @@ def merged(probe, starttime, endtime, verbose=True, try_download=True):
         doy = int(this_date.strftime('%j'))
         year = this_date.year
 
-        hdfloc = os.path.join(floc, _merged_fname(probe, year, doy) + '.hdf')
+        hdfloc = floc / str(_merged_fname(probe, year, doy) + '.hdf')
         # Data not processed yet, try to process and load it
-        if not os.path.isfile(hdfloc):
+        if not hdfloc.is_file():
             try:
                 data.append(_merged_fromascii(probe, year, doy,
                             try_download=try_download))
@@ -1015,7 +1015,7 @@ def _merged_fromascii(probe, year, doy, try_download):
     remote_url = ('ftp://cdaweb.gsfc.nasa.gov/pub/data/helios/'
                   'helios{}/merged/he{}_40sec'.format(probe, probe))
     filename = _merged_fname(probe, year, doy) + '.dat'
-    asciiloc = os.path.join(local_dir, filename)
+    asciiloc = local_dir / filename
 
     # Make sure file is downloaded
     util.load(filename, local_dir, remote_url, try_download=try_download)
@@ -1044,7 +1044,7 @@ def _merged_fromascii(probe, year, doy, try_download):
 
 
 def _4hz_localdir(probe):
-    return os.path.join(helios_dir, 'helios{}'.format(probe), 'mag', '4hz')
+    return helios_dir / 'helios{}'.format(probe) / 'mag' / '4hz'
 
 
 def _4hz_filename(probe, year, doy):
@@ -1095,9 +1095,8 @@ def mag_4hz(probe, starttime, endtime, verbose=True, try_download=True):
 
         # Loop through days of year
         for doy in range(startdoy, enddoy + 1):
-            hdfloc = os.path.join(
-                floc, _4hz_filename(probe, year, doy) + '.hdf')
-            if not os.path.isfile(hdfloc):
+            hdfloc = floc / str(_4hz_filename(probe, year, doy) + '.hdf')
+            if not hdfloc.is_file():
                 # Data not processed yet, try to process and load it
                 try:
                     data.append(_fourHz_fromascii(probe, year, doy,
@@ -1151,9 +1150,8 @@ def _fourHz_fromascii(probe, year, doy, try_download=True):
     asciiloc = None
     fname = None
     for i in range(0, 24):
-        testloc = os.path.join(local_dir,
-                               fname_prefix + str(i).zfill(2) + '.asc')
-        if os.path.isfile(testloc):
+        testloc = local_dir / str(fname_prefix + str(i).zfill(2) + '.asc')
+        if testloc.is_file():
             asciiloc = testloc
             break
     if asciiloc is not None:
@@ -1201,8 +1199,8 @@ def _fourHz_fromascii(probe, year, doy, try_download=True):
 
 
 def _ness_localdir(probe, year):
-    return os.path.join(helios_dir, 'helios{}'.format(probe),
-                        'mag', '6sec_ness', '{}'.format(year))
+    return (helios_dir / 'helios{}'.format(probe) /
+            'mag' / '6sec_ness' / '{}'.format(year))
 
 
 def _ness_fname(probe, year, doy):
@@ -1280,8 +1278,8 @@ def mag_ness(probe, starttime, endtime, verbose=True, try_download=True):
                     print(nodatastr)
                 continue
 
-            hdfloc = os.path.join(floc, _ness_fname(probe, year, doy) + 'hdf')
-            if os.path.isfile(hdfloc):
+            hdfloc = floc / str(_ness_fname(probe, year, doy) + 'hdf')
+            if hdfloc.is_file():
                 # Load data from already processed file
                 data.append(pd.read_hdf(hdfloc, 'table'))
                 print(datastr)
@@ -1359,5 +1357,5 @@ def _mag_ness_fromascii(probe, year, doy, try_download=True):
 
 
 def _save_hdf(data, fdir, fname):
-    saveloc = os.path.join(fdir, fname + '.hdf')
+    saveloc = fdir / str(fname + '.hdf')
     data.to_hdf(saveloc, 'table', format='fixed', mode='w')
