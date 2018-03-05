@@ -1,5 +1,7 @@
 @import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600,700,900');
 
+/* HelioPy yellow is #fab81e */
+
 body {
   background-color: white;
   color: #333;
@@ -18,7 +20,7 @@ h4 {
 }
 
 a {
-  color: #ffc425;
+  color: #fab81e;
 }
 
 a:hover {
@@ -72,11 +74,11 @@ div.section::before {
 
 .navbar-default .navbar-brand:focus,
 .navbar-default .navbar-brand:hover {
-  color: #ffc425;
+  color: #fab81e;
 }
 
 .navbar-default .navbar-brand {
-  color: #ffc425;
+  color: #fab81e;
   font-size: 20px;
   font-weight: bold;
   margin-right: 10px;
@@ -85,12 +87,12 @@ div.section::before {
 .navbar-default .navbar-nav > li > a:hover,
 .navbar-default .navbar-nav > li > a:focus,
 .navbar-default .navbar-nav > li > a:active {
-  color: #ffc425;
+  color: #fab81e;
 }
 
 div#navbar {
   border-bottom: 3px;
-  border-bottom-color: #ffc425;
+  border-bottom-color: #fab81e;
   border-bottom-style: solid;
 }
 
@@ -106,7 +108,7 @@ div#navbar {
 }
 
 .dropdown-menu > li > a:hover {
-  background-color: #ffc425;
+  background-color: #fab81e;
 }
 
 .caret {
@@ -120,7 +122,7 @@ div#navbar {
 }
 
 .icon-text {
-  color: #ffc425;
+  color: #fab81e;
   font-size: 120px;
   font-weight: bold;
 }
@@ -141,15 +143,15 @@ div#navbar {
 }
 
 .btn.btn-default.btn1 {
-  background-color: #ffc425;
-  border-color: #ffc425;
+  background-color: #fab81e;
+  border-color: #fab81e;
   text-transform: uppercase;
   margin-top: 20px;
   padding: 10px 21px;
 }
 
 a.btn.btn-default.btn1:hover {
-  color: #ffc425;
+  color: #fab81e;
   background-color: white;
 }
 
@@ -187,7 +189,7 @@ p.whatsnew {
 }
 
 .whatsnew a {
-  color: #ffc425;
+  color: #fab81e;
   font-weight: bold;
   text-decoration: none;
 }
@@ -212,11 +214,11 @@ p.whatsnew {
   position: fixed;
   width: 300px;
   max-height: 80%;
-  border-left: 3px solid #ffc425;
+  border-left: 3px solid #fab81e;
 }
 
 .bs-sidenav h2 {
-  color: #ffc425;
+  color: #fab81e;
   padding-left: 10px;
 }
 
@@ -225,7 +227,7 @@ p.whatsnew {
 }
 
 .bs-sidenav .nav > li {
-  color: #ffc425;
+  color: #fab81e;
 }
 
 .bs-sidenav .nav > li > span {
@@ -245,12 +247,12 @@ p.whatsnew {
 
 .bs-sidenav .nav > li > a:hover,
 .bs-sidenav .nav > li > a:focus {
-  background-color: #ffc425;
+  background-color: #fab81e;
 }
 
 .bs-sidenav .nav > li > a.current {
   color: white;
-  background-color: #ffc425;
+  background-color: #fab81e;
 }
 
 .bs-sidenav .nav .nav > li > a {
@@ -267,7 +269,7 @@ p.whatsnew {
 }
 
 .bs-sidenav .nav .nav > li > a.current {
-  background-color: #ffc425;
+  background-color: #fab81e;
   color: white;
 }
 
@@ -297,7 +299,7 @@ p.whatsnew {
 }
 
 .bs-sidenav ul > li#comments > a {
-  color: #ffc425;
+  color: #fab81e;
 }
 
 .bs-sidenav ul > li#comments > a:hover {
@@ -333,7 +335,7 @@ input {
 }
 
 .doc-title {
-  color: #ffc425;
+  color: #fab81e;
   text-align: center;
   font-weight: bold;
 }
@@ -370,7 +372,7 @@ div.admonition {
 
 .alert-warning {
   background-color: #fff3e0;
-  border: 1px solid #ffc425;
+  border: 1px solid #fab81e;
 }
 
 p.admonition-title {
@@ -389,7 +391,7 @@ a code {
 }
 
 code {
-  color: #ffc425;
+  color: #fab81e;
   padding: 2px;
   background-color: transparent;
 }
@@ -405,7 +407,7 @@ code.descname {
 /* Highlight */
 
 .highlight .o {
-  color: #ffc425;
+  color: #fab81e;
 }
 
 .highlight .nb,
@@ -447,7 +449,7 @@ div.sphx-glr-download a {
   color: black;
   background-color: white;
   background-image: none !important;
-  border: 1px solid #ffc425;
+  border: 1px solid #fab81e;
 }
 
 div.sphx-glr-download a:hover {
@@ -581,7 +583,7 @@ div.figure p.caption span.caption-text {
     margin: 0 auto;
     padding: 5px 20px;
     color: white;
-    background-color: #ffc425;
+    background-color: #fab81e;
     text-align: center;
     cursor: pointer;
     font-size: 25px;
@@ -651,7 +653,7 @@ div.figure p.caption span.caption-text {
   margin-bottom: 20px;
   border-radius: 5px;
   color: white;
-  background-color: #ffc425;
+  background-color: #fab81e;
   text-align: center;
   cursor: pointer;
   font-size: 17px;
