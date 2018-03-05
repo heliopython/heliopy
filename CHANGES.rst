@@ -8,8 +8,9 @@ New features
   "Helios 1 Reconstructed", "Helios 1 Predicted", "Juno Reconstructed", "Juno Predicted" and "Helios 2" kernels
 - :meth:`heliopy.spice.furnish` now accepts a list of filenames as well as
   individual filenames.
-- :meth:`heliopy.data.sunspot` added an additional functionality to import
+- :meth:`heliopy.data.sunspot` adds new functionality to import
   sunspot data in three different timeframes - daily, monthly and yearly.
+- :mod:`heliopy.data.ace` has a lot of new methods to download ACE data.
 
 Backwards incompatible changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -21,7 +22,7 @@ Backwards incompatible changes
   :mod:`heliopy.data.helper` are useful for users, and the ones in
   :mod:`heliopy.data.util` are used internally as utility functions for
   data import.
-  
+
 Removed features
 ^^^^^^^^^^^^^^^^
 

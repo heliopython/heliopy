@@ -142,6 +142,14 @@ class TestAce:
         df = ace.swi_h2(self.starttime, self.endtime)
         check_datetime_index(df)
 
+    def test_swi_h3(self):
+        df = ace.swi_h3(self.starttime, self.endtime)
+        check_datetime_index(df)
+
+    def test_swi_h6(self):
+        df = ace.swi_h6(self.starttime, self.endtime)
+        check_datetime_index(df)
+
 
 @pytest.mark.skipif(no_pycdf, reason='Importing pycdf failed')
 @pytest.mark.data

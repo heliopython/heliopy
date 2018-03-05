@@ -148,3 +148,57 @@ def swi_h2(starttime, endtime):
     badvalues = -1e31
     return _ace(starttime, endtime, instrument, product, fname,
                 version=version, badvalues=badvalues)
+
+
+def swi_h3(starttime, endtime):
+    """
+    Import hourly SWICS composition data.
+
+    See https://cdaweb.sci.gsfc.nasa.gov/misc/NotesA.html#AC_H3_SWI for more
+    information.
+
+    Parameters
+    ----------
+    starttime : datetime
+        Interval start time.
+    endtime : datetime
+        Interval end time.
+
+    Returns
+    -------
+    data : DataFrame
+    """
+    instrument = 'swics'
+    product = 'swi_h3'
+    fname = 'h3_swi'
+    version = '01'
+    badvalues = -1e31
+    return _ace(starttime, endtime, instrument, product, fname,
+                version=version, badvalues=badvalues)
+
+
+def swi_h6(starttime, endtime):
+    """
+    Import 12 minute SWICS proton data.
+
+    See https://cdaweb.sci.gsfc.nasa.gov/misc/NotesA.html#AC_H6_SWI for more
+    information.
+
+    Parameters
+    ----------
+    starttime : datetime
+        Interval start time.
+    endtime : datetime
+        Interval end time.
+
+    Returns
+    -------
+    data : DataFrame
+    """
+    instrument = 'swics'
+    product = 'swi_h6'
+    fname = 'h6_swi'
+    version = '09'
+    badvalues = -1e31
+    return _ace(starttime, endtime, instrument, product, fname,
+                version=version, badvalues=badvalues)
