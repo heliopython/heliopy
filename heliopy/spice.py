@@ -9,7 +9,7 @@ import spiceypy
 import astropy.units as u
 
 data_dir = config['download_dir']
-spice_dir = os.path.join(data_dir, 'spice')
+spice_dir = data_dir / 'spice'
 
 
 def _setup_spice():
