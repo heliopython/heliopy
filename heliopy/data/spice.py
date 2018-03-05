@@ -31,22 +31,16 @@ available_kernels = {'lsk': ['https://naif.jpl.nasa.gov/pub/naif/generic_kernels
                      'Helios 2': ['https://naif.jpl.nasa.gov/pub/naif/HELIOS/kernels/spk/100607R_helios2_76016_80068.bsp'],
                      'Juno_Reconstructed': ['https://naif.jpl.nasa.gov/pub/naif/JUNO/kernels/spk/juno_rec_orbit.bsp'],
                      'Juno_Predicted': ['https://naif.jpl.nasa.gov/pub/naif/JUNO/kernels/spk/juno_pred_orbit.bsp'],
-                     'Clementine_nrl': ['https://naif.jpl.nasa.gov/pub/naif/pds/data/clem1-l-spice-6-v1.0/clsp_1000/data/spk/clem_jpl.bsp'],
+                     'Clementine_nrl': ['https://naif.jpl.nasa.gov/pub/naif/pds/data/clem1-l-spice-6-v1.0/clsp_1000/data/spk/clem_nrl.bsp'],
                      'Clementine_gsfc': ['https://naif.jpl.nasa.gov/pub/naif/pds/data/clem1-l-spice-6-v1.0/clsp_1000/data/spk/clem_gsfc.bsp'],
                      'Clementine_jpl': ['https://naif.jpl.nasa.gov/pub/naif/pds/data/clem1-l-spice-6-v1.0/clsp_1000/data/spk/clem_jpl.bsp'],
-                     'de414': ['https://naif.jpl.nasa.gov/pub/naif/pds/data/clem1-l-spice-6-v1.0/clsp_1000/data/spk/de414.bsp'],
                      'Deep Impact': ['https://naif.jpl.nasa.gov/pub/naif/pds/data/di-c-spice-6-v1.0/disp_1000/data/spk/di_finalenc_nav_v3_to06048.bsp'],
                      'Deep Impact_ImpactSite': ['https://naif.jpl.nasa.gov/pub/naif/pds/data/di-c-spice-6-v1.0/disp_1000/data/spk/di_finalenc_nav_v3.bsp'],
                      'Deep Impact_Complete': ['https://naif.jpl.nasa.gov/pub/naif/pds/data/di-c-spice-6-v1.0/disp_1000/data/spk/dii_preenc174_nav_v1.bsp', 'https://naif.jpl.nasa.gov/pub/naif/pds/data/di-c-spice-6-v1.0/disp_1000/data/spk/dif_preenc174_nav_v1.bsp', 'https://naif.jpl.nasa.gov/pub/naif/pds/data/di-c-spice-6-v1.0/disp_1000/data/spk/di_tempel1_ssd_v1.bsp', 'https://naif.jpl.nasa.gov/pub/naif/pds/data/di-c-spice-6-v1.0/disp_1000/data/spk/di_finalenc_nav_v3_to06048.bsp'],
                      'Deep Space': ['https://naif.jpl.nasa.gov/pub/naif/pds/data/ds1-a_c-spice-6-v1.0/ds1sp_1000/data/spk/ds1_radionav.bsp'],
-                     'de405': ['https://naif.jpl.nasa.gov/pub/naif/pds/data/ds1-a_c-spice-6-v1.0/ds1sp_1000/data/spk/de405s.bsp'],
                      'EPOXI_dixi': ['https://naif.jpl.nasa.gov/pub/naif/pds/data/dif-c_e_x-spice-6-v1.0/epxsp_1000/data/spk/dif_dixi_nav_v1.bsp'],
                      'EPOXI_epoch': ['https://naif.jpl.nasa.gov/pub/naif/pds/data/dif-c_e_x-spice-6-v1.0/epxsp_1000/data/spk/dif_epoch_nav_v1.bsp'],
-                     'de421': ['https://naif.jpl.nasa.gov/pub/naif/pds/data/grail-l-spice-6-v1.0/grlsp_1000/data/spk/de421.bsp'],
-                     'de403': ['https://naif.jpl.nasa.gov/pub/naif/pds/data/hay-a-spice-6-v1.0/haysp_1000/data/spk/de403s.bsp'],
-                     'Hayabusa_Complete': ['https://naif.jpl.nasa.gov/pub/naif/pds/data/hay-a-spice-6-v1.0/haysp_1000/data/spk/de403s.bsp', 'https://naif.jpl.nasa.gov/pub/naif/pds/data/hay-a-spice-6-v1.0/haysp_1000/data/spk/sb_25143_140.bsp', 'https://naif.jpl.nasa.gov/pub/naif/pds/data/hay-a-spice-6-v1.0/haysp_1000/data/spk/hay_jaxa_050916_051119_v1n.bsp', 'https://naif.jpl.nasa.gov/pub/naif/pds/data/hay-a-spice-6-v1.0/haysp_1000/data/spk/hay_osbj_050911_051118_v1n.bsp'],
-                     'de421': ['https://naif.jpl.nasa.gov/pub/naif/pds/data/lro-l-spice-6-v1.0/lrosp_1000/data/spk/de421.bsp'],
-                     'de430': ['https://naif.jpl.nasa.gov/pub/naif/pds/pds4/maven/maven_spice/spice_kernels/spk/de430s.bsp']}
+                     'Hayabusa_Complete': ['https://naif.jpl.nasa.gov/pub/naif/pds/data/hay-a-spice-6-v1.0/haysp_1000/data/spk/de403s.bsp', 'https://naif.jpl.nasa.gov/pub/naif/pds/data/hay-a-spice-6-v1.0/haysp_1000/data/spk/sb_25143_140.bsp', 'https://naif.jpl.nasa.gov/pub/naif/pds/data/hay-a-spice-6-v1.0/haysp_1000/data/spk/hay_jaxa_050916_051119_v1n.bsp', 'https://naif.jpl.nasa.gov/pub/naif/pds/data/hay-a-spice-6-v1.0/haysp_1000/data/spk/hay_osbj_050911_051118_v1n.bsp']}
 
 
 for kernel in available_kernels:
