@@ -12,7 +12,7 @@ https://github.com/heliopython/heliopy/issues.
 .. csv-table:: Available kernels
    :name: data_spice_kernels
    :header: "Name", "Identifier", "Readme" "URL(s)"
-   :widths: 30, 30, 70, 70
+   :widths: 30, 70
 
 """
 import os
