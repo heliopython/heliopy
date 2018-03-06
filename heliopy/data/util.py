@@ -368,7 +368,7 @@ def load(filename, local_dir, remote_url, guessversion=False,
 
     # Loading locally failed, but directory has been made so try to download
     # file.
-    # remote_url = _fix_url(remote_url)
+    remote_url = _fix_url(remote_url)
     if guessversion:
         # Split remote url into a server name and directory
         # Strip ftp:// from front of url
