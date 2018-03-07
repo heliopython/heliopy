@@ -361,7 +361,7 @@ def load(filename, local_dir, remote_url, guessversion=False,
     # Try to load locally
     if _checkdir(local_dir):
         for f in local_dir.iterdir():
-            if str(f) == filename or guessversion and \
+            if f.is_file() and str(f) == filename or guessversion and \
                     (str(f)[:-6] == filename[:-6]):
                 filename = str(f)
                 return _load_local(local_dir, f, filetype)

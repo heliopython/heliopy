@@ -1150,8 +1150,8 @@ def _fourHz_fromascii(probe, year, doy, try_download=True):
     asciiloc = None
     fname = None
     for i in range(0, 24):
-        testloc = str(local_dir / str(fname_prefix + str(i).zfill(2) + '.asc'))
-        if os.path.isfile(testloc):
+        testloc = local_dir / str(fname_prefix + str(i).zfill(2) + '.asc')
+        if testloc.is_file():
             asciiloc = testloc
             break
     if asciiloc is not None:
