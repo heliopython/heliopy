@@ -379,13 +379,16 @@ def load(filename, local_dir, remote_url, guessversion=False,
                 server_dir = remote_ftp[i:]
                 break
         # Login to remote server
-        with ftplib.FTP(server) as ftp:
-            ftp.login()
-            ftp.cwd(server_dir)
-            # Loop through and find files
-            for (f, _) in ftp.mlsd():
-                if f[-len(filename):-8] == filename[:-8]:
-                    filename = f[-len(filename):]
+        ftp = ftplib.FTP(server)
+        ftp.login()
+        # List files in directory
+        print(remote_url)
+        files = ftp.nlst(server_dir)
+        ftp.quit()
+        # Loop through and find files
+        for f in files:
+            if f[-len(filename):-8] == filename[:-8]:
+                filename = f[-len(filename):]
 
     if try_download:
         try:

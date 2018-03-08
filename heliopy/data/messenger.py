@@ -57,7 +57,7 @@ def mag_rtn(starttime, endtime):
         util._checkdir(local_dir)
 
         remote_url = os.path.join(remote_mess_dir, this_relative_dir)
-
+        print(filename, local_dir, remote_url)
         cdf = util.load(filename, local_dir, remote_url, guessversion=True)
         if cdf is None:
             print('File {}/{} not available\n'.format(
