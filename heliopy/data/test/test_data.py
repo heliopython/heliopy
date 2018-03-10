@@ -172,7 +172,7 @@ class TestImp:
         df = imp.mitplasma_h0(self.probe, self.starttime, self.endtime)
         check_datetime_index(df)
 
-    def test_mereged(self):
+    def test_merged(self):
         df = imp.merged(self.probe, self.starttime, self.endtime)
         check_datetime_index(df)
 
