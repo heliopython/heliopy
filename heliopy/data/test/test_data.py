@@ -165,7 +165,6 @@ class TestImp:
         check_datetime_index(df)
 
     def test_mag15s(self):
-        probe = '8'
         df = imp.mag15s(probe, self.starttime, self.endtime)
         check_datetime_index(df)
 
