@@ -27,9 +27,9 @@ before_install:
 - pip install --quiet spiceypy --no-cache-di
 
 # Install CDF library
-- wget http://cdaweb.gsfc.nasa.gov/pub/software/cdf/dist/cdf36_3_1/linux/cdf36_3_1-dist-all.tar.gz
-- tar -zxvf cdf36_3_1-dist-all.tar.gz
-- cd cdf36_3-dist
+- wget https://cdaweb.sci.gsfc.nasa.gov/pub/software/cdf/dist/cdf37_0/linux/cdf37_0-dist-all.tar.gz
+- tar -zxvf cdf37_0-dist-all.tar.gz
+- cd cdf37_0-dist
 - make OS=linux ENV=gnu all
 - sudo make INSTALLDIR=/usr/local/cdf install
 - cd ../
