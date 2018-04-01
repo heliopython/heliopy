@@ -45,7 +45,7 @@ def mag_1min(starttime, endtime, coords):
     """
     Import 1 minute magnetic field from Cassini.
 
-    See https://pds-ppi.igpp.ucla.edu/search/view/?f=yes&id=pds://PPI/CO-E_SW_J_S-MAG-4-SUMM-1MINAVG-V1.0
+    See http://pds-ppi.igpp.ucla.edu/search/view/?f=yes&id=pds://PPI/CO-E_SW_J_S-MAG-4-SUMM-1MINAVG-V1.0
     for more information.
 
     Cassini Orbiter Magnetometer Calibrated MAG data in 1 minute averages
@@ -72,7 +72,7 @@ def mag_1min(starttime, endtime, coords):
     valid_coords = ['KRTP', 'KSM', 'KSO', 'RTN']
     if coords not in valid_coords:
         raise ValueError('coords must be one of {}'.format(valid_coords))
-    base_url = ('https://pds-ppi.igpp.ucla.edu/ditdos/download?'
+    base_url = ('http://pds-ppi.igpp.ucla.edu/ditdos/download?'
                 'id=pds://PPI/CO-E_SW_J_S-MAG-4-SUMM-1MINAVG-V1.0/DATA')
 
     data = []
