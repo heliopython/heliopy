@@ -11,7 +11,7 @@ from heliopy import config
 
 data_dir = config['download_dir']
 use_hdf = config['use_hdf']
-mess_dir = os.path.join(data_dir, 'messenger')
+mess_dir = data_dir / 'messenger'
 remote_mess_dir = 'ftp://spdf.gsfc.nasa.gov/pub/data/messenger'
 
 
@@ -44,20 +44,20 @@ def mag_rtn(starttime, endtime):
             str(date.month).zfill(2) +\
             str(date.day).zfill(2) +\
             '_v01.hdf'
-        hdfloc = os.path.join(mess_dir, this_relative_dir, hdffile)
+        hdfloc = mess_dir / this_relative_dir / hdffile
         # Try to load hdf file
-        if os.path.isfile(hdfloc):
+        if hdfloc.is_file():
             df = pd.read_hdf(hdfloc)
             data.append(df)
             continue
 
-        filename = hdffile[:-4] + '.cdf'
+        filename = str(hdffile[:-4]) + '.cdf'
         # Absolute path to local directory for this data file
-        local_dir = os.path.join(mess_dir, this_relative_dir)
+        local_dir = mess_dir / this_relative_dir
         util._checkdir(local_dir)
 
         remote_url = os.path.join(remote_mess_dir, this_relative_dir)
-
+        print(filename, local_dir, remote_url)
         cdf = util.load(filename, local_dir, remote_url, guessversion=True)
         if cdf is None:
             print('File {}/{} not available\n'.format(

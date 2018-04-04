@@ -49,18 +49,17 @@ def load_config():
     """
     config_location = get_config_file()
     config = configparser.ConfigParser()
-    config.read(config_location)
+    config.read(str(config_location))
     config_dict = {}
 
     # Set data download directory
-    download_dir = os.path.expanduser(config['DEFAULT']['download_dir'])
-    if os.name == 'nt':
-        download_dir = download_dir.replace('/', '\\')
+    download_dir = Path(config['DEFAULT']['download_dir']).expanduser()
+
     config_dict['download_dir'] = download_dir
     # Create data download if not created
-    if not os.path.isdir(download_dir):
+    if not download_dir.is_dir():
         print('Creating download directory {}'.format(download_dir))
-        os.makedirs(download_dir)
+        download_dir.mkdir(exist_ok=True, parents=True)
 
     # Set cluster cookie
     # Check environment variables for a cluster cookie

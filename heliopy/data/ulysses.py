@@ -14,7 +14,7 @@ from heliopy import config
 use_hdf = config['use_hdf']
 data_dir = config['download_dir']
 
-ulysses_dir = os.path.join(data_dir, 'ulysses')
+ulysses_dir = data_dir / 'ulysses'
 ulysses_url = 'http://ufa.esac.esa.int/ufa-sl-server/data-action?'
 url_options = {'PROTOCOL': 'HTTP',
                'PRODUCT_TYPE': 'ALL'}
@@ -120,9 +120,9 @@ def _swics(starttime, endtime, names, product):
         swics_options['FILE_NAME'] = '{}{}.dat'.format(product,
                                                        str(year)[-2:])
         # Local locaiton to download to
-        local_dir = os.path.join(ulysses_dir, 'swics')
-        local_file = os.path.join(local_dir, swics_options['FILE_NAME'])
-        local_hdf = local_file[:-4] + '.hdf'
+        local_dir = ulysses_dir / 'swics'
+        local_file = local_dir / swics_options['FILE_NAME']
+        local_hdf = str(local_file)[:-4] + '.hdf'
         # If we have already saved a hdf file
         if os.path.exists(local_hdf):
             thisdata = pd.read_hdf(local_hdf)
@@ -178,9 +178,9 @@ def fgm_hires(starttime, endtime):
         fgm_options['FILE_NAME'] = ('U' + yearstr[-2:] +
                                     date.strftime('%j') + 'SH.ASC')
         # Local locaiton to download to
-        local_dir = os.path.join(ulysses_dir, 'fgm', 'hires', yearstr)
-        local_file = os.path.join(local_dir, fgm_options['FILE_NAME'])
-        local_hdf = local_file[:-4] + '.hdf'
+        local_dir = ulysses_dir / 'fgm' / 'hires' / yearstr
+        local_file = local_dir / fgm_options['FILE_NAME']
+        local_hdf = str(local_file)[:-4] + '.hdf'
         # If we have already saved a hdf file
         if os.path.exists(local_hdf):
             thisdata = pd.read_hdf(local_hdf)
@@ -251,8 +251,7 @@ def swoops_ions(starttime, endtime):
         for key in swoops_options:
             remote_url += key + '=' + swoops_options[key] + '&'
         # Local locaiton to download to
-        local_dir = os.path.join(ulysses_dir, 'swoops', 'ions',
-                                 first_day.strftime('%Y'))
+        local_dir = ulysses_dir / 'swoops' / 'ions' / first_day.strftime('%Y')
 
         # Load data
         try:

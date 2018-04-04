@@ -12,7 +12,7 @@ from heliopy.data import util
 from heliopy import config
 
 data_dir = config['download_dir']
-themis_dir = data_dir + '/themis'
+themis_dir = data_dir / 'themis'
 remote_themis_dir = 'http://themis.ssl.berkeley.edu/data/themis/'
 valid_probes = ['a', 'b', 'c', 'd', 'e']
 
@@ -70,7 +70,7 @@ def fgm(probe, rate, coords, starttime, endtime):
             str(date.day).zfill(2) +\
             '_v01.cdf'
         # Absolute path to local directory for this data file
-        local_dir = os.path.join(themis_dir, this_relative_dir)
+        local_dir = themis_dir / this_relative_dir
         util._checkdir(local_dir)
 
         remote_url = remote_themis_dir + this_relative_dir

@@ -12,7 +12,7 @@ from heliopy import config
 
 data_dir = config['download_dir']
 use_hdf = config['use_hdf']
-cassini_dir = os.path.join(data_dir, 'cassini')
+cassini_dir = data_dir / 'cassini'
 
 # These mappings from months to strings are used in directory names
 month2str = {1: '001_031_JAN',
@@ -78,12 +78,12 @@ def mag_1min(starttime, endtime, coords):
     data = []
     for year in starttime.year, endtime.year:
         url = '{}/{}'.format(base_url, year)
-        local_dir = os.path.join(cassini_dir, 'mag', '1min')
+        local_dir = cassini_dir / 'mag' / '1min'
 
         fname = '{}_FGM_{}_1M'.format(year, coords)
 
-        hdfloc = os.path.join(local_dir, fname + '.hdf')
-        if os.path.isfile(hdfloc):
+        hdfloc = local_dir / str(fname + '.hdf')
+        if hdfloc.is_file():
             df = pd.read_hdf(hdfloc)
             data.append(df)
             continue
@@ -91,7 +91,7 @@ def mag_1min(starttime, endtime, coords):
         f = util.load(fname + '.TAB', local_dir, url)
         if 'error_message' in f.readline():
             f.close()
-            os.remove(os.path.join(local_dir, fname + '.TAB'))
+            os.remove(str(local_dir / fname + '.TAB'))
             continue
 
         df = pd.read_table(f, names=['Time', 'Bx', 'By', 'Bz', '|B|',
@@ -149,7 +149,7 @@ def mag_hires(starttime, endtime):
         url = '{}/{}'.format(url, monthstr)
 
         doy = day.strftime('%j')
-        local_dir = os.path.join(cassini_dir, 'mag', 'hires', str(year))
+        local_dir = cassini_dir / 'mag' / 'hires' / str(year)
 
         # No way to work out co-ordinates, so guess Kronian and then RTN
         try:
@@ -172,8 +172,8 @@ def _mag_hires_helper(year, doy, local_dir, url, coords):
     fname = str(year)[2:] + doy + '_FGM_' + coords
 
     hdf_fname = '{}_{}.hdf'.format(year, doy)
-    hdfloc = os.path.join(local_dir, hdf_fname)
-    if os.path.isfile(hdfloc):
+    hdfloc = local_dir / hdf_fname
+    if hdfloc.is_file():
         return pd.read_hdf(hdfloc)
 
     f = util.load(fname + '.TAB', local_dir, url)
@@ -182,7 +182,7 @@ def _mag_hires_helper(year, doy, local_dir, url, coords):
             'No file named {} exits on remote server'.format(fname))
     elif 'error_message' in f.readline():
         f.close()
-        os.remove(os.path.join(local_dir, fname + '.TAB'))
+        os.remove(os.path.join(str(local_dir), fname + '.TAB'))
         raise RuntimeError(
             'No file named {} exits on remote server'.format(fname))
 

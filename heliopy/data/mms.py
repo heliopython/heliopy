@@ -15,7 +15,7 @@ from heliopy.data import util
 from heliopy import config
 
 data_dir = config['download_dir']
-mms_dir = os.path.join(data_dir, 'mms')
+mms_dir = data_dir / 'mms'
 remote_mms_dir = 'https://lasp.colorado.edu/mms/sdc/public/data/'
 
 
@@ -64,7 +64,7 @@ def fpi_dis_moms(probe, mode, starttime, endtime):
                             probe, mode, date.year, date.month, date.day, h)
 
             # Absolute path to local directory for this data file
-            local_dir = os.path.join(mms_dir, this_relative_dir)
+            local_dir = mms_dir / this_relative_dir
             util._checkdir(local_dir)
 
             remote_url = remote_mms_dir + this_relative_dir
@@ -129,7 +129,7 @@ def fgm_survey(probe, starttime, endtime):
             probe, date.year, date.month, date.day)
 
         # Absolute path to local directory for this data file
-        local_dir = os.path.join(mms_dir, this_relative_dir)
+        local_dir = mms_dir / this_relative_dir
         util._checkdir(local_dir)
 
         remote_url = remote_mms_dir + this_relative_dir

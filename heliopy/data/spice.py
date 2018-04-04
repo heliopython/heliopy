@@ -22,7 +22,7 @@ from heliopy import config
 import heliopy.data.util as util
 
 data_dir = config['download_dir']
-spice_dir = os.path.join(data_dir, 'spice')
+spice_dir = data_dir / 'spice'
 # Mapping of kernel name to remote location
 available_kernels = {'lsk': ['https://naif.jpl.nasa.gov/pub/naif/generic_kernels/lsk/naif0012.tls'],
                      'planets': ['https://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/planets/de430.bsp'],
@@ -64,11 +64,11 @@ def get_kernel(name):
     locs = []
     for url in available_kernels[name]:
         fname = url.split('/')[-1]
-        local_loc = os.path.join(spice_dir, fname)
-        locs.append(local_loc)
-        if not os.path.exists(spice_dir):
-            os.makedirs(spice_dir)
-        if not os.path.exists(local_loc):
+        local_loc = spice_dir / fname
+        locs.append(str(local_loc))
+        if not spice_dir.exists():
+            spice_dir.mkdir()
+        if not local_loc.exists():
             print('Downloading {}'.format(url))
-            urlretrieve(url, local_loc, reporthook=util._reporthook)
+            urlretrieve(url, str(local_loc), reporthook=util._reporthook)
     return locs

@@ -14,7 +14,7 @@ from heliopy import config
 
 data_dir = config['download_dir']
 use_hdf = config['use_hdf']
-wind_dir = os.path.join(data_dir, 'wind')
+wind_dir = data_dir / 'wind'
 remote_wind_dir = 'ftp://spdf.gsfc.nasa.gov/pub/data/wind/'
 
 
@@ -40,7 +40,7 @@ def _load_wind_cdf(starttime, endtime, instrument,
                       fname, extension):
         remote_url = '{}{}'.format(remote_base_url, directory)
         util.load(fname + extension,
-                  os.path.join(local_base_dir, directory),
+                  (local_base_dir / directory),
                   remote_url)
 
     def processing_func(directory, fname):
@@ -148,7 +148,7 @@ def swe_h3(starttime, endtime):
                       fname, extension):
         remote_url = '{}{}'.format(remote_base_url, directory)
         util.load(fname + extension,
-                  os.path.join(local_base_dir, directory),
+                  (local_base_dir / directory),
                   remote_url)
 
     def processing_func(local_dir, fname):
@@ -251,7 +251,7 @@ def _mfi(starttime, endtime, version):
                       fname, extension):
         remote_url = '{}{}'.format(remote_base_url, directory)
         util.load(fname + extension,
-                  os.path.join(local_base_dir, directory),
+                  (local_base_dir / directory),
                   remote_url, guessversion=True)
 
     def processing_func(directory, fname):
@@ -304,15 +304,15 @@ def threedp_pm(starttime, endtime):
         date = day[0]
         this_relative_dir = os.path.join(relative_dir, str(day[0].year))
         # Absolute path to local directory for this data file
-        local_dir = os.path.join(wind_dir, this_relative_dir)
+        local_dir = wind_dir / this_relative_dir
         filename = 'wi_pm_3dp_' +\
             str(date.year) +\
             str(date.month).zfill(2) +\
             str(date.day).zfill(2) +\
             '_v05.cdf'
         hdfname = filename[:-4] + 'hdf'
-        hdfloc = os.path.join(local_dir, hdfname)
-        if os.path.isfile(hdfloc):
+        hdfloc = local_dir / hdfname
+        if hdfloc.is_file():
             df = pd.read_hdf(hdfloc)
             data.append(df)
             continue
@@ -365,12 +365,12 @@ def threedp_sfpd(starttime, endtime):
     for (date, _, _) in daylist:
         this_relative_dir = os.path.join(relative_dir, str(date.year))
         # Absolute path to local directory for this data file
-        local_dir = os.path.join(wind_dir, this_relative_dir)
+        local_dir = wind_dir / this_relative_dir
         filename = 'wi_sfpd_3dp_{:{dfmt}}_v02'.format(
             date, dfmt='%Y%m%d')
         hdfname = filename + '.hdf'
-        hdfloc = os.path.join(local_dir, hdfname)
-        if os.path.isfile(hdfloc):
+        hdfloc = local_dir / hdfname
+        if hdfloc.is_file():
             df = pd.read_hdf(hdfloc)
             data.append(df)
             continue

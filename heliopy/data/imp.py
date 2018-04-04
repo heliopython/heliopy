@@ -13,7 +13,7 @@ from heliopy import config
 data_dir = config['download_dir']
 use_hdf = config['use_hdf']
 imp_url = 'ftp://cdaweb.gsfc.nasa.gov/pub/data/imp/'
-imp_dir = os.path.join(data_dir, 'imp')
+imp_dir = data_dir / 'imp'
 valid_probes = ['1', '2', '3', '4', '5', '6', '7', '8']
 
 
@@ -76,9 +76,9 @@ def merged(probe, starttime, endtime, verbose=False):
             relative_loc = os.path.join('imp' + probe,
                                         'merged')
 
-            local_dir = os.path.join(imp_dir, relative_loc)
-            hdffile = os.path.join(local_dir, filename[:-4] + '.hdf')
-            if os.path.isfile(hdffile):
+            local_dir = imp_dir / relative_loc
+            hdffile = local_dir / str(filename[:-4] + '.hdf')
+            if hdffile.exists():
                 data.append(pd.read_hdf(hdffile))
                 continue
 
@@ -167,7 +167,7 @@ def mitplasma_h0(probe, starttime, endtime):
         relative_loc = 'imp' + probe + '/plasma_mit/mitplasma_h0/' +\
             str(date.year)
 
-        local_dir = os.path.join(imp_dir, relative_loc)
+        local_dir = imp_dir / relative_loc
         remote_url = imp_url + relative_loc
 
         cdf = util.load(filename, local_dir, remote_url)
@@ -227,9 +227,9 @@ def mag320ms(probe, startTime, endTime):
         relative_loc = 'imp' + probe + '/mag/mag_320msec_cdaweb/' +\
             str(date.year)
 
-        local_dir = os.path.join(imp_dir, relative_loc)
-        hdffile = os.path.join(local_dir, hdffname)
-        if os.path.exists(hdffile):
+        local_dir = imp_dir / relative_loc
+        hdffile = local_dir / hdffname
+        if hdffile.exists():
             thisdata = pd.read_hdf(hdffile)
             data.append(thisdata)
             continue
@@ -290,9 +290,9 @@ def mag15s(probe, starttime, endtime, verbose=False):
                                     '15s_ascii_v3',
                                     str(year))
 
-        local_dir = os.path.join(imp_dir, relative_loc)
-        hdffile = os.path.join(local_dir, hdffname)
-        if os.path.exists(hdffile):
+        local_dir = imp_dir / relative_loc
+        hdffile = local_dir / hdffname
+        if hdffile.exists():
             thisdata = pd.read_hdf(hdffile)
             data.append(thisdata)
             continue
