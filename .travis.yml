@@ -1,4 +1,4 @@
-dist: trusty
+sudo: false
 language: python
 
 matrix:
@@ -31,7 +31,8 @@ before_install:
 - tar -zxvf cdf37_0-dist-all.tar.gz
 - cd cdf37_0-dist
 - make OS=linux ENV=gnu all
-- sudo make INSTALLDIR=/usr/local/cdf install
+- make INSTALLDIR=~/cdf install
+- PATH=~/cdf:$PATH
 - cd ../
 
 script:
