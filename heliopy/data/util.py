@@ -370,21 +370,21 @@ def load(filename, local_dir, remote_url, guessversion=False,
     remote_url = _fix_url(remote_url)
     if guessversion:
         # Split remote url into a server name and directory
-        for i, c in enumerate(remote_url[6:]):
+        # Strip ftp:// from front of url
+        remote_ftp = remote_url[6:]
+        for i, c in enumerate(remote_ftp):
             if c == '/':
-                server = remote_url[6:6 + i]
-                server_dir = remote_url[7 + i:]
+                server = remote_ftp[:i]
+                server_dir = remote_ftp[i:]
                 break
         # Login to remote server
-        ftp = ftplib.FTP(server)
-        ftp.login()
-        # List files in directory
-        files = ftp.nlst(server_dir)
-        ftp.quit()
-        # Loop through and find files
-        for f in files:
-            if f[-len(filename):-8] == filename[:-8]:
-                filename = f[-len(filename):]
+        with ftplib.FTP(server) as ftp:
+            ftp.login()
+            ftp.cwd(server_dir)
+            # Loop through and find files
+            for (f, _) in ftp.mlsd():
+                if f[-len(filename):-8] == filename[:-8]:
+                    filename = f[-len(filename):]
 
     if try_download:
         try:
