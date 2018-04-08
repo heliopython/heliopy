@@ -6,10 +6,12 @@ This is essentially a library of SPICE kernels that are available online, so
 users don't have go go hunting for them. If you know a kernel is out of date,
 and HelioPy should be using a newer kernel please let us know at
 https://github.com/heliopython/heliopy/issues.
+
 .. csv-table:: Available kernels
    :name: data_spice_kernels
    :header: "Name", "Identifier", "Readme", "URL(s)"
    :widths: 30, 20, 70, 70
+
 """
 import os
 from urllib.request import urlretrieve
@@ -77,6 +79,7 @@ available_kernels = {'lsk': ['https://naif.jpl.nasa.gov/pub/naif/generic_kernels
                      'epoxi_epoch': ['https://naif.jpl.nasa.gov/pub/naif/pds/data/dif-c_e_x-spice-6-v1.0/epxsp_1000/data/spk/dif_epoch_nav_v1.bsp'],
                      'hayabusa_complete': ['https://naif.jpl.nasa.gov/pub/naif/pds/data/hay-a-spice-6-v1.0/haysp_1000/data/spk/de403s.bsp', 'https://naif.jpl.nasa.gov/pub/naif/pds/data/hay-a-spice-6-v1.0/haysp_1000/data/spk/sb_25143_140.bsp', 'https://naif.jpl.nasa.gov/pub/naif/pds/data/hay-a-spice-6-v1.0/haysp_1000/data/spk/hay_jaxa_050916_051119_v1n.bsp', 'https://naif.jpl.nasa.gov/pub/naif/pds/data/hay-a-spice-6-v1.0/haysp_1000/data/spk/hay_osbj_050911_051118_v1n.bsp']}
 #Kernel Download Sources
+#Link text <https://domain.invalid/>
 for kernel in available_kernels:
     __doc__ += '\n   {}, {}, {}, '.format(kernel_name[kernel][0], kernel, kernel_readme[kernel][0])
     for url in available_kernels[kernel]:
