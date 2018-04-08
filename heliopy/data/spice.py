@@ -88,11 +88,15 @@ for kernel in available_kernels:
 def get_kernel(name):
     """
     Get the local location of a kernel.
+
     If a kernel isn't available locally, it is downloaded.
+
     Parameters
     ----------
     name : str
-        Kernel name. See PUT LINK HERE for a list of available names.
+        Kernel name. See :ref:`data_spice_kernels` for a list of
+        available names.
+
     Returns
     -------
     list
