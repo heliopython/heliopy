@@ -105,7 +105,7 @@ def get_kernel(name):
                 name, available_kernels.keys()))
     locs = []
     for url in available_kernels[name]:
-        fname = kernel_name[name]
+        fname = kernel_name[name][0]
         local_loc = os.path.join(spice_dir, fname)
         locs.append(local_loc)
         if not os.path.exists(spice_dir):
