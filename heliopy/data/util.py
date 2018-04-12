@@ -431,8 +431,9 @@ def _reporthook(blocknum, blocksize, totalsize):
 
 
 def _load_remote(remote_url, filename, local_dir, filetype):
-    print('Downloading', remote_url + '/' + filename)
-    urlreq.urlretrieve(remote_url + '/' + filename,
+    remote_url = remote_url + '/' + filename
+    print('Downloading', remote_url)
+    urlreq.urlretrieve(remote_url,
                        filename=os.path.join(local_dir, filename),
                        reporthook=_reporthook)
     print('\n')
