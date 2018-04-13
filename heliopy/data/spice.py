@@ -111,7 +111,7 @@ def get_kernel(name):
     if name not in kernel_dict:
         raise ValueError(
             'Provided name {} not in list of available names: {}'.format(
-                name, available_kernels.keys()))
+                name, kernel_dict.keys()))
     kernel = kernel_dict[name]
     locs = []
     for url in kernel.urls:
