@@ -3,8 +3,8 @@ Version 0.6.0
 
 Fixed bugs
 ^^^^^^^^^^
-- :meth:`spice.Trajectory.generate_positions` can now generate positions at a
-  resolution of one second instead of one day.
+- :meth:`.spice.Trajectory.generate_positions` can now generate
+  positions at a resolution of one second instead of one day.
 
 Version 0.5.0
 -------------
