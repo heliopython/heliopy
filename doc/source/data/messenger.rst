@@ -1,5 +1,5 @@
-MESSENGER (:mod:`heliopy.data.messenger`)
-=========================================
+MESSENGER
+=========
 
 .. currentmodule:: heliopy.data.messenger
 

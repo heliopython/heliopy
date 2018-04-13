@@ -1,5 +1,5 @@
-IMP (:mod:`heliopy.data.imp`)
-=============================
+IMP
+===
 
 .. currentmodule:: heliopy.data.imp
 

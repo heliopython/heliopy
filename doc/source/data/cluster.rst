@@ -1,5 +1,5 @@
-Cluster (:mod:`heliopy.data.cluster`)
-=====================================
+Cluster
+=======
 
 .. currentmodule:: heliopy.data.cluster
 

@@ -1,5 +1,5 @@
-ARTEMIS (:mod:`heliopy.data.artemis`)
-=====================================
+ARTEMIS
+=======
 
 .. currentmodule:: heliopy.data.artemis
 
