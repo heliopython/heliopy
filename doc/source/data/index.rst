@@ -26,6 +26,7 @@ There is also other modules for downloading SPICE kernels and sunspot number
 data:
 
 .. toctree::
+   :maxdepth: 1
 
    spice
    sunspot
