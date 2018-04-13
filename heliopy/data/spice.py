@@ -117,7 +117,7 @@ def get_kernel(name):
     kernel = kernel_dict[name]
     locs = []
     for url in kernel.urls:
-        fname = url[url.rfind("/")+1:]
+        fname = url[url.rfind("/") + 1:]
         local_loc = os.path.join(spice_dir, fname)
         locs.append(local_loc)
         if not os.path.exists(spice_dir):
