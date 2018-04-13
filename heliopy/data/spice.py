@@ -42,8 +42,12 @@ class _Kernel:
 
 generic_kernels = [_Kernel('Leap Second Kernel', 'lsk',
                            'https://naif.jpl.nasa.gov/pub/naif/generic_kernels/lsk/naif0012.tls'),
-                   _Kernel('Development Ephemeris', 'planets',
-                           'https://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/planets/de430.bsp')]
+                   _Kernel('Planet trajectories', 'planet_trajectories',
+                           'https://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/planets/de430.bsp',
+                           'https://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/planets/aa_summaries.txt'),
+                   _Kernel('Planet orientations', 'planet_orientations',
+                           'https://naif.jpl.nasa.gov/pub/naif/generic_kernels/pck/pck00010.tpc',
+                           'https://naif.jpl.nasa.gov/pub/naif/generic_kernels/pck/aareadme.txt')]
 
 spacecraft_kernels = [_Kernel('Solar Orbiter 2020', 'solo_2020',
                               'https://issues.cosmos.esa.int/solarorbiterwiki/download/attachments/7274724/solo_ANC_soc-orbit_20200207-20300902_V01.bsp'),
@@ -59,7 +63,10 @@ spacecraft_kernels = [_Kernel('Solar Orbiter 2020', 'solo_2020',
                               'https://naif.jpl.nasa.gov/pub/naif/JUNO/kernels/spk/aareadme.txt'),
                       _Kernel('Juno predicted', 'juno_pred',
                               'https://naif.jpl.nasa.gov/pub/naif/JUNO/kernels/spk/juno_pred_orbit.bsp',
-                              'https://naif.jpl.nasa.gov/pub/naif/JUNO/kernels/spk/aareadme.txt')
+                              'https://naif.jpl.nasa.gov/pub/naif/JUNO/kernels/spk/aareadme.txt'),
+                      _Kernel('Ulysses', 'ulysses',
+                              'https://naif.jpl.nasa.gov/pub/naif/ULYSSES/kernels/spk/ulysses_1990_2009_2050.bsp',
+                              'https://naif.jpl.nasa.gov/pub/naif/ULYSSES/kernels/spk/ulysses_1990_2009_2050.cmt')
                       ]
 
 kernel_dict = {}
