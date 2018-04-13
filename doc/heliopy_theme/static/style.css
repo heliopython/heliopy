@@ -58,6 +58,10 @@ div.section::before {
   content: '';
 }
 
+span.caption-text {
+  color: black;
+  text-decoration: underline;
+}
 .content {
   margin-bottom: 3em;
 }
@@ -514,7 +518,7 @@ div.figure p.caption span.caption-text {
 .center-footer {
   float: none;
   margin: 0 auto;
-  width: 30%;
+  width: 100%;
 }
 
 .left-footer {
