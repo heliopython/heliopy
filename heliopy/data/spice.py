@@ -64,7 +64,7 @@ spacecraft_kernels = [_Kernel('Solar Orbiter 2020', 'solo_2020',
 
 kernel_dict = {}
 for kernel in generic_kernels + spacecraft_kernels:
-    kernel_dict[kernel.name] = kernel
+    kernel_dict[kernel.short_name] = kernel
 
 __doc__ += '''
 .. csv-table:: Generic kernels
