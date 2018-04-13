@@ -133,7 +133,8 @@ def _swics(starttime, endtime, names, product, try_download=True):
 
     def processing_func(local_dir, local_fname):
         readargs = {'names': names,
-                    'delim_whitespace': True}
+                    'delim_whitespace': True,
+                    'na_values': ['******']}
         f = os.path.join(local_dir, local_fname)
         thisdata = pd.read_table(f, **readargs)
         thisdata = _convert_ulysses_time(thisdata)
@@ -206,7 +207,7 @@ def fgm_hires(starttime, endtime):
     return util.timefilter(data, starttime, endtime)
 
 
-def swoops_ions(starttime, endtime):
+def swoops_ions(starttime, endtime, try_download=True):
     """
     Import SWOOPS ion data.
 
@@ -278,7 +279,7 @@ def swoops_ions(starttime, endtime):
     return util.process(
         dirs, fnames, extension, local_base_dir, remote_base_url,
         download_func, processing_func, starttime, endtime,
-        try_download=True)
+        try_download=try_download)
 
 
 def _convert_ulysses_time(data):
