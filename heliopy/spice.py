@@ -91,7 +91,7 @@ class Trajectory:
             for a list of frames.
         """
         # Spice needs a funny set of times
-        fmt = '%b %d, %Y'
+        fmt = '%Y %b %d, %H:%M:%S'
         spice_times = [spiceypy.str2et(time.strftime(fmt)) for time in times]
         observing_body = observing_body
         # 'None' specifies no light-travel time correction
