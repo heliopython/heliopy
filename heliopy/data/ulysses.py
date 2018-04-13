@@ -133,7 +133,8 @@ def _swics(starttime, endtime, names, product, try_download=True):
 
     def processing_func(local_dir, local_fname):
         readargs = {'names': names,
-                    'delim_whitespace': True}
+                    'delim_whitespace': True,
+                    'na_values': ['******']}
         f = os.path.join(local_dir, local_fname)
         thisdata = pd.read_table(f, **readargs)
         thisdata = _convert_ulysses_time(thisdata)
