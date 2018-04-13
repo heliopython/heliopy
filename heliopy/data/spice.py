@@ -100,8 +100,10 @@ def get_kernel(name):
     Parameters
     ----------
     name : str
-        Kernel name. See :ref:`data_spice_generic_kernels` for a list of
-        available names.
+        Kernel name. See :ref:`data_spice_generic_kernels` and
+        :ref:`data_spice_spacecraft_kernels` for lists of
+        available names. The name should be a string from the "Identifier"
+        column of one of the tables.
 
     Returns
     -------
