@@ -1,5 +1,5 @@
-MMS (:mod:`heliopy.data.mms`)
-=============================
+MMS
+===
 
 .. currentmodule:: heliopy.data.mms
 

@@ -1,5 +1,5 @@
-ACE (:mod:`heliopy.data.ace`)
-=============================
+ACE
+===
 
 .. currentmodule:: heliopy.data.ace
 

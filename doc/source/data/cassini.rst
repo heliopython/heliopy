@@ -1,5 +1,5 @@
-Cassini (:mod:`heliopy.data.cassini`)
-=====================================
+Cassini
+=======
 
 .. currentmodule:: heliopy.data.cassini
 

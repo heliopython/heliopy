@@ -1,5 +1,5 @@
-Sunspot (:mod:`heliopy.data.sunspot`)
-=====================================
+Sunspot
+=======
 
 .. currentmodule:: heliopy.data.sunspot
 

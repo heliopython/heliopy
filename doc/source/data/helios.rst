@@ -1,5 +1,5 @@
-Helios (:mod:`heliopy.data.helios`)
-===================================
+Helios
+======
 
 .. currentmodule:: heliopy.data.helios
 

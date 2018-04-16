@@ -1,5 +1,5 @@
-Helper Methods (:mod:`heliopy.data.helper`)
-===========================================
+Helper methods
+==============
 
 .. currentmodule:: heliopy.data.helper
 

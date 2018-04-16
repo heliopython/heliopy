@@ -1,5 +1,5 @@
-Ulysses (:mod:`heliopy.data.ulysses`)
-=====================================
+Ulysses
+=======
 
 .. currentmodule:: heliopy.data.ulysses
 

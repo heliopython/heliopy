@@ -1,5 +1,5 @@
-WIND (:mod:`heliopy.data.wind`)
-===============================
+WIND
+====
 
 .. currentmodule:: heliopy.data.wind
 
