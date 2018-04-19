@@ -31,20 +31,24 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
     dirs : list
         A list of directories relative to *local_base_dir*.
     fnames : list
-        A list of filenames **without** their extension. Must be the
-        same length as *dirs*.
+        A list of filenames **without** their extension. These are the
+        filenames that will be downloaded from the remote source. Must be the
+        same length as *dirs*. Each filename is saved in it's respective entry
+        in *dirs*.
     extension : str
         File extension of the raw files. **Must include leading dot**.
     local_base_dir : str
-        Local base directory.
+        Local base directory. ``fname[i]`` will be stored in
+        ``local_base_dir / dirs[i] / fname[i] + extension``.
     remote_base_url : str
-        Remote base URL.
+        Remote base URL. ``fname[i]`` will be downloaded from
+        ``Remote / dirs[i] / fname[i] + extension``.
     download_func
         Function that takes
 
         - The remote base url
         - The local base directory
-        - The relative directory (this is relative to the base url)
+        - The relative directory (relative to the base url)
         - A filename
         - A file extension
 
@@ -54,7 +58,9 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
                               directory, fname, extension)
 
         The function can also return the filename of the file it downloaded,
-        if this is different to the filename it is given.
+        if this is different to the filename it is given. *download_func*
+        should **not** raise any errors, and just silently do nothing if a
+        given file is not available.
 
     processing_func
         Function that takes the directory of the local raw file, and the
@@ -70,7 +76,7 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
         Start of requested interval.
     endtime : datetime
         End of requested interval.
-    try_download : bool
+    try_download : bool, optional
         If ``True``, try to download data. If ``False`` don't.
         Default is ``True``.
 
