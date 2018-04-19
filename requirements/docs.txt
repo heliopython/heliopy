@@ -2,8 +2,9 @@
 
 matplotlib
 mock
-sphinx-gallery
 sphinx
-sphinx-bootstrap-theme
-pillow
 sphinx-automodapi
+sphinx-bootstrap-theme
+sphinx-gallery
+sphinx-issues
+pillow

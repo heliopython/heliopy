@@ -50,7 +50,8 @@ extensions = [
     'sphinx.ext.napoleon',
     'sphinx.ext.intersphinx',
     'sphinx_gallery.gen_gallery',
-    'sphinx_automodapi.automodapi'
+    'sphinx_automodapi.automodapi',
+    'sphinx_issues'
 ]
 
 intersphinx_mapping = {
@@ -67,6 +68,8 @@ sphinx_gallery_conf = {
     'gallery_dirs': 'auto_examples',
     'backreferences_dir': False,
     'min_reported_time': 0}
+
+issues_github_path = 'heliopython/heliopy'
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
