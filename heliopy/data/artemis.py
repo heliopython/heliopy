@@ -96,4 +96,6 @@ def fgm(probe, rate, coords, starttime, endtime):
     data = pd.concat(data)
     data = data[(data['Time'] > starttime) &
                 (data['Time'] < endtime)]
+    data = data.drop(columns='Time')
+    data.index.name = 'Time'
     return data
