@@ -192,6 +192,7 @@ def mitplasma_h0(probe, starttime, endtime):
 
     data = pd.concat(data)
     data = data[(data['Time'] > starttime) & (data['Time'] < endtime)]
+    data.index.name = 'Time'
     return data
 
 
@@ -248,6 +249,8 @@ def mag320ms(probe, startTime, endTime):
 
     data = pd.concat(data)
     data = data[(data['Time'] > startTime) & (data['Time'] < endTime)]
+    data = data.drop(columns='Time')
+    data.index.name = 'Time'
     return data
 
 
