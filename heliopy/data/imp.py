@@ -300,7 +300,7 @@ def mag15s(probe, starttime, endtime, verbose=False):
         remote_url = imp_url + relative_loc
         f = util.load(filename, local_dir, remote_url)
         readargs = {'names': ['Year', 'doy', 'Second', 'Source flag',
-                              'n points', 'x gse', 'y gse', 'z gsm',
+                              'n points', 'x gse', 'y gse', 'z gse',
                               'y gsm', 'z gsm',
                               '|B|', 'Bx gse', 'By gse', 'Bz gse',
                               'By gsm', 'Bz gsm',
