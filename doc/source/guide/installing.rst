@@ -7,7 +7,12 @@ Installation instructions can be found `here <https://docs.continuum.io/anaconda
 
 The supported versions of python are 3.5 and 3.6.
 
-Once you have a Python distribution installed, HelioPy can be installed using::
+Once you have a Python distribution installed, HelioPy can be installed using
+either conda::
+
+  conda install -c conda-forge heliopy 
+
+or pip::
 
   pip install heliopy
 
