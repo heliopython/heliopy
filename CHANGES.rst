@@ -1,10 +1,22 @@
-Version 0.6.0
+Version 0.5.1
 -------------
+
+New features
+^^^^^^^^^^^^
+
+- HelioPy can now be installed using conda.
+
+Backwards incompatible changes
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+- The list of kernels available for automatic download in :mod:`.data.spice`
+  has been updated, and some names changed. :issue:`408`
 
 Fixed bugs
 ^^^^^^^^^^
 - :meth:`.spice.Trajectory.generate_positions` can now generate
   positions at a resolution of one second instead of one day. :issue:`405`
+- A duplicate "z gsm" column header in the data returned by
+  :meth:`.data.imp.mag15s` has been corrected. :issue:`396`
 
 Version 0.5.0
 -------------
