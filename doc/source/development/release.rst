@@ -5,11 +5,19 @@ Creating a release
 
 .. code-block:: bash
 
+  git checkout master
   git fetch upstream
-  git merge upstream/master
+  git merge --ff-only upstream/master
 
 
-2. Run ``git clean -xfd`` to clean out any old builds
+2. Run
+
+.. code-block:: bash
+
+  git clean -xfd
+
+to clean out any old builds
+
 3. Tag the current version using
 
 .. code-block:: bash
@@ -18,20 +26,14 @@ Creating a release
   git push
   git push --tags
 
-4. Create a source distribution
+4. Create a source distribution and a python wheel
 
 .. code-block:: bash
 
   python setup.py sdist
-
-
-5. Create a python wheel
-
-.. code-block:: bash
-
   python setup.py bdist_wheel
 
-6. Upload created wheels to pypi
+5. Upload created wheels to pypi
 
 .. code-block:: bash
 
@@ -39,3 +41,5 @@ Creating a release
 
 See https://packaging.python.org/tutorials/distributing-packages/#packaging-your-project
 for more information.
+
+6. Update conda package at https://github.com/conda-forge/heliopy-feedstock
