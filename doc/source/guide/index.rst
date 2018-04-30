@@ -6,5 +6,6 @@ HelioPy guide
 
    installing
    configuring
+   citing
    whatsnew
    code-of-conduct
