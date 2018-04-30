@@ -2,9 +2,8 @@
 HelioPy Documentation
 #####################
 
-HelioPy is a free and open source set of tools for analysing space physics data
-in python. The main purpose is to make it easy to download and read in various
-space physics data sets.
+HelioPy is a free and open source set of tools for automatically downloading
+and reading in space physics timeseries data to python.
 
 Getting started
 ===============
@@ -12,8 +11,8 @@ Getting started
 .. toctree::
    :maxdepth: 2
 
-   guide/index
    auto_examples/index
+   guide/index
 
 Module documentation
 ====================
