@@ -11,6 +11,7 @@ import heliopy.data.cassini as cassini
 import heliopy.data.helper as helper
 import heliopy.data.spice as spice
 import heliopy.data.sunspot as sunspot
+import astropy.units as u
 from heliopy import config
 
 import pandas as pd
@@ -28,6 +29,11 @@ except Exception:
 def check_datetime_index(df):
     'Helper funciton to check all dataframes have a datetime index'
     assert type(df.index[0]) == pd.Timestamp
+
+
+def check_units(df):
+    for column in df.data.columns:
+        assert type(df.quantity(column)) == u.quantity.Quantity
 
 
 @pytest.mark.data
@@ -132,7 +138,8 @@ class TestAce:
 
     def test_mfi_h0(self):
         df = ace.mfi_h0(self.starttime, self.endtime)
-        check_datetime_index(df)
+        check_datetime_index(df.data)
+        check_units(df)
 
     def test_swe_h0(self):
         df = ace.swe_h0(self.starttime, self.endtime)
