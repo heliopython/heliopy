@@ -180,7 +180,6 @@ def timefilter(data, starttime, endtime):
         raise KeyError('The label "Time" was not found in '
                        'the dataframe columns or index')
 
-    print(data.head())
     data = data[(time > starttime) &
                 (time < endtime)]
     # Assume if this fails we have a multi-index that already has time in it
