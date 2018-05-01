@@ -12,7 +12,7 @@ from heliopy.data import util
 from heliopy import config
 
 data_dir = config['download_dir']
-themis_dir = data_dir + '/themis'
+artemis_dir = os.path.join(data_dir, 'artemis')
 remote_themis_dir = 'http://themis.ssl.berkeley.edu/data/themis/'
 valid_probes = ['a', 'b', 'c', 'd', 'e']
 
@@ -57,45 +57,49 @@ def fgm(probe, rate, coords, starttime, endtime):
                           'co-ordinate systems: %s') % (rate, valid_rates))
 
     # Directory relative to main THEMIS data directory
-    relative_dir = os.path.join('th' + probe, 'l2', 'fgm')
-
+    fgm_dir = os.path.join('th' + probe, 'l2', 'fgm')
     daylist = util._daysplitinterval(starttime, endtime)
-    data = []
+
+    dirs = []
+    fnames = []
+    extension = '.cdf'
     for day in daylist:
         date = day[0]
-        this_relative_dir = os.path.join(relative_dir, str(date.year))
-        filename = 'th' + probe + '_l2_fgm_' +\
-            str(date.year) +\
-            str(date.month).zfill(2) +\
-            str(date.day).zfill(2) +\
-            '_v01.cdf'
-        # Absolute path to local directory for this data file
-        local_dir = os.path.join(themis_dir, this_relative_dir)
-        util._checkdir(local_dir)
+        filename = 'th{}_l2_fgm_{}{:02}{:02}_v01'.format(
+            probe, date.year, date.month, date.day)
+        fnames.append(filename)
+        this_relative_dir = os.path.join(fgm_dir, str(date.year))
+        dirs.append(this_relative_dir)
 
+    def download_func(remote_base_url, local_base_dir,
+                      directory, fname, extension):
         remote_url = remote_themis_dir + this_relative_dir
-        cdf = util.load(filename, local_dir, remote_url)
-        if cdf is None:
-            print('File {}/{} not available\n'.format(
-                remote_url, filename))
-            continue
+        # Now load remotely
+        util.load(fname + extension,
+                  os.path.join(local_base_dir, directory),
+                  remote_url)
+
+    def processing_func(local_dir, local_fname, **kwargs):
+        cdf = util.load(local_fname, local_dir, '')
+
+        probe = kwargs.pop('probe')
+        rate = kwargs.pop('rate')
+        coords = kwargs.pop('coords')
 
         probestr = 'th' + probe
         ratestr = '_fg' + rate + '_'
         keys = {probestr + ratestr + 'btotal': '|B|',
                 probestr + ratestr + coords: ['Bx_' + coords,
                                               'By_' + coords,
-                                              'Bz_' + coords],
-                probestr + ratestr + 'time': 'Time'}
+                                              'Bz_' + coords]}
         df = util.cdf2df(cdf, probestr + ratestr + 'time', keys,
                          dtimeindex=False)
         df = df.set_index(pd.to_datetime(df.index.values, unit='s'))
-        df['Time'] = df.index.values
-        data.append(df)
+        df.index.name = 'Time'
+        return df
 
-    data = pd.concat(data)
-    data = data[(data['Time'] > starttime) &
-                (data['Time'] < endtime)]
-    data = data.drop(columns='Time')
-    data.index.name = 'Time'
-    return data
+    processing_kwargs = {'probe': probe, 'rate': rate, 'coords': coords}
+    return util.process(dirs, fnames, extension, artemis_dir,
+                        remote_themis_dir, download_func, processing_func,
+                        starttime, endtime,
+                        processing_kwargs=processing_kwargs)

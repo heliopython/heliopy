@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 def process(dirs, fnames, extension, local_base_dir, remote_base_url,
             download_func, processing_func, starttime, endtime,
-            try_download=True, units=None):
+            try_download=True, units=None, processing_kwargs={}):
     """
     The main utility method for systematically loading, downloading, and saving
     data.
@@ -70,7 +70,7 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
         given to *processing_func* includes the extension. The signature must
         be::
 
-            def processing_func(local_dir, local_fname)
+            def processing_func(local_dir, local_fname, **processing_kwargs)
 
         The files handed to *processing_func* are always guarenteed to exist.
 
@@ -81,6 +81,9 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
     try_download : bool, optional
         If ``True``, try to download data. If ``False`` don't.
         Default is ``True``.
+
+    processing_kwargs : dict, optional
+        Extra keyword arguments to be passed to the processing funciton.
 
     Returns
     -------
@@ -121,7 +124,8 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
 
         if os.path.exists(raw_loc):
             # Convert raw file to a dataframe
-            df = processing_func(local_dir, fname + extension)
+            df = processing_func(local_dir, fname + extension,
+                                 **processing_kwargs)
 
             # Save dataframe to disk
             if use_hdf:
