@@ -112,12 +112,12 @@ class TestUlysses:
 class TestArtemis:
     @classmethod
     def setup_class(self):
-        self.starttime = datetime(2008, 1, 1, 0, 0, 0)
-        self.endtime = datetime(2008, 1, 2, 0, 0, 0)
+        self.starttime = datetime(2008, 1, 1)
+        self.endtime = datetime(2008, 1, 2)
         self.probe = 'a'
 
     def test_fgm(self):
-        df = artemis.fgm(self.probe, 'h', 'dsl', self.starttime, self.endtime)
+        df = artemis.fgm(self.probe, 'l', 'dsl', self.starttime, self.endtime)
         check_datetime_index(df)
 
         with pytest.raises(ValueError):
