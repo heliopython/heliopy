@@ -2,3 +2,4 @@ astropy
 numpy
 pandas
 requests
+sunpy

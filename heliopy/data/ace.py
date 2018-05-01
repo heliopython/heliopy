@@ -6,8 +6,11 @@ ACE spacecraft homepage can be found at http://www.srl.caltech.edu/ACE/.
 """
 import os
 import pandas as pd
+import sunpy.timeseries as ts
 
 from heliopy.data import util
+from collections import OrderedDict
+import astropy.units as u
 from heliopy import config
 
 data_dir = config['download_dir']
@@ -16,7 +19,7 @@ remote_ace_dir = 'ftp://spdf.gsfc.nasa.gov/pub/data/ace/'
 remote_cda_dir = 'ftp://cdaweb.gsfc.nasa.gov/pub/data/ace/'
 
 
-def _ace(starttime, endtime, instrument, product, fname, keys=None,
+def _ace(starttime, endtime, instrument, product, fname, units=None, keys=None,
          version='01', badvalues={}):
     """
     Generic method for downloading ACE data from cdaweb.
@@ -60,7 +63,8 @@ def _ace(starttime, endtime, instrument, product, fname, keys=None,
                            keys=keys, badvalues=badvalues)
 
     return util.process(dirs, fnames, extension, ace_dir, remote_ace_dir,
-                        download_func, processing_func, starttime, endtime)
+                        download_func, processing_func, starttime,
+                        endtime, units=units)
 
 
 def mfi_h0(starttime, endtime):
@@ -83,8 +87,10 @@ def mfi_h0(starttime, endtime):
     product = 'mfi_h0'
     fname = 'h0_mfi'
     version = '06'
+    units = OrderedDict([('Magnitude', u.nT), ('dBrms', u.nT),
+                         ('Q_FLAG', u.dimensionless_unscaled)])
     return _ace(starttime, endtime, instrument, product,
-                fname, version=version)
+                fname, units, version=version)
 
 
 def swe_h0(starttime, endtime):
@@ -119,8 +125,8 @@ def swe_h0(starttime, endtime):
             'Epoch': 'Time'}
     version = '06'
     badvalues = -1e31
-    return _ace(starttime, endtime, instrument, product, fname, keys, version,
-                badvalues)
+    return _ace(starttime, endtime, instrument, product, fname, keys=keys,
+                version=version, badvalues=badvalues)
 
 
 def swi_h2(starttime, endtime):

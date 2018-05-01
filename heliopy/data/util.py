@@ -10,6 +10,8 @@ import os
 import sys
 import urllib.error as urlerror
 import urllib.request as urlreq
+import astropy.units as u
+import sunpy.timeseries as ts
 
 import numpy as np
 import pandas as pd
@@ -21,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 def process(dirs, fnames, extension, local_base_dir, remote_base_url,
             download_func, processing_func, starttime, endtime,
-            try_download=True):
+            try_download=True, units=None):
     """
     The main utility method for systematically loading, downloading, and saving
     data.
@@ -128,7 +130,17 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
         else:
             logger.info('File {}/{}{} not available\n'.format(
                         local_dir, fname, extension))
-    return timefilter(data, starttime, endtime)
+
+    if units is None:
+        return timefilter(data, starttime, endtime)
+    else:
+        new_data = timefilter(data, starttime, endtime)
+        return units_attach(new_data, units)
+
+
+def units_attach(data, units):
+    timeseries_data = ts.TimeSeries(data, units)
+    return timeseries_data
 
 
 def timefilter(data, starttime, endtime):
