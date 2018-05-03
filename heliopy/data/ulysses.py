@@ -73,7 +73,15 @@ def swics_heavy_ions(starttime, endtime, try_download=True):
     for ion in ['ALPHA', 'C6', 'O6', 'NE8', 'MG10', 'SI9', 'SI10', 'FE11']:
         names += ['DENS_' + ion, 'VEL_' + ion, 'TEMP_' + ion]
     product = 'uswimatb'
-    return _swics(starttime, endtime, names, product, try_download)
+    units = OrderedDict([('VEL_ALPHA', u.km/u.s), ('TEMP_ALPHA', u.K),
+                        ('VEL_C6', u.km/u.s), ('TEMP_C6', u.K),
+                        ('VEL_O6', u.km/u.s), ('TEMP_O6', u.K),
+                        ('VEL_NE8', u.km/u.s), ('TEMP_NE8', u.K),
+                        ('VEL_MG10', u.km/u.s), ('TEMP_MG10', u.K),
+                        ('VEL_SI9', u.km/u.s), ('TEMP_SI9', u.K),
+                        ('VEL_SI10', u.km/u.s), ('TEMP_SI10', u.K),
+                        ('VEL_FE11', u.km/u.s), ('TEMP_FE11', u.K)])
+    return _swics(starttime, endtime, names, product, units, try_download)
 
 
 def swics_abundances(starttime, endtime, try_download=True):
@@ -108,10 +116,11 @@ def swics_abundances(starttime, endtime, try_download=True):
              'VEL_ALPHA', 'RAT_C6_C5', 'RAT_O7_O6', 'RAT_FE_O', 'CHARGE_FE',
              'N_CYC']
     product = 'uswichst'
-    return _swics(starttime, endtime, names, product, try_download)
+    units = OrderedDict([('VEL_ALPHA', u.km/u.s)])
+    return _swics(starttime, endtime, names, product, units, try_download)
 
 
-def _swics(starttime, endtime, names, product, try_download=True):
+def _swics(starttime, endtime, names, product, units=None, try_download=True):
     data = []
     dtimes = util._daysplitinterval(starttime, endtime)
     dirs = []
@@ -153,7 +162,7 @@ def _swics(starttime, endtime, names, product, try_download=True):
     return util.process(
         dirs, fnames, extension, local_base_dir, remote_base_url,
         download_func, processing_func, starttime, endtime,
-        try_download=True)
+        units=units, try_download=True)
 
 
 def fgm_hires(starttime, endtime):
@@ -233,11 +242,8 @@ def swoops_ions(starttime, endtime, try_download=True):
     local_base_dir = os.path.join(ulysses_dir, 'swoops', 'ions')
     remote_base_url = ulysses_url
     units = OrderedDict([('T_p_large', u.K), ('T_p_small', u.K),
-                        ('iqual', u.dimensionless_unscaled),
                         ('v_t', u.km/u.s), ('v_r', u.km/u.s),
                         ('v_n', u.km/u.s), ('r', u.au),
-                        ('hlat', u.dimensionless_unscaled),
-                        ('hlon', u.dimensionless_unscaled),
                         ('n_a', u.cm**-3), ('n_p', u.cm**-3)])
 
     def download_func(remote_base_url, local_base_dir,

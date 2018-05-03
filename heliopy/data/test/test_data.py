@@ -101,11 +101,13 @@ class TestUlysses:
 
     def test_swics_heavy_ions(self):
         df = ulysses.swics_heavy_ions(self.starttime, self.endtime)
-        check_datetime_index(df)
+        check_datetime_index(df.data)
+        check_units(df)
 
     def test_swics_abundances(self):
         df = ulysses.swics_abundances(self.starttime, self.endtime)
-        check_datetime_index(df)
+        check_datetime_index(df.data)
+        check_units(df)
 
 
 @pytest.mark.skipif(no_pycdf, reason='Importing pycdf failed')
