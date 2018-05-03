@@ -5,10 +5,13 @@ All data is publically available at http://ufa.esac.esa.int/ufa/
 """
 import os
 import pandas as pd
+import sunpy.timeseries as ts
 from datetime import datetime, date
 from urllib.error import HTTPError
 
 from heliopy.data import util
+from collections import OrderedDict
+import astropy.units as u
 from heliopy import config
 
 use_hdf = config['use_hdf']
@@ -229,6 +232,13 @@ def swoops_ions(starttime, endtime, try_download=True):
     extension = '.dat'
     local_base_dir = os.path.join(ulysses_dir, 'swoops', 'ions')
     remote_base_url = ulysses_url
+    units = OrderedDict([('T_p_large', u.K), ('T_p_small', u.K),
+                        ('iqual', u.dimensionless_unscaled),
+                        ('v_t', u.km/u.s), ('v_r', u.km/u.s),
+                        ('v_n', u.km/u.s), ('r', u.au),
+                        ('hlat', u.dimensionless_unscaled),
+                        ('hlon', u.dimensionless_unscaled),
+                        ('n_a', u.cm**-3), ('n_p', u.cm**-3)])
 
     def download_func(remote_base_url, local_base_dir,
                       directory, fname, extension):
@@ -279,7 +289,7 @@ def swoops_ions(starttime, endtime, try_download=True):
     return util.process(
         dirs, fnames, extension, local_base_dir, remote_base_url,
         download_func, processing_func, starttime, endtime,
-        try_download=try_download)
+        units=units, try_download=try_download)
 
 
 def _convert_ulysses_time(data):
