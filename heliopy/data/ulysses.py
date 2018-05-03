@@ -80,7 +80,8 @@ def swics_heavy_ions(starttime, endtime, try_download=True):
                         ('VEL_MG10', u.km/u.s), ('TEMP_MG10', u.K),
                         ('VEL_SI9', u.km/u.s), ('TEMP_SI9', u.K),
                         ('VEL_SI10', u.km/u.s), ('TEMP_SI10', u.K),
-                        ('VEL_FE11', u.km/u.s), ('TEMP_FE11', u.K)])
+                        ('VEL_FE11', u.km/u.s), ('TEMP_FE11', u.K),
+                        ('DENS_O6'), u.cm**-3])
     return _swics(starttime, endtime, names, product, units, try_download)
 
 
