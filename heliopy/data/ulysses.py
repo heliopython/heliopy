@@ -81,7 +81,14 @@ def swics_heavy_ions(starttime, endtime, try_download=True):
                         ('VEL_SI9', u.km / u.s), ('TEMP_SI9', u.K),
                         ('VEL_SI10', u.km / u.s), ('TEMP_SI10', u.K),
                         ('VEL_FE11', u.km / u.s), ('TEMP_FE11', u.K),
-                        ('DENS_O6', u.cm**-3)])
+                        ('DENS_O6', u.cm**-3), ('DENS_ALPHA', u.dimensionless_unscaled),
+                        ('DENS_C6', u.dimensionless_unscaled),
+                        ('DENS_O6', u.dimensionless_unscaled),
+                        ('DENS_NE8', u.dimensionless_unscaled),
+                        ('DENS_MG10', u.dimensionless_unscaled),
+                        ('DENS_SI9', u.dimensionless_unscaled),
+                        ('DENS_SI10', u.dimensionless_unscaled),
+                        ('DENS_FE11', u.dimensionless_unscaled)])
     return _swics(starttime, endtime, names, product, units, try_download)
 
 
@@ -117,7 +124,12 @@ def swics_abundances(starttime, endtime, try_download=True):
              'VEL_ALPHA', 'RAT_C6_C5', 'RAT_O7_O6', 'RAT_FE_O', 'CHARGE_FE',
              'N_CYC']
     product = 'uswichst'
-    units = OrderedDict([('VEL_ALPHA', u.km / u.s)])
+    units = OrderedDict([('VEL_ALPHA', u.km / u.s),
+                        ('RAT_C6_C5', u.dimensionless_unscaled),
+                        ('RAT_O7_O6', u.dimensionless_unscaled),
+                        ('RAT_FE_O', u.dimensionless_unscaled),
+                        ('CHARGE_FE', u.dimensionless_unscaled),
+                        ('N_CYC', u.dimensionless_unscaled)])
     return _swics(starttime, endtime, names, product, units, try_download)
 
 
@@ -245,7 +257,10 @@ def swoops_ions(starttime, endtime, try_download=True):
     units = OrderedDict([('T_p_large', u.K), ('T_p_small', u.K),
                         ('v_t', u.km / u.s), ('v_r', u.km / u.s),
                         ('v_n', u.km / u.s), ('r', u.au),
-                        ('n_a', u.cm**-3), ('n_p', u.cm**-3)])
+                        ('n_a', u.cm**-3), ('n_p', u.cm**-3),
+                        ('hlat', u.dimensionless_unscaled),
+                        ('hlon', u.dimensionless_unscaled),
+                        ('iqual', u.dimensionless_unscaled)])
 
     def download_func(remote_base_url, local_base_dir,
                       directory, fname, extension):
