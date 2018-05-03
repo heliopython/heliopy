@@ -12,6 +12,7 @@ import urllib.error as urlerror
 import urllib.request as urlreq
 import astropy.units as u
 import sunpy.timeseries as ts
+import warnings
 
 import numpy as np
 import pandas as pd
@@ -139,6 +140,11 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
 
 
 def units_attach(data, units):
+    unit_key = list(units.keys())
+    for column_name in data.columns:
+        if column_name not in unit_key:
+            units[column_name] = u.dimensionless_unscaled
+            warnings.warn("Column {} has been assigned dimensionless quantity because no unit was assigned in the files. Please assign.".format(column_name), Warning)
     timeseries_data = ts.TimeSeries(data, units)
     return timeseries_data
 
