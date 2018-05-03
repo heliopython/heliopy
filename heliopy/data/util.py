@@ -139,6 +139,10 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
 
 
 def units_attach(data, units):
+    unit_key = list(units.keys())
+    for column_name in data.columns:
+        if column_name not in unit_key:
+            units[column_name] = u.dimensionless_unscaled
     timeseries_data = ts.TimeSeries(data, units)
     return timeseries_data
 
