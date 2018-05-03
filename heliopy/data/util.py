@@ -144,7 +144,8 @@ def units_attach(data, units):
     for column_name in data.columns:
         if column_name not in unit_key:
             units[column_name] = u.dimensionless_unscaled
-            warnings.warn("Column {} has been assigned dimensionless quantity because no unit was assigned in the files. Please assign.".format(column_name), Warning)
+            message = "{} has no units. Assign true unit.".format(column_name)
+            warnings.warn(message, Warning)
     timeseries_data = ts.TimeSeries(data, units)
     return timeseries_data
 
