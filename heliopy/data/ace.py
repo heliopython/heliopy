@@ -6,7 +6,6 @@ ACE spacecraft homepage can be found at http://www.srl.caltech.edu/ACE/.
 """
 import os
 import pandas as pd
-import sunpy.timeseries as ts
 
 from heliopy.data import util
 from collections import OrderedDict
