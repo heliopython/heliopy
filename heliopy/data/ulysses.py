@@ -5,7 +5,6 @@ All data is publically available at http://ufa.esac.esa.int/ufa/
 """
 import os
 import pandas as pd
-import sunpy.timeseries as ts
 from datetime import datetime, date
 from urllib.error import HTTPError
 
@@ -258,8 +257,8 @@ def swoops_ions(starttime, endtime, try_download=True):
                         ('v_t', u.km / u.s), ('v_r', u.km / u.s),
                         ('v_n', u.km / u.s), ('r', u.au),
                         ('n_a', u.cm**-3), ('n_p', u.cm**-3),
-                        ('hlat', u.dimensionless_unscaled),
-                        ('hlon', u.dimensionless_unscaled),
+                        ('hlat', u.deg),
+                        ('hlon', u.deg),
                         ('iqual', u.dimensionless_unscaled)])
 
     def download_func(remote_base_url, local_base_dir,
