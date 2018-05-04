@@ -12,6 +12,7 @@ import urllib.error as urlerror
 import urllib.request as urlreq
 import astropy.units as u
 import sunpy.timeseries as ts
+import warnings
 
 import numpy as np
 import pandas as pd
@@ -143,6 +144,12 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
 
 
 def units_attach(data, units):
+    unit_key = list(units.keys())
+    for column_name in data.columns:
+        if column_name not in unit_key:
+            units[column_name] = u.dimensionless_unscaled
+            message = "{} has no units. Assign true unit.".format(column_name)
+            warnings.warn(message, Warning)
     timeseries_data = ts.TimeSeries(data, units)
     return timeseries_data
 

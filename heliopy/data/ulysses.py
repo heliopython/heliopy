@@ -9,6 +9,8 @@ from datetime import datetime, date
 from urllib.error import HTTPError
 
 from heliopy.data import util
+from collections import OrderedDict
+import astropy.units as u
 from heliopy import config
 
 use_hdf = config['use_hdf']
@@ -70,7 +72,23 @@ def swics_heavy_ions(starttime, endtime, try_download=True):
     for ion in ['ALPHA', 'C6', 'O6', 'NE8', 'MG10', 'SI9', 'SI10', 'FE11']:
         names += ['DENS_' + ion, 'VEL_' + ion, 'TEMP_' + ion]
     product = 'uswimatb'
-    return _swics(starttime, endtime, names, product, try_download)
+    units = OrderedDict([('VEL_ALPHA', u.km / u.s), ('TEMP_ALPHA', u.K),
+                        ('VEL_C6', u.km / u.s), ('TEMP_C6', u.K),
+                        ('VEL_O6', u.km / u.s), ('TEMP_O6', u.K),
+                        ('VEL_NE8', u.km / u.s), ('TEMP_NE8', u.K),
+                        ('VEL_MG10', u.km / u.s), ('TEMP_MG10', u.K),
+                        ('VEL_SI9', u.km / u.s), ('TEMP_SI9', u.K),
+                        ('VEL_SI10', u.km / u.s), ('TEMP_SI10', u.K),
+                        ('VEL_FE11', u.km / u.s), ('TEMP_FE11', u.K),
+                        ('DENS_O6', u.cm**-3), ('DENS_ALPHA', u.dimensionless_unscaled),
+                        ('DENS_C6', u.dimensionless_unscaled),
+                        ('DENS_O6', u.dimensionless_unscaled),
+                        ('DENS_NE8', u.dimensionless_unscaled),
+                        ('DENS_MG10', u.dimensionless_unscaled),
+                        ('DENS_SI9', u.dimensionless_unscaled),
+                        ('DENS_SI10', u.dimensionless_unscaled),
+                        ('DENS_FE11', u.dimensionless_unscaled)])
+    return _swics(starttime, endtime, names, product, units, try_download)
 
 
 def swics_abundances(starttime, endtime, try_download=True):
@@ -105,10 +123,16 @@ def swics_abundances(starttime, endtime, try_download=True):
              'VEL_ALPHA', 'RAT_C6_C5', 'RAT_O7_O6', 'RAT_FE_O', 'CHARGE_FE',
              'N_CYC']
     product = 'uswichst'
-    return _swics(starttime, endtime, names, product, try_download)
+    units = OrderedDict([('VEL_ALPHA', u.km / u.s),
+                        ('RAT_C6_C5', u.dimensionless_unscaled),
+                        ('RAT_O7_O6', u.dimensionless_unscaled),
+                        ('RAT_FE_O', u.dimensionless_unscaled),
+                        ('CHARGE_FE', u.dimensionless_unscaled),
+                        ('N_CYC', u.dimensionless_unscaled)])
+    return _swics(starttime, endtime, names, product, units, try_download)
 
 
-def _swics(starttime, endtime, names, product, try_download=True):
+def _swics(starttime, endtime, names, product, units=None, try_download=True):
     data = []
     dtimes = util._daysplitinterval(starttime, endtime)
     dirs = []
@@ -150,7 +174,7 @@ def _swics(starttime, endtime, names, product, try_download=True):
     return util.process(
         dirs, fnames, extension, local_base_dir, remote_base_url,
         download_func, processing_func, starttime, endtime,
-        try_download=True)
+        units=units, try_download=True)
 
 
 def fgm_hires(starttime, endtime):
@@ -229,6 +253,13 @@ def swoops_ions(starttime, endtime, try_download=True):
     extension = '.dat'
     local_base_dir = os.path.join(ulysses_dir, 'swoops', 'ions')
     remote_base_url = ulysses_url
+    units = OrderedDict([('T_p_large', u.K), ('T_p_small', u.K),
+                        ('v_t', u.km / u.s), ('v_r', u.km / u.s),
+                        ('v_n', u.km / u.s), ('r', u.au),
+                        ('n_a', u.cm**-3), ('n_p', u.cm**-3),
+                        ('hlat', u.deg),
+                        ('hlon', u.deg),
+                        ('iqual', u.dimensionless_unscaled)])
 
     def download_func(remote_base_url, local_base_dir,
                       directory, fname, extension):
@@ -279,7 +310,7 @@ def swoops_ions(starttime, endtime, try_download=True):
     return util.process(
         dirs, fnames, extension, local_base_dir, remote_base_url,
         download_func, processing_func, starttime, endtime,
-        try_download=try_download)
+        units=units, try_download=try_download)
 
 
 def _convert_ulysses_time(data):
