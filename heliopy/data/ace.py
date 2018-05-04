@@ -6,7 +6,6 @@ ACE spacecraft homepage can be found at http://www.srl.caltech.edu/ACE/.
 """
 import os
 import pandas as pd
-import sunpy.timeseries as ts
 
 from heliopy.data import util
 from collections import OrderedDict
@@ -87,10 +86,8 @@ def mfi_h0(starttime, endtime):
     product = 'mfi_h0'
     fname = 'h0_mfi'
     version = '06'
-    units = OrderedDict([('Magnitude', u.nT), ('dBrms', u.nT),
-                         ('Q_FLAG', u.dimensionless_unscaled)])
     return _ace(starttime, endtime, instrument, product,
-                fname, units, version=version)
+                fname, version=version)
 
 
 def swe_h0(starttime, endtime):

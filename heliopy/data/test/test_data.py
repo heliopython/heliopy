@@ -141,8 +141,7 @@ class TestAce:
 
     def test_mfi_h0(self):
         df = ace.mfi_h0(self.starttime, self.endtime)
-        check_datetime_index(df.data)
-        check_units(df)
+        check_datetime_index(df)
 
     def test_swe_h0(self):
         df = ace.swe_h0(self.starttime, self.endtime)
