@@ -390,30 +390,14 @@ def load(filename, local_dir, remote_url, guessversion=False,
     # Try to load locally
     if _checkdir(local_dir):
         for f in os.listdir(local_dir):
-            if f == filename or guessversion and (f[:-6] == filename[:-6]):
+            if f == filename or (guessversion and (f[:-6] == filename[:-6])):
                 filename = f
                 return _load_local(local_dir, f, filetype)
 
     # Loading locally failed, but directory has been made so try to download
     # file.
-    remote_url = _fix_url(remote_url)
     if guessversion:
-        # Split remote url into a server name and directory
-        # Strip ftp:// from front of url
-        remote_ftp = remote_url[6:]
-        for i, c in enumerate(remote_ftp):
-            if c == '/':
-                server = remote_ftp[:i]
-                server_dir = remote_ftp[i:]
-                break
-        # Login to remote server
-        with ftplib.FTP(server) as ftp:
-            ftp.login()
-            ftp.cwd(server_dir)
-            # Loop through and find files
-            for (f, _) in ftp.mlsd():
-                if f[-len(filename):-8] == filename[:-8]:
-                    filename = f[-len(filename):]
+        filename = _get_remote_version(remote_url, filename)
 
     if try_download:
         try:
@@ -426,6 +410,26 @@ def load(filename, local_dir, remote_url, guessversion=False,
                 return None
     else:
         return None
+
+
+def _get_remote_version(remote_url, filename):
+    remote_url = _fix_url(remote_url)
+    # Split remote url into a server name and directory
+    # Strip ftp:// from front of url
+    remote_ftp = remote_url[6:]
+    for i, c in enumerate(remote_ftp):
+        if c == '/':
+            server = remote_ftp[:i]
+            server_dir = remote_ftp[i:]
+            break
+    # Login to remote server
+    with ftplib.FTP(server) as ftp:
+        ftp.login()
+        ftp.cwd(server_dir)
+        # Loop through and find files
+        for (f, _) in ftp.mlsd():
+            if f[-len(filename):-8] == filename[:-8]:
+                return f[-len(filename):]
 
 
 def _load_local(local_dir, filename, filetype):
