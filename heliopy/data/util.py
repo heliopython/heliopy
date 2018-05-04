@@ -459,13 +459,18 @@ def _reporthook(blocknum, blocksize, totalsize):
         sys.stderr.write("\rRead %d" % (readsofar,))
 
 
-def _load_remote(remote_url, filename, local_dir, filetype):
+def _download_remote(remote_url, filename, local_dir):
+    remote_url = _fix_url(remote_url)
     remote_url = remote_url + '/' + filename
     print('Downloading', remote_url)
     urlreq.urlretrieve(remote_url,
                        filename=os.path.join(local_dir, filename),
                        reporthook=_reporthook)
     print('\n')
+
+
+def _load_remote(remote_url, filename, local_dir, filetype):
+    _download_remote(remote_url, filename, local_dir)
     return _load_local(local_dir, filename, filetype)
 
 
