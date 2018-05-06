@@ -1,7 +1,8 @@
 """
 Methods for importing data from the Cassini spacecraft.
 
-All data is publically available at http://pds-atmospheres.nmsu.edu/data_and_services/atmospheres_data/Cassini/Cassini.html
+All data is publically available at
+http://pds-atmospheres.nmsu.edu/data_and_services/atmospheres_data/Cassini/Cassini.html
 """
 import os
 import pandas as pd
@@ -75,35 +76,36 @@ def mag_1min(starttime, endtime, coords):
     base_url = ('http://pds-ppi.igpp.ucla.edu/ditdos/download?'
                 'id=pds://PPI/CO-E_SW_J_S-MAG-4-SUMM-1MINAVG-V1.0/DATA')
 
-    data = []
+    local_base_dir = os.path.join(cassini_dir, 'mag', '1min')
+    dirs = []
+    fnames = []
+    extension = '.TAB'
     for year in starttime.year, endtime.year:
+        dirs.append('{}'.format(year))
+        fnames.append('{}_FGM_{}_1M'.format(year, coords))
+
+    def download_func(remote_base_url, local_base_dir,
+                      directory, fname, extension):
         url = '{}/{}'.format(base_url, year)
-        local_dir = os.path.join(cassini_dir, 'mag', '1min')
+        util._download_remote(url,
+                              fname + extension,
+                              os.path.join(local_base_dir, directory))
 
-        fname = '{}_FGM_{}_1M'.format(year, coords)
-
-        hdfloc = os.path.join(local_dir, fname + '.hdf')
-        if os.path.isfile(hdfloc):
-            df = pd.read_hdf(hdfloc)
-            data.append(df)
-            continue
-
-        f = util.load(fname + '.TAB', local_dir, url)
+    def processing_func(local_dir, local_fname):
+        f = util._load_local(local_dir, local_fname, 'ascii')
         if 'error_message' in f.readline():
             f.close()
             os.remove(os.path.join(local_dir, fname + '.TAB'))
-            continue
+            raise util._NoDataError()
+        return pd.read_table(f,
+                             names=['Time', 'Bx', 'By', 'Bz', '|B|',
+                                    'X', 'Y', 'Z', 'Local hour', 'n points'],
+                             delim_whitespace=True,
+                             parse_dates=[0], index_col=0)
 
-        df = pd.read_table(f, names=['Time', 'Bx', 'By', 'Bz', '|B|',
-                                     'X', 'Y', 'Z', 'Local hour', 'n points'],
-                           delim_whitespace=True,
-                           parse_dates=[0], index_col=0)
-        data.append(df)
-
-        if use_hdf:
-            df.to_hdf(hdfloc, key='data', mode='w')
-
-    return util.timefilter(data, starttime, endtime)
+    return util.process(dirs, fnames, extension, local_base_dir,
+                        base_url, download_func, processing_func,
+                        starttime, endtime)
 
 
 def mag_hires(starttime, endtime):

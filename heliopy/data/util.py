@@ -125,8 +125,11 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
 
         if os.path.exists(raw_loc):
             # Convert raw file to a dataframe
-            df = processing_func(local_dir, fname + extension,
-                                 **processing_kwargs)
+            try:
+                df = processing_func(local_dir, fname + extension,
+                                     **processing_kwargs)
+            except _NoDataError:
+                continue
 
             # Save dataframe to disk
             if use_hdf:
@@ -141,6 +144,10 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
     else:
         new_data = timefilter(data, starttime, endtime)
         return units_attach(new_data, units)
+
+
+class _NoDataError(RuntimeError):
+    pass
 
 
 def units_attach(data, units):
