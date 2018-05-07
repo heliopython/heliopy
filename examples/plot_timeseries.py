@@ -29,4 +29,4 @@ axs[1].plot(timeseries_data.data['RAT_FE_O'])
 
 for ax in axs:
     ax.legend()
-plt.show()]
+plt.show()
