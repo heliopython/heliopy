@@ -13,12 +13,20 @@ import matplotlib.pyplot as plt
 from datetime import datetime
 
 starttime = datetime(1993, 1, 1, 0, 0, 0)
-endtime = datetime(1993, 1, 2, 0, 0, 0)
+endtime = datetime(1993, 2, 1, 0, 0, 0)
 
 timeseries_data = ulysses.swics_abundances(starttime, endtime)
 
-print(timeseries_data.data)  # Returns a Pandas DataFrame from the TimeSeries
-print(timeseries_data.quantity('VEL_ALPHA'))  # Returns list-like data of the labeled column
-print(timeseries_data.units)  # Returns the column names and the units attached
+# timeseries_data is a TimeSeries data type
+# Using the timeseries.data function, one can obtain the Pandas DataFrame of the data
 
-fig = timeseries_data.peek()  # Quick way to plot a TimeSeries function
+print(timeseres_data.data.keys())
+fig, axs = plt.subplots(2, 1, sharex=True)
+axs[0].plot(timeseries_data.data['VEL_ALPHA'])
+axs[1].plot(timeseries_data.data['RAT_C6_C5'])
+axs[1].plot(timeseries_data.data['RAT_O7_O6'])
+axs[1].plot(timeseries_data.data['RAT_FE_O'])
+
+for ax in axs:
+    ax.legend()
+plt.show()]
