@@ -1,6 +1,6 @@
 """
-TimeSeries Example
-==================
+TimeSeries Plotting Example
+===========================
 
 An example to show some basic, but very important functions in Sunpy's TimeSeries.
 
