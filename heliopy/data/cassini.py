@@ -7,7 +7,9 @@ http://pds-atmospheres.nmsu.edu/data_and_services/atmospheres_data/Cassini/Cassi
 import os
 import pandas as pd
 import calendar
+import astropy.units as u
 
+from collections import OrderedDict
 from heliopy.data import util
 from heliopy import config
 
@@ -75,6 +77,27 @@ def mag_1min(starttime, endtime, coords):
         raise ValueError('coords must be one of {}'.format(valid_coords))
     base_url = ('http://pds-ppi.igpp.ucla.edu/ditdos/download?'
                 'id=pds://PPI/CO-E_SW_J_S-MAG-4-SUMM-1MINAVG-V1.0/DATA')
+    units = None
+    Rs = u.def_unit('saturnRad', 60268 * u.km)
+    if ( coords == 'KRTP'):
+        units = OrderedDict([('Bx', u.nT), ('By', u.nT), ('Bz', u.nT),
+                            ('X',  Rs), ('|B|', u.nT),
+                            ('Y',  u.deg),
+                            ('Z',  u.deg),
+                            ('Local hour', u.dimensionless_unscaled),
+                            ('n points', u.dimensionless_unscaled)])
+    if ( coords == 'RTN'):
+        units = OrderedDict([('Bx', u.nT), ('By', u.nT), ('Bz', u.nT),
+                            ('X', u.AU), ('Y', u.AU), ('Z', u.AU),
+                            ('|B|', u.nT),
+                            ('Local hour', u.dimensionless_unscaled),
+                            ('n points', u.dimensionless_unscaled)])
+    if ( coords == 'KSM' or coords == 'KSO'):
+        units = OrderedDict([('Bx', u.nT), ('By', u.nT), ('Bz', u.nT),
+                            ('X', Rs), ('Y', Rs), ('Z', Rs),
+                            ('|B|', u.nT),
+                            ('Local hour', u.dimensionless_unscaled),
+                            ('n points', u.dimensionless_unscaled)])
 
     local_base_dir = os.path.join(cassini_dir, 'mag', '1min')
     dirs = []
@@ -105,7 +128,7 @@ def mag_1min(starttime, endtime, coords):
 
     return util.process(dirs, fnames, extension, local_base_dir,
                         base_url, download_func, processing_func,
-                        starttime, endtime)
+                        starttime, endtime, units=units)
 
 
 def mag_hires(starttime, endtime):
