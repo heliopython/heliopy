@@ -79,20 +79,20 @@ def mag_1min(starttime, endtime, coords):
                 'id=pds://PPI/CO-E_SW_J_S-MAG-4-SUMM-1MINAVG-V1.0/DATA')
     units = None
     Rs = u.def_unit('saturnRad', 60268 * u.km)
-    if ( coords == 'KRTP'):
+    if (coords == 'KRTP'):
         units = OrderedDict([('Bx', u.nT), ('By', u.nT), ('Bz', u.nT),
-                            ('X',  Rs), ('|B|', u.nT),
-                            ('Y',  u.deg),
-                            ('Z',  u.deg),
+                            ('X', Rs), ('|B|', u.nT),
+                            ('Y', u.deg),
+                            ('Z', u.deg),
                             ('Local hour', u.dimensionless_unscaled),
                             ('n points', u.dimensionless_unscaled)])
-    if ( coords == 'RTN'):
+    if (coords == 'RTN'):
         units = OrderedDict([('Bx', u.nT), ('By', u.nT), ('Bz', u.nT),
                             ('X', u.AU), ('Y', u.AU), ('Z', u.AU),
                             ('|B|', u.nT),
                             ('Local hour', u.dimensionless_unscaled),
                             ('n points', u.dimensionless_unscaled)])
-    if ( coords == 'KSM' or coords == 'KSO'):
+    if (coords == 'KSM' or coords == 'KSO'):
         units = OrderedDict([('Bx', u.nT), ('By', u.nT), ('Bz', u.nT),
                             ('X', Rs), ('Y', Rs), ('Z', Rs),
                             ('|B|', u.nT),
