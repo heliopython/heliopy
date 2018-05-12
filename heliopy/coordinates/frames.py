@@ -15,6 +15,18 @@ class HeliocentricEarthEcliptic(baseframe.BaseCoordinateFrame):
 
     The x-y plane is the Earth mean ecliptic, the x-axis points from the
     Sun to the Earth, and the z-axis points North out of the ecliptic plane.
+
+    Parameters
+    ----------
+    x : `~astropy.units.Quantity`
+        x-coordinate(s)
+    y : `~astropy.units.Quantity`
+        y-coordinate(s)
+    z : `~astropy.units.Quantity`
+        z-coordinate(s)
+    obstime : datetime, optional
+        Observation time. Required for some transformations between different
+        coordinate systems.
     """
     name = 'HEE'
     default_representation = coords.CartesianRepresentation
@@ -27,6 +39,18 @@ class GeocentricSolarEcliptic(baseframe.BaseCoordinateFrame):
 
     The x-y plane is the Earth mean ecliptic, the x-axis points from the
     Earth to the Sun, and the z-axis points North out of the ecliptic plane.
+
+    Parameters
+    ----------
+    x : `~astropy.units.Quantity`
+        x-coordinate(s)
+    y : `~astropy.units.Quantity`
+        y-coordinate(s)
+    z : `~astropy.units.Quantity`
+        z-coordinate(s)
+    obstime : datetime, optional
+        Observation time. Required for some transformations between different
+        coordinate systems.
     """
     name = 'GSE'
     default_representation = coords.CartesianRepresentation
