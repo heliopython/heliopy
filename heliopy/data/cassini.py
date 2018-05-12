@@ -77,7 +77,6 @@ def mag_1min(starttime, endtime, coords):
         raise ValueError('coords must be one of {}'.format(valid_coords))
     base_url = ('http://pds-ppi.igpp.ucla.edu/ditdos/download?'
                 'id=pds://PPI/CO-E_SW_J_S-MAG-4-SUMM-1MINAVG-V1.0/DATA')
-    units = None
     Rs = u.def_unit('saturnRad', 60268 * u.km)
     if (coords == 'KRTP'):
         units = OrderedDict([('Bx', u.nT), ('By', u.nT), ('Bz', u.nT),
