@@ -191,7 +191,7 @@ def _mag_hires_helper(year, doy, local_dir, url, coords):
     df = pd.read_table(f, names=['Time', 'Bx', 'By', 'Bz'],
                        delim_whitespace=True,
                        parse_dates=[0], index_col=0)
-
+    f.close()
     if use_hdf:
         df.to_hdf(hdfloc, key='data', mode='w')
 
