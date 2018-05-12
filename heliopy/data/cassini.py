@@ -97,11 +97,13 @@ def mag_1min(starttime, endtime, coords):
             f.close()
             os.remove(os.path.join(local_dir, fname + '.TAB'))
             raise util._NoDataError()
-        return pd.read_table(f,
+        data = pd.read_table(f,
                              names=['Time', 'Bx', 'By', 'Bz', '|B|',
                                     'X', 'Y', 'Z', 'Local hour', 'n points'],
                              delim_whitespace=True,
                              parse_dates=[0], index_col=0)
+        f.close()
+        return data
 
     return util.process(dirs, fnames, extension, local_base_dir,
                         base_url, download_func, processing_func,
