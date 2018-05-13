@@ -1,4 +1,4 @@
-# HelioPy
+![alt text](https://github.com/heliopython/heliopy/raw/master/artwork/logo_rectangle.svg "HelioPy")
 
 A python library for Space Physics. The primary goal of this python package is
 to make it really easy to import common data sets used in Space Physics.
