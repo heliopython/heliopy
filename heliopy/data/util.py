@@ -13,6 +13,7 @@ import urllib.request as urlreq
 import astropy.units as u
 import sunpy.timeseries as ts
 import warnings
+from collections import OrderedDict
 
 import numpy as np
 import pandas as pd
@@ -159,6 +160,18 @@ def units_attach(data, units):
             warnings.warn(message, Warning)
     timeseries_data = ts.TimeSeries(data, units)
     return timeseries_data
+
+
+def cdf_units(cdf_):
+    units = OrderedDict()
+    for variable_name in list(cdf_.keys()):
+        if 'UNITS' in cdf_[variable_name].attrs:
+            try:
+                temp_ = u.Unit(cdf_[variable_name].attrs['UNITS'])
+                units[variable_name] = temp_
+            except ValueError:
+                units[variable_name] = u.dimensionless_unscaled
+    return units
 
 
 def timefilter(data, starttime, endtime):
