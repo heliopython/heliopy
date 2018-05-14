@@ -173,11 +173,11 @@ def cdf_units(cdf_, keys):
             else:
                 units[keys[key]] = temp_
         except ValueError:
-           if (type(keys[key]) == list):
-               for values in keys[key]:
-                   units[values] = u.dimensionless_unscaled
-           else:
-               units[keys[key]] = u.dimensionless_unscaled
+            if (type(keys[key]) == list):
+                for values in keys[key]:
+                    units[values] = u.dimensionless_unscaled
+            else:
+                units[keys[key]] = u.dimensionless_unscaled
     return units
 
 
