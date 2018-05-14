@@ -162,22 +162,38 @@ def units_attach(data, units):
     return timeseries_data
 
 
-def cdf_units(cdf_, keys):
+def cdf_units(cdf_, keys=None):
+    """
+    Takes the CDF File and the required keys, and finds the units of the
+    selected keys.
+
+    Parameters
+    ----------
+    cdf_ : cdf
+        Opened cdf file
+    keys : :class 'dict'
+        The keys required by user.
+
+    Returns
+    -------
+    out : :class:`collections.OrderedDict`
+        Returns an OrderedDict with units of the selected keys.
+    """
     units = OrderedDict()
+    if keys is None:
+        keys = dict(zip(list(cdf_.keys()), list(cdf_.keys())))
     for key in keys:
         try:
             temp_ = u.Unit(cdf_[key].attrs['UNITS'])
-            if (type(keys[key]) == list):
-                for values in keys[key]:
-                    units[values] = temp_
-            else:
-                units[keys[key]] = temp_
         except ValueError:
-            if (type(keys[key]) == list):
-                for values in keys[key]:
-                    units[values] = u.dimensionless_unscaled
-            else:
-                units[keys[key]] = u.dimensionless_unscaled
+            temp_ = u.dimensionless_unscaled
+        except KeyError:
+            continue
+        if (type(keys[key]) == list):
+            for values in keys[key]:
+                units[values] = temp_
+        else:
+            units[keys[key]] = temp_
     return units
 
 
