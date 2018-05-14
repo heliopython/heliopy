@@ -162,15 +162,22 @@ def units_attach(data, units):
     return timeseries_data
 
 
-def cdf_units(cdf_):
+def cdf_units(cdf_, keys):
     units = OrderedDict()
-    for variable_name in list(cdf_.keys()):
-        if 'UNITS' in cdf_[variable_name].attrs:
-            try:
-                temp_ = u.Unit(cdf_[variable_name].attrs['UNITS'])
-                units[variable_name] = temp_
-            except ValueError:
-                units[variable_name] = u.dimensionless_unscaled
+    for key in keys:
+        try:
+            temp_ = u.Unit(cdf_[key].attrs['UNITS'])
+            if (type(keys[key]) == list):
+                for values in keys[key]:
+                    units[values] = temp_
+            else:
+                units[keys[key]] = temp_
+        except ValueError:
+           if (type(keys[key]) == list):
+               for values in keys[key]:
+                   units[values] = u.dimensionless_unscaled
+           else:
+               units[keys[key]] = u.dimensionless_unscaled
     return units
 
 
