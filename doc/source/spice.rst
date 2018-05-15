@@ -1,6 +1,8 @@
 SPICE (:mod:`heliopy.spice`)
 ============================
 
+.. currentmodule:: heliopy.spice
+
 A module for loading SPICE kernels.
 
 `SPICE`_ is a NASA toolkit for calculating the position of bodies
