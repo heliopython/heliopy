@@ -1,5 +1,7 @@
-Coordinates
-===========
+Coordinates (:mod:`heliopy.coordinates`)
+----------------------------------------
+
+.. currentmodule:: heliopy.data
 
 .. automodapi:: heliopy.coordinates.frames
    :no-inheritance-diagram:
