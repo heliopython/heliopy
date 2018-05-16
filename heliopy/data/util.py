@@ -151,6 +151,21 @@ class _NoDataError(RuntimeError):
 
 
 def units_attach(data, units):
+    """
+    Takes the units defined by the user and attaches them to the TimeSeries.
+
+    Parameters
+    ----------
+    data : :class:`pandas.DataFrame`
+        Input data. Takes the DataFrame which needs to have units attached.
+    units : :class:`collections.OrderedDict`
+        The units manually defined by the user.
+
+    Returns
+    -------
+    out : sunpy.timeseries.timeseriesbase.GenericTimeSeries
+        DataFrame converted into TimeSeries with units attached.
+    """
     unit_key = list(units.keys())
     for column_name in data.columns:
         if column_name not in unit_key:

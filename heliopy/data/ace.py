@@ -85,9 +85,17 @@ def mfi_h0(starttime, endtime):
     instrument = 'mag'
     product = 'mfi_h0'
     fname = 'h0_mfi'
+    keys = {'Magnitude': 'Magnitude',
+            'SC_pos_GSE': ['sc_gse_x', 'sc_gse_y', 'sc_gse_z'],
+            'SC_pos_GSM': ['sc_gsm_x', 'sc_gsm_y', 'sc_gsm_z'],
+            'BGSEc': ['BGSE_x', 'BGSE_y', 'BGSE_z'],
+            'BGSM': ['BGSM_x', 'BGSM_y', 'BGSM_z'],
+            'dBrms': 'dBrms',
+            'Q_FLAG': 'Q_FLAG',
+            'Epoch': 'Time'}
     version = '06'
     return _ace(starttime, endtime, instrument, product,
-                fname, version=version)
+                fname, keys=keys, version=version)
 
 
 def swe_h0(starttime, endtime):
