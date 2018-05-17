@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 
 def process(dirs, fnames, extension, local_base_dir, remote_base_url,
             download_func, processing_func, starttime, endtime,
-            try_download=True, units=None, processing_kwargs={}):
+            try_download=True, units=None, units_func=None, processing_kwargs={}):
     """
     The main utility method for systematically loading, downloading, and saving
     data.
@@ -128,6 +128,8 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
             # Convert raw file to a dataframe
             try:
                 df = processing_func(local_dir, fname + extension,
+                                     **processing_kwargs)
+                units = units_func(local_dir, fname + extension,
                                      **processing_kwargs)
             except _NoDataError:
                 continue
