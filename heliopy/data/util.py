@@ -129,8 +129,9 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
             try:
                 df = processing_func(local_dir, fname + extension,
                                      **processing_kwargs)
-                units = units_func(local_dir, fname + extension,
-                                     **processing_kwargs)
+                if units_func is not None:
+                    units = units_func(local_dir, fname + extension,
+                                         **processing_kwargs)
             except _NoDataError:
                 continue
 
