@@ -13,7 +13,7 @@ import urllib.request as urlreq
 import astropy.units as u
 import sunpy.timeseries as ts
 import warnings
-from collections import OrderedDict
+import collections as coll
 
 import numpy as np
 import pandas as pd
@@ -194,7 +194,7 @@ def cdf_units(cdf_, keys=None):
     out : :class:`collections.OrderedDict`
         Returns an OrderedDict with units of the selected keys.
     """
-    units = OrderedDict()
+    units = coll.OrderedDict()
     if keys is None:
         keys = dict(zip(list(cdf_.keys()), list(cdf_.keys())))
     for key in keys:
