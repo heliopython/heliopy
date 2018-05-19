@@ -201,18 +201,17 @@ def cdf_units(cdf_, keys=None):
     units = coll.OrderedDict()
     if keys is None:
         keys = dict(zip(list(cdf_.keys()), list(cdf_.keys())))
-    for key in keys:
+    for key, val in keys.items():
         try:
             temp_ = u.Unit(cdf_[key].attrs['UNITS'])
         except ValueError:
             temp_ = u.dimensionless_unscaled
         except KeyError:
             continue
-        if (type(keys[key]) == list):
-            for values in keys[key]:
-                units[values] = temp_
+        if isinstance(val, list):
+            units.update(coll.OrderedDict.fromkeys(val, temp_))
         else:
-            units[keys[key]] = temp_
+            units[val] = temp_
     return units
 
 
