@@ -62,4 +62,3 @@ $(document).ready(function() {
         }
     });
 });
-

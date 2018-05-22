@@ -7,6 +7,11 @@ deps-run: &deps-install
     pip install --user --quiet -r requirements/docs.txt
     pip install --user .
 
+doc-test: &doc-test
+  name: Run doctets
+  command: make doctest
+  working_directory: doc
+
 doc-run: &doc-build
   name: Build documentation
   command: make html SPHINXOPTS='-W -q'
@@ -20,6 +25,7 @@ jobs:
     steps:
       - checkout
       - run: *deps-install
+      - run: *doc-test
       - run: *doc-build
       - store_artifacts:
           path: doc/build/html

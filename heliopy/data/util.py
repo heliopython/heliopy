@@ -140,6 +140,7 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
             logger.info('File {}/{}{} not available\n'.format(
                         local_dir, fname, extension))
 
+
  # Loaded all the data, now filter between times
     data = timefilter(data, starttime, endtime)
     if extension == '.cdf':
@@ -149,7 +150,7 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
         else:
             units = cdf_units(cdf)
         return units_attach(data, units)
-    if type(units) is OrderedDict:
+    if type(units) is coll.OrderedDict:
         return units_attach(data, units)
     if units is None:
         return data
