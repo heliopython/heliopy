@@ -77,6 +77,18 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
 
         The files handed to *processing_func* are always guarenteed to exist.
 
+    units_func
+        Function that takes the directory of the local CDF file, and the
+        filename of the local file and returns the units present in them.
+        The filename given to *units_func* includes the extension.
+        All the arguments passed to processing_func are used for units_func.
+        The signature must be::
+
+            def units_func(local_dir, local_fname, **processing_kwargs)
+
+        If the file is CDF, then it is required that it be passed through
+        *units_func*.
+
     starttime : datetime
         Start of requested interval.
     endtime : datetime
@@ -190,8 +202,11 @@ def cdf_units(cdf_, keys=None):
     ----------
     cdf_ : cdf
         Opened cdf file
-    keys : :class 'dict'
-        The keys required by user.
+    keys : dict, optional
+        If the user knows the units they wish to extract
+        from the CDF file keys, keys can be passed as an arugment.
+        If not, the function extracts all the keys present which
+        have an UNIT attribute.
 
     Returns
     -------
