@@ -142,14 +142,17 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
 
  # Loaded all the data, now filter between times
     data = timefilter(data, starttime, endtime)
-    if units is None:
-        return data
-    if type(units) is dict and extension == '.cdf':
+    if extension == '.cdf':
         cdf = load(fname + extension, local_dir, '')
-        units = cdf_units(cdf, keys=units)
+        if type(units) is dict:
+            units = cdf_units(cdf, keys=units)
+        else:
+            units = cdf_units(cdf)
         return units_attach(data, units)
     if type(units) is OrderedDict:
         return units_attach(data, units)
+    if units is None:
+        return data
 
 
 class _NoDataError(RuntimeError):
