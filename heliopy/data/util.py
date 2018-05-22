@@ -149,7 +149,7 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
         cdf = load(fname + extension, local_dir, '')
         units = cdf_units(cdf, keys=units)
         return units_attach(data, units)
-    if type(units) is OrderedDict:
+    if type(units) is coll.OrderedDict:
         return units_attach(data, units)
 
 
