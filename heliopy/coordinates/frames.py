@@ -1,14 +1,6 @@
 """
 This submodule contains various space physics coordinate frames for use with
 the :mod:`astropy.coordinates` module.
-
-Creating coordinate objects
----------------------------
-TODO: Add examples here
-
-Transforming between coordinate systems
----------------------------------------
-TODO: Add examples here
 """
 import astropy.coordinates.baseframe as baseframe
 import astropy.coordinates.representation as r
@@ -22,7 +14,7 @@ class HeliocentricEarthEcliptic(baseframe.BaseCoordinateFrame):
     Possible call signatures::
 
         hee = HeliocentricEarthEcliptic(x, y, z)
-        hee = HeliocentricEarthEcliptic(x, y, z, obstime)
+        hee = HeliocentricEarthEcliptic(x, y, z, obstime=obstime)
 
     The x-y plane is the Earth mean ecliptic, the x-axis points from the
     Sun to the Earth, and the z-axis points North out of the ecliptic plane.
