@@ -25,8 +25,7 @@ logger = logging.getLogger(__name__)
 
 def process(dirs, fnames, extension, local_base_dir, remote_base_url,
             download_func, processing_func, starttime, endtime,
-            try_download=True, units=None,
-            units_func=None, processing_kwargs={}):
+            try_download=True, units=None, processing_kwargs={}):
     """
     The main utility method for systematically loading, downloading, and saving
     data.
@@ -76,18 +75,6 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
             def processing_func(local_dir, local_fname, **processing_kwargs)
 
         The files handed to *processing_func* are always guarenteed to exist.
-
-    units_func
-        Function that takes the directory of the local CDF file, and the
-        filename of the local file and returns the units present in them.
-        The filename given to *units_func* includes the extension.
-        All the arguments passed to processing_func are used for units_func.
-        The signature must be::
-
-            def units_func(local_dir, local_fname, **processing_kwargs)
-
-        If the file is CDF, then it is required that it be passed through
-        *units_func*.
 
     starttime : datetime
         Start of requested interval.
@@ -142,9 +129,6 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
             try:
                 df = processing_func(local_dir, fname + extension,
                                      **processing_kwargs)
-                if units_func is not None:
-                    units = units_func(local_dir, fname + extension,
-                                       **processing_kwargs)
             except _NoDataError:
                 continue
 
@@ -156,11 +140,16 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
             logger.info('File {}/{}{} not available\n'.format(
                         local_dir, fname, extension))
 
+ # Loaded all the data, now filter between times
+    data = timefilter(data, starttime, endtime)
     if units is None:
-        return timefilter(data, starttime, endtime)
-    else:
-        new_data = timefilter(data, starttime, endtime)
-        return units_attach(new_data, units)
+        return data
+    if type(units) is dict and extension == '.cdf':
+        cdf = load(fname + extension, local_dir, '')
+        units = cdf_units(cdf, keys=units)
+        return units_attach(data, units)
+    if type(units) is OrderedDict:
+        return units_attach(data, units)
 
 
 class _NoDataError(RuntimeError):
