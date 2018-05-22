@@ -139,11 +139,12 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
             logger.info('File {}/{}{} not available\n'.format(
                         local_dir, fname, extension))
 
+    # Loaded all the data, now filter between times
+    data = timefilter(data, starttime, endtime)
     if units is None:
-        return timefilter(data, starttime, endtime)
+        return data
     else:
-        new_data = timefilter(data, starttime, endtime)
-        return units_attach(new_data, units)
+        return units_attach(data, units)
 
 
 class _NoDataError(RuntimeError):
