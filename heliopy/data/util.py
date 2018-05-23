@@ -83,6 +83,11 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
         If ``True``, try to download data. If ``False`` don't.
         Default is ``True``.
 
+    units : coll.OrderedDict, optional
+        The manually defined units passed as an arugment to be attached to the
+        data that will be returned. If units are present, then a TimeSeries
+        object is returned, else, a Pandas DataFrame.
+
     processing_kwargs : dict, optional
         Extra keyword arguments to be passed to the processing funciton.
 
