@@ -164,6 +164,7 @@ def swe_h3(starttime, endtime):
         cdf = util.load(fname, local_dir, '')
         df = util.pitchdist_cdf2df(cdf, distkeys, energykey, timekey,
                                    anglelabels)
+        df = df.reset_index(level=['Energy', 'Angle'])
         return df
 
     return util.process(dirs, fnames, extension, local_base_dir,
