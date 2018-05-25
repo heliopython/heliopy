@@ -140,8 +140,7 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
             logger.info('File {}/{}{} not available\n'.format(
                         local_dir, fname, extension))
 
-
- # Loaded all the data, now filter between times
+    # Loaded all the data, now filter between times
     data = timefilter(data, starttime, endtime)
     if extension == '.cdf':
         cdf = load(fname + extension, local_dir, '')
