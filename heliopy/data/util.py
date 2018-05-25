@@ -414,7 +414,7 @@ def load(filename, local_dir, remote_url, guessversion=False,
         for f in os.listdir(local_dir):
             if f == filename or (guessversion and (f[:-6] == filename[:-6])):
                 filename = f
-                return _load_local(local_dir, f, filetype)
+                return _load_local(os.path.join(local_dir, f), filetype)
 
     # Loading locally failed, but directory has been made so try to download
     # file.
@@ -454,19 +454,18 @@ def _get_remote_version(remote_url, filename):
                 return f[-len(filename):]
 
 
-def _load_local(local_dir, filename, filetype):
+def _load_local(file_path, filetype):
     # Import local file
     if filetype == 'cdf':
         from pycdf import pycdf
         try:
-            cdf = pycdf.CDF(os.path.join(local_dir, filename))
+            cdf = pycdf.CDF(file_path)
         except Exception as err:
-            print('Error whilst trying to load {}\n'.format(
-                os.path.join(local_dir, filename)))
+            print('Error whilst trying to load {}\n'.format(file_path))
             raise err
         return cdf
     elif filetype == 'ascii':
-        f = open(os.path.join(local_dir, filename))
+        f = open(file_path)
         return f
 
 
@@ -497,7 +496,7 @@ def _download_remote(remote_url, filename, local_dir):
 
 def _load_remote(remote_url, filename, local_dir, filetype):
     _download_remote(remote_url, filename, local_dir)
-    return _load_local(local_dir, filename, filetype)
+    return _load_local(os.path.join(local_dir, filename), filetype)
 
 
 def _fix_url(url):

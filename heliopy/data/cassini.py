@@ -114,7 +114,7 @@ def mag_1min(starttime, endtime, coords):
                               os.path.join(local_base_dir, directory))
 
     def processing_func(local_dir, local_fname):
-        f = util._load_local(local_dir, local_fname, 'ascii')
+        f = util._load_local(os.path.join(local_dir, local_fname), 'ascii')
         if 'error_message' in f.readline():
             f.close()
             os.remove(os.path.join(local_dir, fname + '.TAB'))
