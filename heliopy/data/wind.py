@@ -5,22 +5,23 @@ All data is publically available at ftp://spdf.gsfc.nasa.gov/pub/data/wind.
 See https://wind.nasa.gov/data_sources.php for more information on different
 data products.
 """
-import os
+import pathlib as path
+
 import pandas as pd
 import numpy as np
 
 from heliopy.data import util
 from heliopy import config
 
-data_dir = config['download_dir']
+data_dir = path.Path(config['download_dir'])
+wind_dir = data_dir / 'wind'
 use_hdf = config['use_hdf']
-wind_dir = os.path.join(data_dir, 'wind')
 remote_wind_dir = 'ftp://spdf.gsfc.nasa.gov/pub/data/wind/'
 
 
 def _load_wind_cdf(starttime, endtime, instrument,
                    data_product, fname, badvalues={}):
-    relative_dir = os.path.join(instrument, data_product)
+    relative_dir = path.Path(instrument) / data_product
     # Get directories and filenames
     dirs = []
     fnames = []
@@ -30,7 +31,7 @@ def _load_wind_cdf(starttime, endtime, instrument,
         filename = 'wi_{}_{}{:02}{:02}_v01'.format(
             fname, date.year, date.month, date.day)
         fnames.append(filename)
-        local_dir = os.path.join(relative_dir, str(date.year))
+        local_dir = relative_dir / str(date.year)
         dirs.append(local_dir)
     extension = '.cdf'
     local_base_dir = wind_dir
@@ -40,11 +41,10 @@ def _load_wind_cdf(starttime, endtime, instrument,
                       fname, extension):
         remote_url = '{}{}'.format(remote_base_url, directory)
         util.load(fname + extension,
-                  os.path.join(local_base_dir, directory),
+                  local_base_dir / directory,
                   remote_url)
 
-    def processing_func(directory, fname):
-        cdf = util.load(fname, directory, '')
+    def processing_func(cdf):
         return util.cdf2df(cdf, 'Epoch', badvalues=badvalues)
 
     return util.process(dirs, fnames, extension, local_base_dir,
@@ -128,7 +128,7 @@ def swe_h3(starttime, endtime):
     -------
     data : DataFrame
     """
-    relative_dir = os.path.join('swe', 'swe_h3')
+    relative_dir = path.Path('swe') / 'swe_h3'
     # Get directories and filenames
     dirs = []
     fnames = []
@@ -138,7 +138,7 @@ def swe_h3(starttime, endtime):
         filename = 'wi_h3_swe_{}{:02}{:02}_v01'.format(
             date.year, date.month, date.day)
         fnames.append(filename)
-        local_dir = os.path.join(relative_dir, str(date.year))
+        local_dir = relative_dir / str(date.year)
         dirs.append(local_dir)
     extension = '.cdf'
     local_base_dir = wind_dir
@@ -148,10 +148,10 @@ def swe_h3(starttime, endtime):
                       fname, extension):
         remote_url = '{}{}'.format(remote_base_url, directory)
         util.load(fname + extension,
-                  os.path.join(local_base_dir, directory),
+                  local_base_dir / directory,
                   remote_url)
 
-    def processing_func(local_dir, fname):
+    def processing_func(cdf):
         distkeys = []
         for i in range(0, 13):
             distkeys.append('f_pitch_E' + str(i).zfill(2))
@@ -161,7 +161,6 @@ def swe_h3(starttime, endtime):
         timekey = 'Epoch'
         energykey = 'Ve'
 
-        cdf = util.load(fname, local_dir, '')
         df = util.pitchdist_cdf2df(cdf, distkeys, energykey, timekey,
                                    anglelabels)
         df = df.reset_index(level=['Energy', 'Angle'])
@@ -227,7 +226,7 @@ def _mfi(starttime, endtime, version):
     data : DataFrame
     """
     # Directory relative to main WIND data directory
-    relative_dir = os.path.join('mfi', 'mfi_' + version)
+    relative_dir = path.Path('mfi') / ('mfi_' + version)
     # Get directories and filenames
     dirs = []
     fnames = []
@@ -235,7 +234,7 @@ def _mfi(starttime, endtime, version):
     for day in daylist:
         date = day[0]
         # Absolute path to local directory for this data file
-        local_dir = os.path.join(relative_dir, str(day[0].year))
+        local_dir = relative_dir / str(day[0].year)
         dirs.append(local_dir)
         filename = 'wi_' + version + '_mfi_' +\
             str(date.year) +\
@@ -252,12 +251,10 @@ def _mfi(starttime, endtime, version):
                       fname, extension):
         remote_url = '{}{}'.format(remote_base_url, directory)
         util.load(fname + extension,
-                  os.path.join(local_base_dir, directory),
+                  local_base_dir / directory,
                   remote_url, guessversion=True)
 
-    def processing_func(directory, fname):
-        cdf = util.load(fname, directory, '')
-
+    def processing_func(cdf):
         epoch_dict = {'h0': 'Epoch3', 'h2': 'Epoch'}
         mag_dict = {'h0': 'B3GSE', 'h2': 'BGSE'}
 
@@ -297,29 +294,29 @@ def threedp_pm(starttime, endtime):
     data : DataFrame
     """
     # Directory relative to main WIND data directory
-    relative_dir = os.path.join('3dp', '3dp_pm')
+    relative_dir = path.Path('3dp') / '3dp_pm'
 
     daylist = util._daysplitinterval(starttime, endtime)
     data = []
     for day in daylist:
         date = day[0]
-        this_relative_dir = os.path.join(relative_dir, str(day[0].year))
+        this_relative_dir = relative_dir / str(day[0].year)
         # Absolute path to local directory for this data file
-        local_dir = os.path.join(wind_dir, this_relative_dir)
+        local_dir = wind_dir / this_relative_dir
         filename = 'wi_pm_3dp_' +\
             str(date.year) +\
             str(date.month).zfill(2) +\
             str(date.day).zfill(2) +\
             '_v05.cdf'
         hdfname = filename[:-4] + 'hdf'
-        hdfloc = os.path.join(local_dir, hdfname)
-        if os.path.isfile(hdfloc):
+        hdfloc = local_dir / hdfname
+        if hdfloc.exists():
             df = pd.read_hdf(hdfloc)
             data.append(df)
             continue
 
         util._checkdir(local_dir)
-        remote_url = remote_wind_dir + this_relative_dir
+        remote_url = remote_wind_dir + str(this_relative_dir)
         cdf = util.load(filename, local_dir, remote_url, guessversion=True)
         if cdf is None:
             print('File {}/{} not available\n'.format(remote_url, filename))
@@ -358,26 +355,26 @@ def threedp_sfpd(starttime, endtime):
     data : DataFrame
     """
     # Directory relative to main WIND data directory
-    relative_dir = os.path.join('3dp', '3dp_sfpd')
+    relative_dir = path.Path('3dp') / '3dp_sfpd'
 
     daylist = util._daysplitinterval(starttime, endtime)
     data = []
     mag = []
     for (date, _, _) in daylist:
-        this_relative_dir = os.path.join(relative_dir, str(date.year))
+        this_relative_dir = relative_dir / str(date.year)
         # Absolute path to local directory for this data file
-        local_dir = os.path.join(wind_dir, this_relative_dir)
+        local_dir = wind_dir / this_relative_dir
         filename = 'wi_sfpd_3dp_{:{dfmt}}_v02'.format(
             date, dfmt='%Y%m%d')
         hdfname = filename + '.hdf'
-        hdfloc = os.path.join(local_dir, hdfname)
-        if os.path.isfile(hdfloc):
+        hdfloc = local_dir / hdfname
+        if hdfloc.exists():
             df = pd.read_hdf(hdfloc)
             data.append(df)
             continue
 
         util._checkdir(local_dir)
-        remote_url = remote_wind_dir + this_relative_dir
+        remote_url = remote_wind_dir + str(this_relative_dir)
         cdf = util.load(filename + '.cdf', local_dir, remote_url,
                         guessversion=True)
         if cdf is None:

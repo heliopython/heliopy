@@ -4,15 +4,16 @@ Methods for importing data from the THEMIS/ARTEMIS spacecraft.
 All data is publically available at
 http://themis.ssl.berkeley.edu/data/themis/.
 """
-import os
+import pathlib as path
+
 import pandas as pd
 import numpy as np
 
 from heliopy.data import util
 from heliopy import config
 
-data_dir = config['download_dir']
-artemis_dir = os.path.join(data_dir, 'artemis')
+data_dir = path.Path(config['download_dir'])
+artemis_dir = data_dir / 'artemis'
 remote_themis_dir = 'http://themis.ssl.berkeley.edu/data/themis/'
 valid_probes = ['a', 'b', 'c', 'd', 'e']
 
@@ -57,7 +58,7 @@ def fgm(probe, rate, coords, starttime, endtime):
                           'co-ordinate systems: %s') % (rate, valid_rates))
 
     # Directory relative to main THEMIS data directory
-    fgm_dir = os.path.join('th' + probe, 'l2', 'fgm')
+    fgm_dir = path.Path('th' + probe) / 'l2' / 'fgm'
     daylist = util._daysplitinterval(starttime, endtime)
 
     dirs = []
@@ -68,20 +69,18 @@ def fgm(probe, rate, coords, starttime, endtime):
         filename = 'th{}_l2_fgm_{}{:02}{:02}_v01'.format(
             probe, date.year, date.month, date.day)
         fnames.append(filename)
-        this_relative_dir = os.path.join(fgm_dir, str(date.year))
+        this_relative_dir = fgm_dir / str(date.year)
         dirs.append(this_relative_dir)
 
     def download_func(remote_base_url, local_base_dir,
                       directory, fname, extension):
-        remote_url = remote_themis_dir + this_relative_dir
+        remote_url = remote_base_url + str(directory)
         # Now load remotely
         util.load(fname + extension,
-                  os.path.join(local_base_dir, directory),
+                  local_base_dir / directory,
                   remote_url)
 
-    def processing_func(local_dir, local_fname, **kwargs):
-        cdf = util.load(local_fname, local_dir, '')
-
+    def processing_func(cdf, **kwargs):
         probe = kwargs.pop('probe')
         rate = kwargs.pop('rate')
         coords = kwargs.pop('coords')

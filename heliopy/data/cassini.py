@@ -5,6 +5,7 @@ All data is publically available at
 http://pds-atmospheres.nmsu.edu/data_and_services/atmospheres_data/Cassini/Cassini.html
 """
 import os
+import pathlib as path
 import pandas as pd
 import calendar
 import astropy.units as u
@@ -13,9 +14,9 @@ from collections import OrderedDict
 from heliopy.data import util
 from heliopy import config
 
-data_dir = config['download_dir']
+data_dir = path.Path(config['download_dir'])
 use_hdf = config['use_hdf']
-cassini_dir = os.path.join(data_dir, 'cassini')
+cassini_dir = data_dir / 'cassini'
 
 # These mappings from months to strings are used in directory names
 month2str = {1: '001_031_JAN',
@@ -98,7 +99,7 @@ def mag_1min(starttime, endtime, coords):
                             ('Local hour', u.dimensionless_unscaled),
                             ('n points', u.dimensionless_unscaled)])
 
-    local_base_dir = os.path.join(cassini_dir, 'mag', '1min')
+    local_base_dir = cassini_dir / 'mag' / '1min'
     dirs = []
     fnames = []
     extension = '.TAB'
@@ -111,13 +112,13 @@ def mag_1min(starttime, endtime, coords):
         url = '{}/{}'.format(base_url, year)
         util._download_remote(url,
                               fname + extension,
-                              os.path.join(local_base_dir, directory))
+                              local_base_dir / directory)
 
-    def processing_func(local_dir, local_fname):
-        f = util._load_local(os.path.join(local_dir, local_fname), 'ascii')
+    def processing_func(f):
         if 'error_message' in f.readline():
+            location = f.name
             f.close()
-            os.remove(os.path.join(local_dir, fname + '.TAB'))
+            os.remove(f.name)
             raise util._NoDataError()
         data = pd.read_table(f,
                              names=['Time', 'Bx', 'By', 'Bz', '|B|',
@@ -175,7 +176,7 @@ def mag_hires(starttime, endtime):
         url = '{}/{}'.format(url, monthstr)
 
         doy = day.strftime('%j')
-        local_dir = os.path.join(cassini_dir, 'mag', 'hires', str(year))
+        local_dir = cassini_dir / 'mag' / 'hires' / str(year)
 
         # No way to work out co-ordinates, so guess Kronian and then RTN
         try:
@@ -198,8 +199,8 @@ def _mag_hires_helper(year, doy, local_dir, url, coords):
     fname = str(year)[2:] + doy + '_FGM_' + coords
 
     hdf_fname = '{}_{}.hdf'.format(year, doy)
-    hdfloc = os.path.join(local_dir, hdf_fname)
-    if os.path.isfile(hdfloc):
+    hdfloc = local_dir / hdf_fname
+    if hdfloc.exists():
         return pd.read_hdf(hdfloc)
 
     f = util.load(fname + '.TAB', local_dir, url)
@@ -207,8 +208,9 @@ def _mag_hires_helper(year, doy, local_dir, url, coords):
         raise RuntimeError(
             'No file named {} exits on remote server'.format(fname))
     elif 'error_message' in f.readline():
+        location = f.name
         f.close()
-        os.remove(os.path.join(local_dir, fname + '.TAB'))
+        os.remove(f.name)
         raise RuntimeError(
             'No file named {} exits on remote server'.format(fname))
 

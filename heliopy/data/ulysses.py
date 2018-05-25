@@ -3,8 +3,8 @@ Methods for importing data from the Ulysses spacecraft.
 
 All data is publically available at http://ufa.esac.esa.int/ufa/
 """
-import os
 import pandas as pd
+import pathlib as path
 from datetime import datetime, date
 from urllib.error import HTTPError
 
@@ -14,9 +14,9 @@ import astropy.units as u
 from heliopy import config
 
 use_hdf = config['use_hdf']
-data_dir = config['download_dir']
+data_dir = path.Path(config['download_dir'])
 
-ulysses_dir = os.path.join(data_dir, 'ulysses')
+ulysses_dir = data_dir / 'ulysses'
 ulysses_url = 'http://ufa.esac.esa.int/ufa-sl-server/data-action?'
 url_options = {'PROTOCOL': 'HTTP',
                'PRODUCT_TYPE': 'ALL'}
@@ -138,12 +138,12 @@ def _swics(starttime, endtime, names, product, units=None, try_download=True):
     dirs = []
     fnames = []
     extension = '.dat'
-    local_base_dir = os.path.join(ulysses_dir, 'swics')
+    local_base_dir = ulysses_dir / 'swics'
     remote_base_url = ulysses_url
 
     def download_func(remote_base_url, local_base_dir,
                       directory, fname, extension):
-        local_dir = os.path.join(local_base_dir, directory)
+        local_dir = local_base_dir / directory
         swics_options = url_options
         swics_options['FILE_NAME'] = fname + extension
         swics_options['FILE_PATH'] = '/ufa/HiRes/data/swics'
@@ -155,11 +155,10 @@ def _swics(starttime, endtime, names, product, units=None, try_download=True):
         except Exception as err:
             return
 
-    def processing_func(local_dir, local_fname):
+    def processing_func(f):
         readargs = {'names': names,
                     'delim_whitespace': True,
                     'na_values': ['******']}
-        f = os.path.join(local_dir, local_fname)
         thisdata = pd.read_table(f, **readargs)
         thisdata = _convert_ulysses_time(thisdata)
         return thisdata
@@ -207,11 +206,11 @@ def fgm_hires(starttime, endtime):
         fgm_options['FILE_NAME'] = ('U' + yearstr[-2:] +
                                     date.strftime('%j') + 'SH.ASC')
         # Local locaiton to download to
-        local_dir = os.path.join(ulysses_dir, 'fgm', 'hires', yearstr)
-        local_file = os.path.join(local_dir, fgm_options['FILE_NAME'])
-        local_hdf = local_file[:-4] + '.hdf'
+        local_dir = ulysses_dir / 'fgm' / 'hires' / yearstr
+        local_file = local_dir / fgm_options['FILE_NAME']
+        local_hdf = local_file.with_suffix('.hdf')
         # If we have already saved a hdf file
-        if os.path.exists(local_hdf):
+        if local_hdf.exists():
             thisdata = pd.read_hdf(local_hdf)
         else:
             # Put together remote url
@@ -251,7 +250,7 @@ def swoops_ions(starttime, endtime, try_download=True):
     dirs = []
     fnames = []
     extension = '.dat'
-    local_base_dir = os.path.join(ulysses_dir, 'swoops', 'ions')
+    local_base_dir = ulysses_dir / 'swoops' / 'ions'
     remote_base_url = ulysses_url
     units = OrderedDict([('T_p_large', u.K), ('T_p_small', u.K),
                         ('v_t', u.km / u.s), ('v_r', u.km / u.s),
@@ -263,7 +262,7 @@ def swoops_ions(starttime, endtime, try_download=True):
 
     def download_func(remote_base_url, local_base_dir,
                       directory, fname, extension):
-        local_dir = os.path.join(local_base_dir, directory)
+        local_dir = local_base_dir / directory
         swoops_options = url_options
         year = fname[1:3]
         # doy = fname[5:8]
@@ -278,13 +277,12 @@ def swoops_ions(starttime, endtime, try_download=True):
         except Exception as err:
             return
 
-    def processing_func(local_dir, local_fname):
+    def processing_func(f):
         readargs = {'names': ['year', 'doy', 'hour', 'minute', 'second',
                               'r', 'hlat', 'hlon', 'n_p', 'n_a',
                               'T_p_large', 'T_p_small',
                               'v_r', 'v_t', 'v_n', 'iqual'],
                     'delim_whitespace': True}
-        f = os.path.join(local_dir, local_fname)
         thisdata = pd.read_table(f, **readargs)
         thisdata = _convert_ulysses_time(thisdata)
         return thisdata

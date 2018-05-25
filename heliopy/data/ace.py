@@ -4,16 +4,17 @@ Methods for importing data from the ACE spacecraft.
 All data is publically available at ftp://spdf.gsfc.nasa.gov/pub/data/ace/. The
 ACE spacecraft homepage can be found at http://www.srl.caltech.edu/ACE/.
 """
-import os
+from collections import OrderedDict
+import pathlib as path
+
+import astropy.units as u
 import pandas as pd
 
-from heliopy.data import util
-from collections import OrderedDict
-import astropy.units as u
 from heliopy import config
+from heliopy.data import util
 
-data_dir = config['download_dir']
-ace_dir = os.path.join(data_dir, 'ace')
+data_dir = path.Path(config['download_dir'])
+ace_dir = data_dir / 'ace'
 remote_ace_dir = 'ftp://spdf.gsfc.nasa.gov/pub/data/ace/'
 remote_cda_dir = 'ftp://cdaweb.gsfc.nasa.gov/pub/data/ace/'
 
@@ -24,7 +25,7 @@ def _ace(starttime, endtime, instrument, product, fname, units=None, keys=None,
     Generic method for downloading ACE data from cdaweb.
     """
     # Directory relative to main WIND data directory
-    relative_dir = os.path.join(instrument, 'level_2_cdaweb', product)
+    relative_dir = path.Path(instrument) / 'level_2_cdaweb' / product
 
     daylist = util._daysplitinterval(starttime, endtime)
     dirs = []
@@ -35,7 +36,7 @@ def _ace(starttime, endtime, instrument, product, fname, units=None, keys=None,
         filename = 'ac_{}_{}{:02}{:02}_v{}'.format(
             fname, date.year, date.month, date.day, version)
         fnames.append(filename)
-        this_relative_dir = os.path.join(relative_dir, str(date.year))
+        this_relative_dir = relative_dir / str(date.year)
         dirs.append(this_relative_dir)
 
     def download_func(remote_base_url, local_base_dir,
@@ -43,21 +44,21 @@ def _ace(starttime, endtime, instrument, product, fname, units=None, keys=None,
         def check_exists():
             # Because the version might be different to the one we guess, work
             # out the downloaded filename
-            for f in os.listdir(os.path.join(local_base_dir, directory)):
-                if (f[:-6] == (fname + extension)[:-6]):
+            for f in (local_base_dir / directory).iterdir():
+                fstr = str(f.name)
+                if (fstr[:-6] == (fname + extension)[:-6]):
                     # Return filename with '.cdf' stripped off the end
-                    return f[:-4]
-        if check_exists() is not None:
-            return check_exists()
-        # Now load remotely
-        util.load(fname + extension,
-                  os.path.join(local_base_dir, directory),
-                  remote_base_url + directory, guessversion=True)
+                    return fstr[:-4]
         if check_exists() is not None:
             return check_exists()
 
-    def processing_func(local_dir, local_fname):
-        cdf = util.load(local_fname, local_dir, '')
+        # Now load remotely
+        util.load(fname + extension,
+                  local_base_dir / directory,
+                  remote_base_url + str(directory), guessversion=True)
+        return check_exists()
+
+    def processing_func(cdf):
         return util.cdf2df(cdf, index_key='Epoch',
                            keys=keys, badvalues=badvalues)
 
