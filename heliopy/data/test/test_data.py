@@ -253,6 +253,8 @@ class TestWind:
 
     def test_swe_h3(self):
         df = wind.swe_h3(self.starttime, self.endtime)
+        check_datetime_index(df.data)
+        check_units(df)
 
     def test_swe_h1(self):
         df = wind.swe_h1(self.starttime, self.endtime)
