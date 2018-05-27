@@ -16,19 +16,20 @@ with 'helios2' in url to change probe):
 If the data is publically available, it will be dowloaded automatically if it
 doesn't exist locally.
 """
-import pandas as pd
-import numpy as np
 from datetime import date, time, datetime, timedelta
-import os
-import warnings
-from urllib.error import URLError
 from ftplib import FTP
-
-from heliopy import config
-from heliopy.data import util
+import os
+import pathlib as path
+from urllib.error import URLError
+import warnings
 
 import astropy.constants as constants
 import astropy.units as u
+import numpy as np
+import pandas as pd
+
+from heliopy import config
+from heliopy.data import util
 
 data_dir = config['download_dir']
 use_hdf = config['use_hdf']
@@ -880,27 +881,28 @@ def corefit(probe, starttime, endtime, verbose=False, try_download=True):
 
         doy = int(this_date.strftime('%j'))
         year = this_date.year
-        floc = os.path.join('E1_experiment',
-                            'New_proton_corefit_data_2017', 'ascii',
-                            'helios{}'.format(probe), '{}'.format(year))
+        floc = (path.Path('E1_experiment') /
+                'New_proton_corefit_data_2017' /
+                'ascii' /
+                'helios{}'.format(probe) /
+                '{}'.format(year))
         dirs.append(floc)
         fname = 'h{}_{}_{:03}_corefit'.format(probe, year, doy)
         fnames.append(fname)
 
     extension = '.csv'
-    local_base_dir = helios_dir
+    local_base_dir = path.Path(helios_dir)
     remote_base_url = 'ftp://apollo.ssl.berkeley.edu/pub/helios-data/'
 
     def download_func(remote_base_url, local_base_dir, directory,
                       fname, extension):
         remote_url = '{}{}'.format(remote_base_url, directory)
         util.load(fname + extension,
-                  os.path.join(local_base_dir, directory),
+                  local_base_dir / directory,
                   remote_url)
 
-    def processing_func(local_dir, fname):
-        fname = os.path.join(local_dir, fname)
-        return pd.read_csv(fname, parse_dates=['Time'])
+    def processing_func(f):
+        return pd.read_csv(f, parse_dates=['Time'])
 
     return util.process(dirs, fnames, extension, local_base_dir,
                         remote_base_url, download_func, processing_func,

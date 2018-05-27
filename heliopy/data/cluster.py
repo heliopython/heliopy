@@ -9,19 +9,22 @@ the `heliopyrc` file.
 The data download method is described at
 https://csa.esac.esa.int/csa/aio/html/wget.shtml.
 """
-import os
-import tarfile
 from datetime import datetime, time
+
+import os
+import pathlib as path
+import tarfile
 import urllib.request as urlreq
+
 import numpy as np
 
 from heliopy import config
 from heliopy.data import util
 
-data_dir = config['download_dir']
+data_dir = path.Path(config['download_dir'])
 cda_cookie = config['cluster_cookie']
 csa_url = 'https://csa.esac.esa.int/csa/aio/product-action?'
-cluster_dir = os.path.join(data_dir, 'cluster')
+cluster_dir = data_dir / 'cluster'
 
 # Create request dictionary to which the data product, start time and end times
 # can be added to later.
@@ -43,15 +46,12 @@ def _load(probe, starttime, endtime, instrument, product_id, cdfkeys):
         month = str(date.month).zfill(2)
         day = str(date.day).zfill(2)
 
-        local_dir = os.path.join(cluster_dir,
-                                 'c' + probe,
-                                 instrument,
-                                 year)
-
+        local_dir = cluster_dir / ('c' + probe) / instrument / year
         local_fname = 'C' + probe + '_' + product_id + '__' +\
             year + month + day + '.cdf'
+        local_file = local_dir / local_fname
         # If we don't have local file download it
-        if not os.path.exists(os.path.join(local_dir, local_fname)):
+        if not local_file.exists():
             thisstart = datetime.combine(date, time.min)
             thisend = datetime.combine(date, time.max)
             try:
@@ -104,33 +104,28 @@ def _download(probe, starttime, endtime, instrument, product_id):
         year = str(starttime.year)
         month = str(starttime.month).zfill(2)
         day = str(starttime.day).zfill(2)
-        local_dir = os.path.join(cluster_dir,
-                                 'c' + probe,
-                                 instrument,
-                                 year)
-        # Work out local filename to download to
-        filename = 'C' + probe + '_' + product_id + '__' + year + month +\
-            day + '.tar.gz'
+        local_dir = cluster_dir / ('c' + probe) / instrument / year
+        local_fname = 'C' + probe + '_' + product_id + '__' +\
+            year + month + day + '.cdf'
+        local_file = local_dir / local_fname
         print(request_url)
         # Download data
         util._checkdir(local_dir)
         urlreq.urlretrieve(request_url,
-                           filename=os.path.join(local_dir, filename),
+                           filename=local_file,
                            reporthook=util._reporthook)
         print('\n')
         # Extract tar.gz file
-        tar = tarfile.open(os.path.join(local_dir, filename))
+        tar = tarfile.open(local_file)
         tar.extractall(local_dir)
         # Delete tar.gz file
-        os.remove(os.path.join(local_dir, filename))
+        os.remove(local_file)
         # The CSA timpstamps the downloaded file by when it is downloaded,
         # so manually list and retrieve the folder name
         dirlist = os.listdir(local_dir)
         for d in dirlist:
             if d[:13] == 'CSA_Download_':
-                download_dir = os.path.join(local_dir,
-                                            d,
-                                            'C' + probe + '_' + product_id)
+                download_dir = local_dir / d / ('C' + probe + '_' + product_id)
                 break
 
         # Remove request times from filename
@@ -138,8 +133,8 @@ def _download(probe, starttime, endtime, instrument, product_id):
         # Move to data folder
         cutoff = 3 + len(product_id) + 10
         for f in dirlist:
-            os.rename(os.path.join(download_dir, f),
-                      os.path.join(local_dir, f[:cutoff] + '.cdf'))
+            os.rename(download_dir / f,
+                      local_dir / (f[:cutoff] + '.cdf'))
         # Delte extra folders created by tar.gz file
         os.rmdir(download_dir)
         os.rmdir(os.path.join(local_dir, d))
