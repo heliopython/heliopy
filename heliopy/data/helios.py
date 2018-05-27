@@ -921,7 +921,7 @@ def _merged_fname(probe, year, doy):
     return 'H{}{}_{:03}'.format(probe, year - 1900, doy)
 
 
-def merged(probe, starttime, endtime, verbose=True, try_download=True):
+def merged(probe, starttime, endtime, try_download=True):
     """
     Read in merged data set.
 
@@ -947,102 +947,58 @@ def merged(probe, starttime, endtime, verbose=True, try_download=True):
     This is an old dataset, and it is recommended to use `corefit` instead.
     """
     probe = _check_probe(probe)
-
     daylist = util._daysplitinterval(starttime, endtime)
-    data = []
-    floc = _merged_localdir(probe)
-    for day in daylist:
-        this_date = day[0]
+    local_base_dir = (path.Path(helios_dir) /
+                      'helios{}'.format(probe) /
+                      'merged' /
+                      'he{}_40sec'.format(probe))
+    extension = '.dat'
+    remote_base_url = ('ftp://cdaweb.gsfc.nasa.gov/pub/data/helios/'
+                       'helios{}/merged/he{}_40sec'.format(probe, probe))
+    fnames = []
+    dirs = []
+    for [day, _, _] in daylist:
         # Check that data for this day exists
         if probe == '1':
-            if this_date < date(1974, 12, 12) or this_date > date(1985, 9, 4):
+            if day < date(1974, 12, 12) or day > date(1985, 9, 4):
                 continue
         if probe == '2':
-            if this_date < date(1976, 1, 17) or this_date > date(1980, 3, 8):
+            if day < date(1976, 1, 17) or day > date(1980, 3, 8):
                 continue
 
-        doy = int(this_date.strftime('%j'))
-        year = this_date.year
+        doy = int(day.strftime('%j'))
+        year = day.year
+        fnames.append('H{}{}_{:03}'.format(probe, year - 1900, doy))
+        dirs.append('')
 
-        hdfloc = os.path.join(floc, _merged_fname(probe, year, doy) + '.hdf')
-        # Data not processed yet, try to process and load it
-        if not os.path.isfile(hdfloc):
-            try:
-                data.append(_merged_fromascii(probe, year, doy,
-                            try_download=try_download))
-                if verbose:
-                    print(year, doy, 'Processed ascii file')
-            except (FileNotFoundError, URLError) as err:
-                if verbose:
-                    print(str(err))
-                    print(year, doy, 'No raw merged data')
-        else:
-            # Load data from already processed file
-            data.append(pd.read_hdf(hdfloc, 'table'))
-            if verbose:
-                print(year, doy)
+    def download_func(remote_base_url, local_base_dir,
+                      directory, fname, extension):
+        remote_url = remote_base_url + str(directory)
+        local_dir = local_base_dir / directory
+        util._download_remote(remote_url, fname + extension, local_dir)
 
-    if data == []:
-        fmt = '%d-%m-%Y'
-        raise ValueError('No data to import for probe ' + probe +
-                         ' between ' + starttime.strftime(fmt) + ' and ' +
-                         endtime.strftime(fmt))
+    def processing_func(f):
+        # Load data
+        data = pd.read_table(f, delim_whitespace=True)
 
-    return util.timefilter(data, starttime, endtime)
+        # Process data
+        data['year'] = data['year'].astype(int)
+        # Convert date info to datetime
+        data['Time'] = pd.to_datetime(data['year'], format='%Y') + \
+            pd.to_timedelta(data['day'] - 1, unit='d') + \
+            pd.to_timedelta(data['hour'], unit='h') + \
+            pd.to_timedelta(data['min'], unit='m') + \
+            pd.to_timedelta(data['sec'], unit='s')
 
+        data = data.drop(['year', 'day', 'hour', 'min', 'sec', 'dechr'],
+                         axis=1)
+        # Set zero values to nans
+        data.replace(0.0, np.nan, inplace=True)
+        return data
 
-def _merged_fromascii(probe, year, doy, try_download):
-    """
-    Read in a single day of merged data.
-
-    Data is loaded from orignal ascii files, and saved to a hdf file for faster
-    access after first read in.
-
-    Parameters
-    ----------
-    probe : int, string
-        Helios probe to import data from. Must be 1 or 2.
-    year : int
-        Year
-    doy : int
-        Day of year
-
-    Returns
-    -------
-    data : DataFrame
-        Merged data set
-    """
-    probe = _check_probe(probe)
-    local_dir = _merged_localdir(probe)
-    remote_url = ('ftp://cdaweb.gsfc.nasa.gov/pub/data/helios/'
-                  'helios{}/merged/he{}_40sec'.format(probe, probe))
-    filename = _merged_fname(probe, year, doy) + '.dat'
-    asciiloc = os.path.join(local_dir, filename)
-
-    # Make sure file is downloaded
-    util.load(filename, local_dir, remote_url, try_download=try_download)
-
-    # Load data
-    data = pd.read_table(asciiloc, delim_whitespace=True)
-
-    # Process data
-    data['year'] = data['year'].astype(int)
-    # Convert date info to datetime
-    data['Time'] = pd.to_datetime(data['year'], format='%Y') + \
-        pd.to_timedelta(data['day'] - 1, unit='d') + \
-        pd.to_timedelta(data['hour'], unit='h') + \
-        pd.to_timedelta(data['min'], unit='m') + \
-        pd.to_timedelta(data['sec'], unit='s')
-
-    data = data.drop(['year', 'day', 'hour', 'min', 'sec', 'dechr'], axis=1)
-    # Set zero values to nans
-    data.replace(0.0, np.nan, inplace=True)
-
-    # Save data to a hdf store
-    if use_hdf:
-        _save_hdf(
-            data, _merged_localdir(probe), _merged_fname(probe, year, doy))
-    return(data)
+    return util.process(dirs, fnames, extension, local_base_dir,
+                        remote_base_url, download_func, processing_func,
+                        starttime, endtime, try_download=try_download)
 
 
 def _4hz_localdir(probe):
