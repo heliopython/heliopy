@@ -72,25 +72,28 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
 
             def processing_func(file, **processing_kwargs)
 
-    starttime : datetime
+    starttime : ~datetime.datetime
         Start of requested interval.
-    endtime : datetime
+    endtime : ~datetime.datetime
         End of requested interval.
     try_download : bool, optional
         If ``True``, try to download data. If ``False`` don't.
         Default is ``True``.
 
-    units : coll.OrderedDict, optional
-        The manually defined units passed as an arugment to be attached to the
-        data that will be returned. If units are present, then a TimeSeries
-        object is returned, else, a Pandas DataFrame.
+    units : ~collections.OrderedDict, optional
+        Manually defined units to be attached to the data that will be
+        returned.
+
+        Must map column headers (strings) to :class:`~astropy.units.Quantity`
+        objects. If units are present, then a TimeSeries object is returned,
+        else a Pandas DataFrame.
 
     processing_kwargs : dict, optional
         Extra keyword arguments to be passed to the processing funciton.
 
     Returns
     -------
-    :class:`~pandas.DataFrame`
+    :class:`~pandas.DataFrame` or :class:`~sunpy.timeseries.TimeSeries`
         Requested data.
     """
     local_base_dir = path.Path(local_base_dir)
