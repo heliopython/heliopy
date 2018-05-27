@@ -21,6 +21,7 @@ from ftplib import FTP
 import os
 import pathlib as path
 from urllib.error import URLError
+from collections import OrderedDict
 import warnings
 
 import astropy.constants as constants
@@ -957,6 +958,19 @@ def merged(probe, starttime, endtime, try_download=True):
                        'helios{}/merged/he{}_40sec'.format(probe, probe))
     fnames = []
     dirs = []
+    units = OrderedDict([('rh', u.AU), ('esh', u.deg),
+                        ('clong', u.deg), ('clat', u.deg), ('HGIlong', u.deg),
+                        ('br', u.nT), ('bt', u.nT), ('bn', u.nT),
+                        ('vp1r', u.km / u.s),
+                        ('vp1t', u.km / u.s), ('vp1n', u.km / u.s),
+                        ('crot', u.dimensionless_unscaled), ('np1', u.cm**-3),
+                        ('vp1', u.km / u.s), ('Tp1', u.K), ('vaz', u.deg),
+                        ('vel', u.deg), ('Bx', u.nT), ('By', u.nT),
+                        ('Bz', u.nT), ('sBx', u.dimensionless_unscaled),
+                        ('sBy', u.dimensionless_unscaled),
+                        ('sBz', u.dimensionless_unscaled),
+                        ('nal', u.cm**-3), ('val', u.km / u.s), ('Tal', u.K),
+                        ('np2', u.cm**-3), ('vp2', u.km / u.s)])
     for [day, _, _] in daylist:
         # Check that data for this day exists
         if probe == '1':
@@ -998,7 +1012,8 @@ def merged(probe, starttime, endtime, try_download=True):
 
     return util.process(dirs, fnames, extension, local_base_dir,
                         remote_base_url, download_func, processing_func,
-                        starttime, endtime, try_download=try_download)
+                        starttime, endtime, units=units,
+                        try_download=try_download)
 
 
 def _4hz_localdir(probe):
