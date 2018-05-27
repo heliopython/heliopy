@@ -140,7 +140,8 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
             logger.info('File {}/{}{} not available\n'.format(
                         local_dir, fname, extension))
 
-    # Loaded all the data, now filter between times
+
+ # Loaded all the data, now filter between times
     data = timefilter(data, starttime, endtime)
     if extension == '.cdf':
         cdf = load(fname + extension, local_dir, '')
@@ -151,7 +152,7 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
         return units_attach(data, units)
     if type(units) is coll.OrderedDict:
         return units_attach(data, units)
-    if units is None:
+    else:
         return data
 
 
@@ -207,18 +208,23 @@ def cdf_units(cdf_, keys=None):
     """
     units = coll.OrderedDict()
     if keys is None:
+        message = "No keys assigned for the CDF. Extracting manually."
+        warnings.warn(message, Warning)
         keys = dict(zip(list(cdf_.keys()), list(cdf_.keys())))
     for key, val in keys.items():
         try:
-            temp_ = u.Unit(cdf_[key].attrs['UNITS'])
+            temp_unit = u.Unit(cdf_[key].attrs['UNITS'])
         except ValueError:
-            temp_ = u.dimensionless_unscaled
+            unknown_unit = (cdf_[key].attrs['UNITS'])
+            message = "{} is an unknown unit. Assign true unit.".format(unknown_unit)
+            warnings.warn(message, Warning)
+            temp_unit = u.dimensionless_unscaled
         except KeyError:
             continue
         if isinstance(val, list):
-            units.update(coll.OrderedDict.fromkeys(val, temp_))
+            units.update(coll.OrderedDict.fromkeys(val, temp_unit))
         else:
-            units[val] = temp_
+            units[val] = temp_unit
     return units
 
 
