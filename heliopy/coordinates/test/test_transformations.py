@@ -12,6 +12,3 @@ def test_hee_to_gse():
     assert gse.y == -hee.y
     assert gse.x > 0 * u.km
     assert gse.x > hee.x
-
-    gse2 = hee.transform_to('GSE')
-    assert gse2 == gse
