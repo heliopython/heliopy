@@ -977,10 +977,9 @@ def merged(probe, starttime, endtime, try_download=True):
         local_dir = local_base_dir / directory
         util._download_remote(remote_url, fname + extension, local_dir)
 
-    def processing_func(local_dir, local_fname):
-        file_loc = local_dir + local_fname
+    def processing_func(f):
         # Load data
-        data = pd.read_table(file_loc, delim_whitespace=True)
+        data = pd.read_table(f, delim_whitespace=True)
 
         # Process data
         data['year'] = data['year'].astype(int)
