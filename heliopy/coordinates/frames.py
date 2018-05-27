@@ -19,6 +19,7 @@ import astropy.units as u
 
 import sunpy.coordinates.ephemeris as ephem
 
+
 class HeliocentricEarthEcliptic(baseframe.BaseCoordinateFrame):
     """
     A coordinate frame in the Heliocentric Earth Ecliptic (HEE) system.
