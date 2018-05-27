@@ -1,3 +1,15 @@
+Version 0.6.0
+-------------
+
+New features
+^^^^^^^^^^^^
+
+Backwards incompatible changes
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+- :func:`.data.helios.merged` no longer takes a `verbose` keyword argument.
+  :issue:`467`
+
+
 Version 0.5.1
 -------------
 

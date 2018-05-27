@@ -2,6 +2,6 @@ What's new
 ==========
 
 .. contents:: :local:
-   :depth: 2
+   :depth: 1
 
 .. include:: ../../../CHANGES.rst
