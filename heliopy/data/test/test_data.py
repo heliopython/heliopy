@@ -281,7 +281,8 @@ class TestHelios:
 
     def test_merged(self):
         df = helios.merged(self.probe, self.starttime, self.endtime)
-        check_datetime_index(df)
+        check_datetime_index(df.data)
+        check_units(df)
 
         starttime = datetime(2000, 1, 1, 0, 0, 0)
         endtime = datetime(2000, 1, 2, 0, 0, 0)
