@@ -966,9 +966,8 @@ def merged(probe, starttime, endtime, try_download=True):
                         ('crot', u.dimensionless_unscaled), ('np1', u.cm**-3),
                         ('vp1', u.km / u.s), ('Tp1', u.K), ('vaz', u.deg),
                         ('vel', u.deg), ('Bx', u.nT), ('By', u.nT),
-                        ('Bz', u.nT), ('sBx', u.dimensionless_unscaled),
-                        ('sBy', u.dimensionless_unscaled),
-                        ('sBz', u.dimensionless_unscaled),
+                        ('Bz', u.nT), ('sBx', u.nT),
+                        ('sBy', u.nT), ('sBz', u.nT),
                         ('nal', u.cm**-3), ('val', u.km / u.s), ('Tal', u.K),
                         ('np2', u.cm**-3), ('vp2', u.km / u.s)])
     for [day, _, _] in daylist:
