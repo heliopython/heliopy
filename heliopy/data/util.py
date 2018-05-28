@@ -14,6 +14,7 @@ import urllib.request as urlreq
 import astropy.units as u
 import sunpy.timeseries as ts
 import warnings
+import collections as coll
 
 import numpy as np
 import pandas as pd
@@ -146,12 +147,20 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
             logger.info('File {}/{}{} not available\n'.format(
                         local_dir, fname, extension))
 
-    # Loaded all the data, now filter between times
+
+# Loaded all the data, now filter between times
     data = timefilter(data, starttime, endtime)
-    if units is None:
-        return data
-    else:
+    if extension == '.cdf':
+        cdf = _load_local(raw_file)
+        if type(units) is dict:
+            units = cdf_units(cdf, keys=units)
+        else:
+            units = cdf_units(cdf)
         return units_attach(data, units)
+    if type(units) is coll.OrderedDict:
+        return units_attach(data, units)
+    else:
+        return data
 
 
 class _NoDataError(RuntimeError):
@@ -182,6 +191,48 @@ def units_attach(data, units):
             warnings.warn(message, Warning)
     timeseries_data = ts.TimeSeries(data, units)
     return timeseries_data
+
+
+def cdf_units(cdf_, keys=None):
+    """
+    Takes the CDF File and the required keys, and finds the units of the
+    selected keys.
+
+    Parameters
+    ----------
+    cdf_ : cdf
+        Opened cdf file
+    keys : dict, optional
+        If the user knows the units they wish to extract
+        from the CDF file keys, keys can be passed as an arugment.
+        If not, the function extracts all the keys present which
+        have an UNIT attribute.
+
+    Returns
+    -------
+    out : :class:`collections.OrderedDict`
+        Returns an OrderedDict with units of the selected keys.
+    """
+    units = coll.OrderedDict()
+    if keys is None:
+        message = "No keys assigned for the CDF. Extracting manually."
+        warnings.warn(message, Warning)
+        keys = dict(zip(list(cdf_.keys()), list(cdf_.keys())))
+    for key, val in keys.items():
+        try:
+            temp_unit = u.Unit(cdf_[key].attrs['UNITS'])
+        except ValueError:
+            unknown_unit = (cdf_[key].attrs['UNITS'])
+            message = "{} is unknown. Assign true unit.".format(unknown_unit)
+            warnings.warn(message, Warning)
+            temp_unit = u.dimensionless_unscaled
+        except KeyError:
+            continue
+        if isinstance(val, list):
+            units.update(coll.OrderedDict.fromkeys(val, temp_unit))
+        else:
+            units[val] = temp_unit
+    return units
 
 
 def timefilter(data, starttime, endtime):
