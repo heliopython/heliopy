@@ -151,7 +151,7 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
  # Loaded all the data, now filter between times
     data = timefilter(data, starttime, endtime)
     if extension == '.cdf':
-        cdf = load(fname + extension, local_dir, '')
+        cdf = _load_local(raw_file)
         if type(units) is dict:
             units = cdf_units(cdf, keys=units)
         else:
