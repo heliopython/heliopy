@@ -948,7 +948,6 @@ def merged(probe, starttime, endtime, try_download=True):
     This is an old dataset, and it is recommended to use `corefit` instead.
     """
     probe = _check_probe(probe)
-    daylist = util._daysplitinterval(starttime, endtime)
     local_base_dir = (path.Path(helios_dir) /
                       'helios{}'.format(probe) /
                       'merged' /
@@ -970,6 +969,7 @@ def merged(probe, starttime, endtime, try_download=True):
                         ('sBy', u.nT), ('sBz', u.nT),
                         ('nal', u.cm**-3), ('val', u.km / u.s), ('Tal', u.K),
                         ('np2', u.cm**-3), ('vp2', u.km / u.s)])
+    daylist = util._daysplitinterval(starttime, endtime)
     for [day, _, _] in daylist:
         # Check that data for this day exists
         if probe == '1':
@@ -1015,16 +1015,12 @@ def merged(probe, starttime, endtime, try_download=True):
                         try_download=try_download)
 
 
-def _4hz_localdir(probe):
-    return os.path.join(helios_dir, 'helios{}'.format(probe), 'mag', '4hz')
-
-
 def _4hz_filename(probe, year, doy):
     # Returns 4hz filename WITHOUT extension
     return 'he{}1s{}{:03}'.format(probe, year - 1900, doy)
 
 
-def mag_4hz(probe, starttime, endtime, verbose=True, try_download=True):
+def mag_4hz(probe, starttime, endtime, try_download=True):
     """
     Read in 4Hz magnetic field data.
 
@@ -1036,12 +1032,8 @@ def mag_4hz(probe, starttime, endtime, verbose=True, try_download=True):
         Interval start time
     endtime : datetime
         Interval end time
-    verbose : bool, optional
-        If ``True``, print more information as data is loading.
-        Default is ``True``.
     try_download : bool, optional
         If ``False`` don't try to download data if it is missing locally.
-        Default is ``False``.
 
     Returns
     -------
@@ -1049,127 +1041,63 @@ def mag_4hz(probe, starttime, endtime, verbose=True, try_download=True):
         4Hz magnetic field data set
     """
     probe = _check_probe(probe)
+    local_base_dir = (path.Path(helios_dir) / 'E2_experiment' /
+                      'Data_Cologne_Nov2016_bestdata' / 'HR' /
+                      'helios{}'.format(probe))
+    remote_base_url = 'apollo.ssl.berkeley.edu'
+    daylist = util._daysplitinterval(starttime, endtime)
+    extension = '.asc'
+    dirs = []
+    fnames = []
+    for [day, _, _] in daylist:
+        dirs.append('')
+        doy = int(day.strftime('%j'))
+        year = day.year
+        fnames.append('he{}1s{}{:03}'.format(probe, year - 1900, doy))
 
-    data = []
-    # Loop through years
-    for year in range(starttime.year, endtime.year + 1):
-        floc = _4hz_localdir(probe)
-        # Calculate start day of year
-        if year == starttime.year:
-            startdoy = int(starttime.strftime('%j'))
-        else:
-            startdoy = 1
-        # Calculate end day of year
-        if year == endtime.year:
-            enddoy = int(endtime.strftime('%j'))
-        else:
-            enddoy = 366
-
-        # Loop through days of year
-        for doy in range(startdoy, enddoy + 1):
-            hdfloc = os.path.join(
-                floc, _4hz_filename(probe, year, doy) + '.hdf')
-            if not os.path.isfile(hdfloc):
-                # Data not processed yet, try to process and load it
-                try:
-                    data.append(_fourHz_fromascii(probe, year, doy,
-                                                  try_download=try_download))
-                except ValueError as err:
-                    if 'No mag data available' in str(err):
-                        if verbose:
-                            print('{}/{:03} '
-                                  '4Hz mag data not available'.format(year,
-                                                                      doy))
-                    else:
-                        raise
-            else:
-                # Load data from already processed file
-                data.append(pd.read_hdf(hdfloc, 'table'))
-            if verbose:
-                print('{}/{:03} 4Hz mag data loaded'.format(year, doy))
-    if data == []:
-        raise ValueError('No raw 4Hz mag data available')
-
-    data = util.timefilter(data, starttime, endtime)
-
-    if data.empty:
-        raise ValueError('No 4Hz raw mag data available for entire interval')
-    return(data)
-
-
-def _fourHz_fromascii(probe, year, doy, try_download=True):
-    """
-    Read in a single day of 4Hz magnetic field data.
-
-    Parameters
-    ----------
-    probe : int, string
-        Helios probe to import data from. Must be 1 or 2.
-    year : int
-        Year
-    doy : int
-        Day of year
-
-    Returns
-    -------
-    data : DataFrame
-        4Hz magnetic field data set
-    """
-    probe = _check_probe(probe)
-    local_dir = _4hz_localdir(probe)
-    fname_prefix = _4hz_filename(probe, year, doy)
-    # For some reason the last number in the filename is the hour at which
-    # data starts from on that day... this means a loop to check each hour
-    asciiloc = None
-    fname = None
-    for i in range(0, 24):
-        testloc = os.path.join(local_dir,
-                               fname_prefix + str(i).zfill(2) + '.asc')
-        if os.path.isfile(testloc):
-            asciiloc = testloc
-            break
-    if asciiloc is not None:
-        if os.name == 'nt':
-            splitchar = '\\'
-        else:
-            splitchar = '/'
-        fname = asciiloc.split(splitchar)[-1]
-        remote_url = None
-    elif try_download is not False:
-        ftpsite = 'apollo.ssl.berkeley.edu'
+    def download_func(remote_base_url, local_base_dir,
+                      directory, fname, extension):
+        local_dir = local_base_dir / directory
         remote_dir = ('pub/helios-data/E2_experiment/'
                       'Data_Cologne_Nov2016_bestdata/'
                       'HR/helios{}'.format(probe))
-        remote_url = 'ftp://' + ftpsite + '/' + remote_dir
+        remote_url = 'ftp://' + remote_base_url + '/' + remote_dir
 
+        original_fname = fname
         fname = None
-        with FTP(ftpsite) as ftp:
+        # Because the filename contains a number between 0 and 24 at the end,
+        # get a list of all the filenames and compare them to the filename
+        # we want
+        with FTP(remote_base_url) as ftp:
             ftp.login()
-            filenames = ftp.nlst(remote_dir)
-            for filename in filenames:
-                if fname_prefix in filename:
-                    fname = filename
-                    break
-    if fname is None:
-        raise ValueError('No mag data available locally or remotely')
+            remote_fnames = ftp.nlst(remote_dir)
 
-    asciiloc = util.load(fname, local_dir, remote_url)
+        for remote_fname in remote_fnames:
+            if original_fname in remote_fname:
+                fname = remote_fname
+                break
+        util._download_remote(remote_url, fname, local_base_dir)
 
-    # Read in data
-    headings = ['Time', 'Bx', 'By', 'Bz', '|B|']
-    cols = [0, 4, 5, 6, 7]
-    data = pd.read_table(asciiloc, names=headings, header=None,
-                         usecols=cols, delim_whitespace=True)
+        # Rename to a sensible and deterministic file name
+        downloaded_path = (local_base_dir / fname).with_suffix(extension)
+        new_path = (local_base_dir / original_fname).with_suffix(extension)
+        downloaded_path.rename(new_path)
 
-    # Convert date info to datetime
-    data['Time'] = pd.to_datetime(data['Time'], format='%Y-%m-%dT%H:%M:%S')
-    data = data.set_index('Time', drop=False)
+    def processing_func(f):
+        # Read in data
+        headings = ['Time', 'Bx', 'By', 'Bz', '|B|']
+        cols = [0, 4, 5, 6, 7]
+        data = pd.read_table(f, names=headings, header=None,
+                             usecols=cols, delim_whitespace=True)
 
-    # Save data to a hdf store
-    if use_hdf:
-        fname = _4hz_filename(probe, year, doy)
-        _save_hdf(data, local_dir, fname)
-    return(data)
+        # Convert date info to datetime
+        data['Time'] = pd.to_datetime(data['Time'], format='%Y-%m-%dT%H:%M:%S')
+        data = data.set_index('Time', drop=True)
+        return data
+
+    return util.process(dirs, fnames, extension, local_base_dir,
+                        remote_base_url, download_func, processing_func,
+                        starttime, endtime, try_download=try_download)
 
 
 def _ness_localdir(probe, year):
