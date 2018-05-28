@@ -7,6 +7,7 @@ import datetime as dt
 import ftplib
 import logging
 import os
+import pathlib as path
 import sys
 import urllib.error as urlerror
 import urllib.request as urlreq
@@ -67,74 +68,80 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
         given file is not available.
 
     processing_func
-        Function that takes the directory of the local raw file, and the
-        filename of the local file and returns a pandas DataFrame. The filename
-        given to *processing_func* includes the extension. The signature must
-        be::
+        Function that takes an open CDF file or open plain text file,
+        and returns a pandas DataFrame. The signature must be::
 
-            def processing_func(local_dir, local_fname, **processing_kwargs)
+            def processing_func(file, **processing_kwargs)
 
-        The files handed to *processing_func* are always guarenteed to exist.
-
-    starttime : datetime
+    starttime : ~datetime.datetime
         Start of requested interval.
-    endtime : datetime
+    endtime : ~datetime.datetime
         End of requested interval.
     try_download : bool, optional
         If ``True``, try to download data. If ``False`` don't.
         Default is ``True``.
+
+    units : ~collections.OrderedDict, optional
+        Manually defined units to be attached to the data that will be
+        returned.
+
+        Must map column headers (strings) to :class:`~astropy.units.Quantity`
+        objects. If units are present, then a TimeSeries object is returned,
+        else a Pandas DataFrame.
 
     processing_kwargs : dict, optional
         Extra keyword arguments to be passed to the processing funciton.
 
     Returns
     -------
-    :class:`~pandas.DataFrame`
+    :class:`~pandas.DataFrame` or :class:`~sunpy.timeseries.TimeSeries`
         Requested data.
     """
+    local_base_dir = path.Path(local_base_dir)
     data = []
     for directory, fname in zip(dirs, fnames):
-        local_dir = os.path.join(local_base_dir, directory)
-        local_file = os.path.join(local_base_dir, directory, fname)
+        local_dir = local_base_dir / directory
+        local_file = local_base_dir / directory / fname
         # Fist try to load local HDF file
-        hdf_loc = local_file + '.hdf'
-        if os.path.exists(hdf_loc):
-            data.append(pd.read_hdf(hdf_loc))
+        hdf_file = local_file.with_suffix('.hdf')
+        if hdf_file.exists():
+            data.append(pd.read_hdf(hdf_file))
             continue
         # Now try raw file
-        raw_loc = local_file + extension
+        raw_file = local_file.with_suffix(extension)
         # If we can't find local file, try downloading
-        if not os.path.exists(raw_loc):
+        if not raw_file.exists():
             if try_download:
                 _checkdir(local_dir)
                 new_fname = download_func(remote_base_url, local_base_dir,
                                           directory, fname, extension)
                 if new_fname is not None:
                     fname = new_fname
-                    local_file = os.path.join(local_base_dir, directory, fname)
-                    raw_loc = local_file + extension
-                    hdf_loc = local_file + '.hdf'
-                    if os.path.exists(hdf_loc):
-                        data.append(pd.read_hdf(hdf_loc))
+                    local_file = local_base_dir / directory / fname
+                    raw_file = local_file.with_suffix(extension)
+                    hdf_file = local_file.with_suffix('.hdf')
+                    if hdf_file.exists():
+                        data.append(pd.read_hdf(hdf_file))
                         continue
 
                 # Print a message if file hasn't been downloaded
-                if not os.path.exists(raw_loc):
+                if not raw_file.exists():
                     logger.info('File {}{}/{}{} not available\n'.format(
                                 remote_base_url, directory, fname, extension))
                     continue
 
-        if os.path.exists(raw_loc):
+        if raw_file.exists():
             # Convert raw file to a dataframe
             try:
-                df = processing_func(local_dir, fname + extension,
-                                     **processing_kwargs)
+                file = _load_local(raw_file)
+                df = processing_func(file, **processing_kwargs)
+                # TODO: close file here
             except _NoDataError:
                 continue
 
             # Save dataframe to disk
             if use_hdf:
-                df.to_hdf(hdf_loc, 'data', mode='w', format='f')
+                df.to_hdf(hdf_file, 'data', mode='w', format='f')
             data.append(df)
         else:
             logger.info('File {}/{}{} not available\n'.format(
@@ -463,10 +470,12 @@ def load(filename, local_dir, remote_url, guessversion=False,
 
     # Try to load locally
     if _checkdir(local_dir):
-        for f in os.listdir(local_dir):
-            if f == filename or (guessversion and (f[:-6] == filename[:-6])):
-                filename = f
-                return _load_local(local_dir, f, filetype)
+        local_dir = path.Path(local_dir)
+        for f in local_dir.iterdir():
+            if str(f) == filename or (guessversion and
+                                      (str(f)[:-6] == filename[:-6])):
+                filename = str(f)
+                return _load_local(local_dir / f, filetype)
 
     # Loading locally failed, but directory has been made so try to download
     # file.
@@ -506,19 +515,33 @@ def _get_remote_version(remote_url, filename):
                 return f[-len(filename):]
 
 
-def _load_local(local_dir, filename, filetype):
+def _load_cdf(file_path):
+    '''
+    A function to handle loading pycdf, and printing a nice error if things
+    go wrong.
+    '''
+    from pycdf import pycdf
+    try:
+        cdf = pycdf.CDF(str(file_path))
+    except Exception as err:
+        print('Error whilst trying to load {}\n'.format(file_path))
+        raise err
+    return cdf
+
+
+def _is_cdf(file_path):
+    file_path = path.Path(file_path)
+    if file_path.suffix == '.cdf':
+        return True
+    return False
+
+
+def _load_local(file_path, filetype=None):
     # Import local file
-    if filetype == 'cdf':
-        from pycdf import pycdf
-        try:
-            cdf = pycdf.CDF(os.path.join(local_dir, filename))
-        except Exception as err:
-            print('Error whilst trying to load {}\n'.format(
-                os.path.join(local_dir, filename)))
-            raise err
-        return cdf
-    elif filetype == 'ascii':
-        f = open(os.path.join(local_dir, filename))
+    if _is_cdf(file_path):
+        return _load_cdf(file_path)
+    else:
+        f = open(str(file_path))
         return f
 
 
@@ -538,18 +561,20 @@ def _reporthook(blocknum, blocksize, totalsize):
 
 
 def _download_remote(remote_url, filename, local_dir):
+    local_dir = path.Path(local_dir)
     remote_url = _fix_url(remote_url)
     remote_url = remote_url + '/' + filename
     print('Downloading', remote_url)
     urlreq.urlretrieve(remote_url,
-                       filename=os.path.join(local_dir, filename),
+                       filename=str(local_dir / filename),
                        reporthook=_reporthook)
     print('\n')
 
 
 def _load_remote(remote_url, filename, local_dir, filetype):
+    local_dir = path.Path(local_dir)
     _download_remote(remote_url, filename, local_dir)
-    return _load_local(local_dir, filename, filetype)
+    return _load_local(local_dir / filename, filetype)
 
 
 def _fix_url(url):
@@ -578,9 +603,10 @@ def _checkdir(directory):
         True if directory exists, False if directory didn't exist when
         function was called.
     """
-    if not os.path.exists(directory):
+    directory = path.Path(directory)
+    if not directory.exists():
         print('Creating new directory', directory)
-        os.makedirs(directory)
+        directory.mkdir(parents=True)
         return False
     else:
         return True
