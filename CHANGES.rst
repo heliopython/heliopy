@@ -6,8 +6,8 @@ New features
 
 Backwards incompatible changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-- :func:`.data.helios.merged` no longer takes a `verbose` keyword argument.
-  :issue:`467`
+- :func:`.data.helios.merged` and :func:`.data.helios.mag_4hz` no longer take
+  a `verbose` keyword argument. :issue:`467`
 
 
 Version 0.5.1
