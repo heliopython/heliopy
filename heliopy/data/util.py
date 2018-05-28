@@ -148,7 +148,7 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
                         local_dir, fname, extension))
 
 
- # Loaded all the data, now filter between times
+# Loaded all the data, now filter between times
     data = timefilter(data, starttime, endtime)
     if extension == '.cdf':
         cdf = _load_local(raw_file)
@@ -223,7 +223,7 @@ def cdf_units(cdf_, keys=None):
             temp_unit = u.Unit(cdf_[key].attrs['UNITS'])
         except ValueError:
             unknown_unit = (cdf_[key].attrs['UNITS'])
-            message = "{} is an unknown unit. Assign true unit.".format(unknown_unit)
+            message = "{} is unknown. Assign true unit.".format(unknown_unit)
             warnings.warn(message, Warning)
             temp_unit = u.dimensionless_unscaled
         except KeyError:
