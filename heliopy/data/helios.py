@@ -1049,6 +1049,8 @@ def mag_4hz(probe, starttime, endtime, try_download=True):
     extension = '.asc'
     dirs = []
     fnames = []
+    units = OrderedDict([('Bx', u.nT), ('By', u.nT),
+                        ('Bz', u.nT), ('|B|', u.nT)])
     for [day, _, _] in daylist:
         dirs.append('')
         doy = int(day.strftime('%j'))
@@ -1097,7 +1099,8 @@ def mag_4hz(probe, starttime, endtime, try_download=True):
 
     return util.process(dirs, fnames, extension, local_base_dir,
                         remote_base_url, download_func, processing_func,
-                        starttime, endtime, try_download=try_download)
+                        starttime, endtime, units=units,
+                        try_download=try_download)
 
 
 def _ness_localdir(probe, year):

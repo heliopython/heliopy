@@ -312,6 +312,7 @@ class TestHelios:
     def test_mag_4hz(self):
         df = helios.mag_4hz(self.probe, self.starttime, self.endtime)
         check_datetime_index(df)
+        check_units(df)
 
 
 class TestHelper:
