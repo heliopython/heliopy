@@ -97,17 +97,17 @@ class TestUlysses:
 
     def test_swoops_ions(self):
         df = ulysses.swoops_ions(self.starttime, self.endtime)
-        check_datetime_index(df.data)
+        check_datetime_index(df)
         check_units(df)
 
     def test_swics_heavy_ions(self):
         df = ulysses.swics_heavy_ions(self.starttime, self.endtime)
-        check_datetime_index(df.data)
+        check_datetime_index(df)
         check_units(df)
 
     def test_swics_abundances(self):
         df = ulysses.swics_abundances(self.starttime, self.endtime)
-        check_datetime_index(df.data)
+        check_datetime_index(df)
         check_units(df)
 
 
@@ -142,27 +142,27 @@ class TestAce:
 
     def test_mfi_h0(self):
         df = ace.mfi_h0(self.starttime, self.endtime)
-        check_datetime_index(df.data)
+        check_datetime_index(df)
         check_units(df)
 
     def test_swe_h0(self):
         df = ace.swe_h0(self.starttime, self.endtime)
-        check_datetime_index(df.data)
+        check_datetime_index(df)
         check_units(df)
 
     def test_swi_h2(self):
         df = ace.swi_h2(self.starttime, self.endtime)
-        check_datetime_index(df.data)
+        check_datetime_index(df)
         check_units(df)
 
     def test_swi_h3(self):
         df = ace.swi_h3(self.starttime, self.endtime)
-        check_datetime_index(df.data)
+        check_datetime_index(df)
         check_units(df)
 
     def test_swi_h6(self):
         df = ace.swi_h6(self.starttime, self.endtime)
-        check_datetime_index(df.data)
+        check_datetime_index(df)
         check_units(df)
 
 
@@ -253,7 +253,7 @@ class TestWind:
 
     def test_swe_h3(self):
         df = wind.swe_h3(self.starttime, self.endtime)
-        check_datetime_index(df.data)
+        check_datetime_index(df)
         check_units(df)
 
     def test_swe_h1(self):
@@ -288,7 +288,7 @@ class TestHelios:
 
     def test_merged(self):
         df = helios.merged(self.probe, self.starttime, self.endtime)
-        check_datetime_index(df.data)
+        check_datetime_index(df)
         check_units(df)
 
         starttime = datetime(2000, 1, 1, 0, 0, 0)
