@@ -152,11 +152,10 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
     data = timefilter(data, starttime, endtime)
     if extension == '.cdf':
         cdf = _load_local(raw_file)
-        if type(units) is dict:
-            units = cdf_units(cdf, keys=units)
-        else:
-            units = cdf_units(cdf)
-        return units_attach(data, units)
+        units_cdf = cdf_units(cdf, keys=keys)
+        if units is not None:
+            units_cdf = units_cdf.update(units)
+        return units_attach(data, units_cdf)
     if type(units) is coll.OrderedDict:
         return units_attach(data, units)
     else:
