@@ -155,7 +155,7 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
         cdf = _load_local(raw_file)
         units_cdf = cdf_units(cdf, keys=keys)
         if units is not None:
-            units_cdf = units_cdf.update(units)
+            units_cdf.update(units)
         return units_attach(data, units_cdf)
     if type(units) is coll.OrderedDict:
         return units_attach(data, units)
