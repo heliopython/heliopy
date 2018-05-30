@@ -95,8 +95,9 @@ def mfi_h0(starttime, endtime):
             'Q_FLAG': 'Q_FLAG',
             'Epoch': 'Time'}
     version = '06'
+    units = OrderedDict([('Q_FLAG', u.dimensionless_unscaled)])
     return _ace(starttime, endtime, instrument, product,
-                fname, keys=keys, version=version)
+                fname, units=units, keys=keys, version=version)
 
 
 def swe_h0(starttime, endtime):
