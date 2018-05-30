@@ -62,11 +62,9 @@ def _ace(starttime, endtime, instrument, product, fname, units=None, keys=None,
         return util.cdf2df(cdf, index_key='Epoch',
                            keys=keys, badvalues=badvalues)
 
-    if units is None:
-        units = keys
     return util.process(dirs, fnames, extension, ace_dir, remote_ace_dir,
                         download_func, processing_func, starttime,
-                        endtime, units=keys)
+                        endtime, units=units, keys=keys)
 
 
 def mfi_h0(starttime, endtime):
