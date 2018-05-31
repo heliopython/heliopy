@@ -223,7 +223,7 @@ def cdf_units(cdf_, keys=None):
             temp_unit = u.Unit(cdf_[key].attrs['UNITS'])
         except ValueError:
             unknown_unit = (cdf_[key].attrs['UNITS'])
-            message = "{} is unknown. Assign true unit.".format(unknown_unit)
+            message = "{} unit, {} column is unknown".format(unknown_unit, key)
             warnings.warn(message, Warning)
             temp_unit = u.dimensionless_unscaled
         except KeyError:
