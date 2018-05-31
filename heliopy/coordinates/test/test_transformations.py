@@ -1,6 +1,4 @@
-import heliopy.coordinates.transformations as trans
 import heliopy.coordinates.frames as frames
-import astropy.coordinates as astro_coords
 import astropy.units as u
 from datetime import datetime
 
