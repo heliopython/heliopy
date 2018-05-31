@@ -5,6 +5,7 @@ Utility functions for data downloading.
 """
 import datetime as dt
 import ftplib
+import io
 import logging
 import os
 import pathlib as path
@@ -104,11 +105,10 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
         local_file = local_base_dir / directory / fname
         # Fist try to load local HDF file
         hdf_file = local_file.with_suffix('.hdf')
+        raw_file = local_file.with_suffix(extension)
         if hdf_file.exists():
             data.append(pd.read_hdf(hdf_file))
             continue
-        # Now try raw file
-        raw_file = local_file.with_suffix(extension)
         # If we can't find local file, try downloading
         if not raw_file.exists():
             if try_download:
@@ -135,7 +135,8 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
             try:
                 file = _load_local(raw_file)
                 df = processing_func(file, **processing_kwargs)
-                # TODO: close file here
+                if isinstance(file, io.IOBase) and not file.closed:
+                    file.close()
             except _NoDataError:
                 continue
 
@@ -147,8 +148,7 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
             logger.info('File {}/{}{} not available\n'.format(
                         local_dir, fname, extension))
 
-
-# Loaded all the data, now filter between times
+    # Loaded all the data, now filter between times
     data = timefilter(data, starttime, endtime)
     if extension == '.cdf':
         cdf = _load_local(raw_file)
