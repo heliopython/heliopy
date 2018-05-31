@@ -21,7 +21,8 @@ called on a coordinate object:
     >>> from astropy.constants import au
     >>> import heliopy.coordinates.frames as frames
     >>>
-    >>> hee_coord = frames.HeliocentricEarthEcliptic(1 * au, 0 * au, 0 * au, obstime=datetime(1992, 12, 21))
+    >>> hee_coord = frames.HeliocentricEarthEcliptic(1 * au, 0 * au, 0 * au,
+    ...     obstime=datetime(1992, 12, 21))
     >>> gse_coord = hee_coord.transform_to(frames.GeocentricSolarEcliptic)
     >>> gse_coord
     <GeocentricSolarEcliptic Coordinate (obstime=None): (x, y, z) in m
