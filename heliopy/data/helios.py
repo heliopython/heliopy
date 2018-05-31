@@ -845,7 +845,7 @@ def ion_dist_single(probe, year, doy, hour, minute, second,
     return dist
 
 
-def corefit(probe, starttime, endtime, verbose=False, try_download=True):
+def corefit(probe, starttime, endtime, try_download=True):
     """
     Read in merged data set
 
@@ -857,9 +857,8 @@ def corefit(probe, starttime, endtime, verbose=False, try_download=True):
         Interval start time
     endtime : datetime
         Interval end time
-    verbose : bool, optional
-        If ``True``, print information as data is loading.
-        Default is ``False``.
+    try_download : bool, optional
+        If ``False`` don't try to download data if it is missing locally.
 
     Returns
     -------
@@ -934,9 +933,8 @@ def merged(probe, starttime, endtime, try_download=True):
         Interval start time
     endtime : datetime
         Interval end time
-    verbose : bool, optional
-        If ``True``, print information as data is loading.
-        Default is ``True``.
+    try_download : bool, optional
+        If ``False`` don't try to download data if it is missing locally.
 
     Returns
     -------
@@ -1116,6 +1114,8 @@ def mag_ness(probe, starttime, endtime, try_download=True):
         Interval start time
     endtime : datetime
         Interval end time
+    try_download : bool, optional
+        If ``False`` don't try to download data if it is missing locally.
 
     Returns
     -------
@@ -1172,8 +1172,3 @@ def mag_ness(probe, starttime, endtime, try_download=True):
     return util.process(dirs, fnames, extension, local_base_dir,
                         remote_base_url, download_func, processing_func,
                         starttime, endtime, try_download=try_download)
-
-
-def _save_hdf(data, fdir, fname):
-    saveloc = os.path.join(fdir, fname + '.hdf')
-    data.to_hdf(saveloc, 'table', format='fixed', mode='w')
