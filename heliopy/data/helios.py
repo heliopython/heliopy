@@ -1045,12 +1045,13 @@ def mag_4hz(probe, starttime, endtime, try_download=True):
                       'Data_Cologne_Nov2016_bestdata' / 'HR' /
                       'helios{}'.format(probe))
     remote_base_url = 'apollo.ssl.berkeley.edu'
-    daylist = util._daysplitinterval(starttime, endtime)
     extension = '.asc'
     dirs = []
     fnames = []
     units = OrderedDict([('Bx', u.nT), ('By', u.nT),
                         ('Bz', u.nT), ('|B|', u.nT)])
+
+    daylist = util._daysplitinterval(starttime, endtime)
     for [day, _, _] in daylist:
         dirs.append('')
         doy = int(day.strftime('%j'))
@@ -1103,17 +1104,7 @@ def mag_4hz(probe, starttime, endtime, try_download=True):
                         try_download=try_download)
 
 
-def _ness_localdir(probe, year):
-    return os.path.join(helios_dir, 'helios{}'.format(probe),
-                        'mag', '6sec_ness', '{}'.format(year))
-
-
-def _ness_fname(probe, year, doy):
-    # Returns ness magnetic field filename WITHOUT extension
-    return 'h{}{}{:03}'.format(probe, year - 1900, doy)
-
-
-def mag_ness(probe, starttime, endtime, verbose=True, try_download=True):
+def mag_ness(probe, starttime, endtime, try_download=True):
     """
     Read in 6 second magnetic field data.
 
@@ -1125,9 +1116,6 @@ def mag_ness(probe, starttime, endtime, verbose=True, try_download=True):
         Interval start time
     endtime : datetime
         Interval end time
-    verbose : bool, optional
-        If ``True``, print more information as data is loading. Default is
-        ``True``.
 
     Returns
     -------
@@ -1135,130 +1123,55 @@ def mag_ness(probe, starttime, endtime, verbose=True, try_download=True):
         6 second magnetic field data set
     """
     probe = _check_probe(probe)
-    startdate = starttime.date()
-    enddate = endtime.date()
+    remote_base_url = ('ftp://apollo.ssl.berkeley.edu/pub/helios-data/' +
+                       'E3_experiment/helios{}_6sec_ness/'.format(probe))
+    local_base_dir = (path.Path(helios_dir) /
+                      'E3_experiment' /
+                      'helios{}_6sec_ness'.format(probe))
+    dirs = []
+    fnames = []
+    extension = '.asc'
+    daylist = util._daysplitinterval(starttime, endtime)
+    for [day, _, _] in daylist:
+        year = day.year
+        doy = int(day.strftime('%j'))
+        dirs.append('{}'.format(day.year))
+        fnames.append('h{}{}{:03}'.format(probe, year - 1900, doy))
 
-    def _check_doy(probe, year, doy):
-        '''
-        Returns False if year and doy are out of bounds for given probe
-        '''
-        if probe == '1':
-            minyear = 1974
-            mindoy = 349
-            maxyear = 1981
-            maxdoy = 167
-        elif probe == '2':
-            minyear = 1976
-            mindoy = 17
-            maxyear = 1980
-            maxdoy = 68
+    def download_func(remote_base_url, local_base_dir,
+                      directory, fname, extension):
+        remote_url = remote_base_url + str(directory)
+        local_dir = local_base_dir / directory
+        filename = fname + extension
+        util._download_remote(remote_url, filename, local_dir)
 
-        if (year == minyear and doy < mindoy) or (year < minyear):
-            return False
-        elif (year == maxyear and doy > maxdoy) or (year > maxyear):
-            return False
-        else:
-            return True
+    def processing_func(f):
+        # Read in data
+        headings = ['probe', 'year', 'doy', 'hour', 'minute', 'second',
+                    'naverage', 'Bx', 'By', 'Bz', '|B|',
+                    'sigma_Bx', 'sigma_By', 'sigma_Bz']
 
-    data = []
-    # Loop through years
-    for year in range(startdate.year, enddate.year + 1):
+        colspecs = [(1, 2), (2, 4), (4, 7), (7, 9), (9, 11), (11, 13),
+                    (13, 15), (15, 22), (22, 29), (29, 36), (36, 42), (42, 48),
+                    (48, 54), (54, 60)]
+        data = pd.read_fwf(f, names=headings, header=None,
+                           colspecs=colspecs)
 
-        floc = _ness_localdir(probe, year)
-        # Calculate start day
-        startdoy = 1
-        if year == startdate.year:
-            startdoy = int(startdate.strftime('%j'))
-        # Calculate end day
-        enddoy = 366
-        if year == enddate.year:
-            enddoy = int(enddate.strftime('%j'))
+        # Process data
+        data['year'] += 1900
+        # Convert date info to datetime
+        data['Time'] = pd.to_datetime(data['year'], format='%Y') + \
+            pd.to_timedelta(data['doy'] - 1, unit='d') + \
+            pd.to_timedelta(data['hour'], unit='h') + \
+            pd.to_timedelta(data['minute'], unit='m') + \
+            pd.to_timedelta(data['second'], unit='s')
+        data = data.drop(['year', 'doy', 'hour', 'minute', 'second'], axis=1)
+        data = data.set_index('Time', drop=False)
+        return data
 
-        # Loop through days of year
-        for doy in range(startdoy, enddoy + 1):
-            nodatastr = '{}/{:03} 6s mag data not available'.format(year, doy)
-            datastr = '{}/{:03} 6s mag data loaded'.format(year, doy)
-            if not _check_doy(probe, year, doy):
-                if verbose:
-                    print(nodatastr)
-                continue
-
-            hdfloc = os.path.join(floc, _ness_fname(probe, year, doy) + 'hdf')
-            if os.path.isfile(hdfloc):
-                # Load data from already processed file
-                data.append(pd.read_hdf(hdfloc, 'table'))
-                print(datastr)
-                continue
-
-            # Data not processed yet, try to process and load it
-            try:
-                data.append(_mag_ness_fromascii(probe, year, doy,
-                                                try_download=try_download))
-                if verbose:
-                    print(datastr)
-            except ValueError:
-                if verbose:
-                    print(nodatastr)
-
-    if data == []:
-        raise ValueError('No 6s mag data avaialble between '
-                         '{} and {}'.format(starttime, endtime))
-    return util.timefilter(data, starttime, endtime)
-
-
-def _mag_ness_fromascii(probe, year, doy, try_download=True):
-    """
-    Read in a single day of 6 second magnetic field data.
-
-    Data is read from orignal ascii files, and saved to a hdf file for faster
-    access after the first read.
-
-    Parameters
-    ----------
-    probe : int, string
-        Helios probe to import data from. Must be 1 or 2.
-    year : int
-        Year
-    doy : int
-        Day of year
-
-    Returns
-    -------
-    data : DataFrame
-        6 second magnetic field data set
-    """
-    probe = _check_probe(probe)
-    local_dir = _ness_localdir(probe, year)
-    remote_url = ('ftp://spdf.sci.gsfc.nasa.gov/pub/data/helios/helios' +
-                  probe + '/mag/6sec_ness/' + str(year) + '/')
-    fname = _ness_fname(probe, year, doy) + '.asc'
-    f = util.load(fname, local_dir, remote_url, try_download=try_download)
-
-    # Read in data
-    headings = ['probe', 'year', 'doy', 'hour', 'minute', 'second', 'naverage',
-                'Bx', 'By', 'Bz', '|B|', 'sigma_Bx', 'sigma_By', 'sigma_Bz']
-
-    colspecs = [(1, 2), (2, 4), (4, 7), (7, 9), (9, 11), (11, 13), (13, 15),
-                (15, 22), (22, 29), (29, 36), (36, 42), (42, 48), (48, 54),
-                (54, 60)]
-    data = pd.read_fwf(f, names=headings, header=None,
-                       colspecs=colspecs)
-
-    # Process data
-    data['year'] += 1900
-    # Convert date info to datetime
-    data['Time'] = pd.to_datetime(data['year'], format='%Y') + \
-        pd.to_timedelta(data['doy'] - 1, unit='d') + \
-        pd.to_timedelta(data['hour'], unit='h') + \
-        pd.to_timedelta(data['minute'], unit='m') + \
-        pd.to_timedelta(data['second'], unit='s')
-    data = data.drop(['year', 'doy', 'hour', 'minute', 'second'], axis=1)
-    data = data.set_index('Time', drop=False)
-
-    # Save data to a hdf store
-    if use_hdf:
-        _save_hdf(data, local_dir, _ness_fname(probe, year, doy))
-    return(data)
+    return util.process(dirs, fnames, extension, local_base_dir,
+                        remote_base_url, download_func, processing_func,
+                        starttime, endtime, try_download=try_download)
 
 
 def _save_hdf(data, fdir, fname):

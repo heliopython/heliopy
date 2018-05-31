@@ -6,7 +6,8 @@ New features
 
 Backwards incompatible changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-- :func:`.data.helios.merged` and :func:`.data.helios.mag_4hz` no longer take
+- :func:`.data.helios.merged`, :func:`.data.helios.mag_4hz`, and
+  :func:`.data.helios.mag_ness` no longer take
   a `verbose` keyword argument. :issue:`467`
 
 
