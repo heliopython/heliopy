@@ -90,6 +90,14 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
         objects. If units are present, then a TimeSeries object is returned,
         else a Pandas DataFrame.
 
+    keys : dict, optional
+        Keys to be extracted from the CDF, along with their column names as the
+        values.
+
+        Must map keys from the CDF (strings) to the column name (strings).
+        If keys are present, then only the specified keys are extracted from
+        the CDF file.
+
     processing_kwargs : dict, optional
         Extra keyword arguments to be passed to the processing funciton.
 
@@ -155,6 +163,7 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
         cdf = _load_local(raw_file)
         units_cdf = cdf_units(cdf, keys=keys)
         if units is not None:
+            # Merges the manual units, overriding any existing keys
             units_cdf.update(units)
         return units_attach(data, units_cdf)
     if type(units) is coll.OrderedDict:
