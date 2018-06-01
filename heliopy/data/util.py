@@ -27,7 +27,8 @@ logger = logging.getLogger(__name__)
 
 def process(dirs, fnames, extension, local_base_dir, remote_base_url,
             download_func, processing_func, starttime, endtime,
-            try_download=True, units=None, processing_kwargs={}):
+            try_download=True, units=None, keys=None,
+            processing_kwargs={}):
     """
     The main utility method for systematically loading, downloading, and saving
     data.
@@ -89,6 +90,14 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
         Must map column headers (strings) to :class:`~astropy.units.Quantity`
         objects. If units are present, then a TimeSeries object is returned,
         else a Pandas DataFrame.
+
+    keys : dict, optional
+        Keys to be extracted from the CDF, along with their column names as the
+        values.
+
+        Must map keys from the CDF (strings) to the column name (strings).
+        If keys are present, then only the specified keys are extracted from
+        the CDF file.
 
     processing_kwargs : dict, optional
         Extra keyword arguments to be passed to the processing funciton.
@@ -152,11 +161,11 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
     data = timefilter(data, starttime, endtime)
     if extension == '.cdf':
         cdf = _load_local(raw_file)
-        if type(units) is dict:
-            units = cdf_units(cdf, keys=units)
-        else:
-            units = cdf_units(cdf)
-        return units_attach(data, units)
+        units_cdf = cdf_units(cdf, keys=keys)
+        if units is not None:
+            # Merges the manual units, overriding any existing keys
+            units_cdf.update(units)
+        return units_attach(data, units_cdf)
     if type(units) is coll.OrderedDict:
         return units_attach(data, units)
     else:

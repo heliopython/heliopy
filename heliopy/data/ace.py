@@ -62,11 +62,9 @@ def _ace(starttime, endtime, instrument, product, fname, units=None, keys=None,
         return util.cdf2df(cdf, index_key='Epoch',
                            keys=keys, badvalues=badvalues)
 
-    if units is None:
-        units = keys
     return util.process(dirs, fnames, extension, ace_dir, remote_ace_dir,
                         download_func, processing_func, starttime,
-                        endtime, units=keys)
+                        endtime, units=units, keys=keys)
 
 
 def mfi_h0(starttime, endtime):
@@ -97,8 +95,9 @@ def mfi_h0(starttime, endtime):
             'Q_FLAG': 'Q_FLAG',
             'Epoch': 'Time'}
     version = '06'
+    units = OrderedDict([('Q_FLAG', u.dimensionless_unscaled)])
     return _ace(starttime, endtime, instrument, product,
-                fname, keys=keys, version=version)
+                fname, units=units, keys=keys, version=version)
 
 
 def swe_h0(starttime, endtime):
