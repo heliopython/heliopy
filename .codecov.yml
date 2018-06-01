@@ -1,3 +1,3 @@
 comment: off
 ignore:
-  - "_version.py"
+  - "heliopy/_version.py"
