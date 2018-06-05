@@ -161,10 +161,7 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
     data = timefilter(data, starttime, endtime)
     if extension == '.cdf':
         cdf = _load_local(raw_file)
-        units_cdf = cdf_units(cdf, keys=keys)
-        if units is not None:
-            # Merges the manual units, overriding any existing keys
-            units_cdf.update(units)
+        units_cdf = cdf_units(cdf, keys=keys, manual_units=units)
         return units_attach(data, units_cdf)
     if type(units) is coll.OrderedDict:
         return units_attach(data, units)
@@ -202,7 +199,7 @@ def units_attach(data, units):
     return timeseries_data
 
 
-def cdf_units(cdf_, keys=None):
+def cdf_units(cdf_, keys=None, manual_units=None):
     """
     Takes the CDF File and the required keys, and finds the units of the
     selected keys.
@@ -231,16 +228,19 @@ def cdf_units(cdf_, keys=None):
         try:
             temp_unit = u.Unit(cdf_[key].attrs['UNITS'])
         except ValueError:
-            unknown_unit = (cdf_[key].attrs['UNITS'])
-            message = "{} unit, {} column is unknown".format(unknown_unit, key)
-            warnings.warn(message, Warning)
-            temp_unit = u.dimensionless_unscaled
+            if key not in manual_units:
+                unknown_unit = (cdf_[key].attrs['UNITS'])
+                message = "{} unit,{} column unknown".format(unknown_unit, key)
+                warnings.warn(message, Warning)
+                temp_unit = u.dimensionless_unscaled
         except KeyError:
             continue
         if isinstance(val, list):
             units.update(coll.OrderedDict.fromkeys(val, temp_unit))
         else:
             units[val] = temp_unit
+    if manual_units is not None:
+        units.update(manual_units)
     return units
 
 
