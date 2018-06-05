@@ -1177,4 +1177,5 @@ def mag_ness(probe, starttime, endtime, try_download=True):
 
     return util.process(dirs, fnames, extension, local_base_dir,
                         remote_base_url, download_func, processing_func,
-                        starttime, endtime, try_download=try_download)
+                        starttime, endtime, units=units,
+                        try_download=try_download)
