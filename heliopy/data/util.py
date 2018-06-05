@@ -228,11 +228,13 @@ def cdf_units(cdf_, keys=None, manual_units=None):
         try:
             temp_unit = u.Unit(cdf_[key].attrs['UNITS'])
         except ValueError:
-            if key not in manual_units:
-                unknown_unit = (cdf_[key].attrs['UNITS'])
-                message = "{} unit,{} column unknown".format(unknown_unit, key)
-                warnings.warn(message, Warning)
-                temp_unit = u.dimensionless_unscaled
+            if manual_units is not None:
+                if key in manual_units:
+                    continue
+            unknown_unit = (cdf_[key].attrs['UNITS'])
+            message = "{} unit,{} column unknown".format(unknown_unit, key)
+            warnings.warn(message, Warning)
+            temp_unit = u.dimensionless_unscaled
         except KeyError:
             continue
         if isinstance(val, list):
