@@ -1130,6 +1130,12 @@ def mag_ness(probe, starttime, endtime, try_download=True):
                       'helios{}_6sec_ness'.format(probe))
     dirs = []
     fnames = []
+    units = OrderedDict([('Bx', u.nT), ('By', u.nT),
+                        ('Bz', u.nT), ('|B|', u.nT),
+                        ('probe', u.dimensionless_unscaled),
+                        ('naverage', u.dimensionless_unscaled),
+                        ('sigma_Bx', u.nT), ('sigma_By', u.nT),
+                        ('sigma_Bz', u.nT)])
     extension = '.asc'
     daylist = util._daysplitinterval(starttime, endtime)
     for [day, _, _] in daylist:
