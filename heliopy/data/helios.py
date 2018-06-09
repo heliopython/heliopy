@@ -918,7 +918,7 @@ def corefit(probe, starttime, endtime, try_download=True):
 
     return util.process(dirs, fnames, extension, local_base_dir,
                         remote_base_url, download_func, processing_func,
-                        starttime, endtime, try_download)
+                        starttime, endtime, try_download, units=units)
 
 
 def _merged_localdir(probe):
