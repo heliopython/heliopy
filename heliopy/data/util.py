@@ -234,6 +234,7 @@ def cdf_units(cdf_, keys=None, manual_units=None):
             unknown_unit = (cdf_[key].attrs['UNITS'])
             message = "{} unit,{} column unknown".format(unknown_unit, key)
             warnings.warn(message, Warning)
+            temp_unit = None
         except KeyError:
             continue
         if isinstance(val, list):
