@@ -60,7 +60,7 @@ def fpi_dis_moms(probe, mode, starttime, endtime):
                                              str(date.year),
                                              str(date.month).zfill(2))
             filename = ('mms{}_fpi_{}_l2_dis-moms_'
-                        '{}{:02}{:02}{:02}0000_v3.1.1.cdf').format(
+                        '{}{:02}{:02}{:02}0000_v3.3.0.cdf').format(
                             probe, mode, date.year, date.month, date.day, h)
 
             # Absolute path to local directory for this data file
