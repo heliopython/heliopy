@@ -75,7 +75,9 @@ def merged(probe, starttime, endtime, try_download=True):
                         ('v_mom', u.km/u.s), ('vx_mom_gse', u.km/u.s),
                         ('vy_mom_gse', u.km/u.s), ('vz_mom_gse', u.km/u.s),
                         ('vlong_mom', u.deg), ('vlat_mom', u.deg),
-                        ('np_mom', u.cm**-3), ('Tp_mom', u.K)])
+                        ('np_mom', u.cm**-3), ('Tp_mom', u.K),
+                        ('FCp', u.dimensionless_unscaled),
+                        ('DWp', u.dimensionless_unscaled)])
     local_base_dir = path.Path(imp_dir) / 'imp{}'.format(probe) / 'merged'
     remote_base_url = imp_url + 'imp{}/merged'.format(probe)
 
