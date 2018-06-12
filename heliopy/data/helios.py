@@ -868,6 +868,18 @@ def corefit(probe, starttime, endtime, try_download=True):
     probe = _check_probe(probe)
     dirs = []
     fnames = []
+    units = OrderedDict([('B instrument', u.dimensionless_unscaled),
+                        ('Bx', u.nT), ('By', u.nT), ('Bz', u.nT),
+                        ('sigma B', u.nT),
+                        ('Ion instrument', u.dimensionless_unscaled),
+                        ('Status', u.dimensionless_unscaled),
+                        ('Tp_par', u.K), ('Tp_perp', u.K),
+                        ('carrot', u.dimensionless_unscaled),
+                        ('r_sun', u.AU), ('clat', u.deg),
+                        ('clong', u.deg), ('earth_he_angle', u.deg),
+                        ('n_p', u.cm**-3), ('vp_x', u.km/u.s),
+                        ('vp_y', u.km/u.s), ('vp_z', u.km/u.s),
+                        ('vth_p_par', u.km/u.s), ('vth_p_perp', u.km/u.s)])
     daylist = util._daysplitinterval(starttime, endtime)
     for day in daylist:
         this_date = day[0]
@@ -906,7 +918,7 @@ def corefit(probe, starttime, endtime, try_download=True):
 
     return util.process(dirs, fnames, extension, local_base_dir,
                         remote_base_url, download_func, processing_func,
-                        starttime, endtime, try_download)
+                        starttime, endtime, try_download, units=units)
 
 
 def _merged_localdir(probe):

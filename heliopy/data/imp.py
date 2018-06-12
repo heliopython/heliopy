@@ -4,10 +4,12 @@ Methods for importing data from the IMP spacecraft.
 All data is publically available at ftp://cdaweb.gsfc.nasa.gov/pub/data/imp/
 """
 from datetime import datetime
+from collections import OrderedDict
 import os
 import pathlib as path
 
 import pandas as pd
+import astropy.units as u
 
 from heliopy import config
 from heliopy.data import util
@@ -54,6 +56,28 @@ def merged(probe, starttime, endtime, try_download=True):
     dirs = []
     fnames = []
     extension = '.asc'
+    units = OrderedDict([('sw_flag', u.dimensionless_unscaled),
+                        ('x_gse', u.R_earth), ('y_gse', u.R_earth),
+                        ('z_gse', u.R_earth), ('y_gsm', u.R_earth),
+                        ('z_gsm', u.R_earth), ('Nm', u.dimensionless_unscaled),
+                        ('<|B|>', u.nT), ('|<B>|', u.nT), ('<B_lat>', u.nT),
+                        ('<B_long>', u.nT), ('Bx_gse', u.nT), ('By_gse', u.nT),
+                        ('Bz_gse', u.nT), ('By_gsm', u.nT), ('Bz_gsm', u.nT),
+                        ('sigma|B|', u.nT), ('sigma B', u.nT),
+                        ('sigma B_x', u.nT), ('sigma B_y', u.nT),
+                        ('sigma B_z', u.nT),
+                        ('plas_reg', u.dimensionless_unscaled),
+                        ('Npp', u.dimensionless_unscaled),
+                        ('v_fit', u.km/u.s), ('vx_fit_gse', u.km/u.s),
+                        ('vy_fit_gse', u.km/u.s), ('vz_fit_gse', u.km/u.s),
+                        ('vlong_fit', u.deg), ('vlat_fit', u.deg),
+                        ('np_fit', u.cm**-3), ('Tp_fit', u.K),
+                        ('v_mom', u.km/u.s), ('vx_mom_gse', u.km/u.s),
+                        ('vy_mom_gse', u.km/u.s), ('vz_mom_gse', u.km/u.s),
+                        ('vlong_mom', u.deg), ('vlat_mom', u.deg),
+                        ('np_mom', u.cm**-3), ('Tp_mom', u.K),
+                        ('FCp', u.dimensionless_unscaled),
+                        ('DWp', u.dimensionless_unscaled)])
     local_base_dir = path.Path(imp_dir) / 'imp{}'.format(probe) / 'merged'
     remote_base_url = imp_url + 'imp{}/merged'.format(probe)
 
@@ -131,7 +155,8 @@ def merged(probe, starttime, endtime, try_download=True):
 
     return util.process(dirs, fnames, extension, local_base_dir,
                         remote_base_url, download_func, processing_func,
-                        starttime, endtime, try_download=try_download)
+                        starttime, endtime, units=units,
+                        try_download=try_download)
 
 
 def mitplasma_h0(probe, starttime, endtime):
