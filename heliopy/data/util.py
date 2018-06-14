@@ -240,7 +240,8 @@ def cdf_units(cdf_, keys=None, manual_units=None):
         if isinstance(val, list):
             units.update(coll.OrderedDict.fromkeys(val, temp_unit))
         else:
-            units[val] = temp_unit
+            if temp_unit is not None:
+                units[val] = temp_unit
     if manual_units is not None:
         units.update(manual_units)
     return units
