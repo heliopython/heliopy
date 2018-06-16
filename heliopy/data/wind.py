@@ -403,5 +403,6 @@ def threedp_sfpd(starttime, endtime):
             data_today.to_hdf(hdfloc, 'sfpd', mode='w')
         data.append(data_today)
 
+    df = df.reset_index(level=['Energy', 'Pitch angle'])
     data = util.timefilter(data, starttime, endtime)
     return data

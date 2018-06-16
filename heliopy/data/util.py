@@ -189,7 +189,6 @@ def units_attach(data, units):
     out : sunpy.timeseries.timeseriesbase.GenericTimeSeries
         DataFrame converted into TimeSeries with units attached.
     """
-    warnings.warn("Returning units", RuntimeWarning)
     unit_key = list(units.keys())
     for column_name in data.columns:
         if column_name not in unit_key:
