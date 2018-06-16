@@ -38,7 +38,7 @@ before_install:
 
 script:
 # Check that unit tests work
-- pytest heliopy/ --cov=heliopy/ -v -s --durations=5 $RUN_PEP8
+- pytest heliopy/ --cov=heliopy/ -v --durations=5 $RUN_PEP8
 # Check building a source distribution works
 - python setup.py sdist
 after_success:
