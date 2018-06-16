@@ -18,6 +18,7 @@ import pandas as pd
 from datetime import datetime
 import urllib
 import pytest
+import sunpy
 
 try:
     from pycdf import pycdf
