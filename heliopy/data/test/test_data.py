@@ -133,7 +133,7 @@ class TestUlysses:
 
 
 @pytest.mark.skipif(no_pycdf, reason='Importing pycdf failed')
-@pytest.mark.data       
+@pytest.mark.data
 class TestArtemis:
     @classmethod
     def setup_class(self):
