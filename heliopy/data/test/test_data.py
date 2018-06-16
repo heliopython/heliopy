@@ -37,8 +37,9 @@ def check_units(df):
     if type(df) is not sunpy.timeseries.timeseriesbase.GenericTimeSeries:
         warnings.warn("Function has no units attached", RuntimeWarning)
         assert type(df.index[0]) == pd.Timestamp
-    for column in df.data.columns:
-        assert type(df.quantity(column)) == u.quantity.Quantity
+    else:
+        for column in df.data.columns:
+            assert type(df.quantity(column)) == u.quantity.Quantity
 
 
 @pytest.mark.data
