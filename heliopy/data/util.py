@@ -16,6 +16,7 @@ import astropy.units as u
 import sunpy.timeseries as ts
 import warnings
 import collections as coll
+import heliopy.data.custom.units_dict as units_dict
 
 import numpy as np
 import pandas as pd
@@ -193,7 +194,7 @@ def units_attach(data, units):
     for column_name in data.columns:
         if column_name not in unit_key:
             units[column_name] = u.dimensionless_unscaled
-            message = "{} has no units. Assign true unit.".format(column_name)
+            message = "{} column has missing units.".format(column_name)
             warnings.warn(message, Warning)
     timeseries_data = ts.TimeSeries(data, units)
     return timeseries_data
@@ -232,9 +233,10 @@ def cdf_units(cdf_, keys=None, manual_units=None):
                 if key in manual_units:
                     continue
             unknown_unit = (cdf_[key].attrs['UNITS'])
-            message = "{} unit,{} column unknown".format(unknown_unit, key)
-            warnings.warn(message, Warning)
-            temp_unit = None
+            temp_unit = units_dict.get(unknown_unit)
+            if temp_unit is None:
+                message = "{} unit, {} key unknown".format(unknown_unit, key)
+                warnings.warn(message, Warning)
         except KeyError:
             continue
         if isinstance(val, list):
