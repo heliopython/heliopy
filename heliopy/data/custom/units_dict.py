@@ -1,3 +1,10 @@
+"""
+CDF Unit Dictionary
+-------------------
+Method to obtain the unit denoted by the strings
+inside the CDF files in the UNIT attribute.
+"""
+
 import astropy.units as u
 from collections import OrderedDict
 
