@@ -45,3 +45,17 @@ util module:
    :maxdepth: 1
 
    util
+
+SunPy and AstroPy Integration
+-----------------------------
+
+HelioPy is built to be used alongside SunPy and AstroPy. Before V0.6, HelioPy returned
+a Pandas DataFrame object. After implementation of physical units, HelioPy now
+returns a SunPy TimeSeries object. The TimeSeries object is capable of storing units data,
+and works well with AstroPy.
+
+SunPy TimeSeries Documentation is available
+at http://docs.sunpy.org/en/v0.9.0/guide/data_types/timeseries.html
+
+AstroPy Units Documentation is available
+at http://docs.astropy.org/en/stable/units/
