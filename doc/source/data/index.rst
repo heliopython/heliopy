@@ -47,7 +47,7 @@ util module:
    util
 
 SunPy and AstroPy Integration
------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 HelioPy is built to be used alongside SunPy and AstroPy. Before V0.6, HelioPy returned
 a Pandas DataFrame object. After implementation of physical units, HelioPy now
