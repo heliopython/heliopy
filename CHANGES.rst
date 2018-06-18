@@ -5,7 +5,7 @@ New features
 ^^^^^^^^^^^^
 - HelioPy has been integrated with SunPy TimeSeries and AstroPy Units. All of
   HelioPy modules now return units.
-- :func:`.data.util.cdf_units` is a function that can extract UNIT attribute from
+- Added a new :func:`.data.util.cdf_units` function that can extract UNIT attribute from
   the CDF files.
 
 Backwards incompatible changes
@@ -15,6 +15,10 @@ Backwards incompatible changes
   a `verbose` keyword argument. :issue:`467`
 - HelioPy no longer returns a Pandas DataFrame.
 
+Fixed bugs
+^^^^^^^^^^
+- :func:`.data.mms.fpi_dis_moms` has been updated to the V3.3.0.
+- :func:`.data.imp.merged` no longer imports redundant columns.
 
 Version 0.5.1
 -------------
