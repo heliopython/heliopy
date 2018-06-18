@@ -26,7 +26,7 @@ import heliopy
 matplotlib.use('agg')
 sys.path.insert(0, os.path.abspath('../../'))
 
-
+html_favicon = '../../artwork/favicon.ico'
 html_sidebars = {'**': ['docsidebar.html']}
 
 # Pretend these modules exits so readthedocs builds

@@ -68,6 +68,9 @@ span.caption-text {
 
 /* Navbar */
 
+.navbar-fixed-top .navbar-collapse,.navbar-fixed-bottom .navbar-collapse {
+  max-height: 60px;
+}
 .navbar {
   background-color: #444;
 }
