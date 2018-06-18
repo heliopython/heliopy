@@ -8,6 +8,7 @@ import pathlib as path
 
 import pandas as pd
 import numpy as np
+import sunpy
 
 from heliopy.data import util
 from heliopy import config
@@ -45,7 +46,7 @@ def fgm(probe, rate, coords, starttime, endtime):
 
     Returns
     -------
-        data : DataFrame
+        data : sunpy.timeseries.timeseriesbase.GenericTimeSeries
     """
     valid_rates = ['e', 'h', 'l', 's']
     valid_coords = ['dsl', 'gse', 'gsm', 'ssl']

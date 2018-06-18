@@ -70,7 +70,7 @@ def mag_1min(starttime, endtime, coords):
 
     Returns
     -------
-    data : DataFrame
+    data : sunpy.timeseries.timeseriesbase.GenericTimeSeries
         Requested data
     """
     valid_coords = ['KRTP', 'KSM', 'KSO', 'RTN']

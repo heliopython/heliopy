@@ -49,7 +49,7 @@ def merged(probe, starttime, endtime, try_download=True):
 
     Returns
     -------
-    data : DataFrame
+    data : sunpy.timeseries.timeseriesbase.GenericTimeSeries
         Requested data.
     """
     _check_probe(probe, ['8'])

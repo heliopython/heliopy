@@ -81,7 +81,7 @@ def mfi_h0(starttime, endtime):
 
     Returns
     -------
-    data : DataFrame
+    data : sunpy.timeseries.timeseriesbase.GenericTimeSeries
     """
     instrument = 'mag'
     product = 'mfi_h0'
@@ -115,7 +115,7 @@ def swe_h0(starttime, endtime):
 
     Returns
     -------
-    data : DataFrame
+    data : sunpy.timeseries.timeseriesbase.GenericTimeSeries
     """
     instrument = 'swepam'
     product = 'swe_h0'
@@ -152,7 +152,7 @@ def swi_h2(starttime, endtime):
 
     Returns
     -------
-    data : DataFrame
+    data : sunpy.timeseries.timeseriesbase.GenericTimeSeries
     """
     instrument = 'swics'
     product = 'swi_h2'
@@ -179,7 +179,7 @@ def swi_h3(starttime, endtime):
 
     Returns
     -------
-    data : DataFrame
+    data : sunpy.timeseries.timeseriesbase.GenericTimeSeries
     """
     instrument = 'swics'
     product = 'swi_h3'
@@ -206,7 +206,7 @@ def swi_h6(starttime, endtime):
 
     Returns
     -------
-    data : DataFrame
+    data : sunpy.timeseries.timeseriesbase.GenericTimeSeries
     """
     instrument = 'swics'
     product = 'swi_h6'

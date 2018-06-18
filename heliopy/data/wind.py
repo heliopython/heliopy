@@ -66,7 +66,7 @@ def swe_h1(starttime, endtime):
 
     Returns
     -------
-    data : DataFrame
+    data : sunpy.timeseries.timeseriesbase.GenericTimeSeries
     """
     instrument = 'swe'
     data_product = 'swe_h1'
@@ -126,7 +126,7 @@ def swe_h3(starttime, endtime):
 
     Returns
     -------
-    data : DataFrame
+    data : sunpy.timeseries.timeseriesbase.GenericTimeSeries
     """
     relative_dir = path.Path('swe') / 'swe_h3'
     # Get directories and filenames
@@ -184,7 +184,7 @@ def mfi_h0(starttime, endtime):
 
     Returns
     -------
-    data : DataFrame
+    data : sunpy.timeseries.timeseriesbase.GenericTimeSeries
     """
     return _mfi(starttime, endtime, 'h0')
 
@@ -205,7 +205,7 @@ def mfi_h2(starttime, endtime):
 
     Returns
     -------
-    data : DataFrame
+    data : sunpy.timeseries.timeseriesbase.GenericTimeSeries
     """
     return _mfi(starttime, endtime, 'h2')
 
@@ -291,7 +291,7 @@ def threedp_pm(starttime, endtime):
 
     Returns
     -------
-    data : DataFrame
+    data : sunpy.timeseries.timeseriesbase.GenericTimeSeries
     """
     # Directory relative to main WIND data directory
     relative_dir = path.Path('3dp') / '3dp_pm'
@@ -352,7 +352,7 @@ def threedp_sfpd(starttime, endtime):
 
     Returns
     -------
-    data : DataFrame
+    data : sunpy.timeseries.timeseriesbase.GenericTimeSeries
     """
     # Directory relative to main WIND data directory
     relative_dir = path.Path('3dp') / '3dp_sfpd'
