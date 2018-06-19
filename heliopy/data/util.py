@@ -235,7 +235,7 @@ def cdf_units(cdf_, keys=None, manual_units=None):
             unknown_unit = (cdf_[key].attrs['UNITS'])
             temp_unit = helper.cdf_dict(unknown_unit)
             if temp_unit is None:
-                message = "The CDF provided units ({}) for key '{}' + \
+                message = "The CDF provided units ({}) for key '{}' \
                 are unknown".format(unknown_unit, key)
                 warnings.warn(message, Warning)
         except KeyError:
