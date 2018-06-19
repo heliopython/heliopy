@@ -19,7 +19,7 @@ import collections as coll
 
 import numpy as np
 import pandas as pd
-import heliopy.helper as helper
+import heliopy.data.helper as helper
 
 from heliopy import config
 use_hdf = config['use_hdf']
