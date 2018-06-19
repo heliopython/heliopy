@@ -16,10 +16,10 @@ import astropy.units as u
 import sunpy.timeseries as ts
 import warnings
 import collections as coll
-import heliopy.data.custom.units_dict as units_dict
 
 import numpy as np
 import pandas as pd
+import heliopy.helper as helper
 
 from heliopy import config
 use_hdf = config['use_hdf']
@@ -233,9 +233,10 @@ def cdf_units(cdf_, keys=None, manual_units=None):
                 if key in manual_units:
                     continue
             unknown_unit = (cdf_[key].attrs['UNITS'])
-            temp_unit = units_dict.get(unknown_unit)
+            temp_unit = helper.cdf_dict(unknown_unit)
             if temp_unit is None:
-                message = "{} unit, {} key unknown".format(unknown_unit, key)
+                message = "The CDF provided units ({}) for key '{}' + \
+                are unknown".format(unknown_unit, key)
                 warnings.warn(message, Warning)
         except KeyError:
             continue
