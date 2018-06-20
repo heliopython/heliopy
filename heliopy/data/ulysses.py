@@ -65,7 +65,7 @@ def swics_heavy_ions(starttime, endtime, try_download=True):
 
     Returns
     -------
-    data : sunpy.timeseries.timeseriesbase.GenericTimeSeries
+    data : :class:`~sunpy.timeseries.TimeSeries`
         Requested data
     """
     names = ['year', 'doy', 'hour', 'minute', 'second']
@@ -116,7 +116,7 @@ def swics_abundances(starttime, endtime, try_download=True):
 
     Returns
     -------
-    data : sunpy.timeseries.timeseriesbase.GenericTimeSeries
+    data : :class:`~sunpy.timeseries.TimeSeries`
         Requested data
     """
     names = ['year', 'doy', 'hour', 'minute', 'second',
@@ -243,7 +243,7 @@ def swoops_ions(starttime, endtime, try_download=True):
 
     Returns
     -------
-    data : sunpy.timeseries.timeseriesbase.GenericTimeSeries
+    data : :class:`~sunpy.timeseries.TimeSeries`
         Requested data
     """
 
