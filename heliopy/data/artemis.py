@@ -8,7 +8,8 @@ import pathlib as path
 
 import pandas as pd
 import numpy as np
-import sunpy
+import astropy.units as u
+from collections import OrderedDict
 
 from heliopy.data import util
 from heliopy import config
@@ -65,6 +66,8 @@ def fgm(probe, rate, coords, starttime, endtime):
     dirs = []
     fnames = []
     extension = '.cdf'
+    units = OrderedDict([('|B|', u.nT), ('Bz_dsl', u.nT),
+                        ('By_dsl', u.nT), ('Bx_dsl', u.nT)])
     for day in daylist:
         date = day[0]
         filename = 'th{}_l2_fgm_{}{:02}{:02}_v01'.format(
@@ -101,5 +104,5 @@ def fgm(probe, rate, coords, starttime, endtime):
     processing_kwargs = {'probe': probe, 'rate': rate, 'coords': coords}
     return util.process(dirs, fnames, extension, artemis_dir,
                         remote_themis_dir, download_func, processing_func,
-                        starttime, endtime,
+                        starttime, endtime, units=units,
                         processing_kwargs=processing_kwargs)

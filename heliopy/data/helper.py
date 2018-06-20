@@ -2,6 +2,8 @@
 import os
 
 import numpy as np
+import astropy.units as u
+from collections import OrderedDict
 
 from heliopy import config
 
@@ -124,3 +126,35 @@ def listdata(probes=None):
         if i == 0:
             print(divider)
     print('-' * total_len)
+
+
+def cdf_dict(unit_string):
+    """
+    CDF Unit Dictionary
+    -------------------
+    Method to obtain the unit denoted by the strings
+    inside the CDF files in the UNIT attribute.
+    """
+    ionic_charge = u.def_unit('Charged State', 1.6021766*(10**-19) * u.C)
+
+    units = OrderedDict([('ratio', u.dimensionless_unscaled),
+                        ('#/cc', u.cm**-3),
+                        ('#/cm^3', u.cm**-3),
+                        ('cm^{-3}', u.cm**-3),
+                        ('ionic charge', u.electron),
+                        ('earth radii', u.earthRad),
+                        ('Re', u.earthRad),
+                        ('Degrees', u.deg),
+                        ('degrees', u.deg),
+                        ('#/{cc*(cm/s)^3}', (u.cm**3 * (u.cm / u.s)**3)**-1),
+                        ('sec', u.s),
+                        ('nT GSE', u.nT),
+                        ('nT GSM', u.nT),
+                        ('nT DSL', u.nT),
+                        ('msec', u.ms),
+                        ('nT SSL', u.nT),
+                        ('ionic charge', ionic_charge)])
+    try:
+        return units[unit_string]
+    except KeyError:
+        return None

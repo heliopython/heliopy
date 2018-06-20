@@ -9,6 +9,8 @@ import pathlib as path
 
 import pandas as pd
 import numpy as np
+import astropy.units as u
+from collections import OrderedDict
 
 from heliopy.data import util
 from heliopy import config
@@ -132,6 +134,8 @@ def swe_h3(starttime, endtime):
     # Get directories and filenames
     dirs = []
     fnames = []
+    units = OrderedDict([('Angle', u .deg),
+                        ('Energy', u.eV)])
     daylist = util._daysplitinterval(starttime, endtime)
     for day in daylist:
         date = day[0]
@@ -168,7 +172,7 @@ def swe_h3(starttime, endtime):
 
     return util.process(dirs, fnames, extension, local_base_dir,
                         remote_base_url, download_func, processing_func,
-                        starttime, endtime)
+                        starttime, endtime, units=units)
 
 
 def mfi_h0(starttime, endtime):
@@ -186,7 +190,9 @@ def mfi_h0(starttime, endtime):
     -------
     data : :class:`~sunpy.timeseries.TimeSeries`
     """
-    return _mfi(starttime, endtime, 'h0')
+    units = OrderedDict([('Bx_gse', u.nT), ('By_gse', u.nT),
+                        ('Bz_gse', u.nT)])
+    return _mfi(starttime, endtime, 'h0', units=units)
 
 
 def mfi_h2(starttime, endtime):
@@ -207,10 +213,12 @@ def mfi_h2(starttime, endtime):
     -------
     data : :class:`~sunpy.timeseries.TimeSeries`
     """
-    return _mfi(starttime, endtime, 'h2')
+    units = OrderedDict([('Bx_gse', u.nT), ('By_gse', u.nT),
+                        ('Bz_gse', u.nT)])
+    return _mfi(starttime, endtime, 'h2', units=units)
 
 
-def _mfi(starttime, endtime, version):
+def _mfi(starttime, endtime, version, units=None):
     """
     Import mfi magnetic field data products from WIND.
 
@@ -272,7 +280,7 @@ def _mfi(starttime, endtime, version):
 
     return util.process(dirs, fnames, extension, local_base_dir,
                         remote_base_url, download_func, processing_func,
-                        starttime, endtime)
+                        starttime, endtime, units=units)
 
 
 def threedp_pm(starttime, endtime):
