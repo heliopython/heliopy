@@ -13,11 +13,10 @@ Backwards incompatible changes
 - :func:`.data.helios.merged`, :func:`.data.helios.mag_4hz`,
   :func:`.data.helios.corefit` and :func:`.data.helios.mag_ness` no longer take
   a `verbose` keyword argument. :issue:`467`
-- HelioPy no longer returns a Pandas DataFrame.
+- :mod:`heliopy.data` no longer returns a Pandas DataFrame.
 
 Fixed bugs
 ^^^^^^^^^^
-- :func:`.data.mms.fpi_dis_moms` has been updated to the V3.3.0.
 - :func:`.data.imp.merged` no longer imports redundant columns.
 
 Version 0.5.1
