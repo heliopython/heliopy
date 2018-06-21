@@ -58,6 +58,6 @@ SunPy Documentation is available at http://docs.sunpy.org/
 You can also read more about `TimeSeries <http://docs.sunpy.org/en/stable/guide/data_types/timeseries.html>`_
 
 AstroPy Documentation is available at http://docs.astropy.org/
-You can also read more about `TimeSeries <http://docs.astropy.org/en/stable/units/>`_
+You can also read more about `Units <http://docs.astropy.org/en/stable/units/>`_
 
 An example on how to use TimeSeries Data and AstroPy Units is also available in the Examples section.
