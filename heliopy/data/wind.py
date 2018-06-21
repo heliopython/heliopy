@@ -412,4 +412,5 @@ def threedp_sfpd(starttime, endtime):
         data.append(data_today)
 
     data = util.timefilter(data, starttime, endtime)
+    data = data.reset_index(level=['Energy', 'Pitch angle'])
     return data

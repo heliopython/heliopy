@@ -18,6 +18,8 @@ import pandas as pd
 from datetime import datetime
 import urllib
 import pytest
+import sunpy
+import warnings
 
 try:
     from pycdf import pycdf
@@ -32,8 +34,12 @@ def check_datetime_index(df):
 
 
 def check_units(df):
-    for column in df.data.columns:
-        assert type(df.quantity(column)) == u.quantity.Quantity
+    if type(df) is not sunpy.timeseries.timeseriesbase.GenericTimeSeries:
+        warnings.warn("Function has no units attached", RuntimeWarning)
+        assert type(df.index[0]) == pd.Timestamp
+    else:
+        for column in df.data.columns:
+            assert type(df.quantity(column)) == u.quantity.Quantity
 
 
 @pytest.mark.data
@@ -53,12 +59,14 @@ class TestCassini:
     def test_mag(self):
         df = cassini.mag_hires(self.starttime, self.endtime)
         check_datetime_index(df)
+        check_units(df)
 
         # Check that a RTN co-ordinate download works too
         starttime = datetime(2004, 5, 1)
         endtime = datetime(2004, 5, 2)
         df = cassini.mag_hires(starttime, endtime)
         check_datetime_index(df)
+        check_units(df)
 
         # Check that no data raises an error
         starttime = datetime(2040, 5, 1)
@@ -82,6 +90,7 @@ class TestMessenger:
     def test_mag(self):
         df = messenger.mag_rtn(self.starttime, self.endtime)
         check_datetime_index(df)
+        check_units(df)
 
 
 @pytest.mark.data
@@ -94,6 +103,7 @@ class TestUlysses:
     def test_fgm_hires(self):
         df = ulysses.fgm_hires(self.starttime, self.endtime)
         check_datetime_index(df)
+        check_units(df)
 
     def test_swoops_ions(self):
         df = ulysses.swoops_ions(self.starttime, self.endtime)
@@ -123,6 +133,7 @@ class TestArtemis:
     def test_fgm(self):
         df = artemis.fgm(self.probe, 'l', 'dsl', self.starttime, self.endtime)
         check_datetime_index(df)
+        check_units(df)
 
         with pytest.raises(ValueError):
             artemis.fgm('123', 'h', 'dsl', self.starttime, self.endtime)
@@ -178,18 +189,22 @@ class TestImp:
     def test_mag320ms(self):
         df = imp.mag320ms(self.probe, self.starttime, self.endtime)
         check_datetime_index(df)
+        check_units(df)
 
     def test_mag15s(self):
         df = imp.mag15s(self.probe, self.starttime, self.endtime)
         check_datetime_index(df)
+        check_units(df)
 
     def test_mitplasma_h0(self):
         df = imp.mitplasma_h0(self.probe, self.starttime, self.endtime)
         check_datetime_index(df)
+        check_units(df)
 
     def test_merged(self):
         df = imp.merged(self.probe, self.starttime, self.endtime)
         check_datetime_index(df)
+        check_units(df)
 
 
 @pytest.mark.skipif(no_pycdf, reason='Importing pycdf failed')
@@ -237,19 +252,23 @@ class TestWind:
     def test_mfi_h0(self):
         df = wind.mfi_h0(self.starttime, self.endtime)
         check_datetime_index(df)
+        check_units(df)
 
     def test_mfi_h2(self):
         df = wind.mfi_h2(self.starttime, self.endtime)
         check_datetime_index(df)
+        check_units(df)
 
     def test_threedp_pm(self):
         df = wind.threedp_pm(self.starttime, self.endtime)
         check_datetime_index(df)
+        check_units(df)
 
     def test_threedp_sfpd(self):
         starttime = datetime(2002, 1, 1, 0, 0, 0)
         endtime = datetime(2002, 1, 1, 23, 59, 59)
         df = wind.threedp_sfpd(starttime, endtime)
+        check_units(df)
 
     def test_swe_h3(self):
         df = wind.swe_h3(self.starttime, self.endtime)
@@ -258,6 +277,7 @@ class TestWind:
 
     def test_swe_h1(self):
         df = wind.swe_h1(self.starttime, self.endtime)
+        check_units(df)
 
 
 @pytest.mark.skipif(no_pycdf, reason='Importing pycdf failed')
@@ -272,10 +292,12 @@ class TestMMS:
     def test_fgm_survey(self):
         df = mms.fgm_survey(self.probe, self.starttime, self.endtime)
         check_datetime_index(df)
+        check_units(df)
 
     def test_fpi_dis_moms(self):
         df = mms.fpi_dis_moms(self.probe, 'fast', self.starttime, self.endtime)
         check_datetime_index(df)
+        check_units(df)
 
 
 @pytest.mark.data
@@ -299,6 +321,7 @@ class TestHelios:
     def test_corefit(self):
         df = helios.corefit(self.probe, self.starttime, self.endtime)
         check_datetime_index(df)
+        check_units(df)
 
         starttime = datetime(2000, 1, 1, 0, 0, 0)
         endtime = datetime(2000, 1, 2, 0, 0, 0)
@@ -308,6 +331,7 @@ class TestHelios:
     def test_6sec_ness(self):
         df = helios.mag_ness(self.probe, self.starttime, self.endtime)
         check_datetime_index(df)
+        check_units(df)
 
     def test_mag_4hz(self):
         df = helios.mag_4hz(self.probe, self.starttime, self.endtime)
