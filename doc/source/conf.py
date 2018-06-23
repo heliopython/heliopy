@@ -30,7 +30,7 @@ html_favicon = '../../artwork/favicon.ico'
 html_sidebars = {'**': ['docsidebar.html']}
 
 # Pretend these modules exits so readthedocs builds
-MOCK_MODULES = ['spiceypy']
+MOCK_MODULES = []
 for mod_name in MOCK_MODULES:
     sys.modules[mod_name] = mock.Mock()
 
