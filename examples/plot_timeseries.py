@@ -2,7 +2,7 @@
 TimeSeries Plotting Example
 ===========================
 
-An example to show some basic, but very important functions in Sunpy's TimeSeries.
+An example to show Sunpy's TimeSeries in HelioPy.
 
 For more information about TimeSeries, http://docs.sunpy.org/en/stable/guide/data_types/timeseries.html
 For more information about AstroPy Units, http://docs.astropy.org/en/stable/units/
