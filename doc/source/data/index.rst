@@ -60,7 +60,8 @@ You can also read more about `TimeSeries <http://docs.sunpy.org/en/stable/guide/
 AstroPy Documentation is available at http://docs.astropy.org/
 You can also read more about `Units <http://docs.astropy.org/en/stable/units/>`_
 
-An example on how to use TimeSeries Data and AstroPy Units is also available in the Examples section.
+An example on how to use TimeSeries Data and AstroPy Units is also available in the Examples section:
+
 .. include:: gen_modules/backreferences/sunpy.timeseries.TimeSeries.examples
 .. raw:: html
 
