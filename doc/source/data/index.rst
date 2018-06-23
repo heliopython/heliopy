@@ -62,7 +62,7 @@ You can also read more about `Units <http://docs.astropy.org/en/stable/units/>`_
 
 An example on how to use TimeSeries Data and AstroPy Units is also available in the Examples section:
 
-.. include:: gen_modules/backreferences/sunpy.timeseries.TimeSeries.examples
+.. include:: ../gen_modules/backreferences/sunpy.timeseries.TimeSeries.examples
 .. raw:: html
 
     <div style='clear:both'></div>
