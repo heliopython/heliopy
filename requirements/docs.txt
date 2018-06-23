@@ -2,6 +2,7 @@
 
 matplotlib
 mock
+spiceypy
 sphinx
 sphinx-automodapi
 sphinx-bootstrap-theme
