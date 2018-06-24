@@ -138,8 +138,9 @@ def cdf_dict(unit_string):
     ionic_charge = u.def_unit('Charged State', 1.6021766*(10**-19) * u.C)
 
     units = OrderedDict([('ratio', u.dimensionless_unscaled),
-                        ('(years)', u.dimensionless_unscaled),
-                        ('(days)', u.dimensionless_unscaled),
+                        ('(years)', u.yr),
+                        ('(days)', u.d),
+                        ('df', u.dimensionless_unscaled),
                         ('#/cc', u.cm**-3),
                         ('#/cm^3', u.cm**-3),
                         ('cm^{-3}', u.cm**-3),
@@ -153,8 +154,8 @@ def cdf_dict(unit_string):
                         ('nT GSE', u.nT),
                         ('nT GSM', u.nT),
                         ('nT DSL', u.nT),
-                        ('msec', u.ms),
                         ('nT SSL', u.nT),
+                        ('msec', u.ms),
                         ('ionic charge', ionic_charge)])
     try:
         return units[unit_string]
