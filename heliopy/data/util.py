@@ -187,7 +187,7 @@ def units_attach(data, units):
 
     Returns
     -------
-    out : sunpy.timeseries.timeseriesbase.GenericTimeSeries
+    out : :class:`~sunpy.timeseries.TimeSeries`
         DataFrame converted into TimeSeries with units attached.
     """
     unit_key = list(units.keys())

@@ -3,13 +3,21 @@ Version 0.6.0
 
 New features
 ^^^^^^^^^^^^
+- HelioPy has been integrated with SunPy TimeSeries and AstroPy Units. All of
+  the HelioPy modules now return units.
+- Added a new :func:`.data.util.cdf_units` function that can extract the UNIT
+  attribute from the CDF files.
 
 Backwards incompatible changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 - :func:`.data.helios.merged`, :func:`.data.helios.mag_4hz`,
   :func:`.data.helios.corefit` and :func:`.data.helios.mag_ness` no longer take
   a `verbose` keyword argument. :issue:`467`
+- Methods in :mod:`heliopy.data` no longer returns a Pandas DataFrame.
 
+Fixed bugs
+^^^^^^^^^^
+- :func:`.data.imp.merged` no longer imports redundant columns.
 
 Version 0.5.1
 -------------

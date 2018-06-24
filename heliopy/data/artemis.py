@@ -47,7 +47,7 @@ def fgm(probe, rate, coords, starttime, endtime):
 
     Returns
     -------
-        data : DataFrame
+        data : :class:`~sunpy.timeseries.TimeSeries`
     """
     valid_rates = ['e', 'h', 'l', 's']
     valid_coords = ['dsl', 'gse', 'gsm', 'ssl']

@@ -68,7 +68,7 @@ def swe_h1(starttime, endtime):
 
     Returns
     -------
-    data : DataFrame
+    data : :class:`~sunpy.timeseries.TimeSeries`
     """
     instrument = 'swe'
     data_product = 'swe_h1'
@@ -128,7 +128,7 @@ def swe_h3(starttime, endtime):
 
     Returns
     -------
-    data : DataFrame
+    data : :class:`~sunpy.timeseries.TimeSeries`
     """
     relative_dir = path.Path('swe') / 'swe_h3'
     # Get directories and filenames
@@ -188,7 +188,7 @@ def mfi_h0(starttime, endtime):
 
     Returns
     -------
-    data : DataFrame
+    data : :class:`~sunpy.timeseries.TimeSeries`
     """
     units = OrderedDict([('Bx_gse', u.nT), ('By_gse', u.nT),
                         ('Bz_gse', u.nT)])
@@ -211,7 +211,7 @@ def mfi_h2(starttime, endtime):
 
     Returns
     -------
-    data : DataFrame
+    data : :class:`~sunpy.timeseries.TimeSeries`
     """
     units = OrderedDict([('Bx_gse', u.nT), ('By_gse', u.nT),
                         ('Bz_gse', u.nT)])
@@ -299,7 +299,7 @@ def threedp_pm(starttime, endtime):
 
     Returns
     -------
-    data : DataFrame
+    data : :class:`~sunpy.timeseries.TimeSeries`
     """
     # Directory relative to main WIND data directory
     relative_dir = path.Path('3dp') / '3dp_pm'
@@ -360,7 +360,7 @@ def threedp_sfpd(starttime, endtime):
 
     Returns
     -------
-    data : DataFrame
+    data : :class:`~sunpy.timeseries.TimeSeries`
     """
     # Directory relative to main WIND data directory
     relative_dir = path.Path('3dp') / '3dp_sfpd'

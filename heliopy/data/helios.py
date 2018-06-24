@@ -862,7 +862,7 @@ def corefit(probe, starttime, endtime, try_download=True):
 
     Returns
     -------
-    data : DataFrame
+    data : :class:`~sunpy.timeseries.TimeSeries`
         Data set
     """
     probe = _check_probe(probe)
@@ -950,7 +950,7 @@ def merged(probe, starttime, endtime, try_download=True):
 
     Returns
     -------
-    data : DataFrame
+    data : :class:`~sunpy.timeseries.TimeSeries`s
         Merged data set
 
     Notes
@@ -1047,7 +1047,7 @@ def mag_4hz(probe, starttime, endtime, try_download=True):
 
     Returns
     -------
-    data : DataFrame
+    data : :class:`~sunpy.timeseries.TimeSeries`
         4Hz magnetic field data set
     """
     probe = _check_probe(probe)
