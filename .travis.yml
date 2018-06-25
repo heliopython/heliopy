@@ -7,7 +7,6 @@ matrix:
     - python: 3.6
       env: RUN_PEP8=--pep8
 
-
 before_install:
 # Install conda
 - wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
@@ -38,3 +37,7 @@ script:
 after_success:
 - pip install codecov
 - codecov
+
+env:
+  matrix:
+    secure: rJ3dtVpU1iAoQb9QX4ugQ6+wClrfVPm35ZvKF6HdpEjmoJbEKiBvn4j8FFTLv4DGaAMhIcZs/MDCKB7LlyzUygLXW87CK2HylVa7+JbIObMFffKsqOGfTMoGqm+OvZtco3NvN00hEFYaOnY3kq8N2a1fuddEWxblrX6Z93oTAW4jyp2oAoOczf7cLyVjmbQ+R1VSoGrqk0+qlklSRooiUlN9t2oHYDUPxW2Yyh4fgs6qpfYY2SLDQGGZ5X95PhmZsCH/6t/VGBiwZzkispgUN+2dDztv0vJjQ5Y3N/3YB+PJ/uwZkwmqp7Jv6K+F/Qm25m2yvLJwgiN4ej3xvPQ6PlVWjhDQhNiq7ahMljqfHyORR/YDDyfHnrlhjGuu6jUU90I75dNQ5sPAVKtskl0pLZrMrApyTeKnSZIdfTzVdnsGEt5ONp+2WsNfmhYnoKOpIfQyGJ2vPhijUl0IscJrz6p1DaVjSuoztFgF2IIfTDrFeBLQtrEHSkEq8hUugmcp3HY9DU/FsfNE2U/7hAO5SN7G9aEQdZ8THNeZCB5yb5HSLDGnJrbN/e8ZumZfuN4Sr9/6fWKD+7wU9cbGtKCjrrF2VpBSJbcEEtTR90IJaIcSQFjZxJ59uGgeWFsIpZIpLwq5haqUoBODnEpyVkXvNvvF2/El0Nwcf68w2rIKPLE=
