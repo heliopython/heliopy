@@ -7,11 +7,6 @@ matrix:
     - python: 3.5
     - python: 3.6
       env: RUN_PEP8=--pep8
-    - python: 3.6
-      env: PRE=--pre
-
-  allow_failures:
-    - env: PRE=--pre
 
 
 before_install:
