@@ -1,6 +1,8 @@
 Version 0.6.0
 -------------
 
+HelioPy now only supports Python versions 3.6 and higher.
+
 New features
 ^^^^^^^^^^^^
 - HelioPy has been integrated with SunPy TimeSeries and AstroPy Units. All of

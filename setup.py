@@ -3,8 +3,8 @@ import os
 import versioneer
 import sys
 
-if sys.version_info < (3, 5):
-    sys.exit('Python versions older than 3.5 are not supported.')
+if sys.version_info < (3, 6):
+    sys.exit('Python versions older than 3.6 are not supported.')
 
 # Config for read the docs
 on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
@@ -34,7 +34,7 @@ setup(name='HelioPy',
       install_requires=['numpy',
                         'pandas',
                         'astropy'],
-      python_requires='>=3.5',
+      python_requires='>=3.6',
       packages=['pycdf',
                 'pycdf.toolbox',
                 'pycdf.pycdf',
