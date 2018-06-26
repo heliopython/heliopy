@@ -7,7 +7,6 @@ matrix:
     - python: 3.6
       env: RUN_PEP8=--pep8
 
-
 before_install:
 # Install conda
 - wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
@@ -29,6 +28,8 @@ before_install:
 - make INSTALLDIR=~/cdf install
 - PATH=~/cdf:$PATH
 - cd ../
+
+- export CLUSTERCOOKIE=2F1B4760251B51783700055F1A037271685A64680A1450722A465D302F0947606504526F370C40752A0640633228546C2A015F2F28075E
 
 script:
 # Check that unit tests work
