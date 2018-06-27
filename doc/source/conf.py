@@ -65,6 +65,7 @@ intersphinx_mapping = {
 
 
 sphinx_gallery_conf = {
+    'default_thumb_file': os.path.abspath(os.path.join('..', '..', 'artwork', 'logo_circle.png')),
     'examples_dirs': '../../examples',
     'gallery_dirs': 'auto_examples',
     'backreferences_dir': 'gen_modules/backreferences',
