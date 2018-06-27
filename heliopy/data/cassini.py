@@ -4,6 +4,7 @@ Methods for importing data from the Cassini spacecraft.
 All data is publically available at
 http://pds-atmospheres.nmsu.edu/data_and_services/atmospheres_data/Cassini/Cassini.html
 """
+import datetime
 import os
 import pathlib as path
 import pandas as pd
@@ -133,7 +134,7 @@ def mag_1min(starttime, endtime, coords):
                         starttime, endtime, units=units)
 
 
-def mag_hires(starttime, endtime):
+def mag_hires(starttime, endtime, try_download=True):
     """
     Import high resolution magnetic field from Cassini.
 
@@ -159,66 +160,45 @@ def mag_hires(starttime, endtime):
     data : DataFrame
         Requested data
     """
-    base_url = ('http://pds-ppi.igpp.ucla.edu/ditdos/download?id='
-                'pds://PPI/CO-E_SW_J_S-MAG-3-RDR-FULL-RES-V1.0/DATA')
+    remote_base_url = ('http://pds-ppi.igpp.ucla.edu/ditdos/download?id='
+                       'pds://PPI/CO-E_SW_J_S-MAG-3-RDR-FULL-RES-V1.0/DATA')
+    dirs = []
+    fnames = []
+    extension = '.TAB'
+    local_base_dir = cassini_dir / 'mag' / 'hires'
 
-    daylist = util._daysplitinterval(starttime, endtime)
-    data = []
-    for [day, stime, etime] in daylist:
+    for [day, _, _] in util._daysplitinterval(starttime, endtime):
         year = day.year
-        url = '{}/{}'.format(base_url, year)
-
         if calendar.isleap(year):
             monthstr = leapmonth2str[day.month]
         else:
             monthstr = month2str[day.month]
 
-        url = '{}/{}'.format(url, monthstr)
-
-        doy = day.strftime('%j')
-        local_dir = cassini_dir / 'mag' / 'hires' / str(year)
-
-        # No way to work out co-ordinates, so guess Kronian and then RTN
-        try:
+        if day < datetime.date(2004, 5, 14):
+            coords = 'RTN'
+        else:
             coords = 'KRTP'
-            df = _mag_hires_helper(year, doy, local_dir, url, coords)
+        doy = day.strftime('%j')
+        dirs.append(path.Path(str(year)) / monthstr)
+        fnames.append(str(year)[2:] + doy + '_FGM_{}'.format(coords))
 
-        except RuntimeError:
-            try:
-                coords = 'RTN'
-                df = _mag_hires_helper(year, doy, local_dir, url, coords)
-            except RuntimeError:
-                continue
-        df['coords'] = coords
+    def download_func(remote_base_url, local_base_dir,
+                      directory, fname, extension):
+            url = remote_base_url + '/' + str(directory)
+            util._download_remote(url, fname + extension,
+                                  local_base_dir / directory)
 
-        data.append(df)
-    return util.timefilter(data, starttime, endtime)
+    def processing_func(f):
+        if 'error_message' in f.readline():
+            location = f.name
+            f.close()
+            os.remove(f.name)
+            raise util._NoDataError()
+        df = pd.read_table(f, names=['Time', 'Bx', 'By', 'Bz'],
+                           delim_whitespace=True,
+                           parse_dates=[0], index_col=0)
+        return df
 
-
-def _mag_hires_helper(year, doy, local_dir, url, coords):
-    fname = str(year)[2:] + doy + '_FGM_' + coords
-
-    hdf_fname = '{}_{}.hdf'.format(year, doy)
-    hdfloc = local_dir / hdf_fname
-    if hdfloc.exists():
-        return pd.read_hdf(hdfloc)
-
-    f = util.load(fname + '.TAB', local_dir, url)
-    if f is None:
-        raise RuntimeError(
-            'No file named {} exits on remote server'.format(fname))
-    elif 'error_message' in f.readline():
-        location = f.name
-        f.close()
-        os.remove(f.name)
-        raise RuntimeError(
-            'No file named {} exits on remote server'.format(fname))
-
-    df = pd.read_table(f, names=['Time', 'Bx', 'By', 'Bz'],
-                       delim_whitespace=True,
-                       parse_dates=[0], index_col=0)
-    f.close()
-    if use_hdf:
-        df.to_hdf(hdfloc, key='data', mode='w')
-
-    return df
+    return util.process(dirs, fnames, extension, local_base_dir,
+                        remote_base_url, download_func, processing_func,
+                        starttime, endtime, try_download=try_download)
