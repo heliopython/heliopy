@@ -76,7 +76,7 @@ def _load(probe, starttime, endtime, instrument, product_id, cdfkeys,
     return util.process(dirs, fnames, extension, local_base_dir,
                         remote_base_url, download_func, processing_func,
                         starttime, endtime, try_download=try_download,
-                        units=None, keys=None,
+                        units=None, keys=cdfkeys,
                         download_info=download_info)
 
 
