@@ -141,7 +141,6 @@ def cdf_dict(unit_string):
                         ('(Unitless)', u.dimensionless_unscaled),
                         ('(years)', u.yr),
                         ('(days)', u.d),
-                        ('df', u.dimensionless_unscaled),
                         ('#/cc', u.cm**-3),
                         ('#/cm^3', u.cm**-3),
                         ('cm^{-3}', u.cm**-3),
