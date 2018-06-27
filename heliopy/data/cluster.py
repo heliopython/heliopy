@@ -37,40 +37,47 @@ generic_dict = {'DELIVERY_FORMAT': 'CDF',
 cda_time_fmt = '%Y-%m-%dT%H:%M:%SZ'
 
 
-def _load(probe, starttime, endtime, instrument, product_id, cdfkeys):
-    daylist = util._daysplitinterval(starttime, endtime)
-    data = []
-    for day in daylist:
+def _load(probe, starttime, endtime, instrument, product_id, cdfkeys,
+          try_download):
+    dirs = []
+    fnames = []
+    download_info = []
+    for day in util._daysplitinterval(starttime, endtime):
         date = day[0]
         year = str(date.year)
         month = str(date.month).zfill(2)
         day = str(date.day).zfill(2)
 
-        local_dir = cluster_dir / ('c' + probe) / instrument / year
+        dirs.append(year)
         local_fname = 'C' + probe + '_' + product_id + '__' +\
             year + month + day + '.cdf'
-        local_file = local_dir / local_fname
-        # If we don't have local file download it
-        if not local_file.exists():
-            thisstart = datetime.combine(date, time.min)
-            thisend = datetime.combine(date, time.max)
-            try:
-                _download(probe, thisstart, thisend, instrument, product_id)
-            except Exception as err:
-                print(str(err), '\n')
-                continue
+        fnames.append(local_fname)
+        thisstart = datetime.combine(date, time.min)
+        thisend = datetime.combine(date, time.max)
+        download_info.append((thisstart, thisend))
 
-        from pycdf import pycdf
-        cdf = pycdf.CDF(os.path.join(local_dir, local_fname))
-        for key, value in cdfkeys.items():
-            if value == 'Time':
+    extension = '.cdf'
+    local_base_dir = cluster_dir / ('c' + probe) / instrument
+    remote_base_url = csa_url
+
+    def download_func(remote_base_url, local_base_dir,
+                      directory, fname, extension, download_info):
+        starttime, endtime = download_info
+        _download(probe, starttime, endtime, instrument, product_id)
+
+    def processing_func(file):
+        for key, value in file.items():
+            print(value)
+            if 'CDF_EPOCH' in str(value):
                 index_key = key
                 break
-        data.append(util.cdf2df(cdf, index_key, cdfkeys))
-    if len(data) == 0:
-        raise RuntimeError('No data available to download during requested '
-                           'times')
-    return util.timefilter(data, starttime, endtime)
+        return util.cdf2df(file, index_key, cdfkeys)
+
+    return util.process(dirs, fnames, extension, local_base_dir,
+                        remote_base_url, download_func, processing_func,
+                        starttime, endtime, try_download=try_download,
+                        units=None, keys=None,
+                        download_info=download_info)
 
 
 def _download(probe, starttime, endtime, instrument, product_id):
@@ -140,7 +147,7 @@ def _download(probe, starttime, endtime, instrument, product_id):
         os.rmdir(os.path.join(local_dir, d))
 
 
-def fgm(probe, starttime, endtime):
+def fgm(probe, starttime, endtime, try_download=True):
     """
     Download fluxgate magnetometer data.
 
@@ -164,10 +171,12 @@ def fgm(probe, starttime, endtime):
     cdfkeys = {'B_mag__C' + probe + '_CP_FGM_FULL': 'Bmag',
                'B_vec_xyz_gse__C' + probe + '_CP_FGM_FULL': ['Bx', 'By', 'Bz'],
                'time_tags__C' + probe + '_CP_FGM_FULL': 'Time'}
-    return _load(probe, starttime, endtime, 'fgm', 'CP_FGM_FULL', cdfkeys)
+    return _load(probe, starttime, endtime, 'fgm', 'CP_FGM_FULL', cdfkeys,
+                 try_download=try_download)
 
 
-def cis_codif_h1_moms(probe, starttime, endtime, sensitivity='high'):
+def cis_codif_h1_moms(probe, starttime, endtime, sensitivity='high',
+                      try_download=True):
     """
     Load H+ moments from CIS instrument.
 
@@ -202,10 +211,11 @@ def cis_codif_h1_moms(probe, starttime, endtime, sensitivity='high'):
                                                 'vh_y',
                                                 'vh_z'],
                'time_tags__C' + probe + endstr: 'Time'}
-    return _load(probe, starttime, endtime, 'peace', endstr[1:], cdfkeys)
+    return _load(probe, starttime, endtime, 'peace', endstr[1:], cdfkeys,
+                 try_download=try_download)
 
 
-def peace_moments(probe, starttime, endtime):
+def peace_moments(probe, starttime, endtime, try_download=True):
     """
     Download electron moments from the PEACE instrument.
 
@@ -239,10 +249,10 @@ def peace_moments(probe, starttime, endtime):
                                                                     've_z'],
                'time_tags__C' + probe + '_CP_PEA_MOMENTS': 'Time'}
     return _load(probe, starttime, endtime, 'peace', 'CP_PEA_MOMENTS',
-                 cdfkeys)
+                 cdfkeys, try_download=try_download)
 
 
-def cis_hia_onboard_moms(probe, starttime, endtime):
+def cis_hia_onboard_moms(probe, starttime, endtime, try_download=True):
     """
     Download onboard ion moments from the CIS instrument.
 
@@ -280,7 +290,6 @@ def cis_hia_onboard_moms(probe, starttime, endtime):
                 'vi_z'],
                'time_tags__C' + probe + '_CP_CIS-HIA_ONBOARD_MOMENTS': 'Time'}
     data = _load(probe, starttime, endtime, 'cis',
-                 'CP_CIS-HIA_ONBOARD_MOMENTS', cdfkeys)
-    to_replace = {'vi_x': -1.803100937500000000e+05}
-    data = data.replace(to_replace, np.nan)
+                 'CP_CIS-HIA_ONBOARD_MOMENTS', cdfkeys,
+                 try_download=try_download)
     return data
