@@ -129,13 +129,12 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
         if not raw_file.exists():
             if try_download:
                 _checkdir(local_dir)
+                args = ()
                 if dl_info is not None:
-                    kwargs = {'dl_info': dl_info}
-                else:
-                    kwargs = {}
+                    args = (dl_info,)
                 new_fname = download_func(remote_base_url, local_base_dir,
                                           directory, fname, extension,
-                                          **kwargs)
+                                          *args)
                 if new_fname is not None:
                     fname = new_fname
                     local_file = local_base_dir / directory / fname
