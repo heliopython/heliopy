@@ -29,7 +29,7 @@ logger = logging.getLogger(__name__)
 def process(dirs, fnames, extension, local_base_dir, remote_base_url,
             download_func, processing_func, starttime, endtime,
             try_download=True, units=None, keys=None,
-            processing_kwargs={}):
+            processing_kwargs={}, download_info=[]):
     """
     The main utility method for systematically loading, downloading, and saving
     data.
@@ -103,6 +103,10 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
     processing_kwargs : dict, optional
         Extra keyword arguments to be passed to the processing funciton.
 
+    download_info : list, optional
+        A list with the same length as *fnames*, which contains extra info
+        that is handed to *download_func* for each file individually.
+
     Returns
     -------
     :class:`~pandas.DataFrame` or :class:`~sunpy.timeseries.TimeSeries`
@@ -110,7 +114,9 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
     """
     local_base_dir = path.Path(local_base_dir)
     data = []
-    for directory, fname in zip(dirs, fnames):
+    if download_info == []:
+        download_info = [None] * len(dirs)
+    for directory, fname, dl_info in zip(dirs, fnames, download_info):
         local_dir = local_base_dir / directory
         local_file = local_base_dir / directory / fname
         # Fist try to load local HDF file
@@ -123,8 +129,13 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
         if not raw_file.exists():
             if try_download:
                 _checkdir(local_dir)
+                if dl_info is not None:
+                    kwargs = {'dl_info': dl_info}
+                else:
+                    kwargs = {}
                 new_fname = download_func(remote_base_url, local_base_dir,
-                                          directory, fname, extension)
+                                          directory, fname, extension,
+                                          **kwargs)
                 if new_fname is not None:
                     fname = new_fname
                     local_file = local_base_dir / directory / fname
