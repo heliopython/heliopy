@@ -166,7 +166,7 @@ def mag_hires(starttime, endtime, try_download=True):
     fnames = []
     extension = '.TAB'
     units = OrderedDict([('Bx', u.nT), ('By', u.nT), ('Bz', u.nT),
-                         ('coords', u.dimensionless_unscaled)]
+                         ('coords', u.dimensionless_unscaled)])
     local_base_dir = cassini_dir / 'mag' / 'hires'
 
     for [day, _, _] in util._daysplitinterval(starttime, endtime):
