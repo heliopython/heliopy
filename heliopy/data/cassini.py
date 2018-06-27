@@ -165,6 +165,8 @@ def mag_hires(starttime, endtime, try_download=True):
     dirs = []
     fnames = []
     extension = '.TAB'
+    units = OrderedDict([('Bx', u.nT), ('By', u.nT), ('Bz', u.nT),
+                         ('coords', u.dimensionless_unscaled)]
     local_base_dir = cassini_dir / 'mag' / 'hires'
 
     for [day, _, _] in util._daysplitinterval(starttime, endtime):
@@ -201,4 +203,5 @@ def mag_hires(starttime, endtime, try_download=True):
 
     return util.process(dirs, fnames, extension, local_base_dir,
                         remote_base_url, download_func, processing_func,
-                        starttime, endtime, try_download=try_download)
+                        starttime, endtime, units=units,
+                        try_download=try_download)
