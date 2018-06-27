@@ -140,6 +140,7 @@ def cdf_dict(unit_string):
     units = OrderedDict([('ratio', u.dimensionless_unscaled),
                         ('Unitless', u.dimensionless_unscaled),
                         ('unitless', u.dimensionless_unscaled),
+                        ('microW m^-2', u.mW * u.m**-2),
                         ('years', u.yr),
                         ('days', u.d),
                         ('#/cc', u.cm**-3),
