@@ -2,8 +2,8 @@
 HelioPy Documentation
 #####################
 
-HelioPy is a free and open source set of tools for automatically downloading
-and reading in space physics timeseries data to python.
+HelioPy is a free and open source set of tools for heliopsheric and planetary
+physics. For more information see the module documentation below.
 
 Getting started
 ===============
