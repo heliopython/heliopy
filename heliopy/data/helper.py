@@ -130,10 +130,8 @@ def listdata(probes=None):
 
 def cdf_dict(unit_string):
     """
-    CDF Unit Dictionary
-    -------------------
-    Method to obtain the unit denoted by the strings
-    inside the CDF files in the UNIT attribute.
+    Method to obtain the unit denoted by the strings inside the CDF files in
+    the UNIT attribute.
     """
     ionic_charge = u.def_unit('Charged State', 1.6021766*(10**-19) * u.C)
 

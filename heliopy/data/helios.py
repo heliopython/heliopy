@@ -950,7 +950,7 @@ def merged(probe, starttime, endtime, try_download=True):
 
     Returns
     -------
-    data : :class:`~sunpy.timeseries.TimeSeries`s
+    data : :class:`~sunpy.timeseries.TimeSeries`
         Merged data set
 
     Notes
