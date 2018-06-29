@@ -5,7 +5,7 @@ HelioPy is built on the Python programming language. The easiest way to install
 Python with the various required scientific python modules is to use Anaconda.
 Installation instructions can be found `here <https://docs.continuum.io/anaconda/install/>`_.
 
-The supported versions of python are 3.5 and 3.6.
+The minimum supported version of python is python 3.6.
 
 Once you have a Python distribution installed, HelioPy can be installed using
 either conda::
@@ -21,13 +21,14 @@ Optional dependencies
 
 HDF file reader/writer
 ^^^^^^^^^^^^^^^^^^^^^^
-Saving data to hdf files for quicker access requires PyTables.
-(see :ref:`sphx_glr_auto_examples_fast_file_loading.py` for more information)
+Saving data to hdf files for quicker access requires the *PyTables* python
+package. (see :ref:`sphx_glr_auto_examples_fast_file_loading.py`
+for more information)
 
 CDF Library
 ^^^^^^^^^^^
-Reading in any data that is stored in .cdf files requires an installation of
-the CDF library: https://cdf.gsfc.nasa.gov/
+Reading in any data that is stored in .cdf files requires a local installation
+of the CDF library: https://cdf.gsfc.nasa.gov/
 
 SPICE Toolkit
 ^^^^^^^^^^^^^
@@ -44,4 +45,4 @@ https://github.com/heliopython/heliopy/. To install from source follow these ste
 3. ``cd heliopy``
 4. ``pip install .``
 
-This will install HelioPy from source and it's required dependancies.
+This will install HelioPy from source.

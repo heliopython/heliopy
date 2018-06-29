@@ -1,7 +1,9 @@
 ![HelioPy](https://github.com/heliopython/heliopy/raw/master/artwork/logo_rectangle.png "HelioPy")
 
-A python library for Space Physics. The primary goal of this python package is
-to make it really easy to import common data sets used in Space Physics.
+A python library for heliospheric and planetary Physics.
+The primary goal of HelioPy is to provide a set of tools to download and read
+in data, and to carry out other common data processing tasks.
+
 Full documentation can be found [here](http://docs.heliopy.org/).
 
 A quick example shows how easy it is to import and view data:
