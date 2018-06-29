@@ -123,8 +123,8 @@ __doc__ += '''
    :widths: 30, 20, 30
 '''
 
-for kernel in sorted([kernel.short_name for kernel in spacecraft_kernels]):
-    __doc__ += spacecraft_kernels[kernel].make_doc_entry()
+for kernel in (sorted(spacecraft_kernels, key=lambda x: x.short_name)):
+    __doc__ += kernel.make_doc_entry()
 # Kernel Download Sources
 '''for kernel in sorted(available_kernels):
     __doc__ += '\n   {}, {}, {}, '.format(
