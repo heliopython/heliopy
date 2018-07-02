@@ -559,12 +559,12 @@ def _get_remote_version(remote_url, filename):
 
 def _load_cdf(file_path):
     '''
-    A function to handle loading pycdf, and printing a nice error if things
+    A function to handle loading cdflib, and printing a nice error if things
     go wrong.
     '''
-    from pycdf import pycdf
+    import cdflib
     try:
-        cdf = pycdf.CDF(str(file_path))
+        cdf = cdflib.CDF(str(file_path))
     except Exception as err:
         print('Error whilst trying to load {}\n'.format(file_path))
         raise err
