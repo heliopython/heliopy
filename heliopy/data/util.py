@@ -426,9 +426,11 @@ def cdf2df(cdf, index_key, keys=None, dtimeindex=True, badvalues=None):
         index_ = cdf.varget(index_key)[...][:, 0]
     except IndexError:
         index_ = cdf.varget(index_key)[...]
-    index_ = cdflib.cdfepoch.breakdown(index_)
-    index = np.asarray([dt.datetime(*x) for x in index_])
-    # Parse datetime index
+    try:
+        utc_comp = cdflib.cdfepoch.breakdown(index_)
+        index = np.asarray([dt.datetime(*x) for x in utc_comp])
+    except ValueError:
+        index = index_
     if dtimeindex:
         index = pd.DatetimeIndex(index)
     df = pd.DataFrame(index=index)
