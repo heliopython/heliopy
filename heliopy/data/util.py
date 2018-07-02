@@ -16,6 +16,7 @@ import astropy.units as u
 import sunpy.timeseries as ts
 import warnings
 import collections as coll
+import cdflib
 
 import numpy as np
 import pandas as pd
@@ -231,9 +232,9 @@ def cdf_units(cdf_, keys=None, manual_units=None):
         Returns an OrderedDict with units of the selected keys.
     """
     units = coll.OrderedDict()
-    for non_empty_var in list(cdf.cdf_info().keys()):
+    for non_empty_var in list(cdf_.cdf_info().keys()):
         if 'variable' in non_empty_var.lower():
-            if len(cdf.cdf_info()[non_empty_var]) > 0:
+            if len(cdf_.cdf_info()[non_empty_var]) > 0:
                 var_list = non_empty_var
                 break
     if keys is None:
@@ -562,7 +563,7 @@ def _load_cdf(file_path):
     A function to handle loading cdflib, and printing a nice error if things
     go wrong.
     '''
-    import cdflib
+
     try:
         cdf = cdflib.CDF(str(file_path))
     except Exception as err:
