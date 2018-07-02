@@ -240,7 +240,7 @@ def cdf_units(cdf_, keys=None, manual_units=None):
     if keys is None:
         message = "No keys assigned for the CDF. Extracting manually."
         warnings.warn(message, Warning)
-        keys_ = list(cdf_.cdf_info()[non_empty_var])
+        keys_ = list(cdf_.cdf_info()[var_list])
         keys = dict(zip(keys_, keys_))
     for key, val in keys.items():
         try:
@@ -435,7 +435,7 @@ def cdf2df(cdf, index_key, keys=None, dtimeindex=True, badvalues=None):
 
     if keys is None:
         keys = {}
-        for key in cdf.cdf_info()[non_empty_var]:
+        for key in cdf.cdf_info()[var_list]:
             if key == 'Epoch':
                 keys['Epoch'] = 'Time'
             else:
