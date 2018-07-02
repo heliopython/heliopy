@@ -23,7 +23,6 @@ Module documentation
    data/index
    coords
    spice
-   pycdf
 
 Development
 ===========
