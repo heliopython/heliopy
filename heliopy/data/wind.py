@@ -391,11 +391,20 @@ def threedp_sfpd(starttime, endtime):
 
         data_today = []
         # Loop through each timestamp to build up fluxes
-        for i, time in enumerate(cdf['Epoch'][...]):
-            energies = cdf['ENERGY'][i, :]
-            angles = cdf['PANGLE'][i, :]
-            fluxes = cdf['FLUX'][i, :, :]
-            magfield = cdf['MAGF'][i, :]
+        for non_empty_var in list(cdf.cdf_info().keys()):
+            if 'variable' in non_empty_var.lower():
+                if len(cdf.cdf_info()[non_empty_var]) > 0:
+                    var_list = non_empty_var
+                    break
+
+        index_ = cdf.varget('Epoch')[...]
+        index_ = cdflib.cdfepoch.breakdown(index_)
+        index_ = np.asarray([dt.datetime(*x) for x in index_])
+        for i, time in enumerate(index_):
+            energies = cdf.varget('ENERGY')[i, :]
+            angles = cdf.varget('PANGLE')[i, :]
+            fluxes = cdf.varget('FLUX')[i, :, :]
+            magfield = cdf.varget('MAGF')[i, :]
             index = pd.MultiIndex.from_product(
                 ([time], energies, angles),
                 names=['Time', 'Energy', 'Pitch angle'])
