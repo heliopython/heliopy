@@ -358,7 +358,9 @@ def pitchdist_cdf2df(cdf, distkeys, energykey, timekey, anglelabels):
                 var_list = non_empty_var
                 break
 
-    times = cdf.varget(timekey)[...]
+    times_ = cdf.varget(timekey)[...]
+    utc_comp = cdflib.cdfepoch.breakdown(times_)
+    times = np.asarray([dt.datetime(*x) for x in utc_comp])
     ntimesteps = times.size
     energies = cdf.varget(energykey)[...]
     # If energies is 2D, just take first set of energies
@@ -429,7 +431,7 @@ def cdf2df(cdf, index_key, keys=None, dtimeindex=True, badvalues=None):
     try:
         utc_comp = cdflib.cdfepoch.breakdown(index_)
         index = np.asarray([dt.datetime(*x) for x in utc_comp])
-    except ValueError:
+    except Exception:
         index = index_
     if dtimeindex:
         index = pd.DatetimeIndex(index)
