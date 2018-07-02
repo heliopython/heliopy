@@ -10,6 +10,7 @@ import pathlib as path
 import pandas as pd
 import numpy as np
 import astropy.units as u
+import cdflib
 from collections import OrderedDict
 
 from heliopy.data import util
