@@ -352,9 +352,15 @@ def pitchdist_cdf2df(cdf, distkeys, energykey, timekey, anglelabels):
     df : :class:`pandas.DataFrame`
         Data frame with read in data.
     """
-    times = cdf[timekey][...]
+    for non_empty_var in list(cdf.cdf_info().keys()):
+        if 'variable' in non_empty_var.lower():
+            if len(cdf.cdf_info()[non_empty_var]) > 0:
+                var_list = non_empty_var
+                break
+
+    times = cdf.varget(timekey)[...]
     ntimesteps = times.size
-    energies = cdf[energykey][...]
+    energies = cdf.varget(energykey)[...]
     # If energies is 2D, just take first set of energies
     if len(energies.shape) == 2:
         energies = energies[0, :]
@@ -366,7 +372,7 @@ def pitchdist_cdf2df(cdf, distkeys, energykey, timekey, anglelabels):
     # Loop through energies
     for i, key in enumerate(distkeys):
         thisenergy = energies[i]
-        this_e_data = cdf[key][...]
+        this_e_data = cdf.varget(key)[...]
         # Loop through angles
         for j in range(0, this_e_data.shape[1]):
             # Time steps
