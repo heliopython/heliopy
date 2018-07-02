@@ -27,8 +27,8 @@ def cdfpeek(cdf_loc):
     cdf_loc : string
         Local location of the cdf file.
     """
-    from pycdf import pycdf
-    cdf = pycdf.CDF(cdf_loc)
+    import cdflib
+    cdf = cdflib.CDF(cdf_loc)
     print(cdf)
 
 
