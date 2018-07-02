@@ -231,18 +231,24 @@ def cdf_units(cdf_, keys=None, manual_units=None):
         Returns an OrderedDict with units of the selected keys.
     """
     units = coll.OrderedDict()
+    for non_empty_var in list(cdf.cdf_info().keys()):
+        if 'variable' in non_empty_var.lower():
+            if len(cdf.cdf_info()[non_empty_var]) > 0:
+                var_list = non_empty_var
+                break
     if keys is None:
         message = "No keys assigned for the CDF. Extracting manually."
         warnings.warn(message, Warning)
-        keys = dict(zip(list(cdf_.keys()), list(cdf_.keys())))
+        keys_ = list(cdf_.cdf_info()[non_empty_var])
+        keys = dict(zip(keys_, keys_))
     for key, val in keys.items():
         try:
-            temp_unit = u.Unit(cdf_[key].attrs['UNITS'])
+            temp_unit = u.Unit(cdf_.varattsget(key)['UNITS'])
         except ValueError:
             if manual_units is not None:
                 if key in manual_units:
                     continue
-            unknown_unit = (cdf_[key].attrs['UNITS'])
+            unknown_unit = cdf_.varattsget(key)['UNITS']
             temp_unit = helper.cdf_dict(unknown_unit)
             if temp_unit is None:
                 message = "The CDF provided units ({}) for key '{}' \
@@ -410,30 +416,41 @@ def cdf2df(cdf, index_key, keys=None, dtimeindex=True, badvalues=None):
     """
     # Extract index values
     try:
-        index = cdf[index_key][...][:, 0]
+        index_ = cdf.varget(index_key)[...][:, 0]
     except IndexError:
-        index = cdf[index_key][...]
+        index_ = cdf.varget(index_key)[...]
+    index_ = cdflib.cdfepoch.breakdown(index_)
+    index = np.asarray([dt.datetime(*x) for x in index_])
     # Parse datetime index
     if dtimeindex:
         index = pd.DatetimeIndex(index)
     df = pd.DataFrame(index=index)
 
+    for non_empty_var in list(cdf.cdf_info().keys()):
+        if 'variable' in non_empty_var.lower():
+            if len(cdf.cdf_info()[non_empty_var]) > 0:
+                var_list = non_empty_var
+                break
+
     if keys is None:
         keys = {}
-        for key in cdf.keys():
+        for key in cdf.cdf_info()[non_empty_var]:
             if key == 'Epoch':
                 keys['Epoch'] = 'Time'
             else:
                 keys[key] = key
 
     for key in keys:
+        if keys[key] == 'Time':
+            df['Time'] = index
+            continue
         df_key = keys[key]
         if isinstance(df_key, list):
             for i, subkey in enumerate(df_key):
-                df[subkey] = cdf[key][...][:, i]
+                df[subkey] = cdf.varget(key)[...][:, i]
         else:
             try:
-                df[df_key] = cdf[key][...]
+                df[df_key] = cdf.varget(key)[...]
             except Exception:
                 continue
     # Replace bad values with nans
