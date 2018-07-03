@@ -402,11 +402,15 @@ def threedp_sfpd(starttime, endtime):
         index_ = cdf.varget('Epoch')[...]
         index_ = cdflib.cdfepoch.breakdown(index_)
         index_ = np.asarray([dt.datetime(*x) for x in index_])
+        energies_ = cdf.varget('ENERGY')[...]
+        angles_ = cdf.varget('PANGLE')[...]
+        fluxes_ = cdf.varget('FLUX')[...]
+        magfield_ = cdf.varget('MAGF')[...]
         for i, time in enumerate(index_):
-            energies = cdf.varget('ENERGY')[i, :]
-            angles = cdf.varget('PANGLE')[i, :]
-            fluxes = cdf.varget('FLUX')[i, :, :]
-            magfield = cdf.varget('MAGF')[i, :]
+            energies = energies_[i, :]
+            angles = angles_[i, :]
+            fluxes = fluxes_[i, :, :]
+            magfield = magfield_[i, :]
             index = pd.MultiIndex.from_product(
                 ([time], energies, angles),
                 names=['Time', 'Energy', 'Pitch angle'])
