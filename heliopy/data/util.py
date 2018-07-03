@@ -429,7 +429,13 @@ def cdf2df(cdf, index_key, keys=None, dtimeindex=True, badvalues=None):
     except IndexError:
         index_ = cdf.varget(index_key)[...]
     try:
-        utc_comp = cdflib.cdfepoch.breakdown(index_)
+        utc_comp = cdflib.cdfepoch.breakdown(index_, to_np=True)
+        if utc_comp.shape[1] == 9:
+            millis = utc_comp[:, 6]*(10**3)
+            micros = utc_comp[:, 8]*(10**2)
+            nanos = utc_comp[:, 7]
+            utc_comp[:, 6] = millis + micros + nanos
+            utc_comp = np.delete(utc_comp,  np.s_[-2:], axis=1)
         index = np.asarray([dt.datetime(*x) for x in utc_comp])
     except Exception:
         index = index_
