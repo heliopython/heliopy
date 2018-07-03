@@ -352,12 +352,6 @@ def pitchdist_cdf2df(cdf, distkeys, energykey, timekey, anglelabels):
     df : :class:`pandas.DataFrame`
         Data frame with read in data.
     """
-    for non_empty_var in list(cdf.cdf_info().keys()):
-        if 'variable' in non_empty_var.lower():
-            if len(cdf.cdf_info()[non_empty_var]) > 0:
-                var_list = non_empty_var
-                break
-
     times_ = cdf.varget(timekey)[...]
     utc_comp = cdflib.cdfepoch.breakdown(times_)
     times = np.asarray([dt.datetime(*x) for x in utc_comp])
@@ -436,7 +430,11 @@ def cdf2df(cdf, index_key, keys=None, dtimeindex=True, badvalues=None):
             nanos = utc_comp[:, 7]
             utc_comp[:, 6] = millis + micros + nanos
             utc_comp = np.delete(utc_comp,  np.s_[-2:], axis=1)
-        index = np.asarray([dt.datetime(*x) for x in utc_comp])
+        try:
+            index = np.asarray([dt.datetime(*x) for x in utc_comp])
+        except ValueError:
+            utc_comp[:, 6] -= micros
+            index = np.asarray([dt.datetime(*x) for x in utc_comp])
     except Exception:
         index = index_
     if dtimeindex:
