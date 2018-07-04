@@ -145,11 +145,17 @@ def cdf_dict(unit_string):
                         ('#/cm^3', u.cm**-3),
                         ('cm^{-3}', u.cm**-3),
                         ('particles cm^-3', u.cm**-3),
+                        ('n/cc (from moments)', u.cm**-3),
+                        ('n/cc (from fits)', u.cm**-3),
+                        ('km/sec (from fits)', u.km / u.s),
+                        ('km/sec (from moments)', u.km / u.s),
                         ('ionic charge', u.electron),
                         ('earth radii', u.earthRad),
                         ('Re', u.earthRad),
                         ('Degrees', u.deg),
                         ('degrees', u.deg),
+                        ('deg (from fits)', u.deg),
+                        ('deg (from moments)', u.deg),
                         ('#/{cc*(cm/s)^3}', (u.cm**3 * (u.cm / u.s)**3)**-1),
                         ('sec', u.s),
                         ('nT GSE', u.nT),
@@ -157,7 +163,8 @@ def cdf_dict(unit_string):
                         ('nT DSL', u.nT),
                         ('nT SSL', u.nT),
                         ('msec', u.ms),
-                        ('ionic charge', ionic_charge)])
+                        ('ionic charge', ionic_charge),
+                        ('Spacecraft', False)])
     try:
         return units[unit_string]
     except KeyError:

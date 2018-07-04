@@ -248,6 +248,8 @@ def cdf_units(cdf_, keys=None, manual_units=None):
                 message = "The CDF provided units ({}) for key '{}' \
                 are unknown".format(unknown_unit, key)
                 warnings.warn(message, Warning)
+            if temp_unit is False:
+                continue
         except KeyError:
             continue
         if isinstance(val, list):
