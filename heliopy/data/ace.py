@@ -158,9 +158,52 @@ def swi_h2(starttime, endtime):
     product = 'swi_h2'
     fname = 'h2_swi'
     version = '09'
+    keys = {'C5_qual': 'C5_qual',
+             'C6to4': 'C6to4',
+             'C6to4_err': 'C6to4_err',
+             'C6to4_qual': 'C6to4_qual',
+             'C6to5': 'C6to5',
+             'C6to5_err': 'C6to5_err',
+             'C6to5_qual': 'C6to5_qual',
+             'Fe10_qual': 'Fe10_qual',
+             'FetoO': 'FetoO',
+             'FetoO_err': 'FetoO_err',
+             'FetoO_qual': 'FetoO_qual',
+             'He_qual': 'He_qual',
+             'O6_qual': 'O6_qual',
+             'O7to6': 'O7to6',
+             'O7to6_err': 'O7to6_err',
+             'O7to6_qual': 'O7to6_qual',
+             'avqC': 'avqC',
+             'avqC_err': 'avqC_err',
+             'avqC_qual': 'avqC_qual',
+             'avqFe': 'avqFe',
+             'avqFe_err': 'avqFe_err',
+             'avqFe_qual': 'avqFe_qual',
+             'avqMg': 'avqMg',
+             'avqMg_err': 'avqMg_err',
+             'avqMg_qual': 'avqMg_qual',
+             'avqO': 'avqO',
+             'avqO_err': 'avqO_err',
+             'avqO_qual': 'avqO_qual',
+             'avqSi': 'avqSi',
+             'avqSi_err': 'avqSi_err',
+             'avqSi_qual': 'avqSi_qual',
+             'nHe2': 'nHe2',
+             'nHe2_err': 'nHe2_err',
+             'vC5': 'vC5',
+             'vFe10': 'vFe10',
+             'vHe2': 'vHe2',
+             'vO6': 'vO6',
+             'vthC5': 'vthC5',
+             'vthFe10': 'vthFe10',
+             'vthHe2': 'vthHe2',
+             'vthO6': 'vthO6',
+             'SW_type': 'SW_type',
+             'Epoch': 'Time'}
     badvalues = -1e31
     return _ace(starttime, endtime, instrument, product, fname,
-                version=version, badvalues=badvalues)
+                keys=keys, version=version, badvalues=badvalues)
 
 
 def swi_h3(starttime, endtime):
@@ -186,8 +229,66 @@ def swi_h3(starttime, endtime):
     fname = 'h3_swi'
     version = '01'
     badvalues = -1e31
+    keys = {'C5_qual': 'C5_qual',
+             'C6to4': 'C6to4',
+             'C6to4_err': 'C6to4_err',
+             'C6to4_qual': 'C6to4_qual',
+             'C6to5': 'C6to5',
+             'C6to5_err': 'C6to5_err',
+             'C6to5_qual': 'C6to5_qual',
+             'CtoO': 'CtoO',
+             'CtoO_err': 'CtoO_err',
+             'CtoO_qual': 'CtoO_qual',
+             'Fe10_qual': 'Fe10_qual',
+             'FetoO': 'FetoO',
+             'FetoO_err': 'FetoO_err',
+             'FetoO_qual': 'FetoO_qual',
+             'He_qual': 'He_qual',
+             'HetoO': 'HetoO',
+             'HetoO_err': 'HetoO_err',
+             'HetoO_qual': 'HetoO_qual',
+             'MgtoO': 'MgtoO',
+             'MgtoO_err': 'MgtoO_err',
+             'MgtoO_qual': 'MgtoO_qual',
+             'NetoO': 'NetoO',
+             'NetoO_err': 'NetoO_err',
+             'NetoO_qual': 'NetoO_qual',
+             'O6_qual': 'O6_qual',
+             'O7to6': 'O7to6',
+             'O7to6_err': 'O7to6_err',
+             'O7to6_qual': 'O7to6_qual',
+             'SitoO': 'SitoO',
+             'SitoO_err': 'SitoO_err',
+             'SitoO_qual': 'SitoO_qual',
+             'avqC': 'avqC',
+             'avqC_err': 'avqC_err',
+             'avqC_qual': 'avqC_qual',
+             'avqFe': 'avqFe',
+             'avqFe_err': 'avqFe_err',
+             'avqFe_qual': 'avqFe_qual',
+             'avqMg': 'avqMg',
+             'avqMg_err': 'avqMg_err',
+             'avqMg_qual': 'avqMg_qual',
+             'avqO': 'avqO',
+             'avqO_err': 'avqO_err',
+             'avqO_qual': 'avqO_qual',
+             'avqSi': 'avqSi',
+             'avqSi_err': 'avqSi_err',
+             'avqSi_qual': 'avqSi_qual',
+             'nHe2': 'nHe2',
+             'nHe2_err': 'nHe2_err',
+             'vC5': 'vC5',
+             'vFe10': 'vFe10',
+             'vHe2': 'vHe2',
+             'vO6': 'vO6',
+             'vthC5': 'vthC5',
+             'vthFe10': 'vthFe10',
+             'vthHe2': 'vthHe2',
+             'vthO6': 'vthO6',
+             'SW_type': 'SW_type',
+             'Epoch': 'Time'}
     return _ace(starttime, endtime, instrument, product, fname,
-                version=version, badvalues=badvalues)
+                keys=keys, version=version, badvalues=badvalues)
 
 
 def swi_h6(starttime, endtime):
@@ -213,5 +314,10 @@ def swi_h6(starttime, endtime):
     fname = 'h6_swi'
     version = '09'
     badvalues = -1e31
+    keys = {'nH': 'nH',
+            'nH_err': 'nH_err',
+            'vH': 'vH',
+            'vthH': 'vthH',
+            'Epoch': 'Time'}
     return _ace(starttime, endtime, instrument, product, fname,
-                version=version, badvalues=badvalues)
+                keys=keys, version=version, badvalues=badvalues)
