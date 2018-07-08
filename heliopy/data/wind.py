@@ -108,15 +108,15 @@ def swe_h1(starttime, endtime):
                  'Alpha_Na_nonlin': 100000.0,
                  'Alpha_sigmaNa_nonlin': 100000.0}
     keys = {'T_a': 'T_a',
-             'T_p': 'T_p',
-             'n_a': 'n_a',
-             'n_p': 'n_p',
-             'va_x': 'va_x',
-             'va_y': 'va_y',
-             'va_z': 'va_z',
-             'vp_x': 'vp_x',
-             'vp_y': 'vp_y',
-             'vp_z': 'vp_z'}
+            'T_p': 'T_p',
+            'n_a': 'n_a',
+            'n_p': 'n_p',
+            'va_x': 'va_x',
+            'va_y': 'va_y',
+            'va_z': 'va_z',
+            'vp_x': 'vp_x',
+            'vp_y': 'vp_y',
+            'vp_z': 'vp_z'}
     return _load_wind_cdf(starttime, endtime, instrument,
                           data_product, fname, badvalues, keys=keys)
 
