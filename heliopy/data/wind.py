@@ -22,7 +22,7 @@ remote_wind_dir = 'ftp://spdf.gsfc.nasa.gov/pub/data/wind/'
 
 
 def _load_wind_cdf(starttime, endtime, instrument,
-                   data_product, fname, badvalues={}):
+                   data_product, fname, badvalues={}, keys=None):
     relative_dir = path.Path(instrument) / data_product
     # Get directories and filenames
     dirs = []
@@ -51,7 +51,7 @@ def _load_wind_cdf(starttime, endtime, instrument,
 
     return util.process(dirs, fnames, extension, local_base_dir,
                         remote_base_url, download_func, processing_func,
-                        starttime, endtime)
+                        starttime, endtime, keys=keys)
 
 
 def swe_h1(starttime, endtime):
@@ -107,8 +107,18 @@ def swe_h1(starttime, endtime):
                  'Proton_Wpar_moment': 99999.9,
                  'Alpha_Na_nonlin': 100000.0,
                  'Alpha_sigmaNa_nonlin': 100000.0}
+    keys = {'T_a': 'T_a',
+             'T_p': 'T_p',
+             'n_a': 'n_a',
+             'n_p': 'n_p',
+             'va_x': 'va_x',
+             'va_y': 'va_y',
+             'va_z': 'va_z',
+             'vp_x': 'vp_x',
+             'vp_y': 'vp_y',
+             'vp_z': 'vp_z'}
     return _load_wind_cdf(starttime, endtime, instrument,
-                          data_product, fname, badvalues)
+                          data_product, fname, badvalues, keys=keys)
 
 
 def swe_h3(starttime, endtime):
@@ -136,6 +146,9 @@ def swe_h3(starttime, endtime):
     fnames = []
     units = OrderedDict([('Angle', u .deg),
                         ('Energy', u.eV)])
+    keys = {'Angle': 'Angle',
+            'Energy': 'Energy',
+            'df': 'df'}
     daylist = util._daysplitinterval(starttime, endtime)
     for day in daylist:
         date = day[0]
@@ -172,7 +185,7 @@ def swe_h3(starttime, endtime):
 
     return util.process(dirs, fnames, extension, local_base_dir,
                         remote_base_url, download_func, processing_func,
-                        starttime, endtime, units=units)
+                        starttime, endtime, units=units, keys=keys)
 
 
 def mfi_h0(starttime, endtime):
@@ -192,7 +205,10 @@ def mfi_h0(starttime, endtime):
     """
     units = OrderedDict([('Bx_gse', u.nT), ('By_gse', u.nT),
                         ('Bz_gse', u.nT)])
-    return _mfi(starttime, endtime, 'h0', units=units)
+    keys = {'Bx_gse': 'Bx_gse',
+            'By_gse': 'By_gse',
+            'Bz_gse': 'Bz_gse'}
+    return _mfi(starttime, endtime, 'h0', units=units, keys=keys)
 
 
 def mfi_h2(starttime, endtime):
@@ -215,10 +231,14 @@ def mfi_h2(starttime, endtime):
     """
     units = OrderedDict([('Bx_gse', u.nT), ('By_gse', u.nT),
                         ('Bz_gse', u.nT)])
-    return _mfi(starttime, endtime, 'h2', units=units)
+    keys = {'Bx_gse': 'Bx_gse',
+            'By_gse': 'By_gse',
+            'Bz_gse': 'Bz_gse'}
+
+    return _mfi(starttime, endtime, 'h2', units=units, keys=keys)
 
 
-def _mfi(starttime, endtime, version, units=None):
+def _mfi(starttime, endtime, version, units=None, keys=None):
     """
     Import mfi magnetic field data products from WIND.
 
@@ -280,7 +300,7 @@ def _mfi(starttime, endtime, version, units=None):
 
     return util.process(dirs, fnames, extension, local_base_dir,
                         remote_base_url, download_func, processing_func,
-                        starttime, endtime, units=units)
+                        starttime, endtime, units=units, keys=keys)
 
 
 def threedp_pm(starttime, endtime):
