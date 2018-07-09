@@ -138,6 +138,7 @@ def cdf_dict(unit_string):
     units = OrderedDict([('ratio', u.dimensionless_unscaled),
                         ('Unitless', u.dimensionless_unscaled),
                         ('unitless', u.dimensionless_unscaled),
+                        ('Spacecraft', u.dimensionless_unscaled),
                         ('microW m^-2', u.mW * u.m**-2),
                         ('years', u.yr),
                         ('days', u.d),
@@ -163,8 +164,7 @@ def cdf_dict(unit_string):
                         ('nT DSL', u.nT),
                         ('nT SSL', u.nT),
                         ('msec', u.ms),
-                        ('ionic charge', ionic_charge),
-                        ('Spacecraft', False)])
+                        ('ionic charge', ionic_charge)])
     try:
         return units[unit_string]
     except KeyError:
