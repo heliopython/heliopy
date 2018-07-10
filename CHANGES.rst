@@ -21,6 +21,22 @@ Fixed bugs
 ^^^^^^^^^^
 - :func:`.data.imp.merged` no longer imports redundant columns.
 
+Version 0.5.2
+-------------
+
+New features
+^^^^^^^^^^^^
+
+- The new HelioPy logo has been added to the documentation.
+  :issue:`448`, :issue:`447`
+
+Fixed bugs
+^^^^^^^^^^
+
+- The new data version number of :meth:`.data.mms.fpi_dis_moms` has been
+  updated.
+
+
 Version 0.5.1
 -------------
 
