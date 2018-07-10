@@ -24,9 +24,12 @@ def _ace(starttime, endtime, instrument, product, fname, units=None, keys=None,
     """
     Generic method for downloading ACE data from cdaweb.
     """
+    # Handling keys
+    if type(keys) is list:
+        keys = dict(zip(keys, keys))
+        keys.update({'Epoch': 'Time'})
     # Directory relative to main WIND data directory
     relative_dir = path.Path(instrument) / 'level_2_cdaweb' / product
-
     daylist = util._daysplitinterval(starttime, endtime)
     dirs = []
     fnames = []
@@ -158,9 +161,17 @@ def swi_h2(starttime, endtime):
     product = 'swi_h2'
     fname = 'h2_swi'
     version = '09'
+    keys = ['C5_qual', 'C6to4', 'C6to4_err', 'C6to4_qual', 'C6to5',
+            'C6to5_err', 'C6to5_qual', 'Fe10_qual', 'FetoO', 'FetoO_err',
+            'FetoO_qual', 'He_qual', 'O6_qual', 'O7to6', 'O7to6_err',
+            'O7to6_qual', 'avqC', 'avqC_err', 'avqC_qual', 'avqFe',
+            'avqFe_err', 'avqFe_qual', 'avqMg', 'avqMg_err', 'avqMg_qual',
+            'avqO', 'avqO_err', 'avqO_qual', 'avqSi', 'avqSi_err',
+            'avqSi_qual', 'nHe2', 'nHe2_err', 'vC5', 'vFe10', 'vHe2',
+            'vO6', 'vthC5', 'vthFe10', 'vthHe2', 'vthO6', 'SW_type']
     badvalues = -1e31
     return _ace(starttime, endtime, instrument, product, fname,
-                version=version, badvalues=badvalues)
+                keys=keys, version=version, badvalues=badvalues)
 
 
 def swi_h3(starttime, endtime):
@@ -186,8 +197,19 @@ def swi_h3(starttime, endtime):
     fname = 'h3_swi'
     version = '01'
     badvalues = -1e31
+    keys = ['C5_qual', 'C6to4', 'C6to4_err', 'C6to4_qual', 'C6to5',
+            'C6to5_err', 'C6to5_qual', 'CtoO', 'CtoO_err', 'CtoO_qual',
+            'Fe10_qual', 'FetoO', 'FetoO_err', 'FetoO_qual', 'He_qual',
+            'HetoO', 'HetoO_err', 'HetoO_qual', 'MgtoO', 'MgtoO_err',
+            'MgtoO_qual', 'NetoO', 'NetoO_err', 'NetoO_qual', 'O6_qual',
+            'O7to6', 'O7to6_err', 'O7to6_qual', 'SitoO', 'SitoO_err',
+            'SitoO_qual', 'avqC', 'avqC_err', 'avqC_qual', 'avqFe',
+            'avqFe_err', 'avqFe_qual', 'avqMg', 'avqMg_err', 'avqMg_qual',
+            'avqO', 'avqO_err', 'avqO_qual', 'avqSi', 'avqSi_err',
+            'avqSi_qual', 'nHe2', 'nHe2_err', 'vC5', 'vFe10', 'vHe2',
+            'vO6', 'vthC5', 'vthFe10', 'vthHe2', 'vthO6', 'SW_type']
     return _ace(starttime, endtime, instrument, product, fname,
-                version=version, badvalues=badvalues)
+                keys=keys, version=version, badvalues=badvalues)
 
 
 def swi_h6(starttime, endtime):
@@ -213,5 +235,6 @@ def swi_h6(starttime, endtime):
     fname = 'h6_swi'
     version = '09'
     badvalues = -1e31
+    keys = ['nH', 'nH_err', 'vH', 'vthH']
     return _ace(starttime, endtime, instrument, product, fname,
-                version=version, badvalues=badvalues)
+                keys=keys, version=version, badvalues=badvalues)
