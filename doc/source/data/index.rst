@@ -22,7 +22,12 @@ own sub-module:
    ulysses
    wind
 
-There is also other modules for downloading SPICE kernels and sunspot number
+Each mission does not have a complete set of data import methods, but the goal
+of HelioPy is to be as complete as possible. If you want to import a data set
+that is not yet supported please open an issue on the bug tracker at
+https://github.com/heliopython/heliopy/issues
+
+There are also modules for downloading SPICE kernels and sunspot number
 data:
 
 .. toctree::

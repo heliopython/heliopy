@@ -399,9 +399,9 @@ def distparams(probe, starttime, endtime, verbose=False):
             todays_params = todays_params.set_index('Time', drop=False)
             # Convert columns to numeric types
             todays_params = todays_params.apply(pd.to_numeric, errors='ignore')
+            todays_params['Time'] = pd.to_datetime(todays_params['Time'])
             if use_hdf:
                 todays_params.to_hdf(hdffile, key='distparams', mode='w')
-
         paramlist.append(todays_params)
         starttime += timedelta(days=1)
 
@@ -453,6 +453,7 @@ def distparams_single(probe, year, doy, hour, minute, second):
     distparams['minus'] = int(flags[3])
     # 0 = no instrument, 1 = i1a, 2 = I3
     distparams['ion_instrument'] = int(flags[4])
+    distparams['data_rate'] = 1 if ('hdm' in f.name) else 0
 
     # 2 lines of Helios location information
     location = f.readline().split()

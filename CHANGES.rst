@@ -4,6 +4,17 @@ Version 0.5.2
 New features
 ^^^^^^^^^^^^
 
+- Lots of small documentation updates.
+- `.data.helios.distparams` now has an extra ``'data_rate'`` column, which
+  determines whether a given distribution function was transmitted in high or
+  low data mode. :issue:`529`
+
+Version 0.5.2
+-------------
+
+New features
+^^^^^^^^^^^^
+
 - The new HelioPy logo has been added to the documentation.
   :issue:`448`, :issue:`447`
 
