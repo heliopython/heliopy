@@ -9,7 +9,7 @@ matrix:
     - python: 3.7
       dist: xenial
       env: RUN_PEP8=--pep8
-      sudo: true
+      sudo: false
 
 before_install:
 # Install conda
@@ -20,6 +20,7 @@ before_install:
 - conda update --yes conda
 - conda create --yes -n testenv python=$TRAVIS_PYTHON_VERSION
 - source activate testenv
+- conda install --yes hdf5
 
 - pip install $PRE -r requirements/test.txt
 - pip install spiceypy --no-cache-di
