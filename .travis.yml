@@ -9,7 +9,7 @@ matrix:
     - python: 3.7
       dist: xenial
       env: RUN_PEP8=--pep8
-      sudo: false
+      sudo: required
 
 before_install:
 # Install conda
