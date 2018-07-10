@@ -1,7 +1,7 @@
 """
 Methods for importing data from the Messenger spacecraft.
 
-All data is publically available at ftp://spdf.gsfc.nasa.gov/pub/data/messenger
+All data is publically available at http://spdf.gsfc.nasa.gov/pub/data/messenger
 """
 import os
 import pandas as pd
@@ -12,7 +12,7 @@ from heliopy import config
 data_dir = config['download_dir']
 use_hdf = config['use_hdf']
 mess_dir = os.path.join(data_dir, 'messenger')
-remote_mess_dir = 'ftp://spdf.gsfc.nasa.gov/pub/data/messenger'
+remote_mess_dir = 'http://spdf.gsfc.nasa.gov/pub/data/messenger'
 
 
 def mag_rtn(starttime, endtime):
