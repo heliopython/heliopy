@@ -20,15 +20,6 @@ before_install:
 - pip install --quiet $PRE -r requirements/test.txt
 - pip install --quiet spiceypy --no-cache-di
 
-# Install CDF library
-- wget https://cdaweb.sci.gsfc.nasa.gov/pub/software/cdf/dist/cdf37_0/linux/cdf37_0-dist-all.tar.gz
-- tar -zxvf cdf37_0-dist-all.tar.gz
-- cd cdf37_0-dist
-- make OS=linux ENV=gnu all
-- make INSTALLDIR=~/cdf install
-- PATH=~/cdf:$PATH
-- cd ../
-
 - export CLUSTERCOOKIE=2F1B4760251B51783700055F1A037271685A64680A1450722A465D302F0947606504526F370C40752A0640633228546C2A015F2F28075E
 
 script:
