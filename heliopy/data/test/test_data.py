@@ -11,6 +11,7 @@ import heliopy.data.cassini as cassini
 import heliopy.data.helper as helper
 import heliopy.data.spice as spice
 import heliopy.data.sunspot as sunspot
+import heliopy.data.omni as omni
 import astropy.units as u
 from heliopy import config
 
@@ -338,6 +339,16 @@ class TestHelios:
         check_datetime_index(df)
         check_units(df)
 
+class TestOmni:
+    @classmethod
+    def setup_class(self):
+        self.starttime = datetime(1970, 1, 1, 0, 0, 0)
+        self.endtime = datetime(1970, 1, 2, 0, 0, 0)
+
+    def test_mag(self):
+        df = omni.low(self.starttime, self.endtime)
+        check_datetime_index(df)
+        check_units(df)
 
 class TestHelper:
     def test_listdata(self):
