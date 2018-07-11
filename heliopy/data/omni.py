@@ -42,24 +42,28 @@ def low(starttime, endtime, try_download=True):
     dirs = []
     fnames = []
     names = ['Year', 'Decimal Day', 'Hour', 'Bartels Rotation Number',
-             'ID IMF Spacecraft', 'ID SW Plasma Spacecraft', '# of points (IMF Average)',
-             '# of points (Plasma Average)', '|B|', 'Magnitude of Avg Field Vector',
-             'Lat. Angle of Aver. Field Vector', 'Long. Angle of Aver. Field Vector',
-             'Bx GSE, GSM', 'By GSE', 'Bz GSE', 'By GSM', 'Bz GSM', 'sigma |B|',
-             'sigma B', 'sigma Bx', 'sigma By', 'sigma Bz', 'Proton Temperature',
+             'ID IMF Spacecraft', 'ID SW Plasma Spacecraft',
+             '# of points (IMF Average)', '# of points (Plasma Average)',
+             '|B|', 'Magnitude of Avg Field Vector',
+             'Lat. Angle of Aver. Field Vector',
+             'Long. Angle of Aver. Field Vector', 'Bx GSE, GSM', 'By GSE',
+             'Bz GSE', 'By GSM', 'Bz GSM', 'sigma |B|', 'sigma B', 'sigma Bx',
+             'sigma By', 'sigma Bz', 'Proton Temperature',
              'Proton Density', 'Plasma Flow Speed', 'Plasma Flow Long. Angle',
              'Plasma Flow Lat. Angle', 'Na/Np', 'Flow Pressure', 'sigma T',
-             'sigma N', 'sigma V', 'sigma phi V', 'sigma theta V', 'sigma Na/Np',
-             'Electric Field', 'Plasma Beta', 'Alfven Mach Number', 'Kp', 'R',
-             'DST Index', 'AE Index', 'Proton Flux > 1MeV', 'Proton Flux > 2MeV',
-             'Proton Flux > 4MeV', 'Proton Flux > 10MeV', 'Proton Flux > 30MeV',
-             'Proton Flux > 60MeV', 'flag', 'ap index', 'f10.7 index', 'PC(N) index',
-             'AL index (Kyoto)', 'AU index (Kyoto)', 'Magnetosonic Mach Number']
+             'sigma N', 'sigma V', 'sigma phi V', 'sigma theta V',
+             'sigma Na/Np', 'Electric Field', 'Plasma Beta',
+             'Alfven Mach Number', 'Kp', 'R', 'DST Index', 'AE Index',
+             'Proton Flux > 1MeV', 'Proton Flux > 2MeV',
+             'Proton Flux > 4MeV', 'Proton Flux > 10MeV',
+             'Proton Flux > 30MeV',
+             'Proton Flux > 60MeV', 'flag', 'ap index',
+             'f10.7 index', 'PC(N) index', 'AL index (Kyoto)',
+             'AU index (Kyoto)', 'Magnetosonic Mach Number']
     extension = '.dat'
     for year in range(starttime.year, endtime.year + 1):
         fnames.append("omni2_{}".format(year))
         dirs.append(local_base_dir)
-
 
     def download_func(remote_base_url, local_base_dir,
                       directory, fname, extension):
@@ -80,7 +84,6 @@ def low(starttime, endtime, try_download=True):
         # thisdata = thisdata.drop(['Year', 'Decimal Day', 'Hour'])
         return thisdata
 
-
     def convert_datetime(year, day_list, hour_list, len_):
         datetime_index = []
         base_date = dt.datetime(year, 1, 1, 0, 0, 0)
@@ -88,7 +91,6 @@ def low(starttime, endtime, try_download=True):
             time_delta = dt.timedelta(days=day_list[x] - 1, hours=hour_list[x])
             datetime_index.append(base_date + time_delta)
         return datetime_index
-
 
     return util.process(dirs, fnames, extension, local_base_dir,
                         remote_base_url, download_func, processing_func,

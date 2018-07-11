@@ -339,6 +339,7 @@ class TestHelios:
         check_datetime_index(df)
         check_units(df)
 
+
 class TestOmni:
     @classmethod
     def setup_class(self):
@@ -349,6 +350,7 @@ class TestOmni:
         df = omni.low(self.starttime, self.endtime)
         check_datetime_index(df)
         check_units(df)
+
 
 class TestHelper:
     def test_listdata(self):
