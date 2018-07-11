@@ -79,8 +79,6 @@ def low(starttime, endtime, try_download=True):
         datetime_index = []
         base_date = dt.datetime(year, 1, 1, 0, 0, 0)
         for x in range(0, len):
-            delta_day = day_list[x]
-            delta_hour = hour_list[x]
             time_delta = dt.timedelta(days=day_list[x], hours=hour_list[x])
             datetime_index.append(base_date + time_delta)
         return datetime_index
