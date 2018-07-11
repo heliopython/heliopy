@@ -77,7 +77,7 @@ def low(starttime, endtime, try_download=True):
         time_index = convert_datetime(year, day_list, hour_list, len_)
         thisdata['Time'] = pd.to_datetime(time_index)
         thisdata = thisdata.set_index('Time')
-        thisdata = thisdata.drop(['Year', 'Decimal Day', 'Hour'])
+        # thisdata = thisdata.drop(['Year', 'Decimal Day', 'Hour'])
         return thisdata
 
 
