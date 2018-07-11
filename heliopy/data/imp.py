@@ -179,6 +179,24 @@ def mitplasma_h0(probe, starttime, endtime, try_download=True):
     dirs = []
     fnames = []
     extension = '.cdf'
+    keys = {'EW_flowangle_best': 'EW_flowangle_best',
+            'EW_flowangle_mom': 'EW_flowangle_best',
+            'Epoch': 'Time',
+            'Flow_elevation_thresh': 'Flow_elevation_thresh',
+            'Flow_elevation_threshsp': 'Flow_elevation_threshsp',
+            'Region': 'Region',
+            'V_fit': 'V_fit',
+            'V_mom': 'V_fit',
+            'mode': 'mode',
+            'protonV_thermal_fit': 'protonV_thermal_fit',
+            'protonV_thermal_mom': 'protonV_thermal_fit',
+            'proton_density_fit': 'proton_density_fit',
+            'proton_density_mom': 'proton_density_mom',
+            'xyzgse': ['x_gse', 'y_gse', 'z_gse'],
+            'ygsm': 'ygsm',
+            'zgsm': 'zgsm'}
+    units = OrderedDict([('mode', u.dimensionless_unscaled),
+                         ('Region', u.dimensionless_unscaled)])
     for date, _, _ in util._daysplitinterval(starttime, endtime):
         intervalstring = str(date.year) +\
             str(date.month).zfill(2) +\
@@ -201,29 +219,13 @@ def mitplasma_h0(probe, starttime, endtime, try_download=True):
         util._download_remote(remote_url, filename, local_dir)
 
     def processing_func(f):
-        keys = {'EW_flowangle_best': 'EW_flowangle_best',
-                'EW_flowangle_mom': 'EW_flowangle_best',
-                'Epoch': 'Time',
-                'Flow_elevation_thresh': 'Flow_elevation_thresh',
-                'Flow_elevation_threshsp': 'Flow_elevation_threshsp',
-                'Region': 'Region',
-                'V_fit': 'V_fit',
-                'V_mom': 'V_fit',
-                'mode': 'mode',
-                'protonV_thermal_fit': 'protonV_thermal_fit',
-                'protonV_thermal_mom': 'protonV_thermal_fit',
-                'proton_density_fit': 'proton_density_fit',
-                'proton_density_mom': 'proton_density_mom',
-                'xyzgse': ['x_gse', 'y_gse', 'z_gse'],
-                'ygsm': 'ygsm',
-                'zgsm': 'zgsm'}
         thisdata = util.cdf2df(f, 'Epoch', keys)
         thisdata.index.name = 'Time'
         return thisdata
 
     return util.process(dirs, fnames, extension, local_base_dir,
                         remote_base_url, download_func, processing_func,
-                        starttime, endtime,
+                        starttime, endtime, keys=keys, units=units,
                         try_download=try_download)
 
 
