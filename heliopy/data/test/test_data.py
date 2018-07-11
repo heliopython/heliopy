@@ -22,10 +22,10 @@ import sunpy
 import warnings
 
 try:
-    from pycdf import pycdf
-    no_pycdf = False
+    import cdflib
+    no_cdflib = False
 except Exception:
-    no_pycdf = True
+    no_cdflib = True
 
 
 def check_datetime_index(df):
@@ -79,7 +79,7 @@ class TestCassini:
         check_units(df)
 
 
-@pytest.mark.skipif(no_pycdf, reason='Importing pycdf failed')
+@pytest.mark.skipif(no_cdflib, reason='Importing cdflib failed')
 @pytest.mark.data
 class TestMessenger:
     @classmethod
@@ -121,7 +121,7 @@ class TestUlysses:
         check_units(df)
 
 
-@pytest.mark.skipif(no_pycdf, reason='Importing pycdf failed')
+@pytest.mark.skipif(no_cdflib, reason='Importing cdflib failed')
 @pytest.mark.data
 class TestArtemis:
     @classmethod
@@ -143,7 +143,7 @@ class TestArtemis:
             artemis.fgm('1', 'h', '123', self.starttime, self.endtime)
 
 
-@pytest.mark.skipif(no_pycdf, reason='Importing pycdf failed')
+@pytest.mark.skipif(no_cdflib, reason='Importing cdflib failed')
 @pytest.mark.data
 class TestAce:
     @classmethod
@@ -177,7 +177,7 @@ class TestAce:
         check_units(df)
 
 
-@pytest.mark.skipif(no_pycdf, reason='Importing pycdf failed')
+@pytest.mark.skipif(no_cdflib, reason='Importing cdflib failed')
 @pytest.mark.data
 class TestImp:
     @classmethod
@@ -207,7 +207,7 @@ class TestImp:
         check_units(df)
 
 
-@pytest.mark.skipif(no_pycdf, reason='Importing pycdf failed')
+@pytest.mark.skipif(no_cdflib, reason='Importing cdflib failed')
 @pytest.mark.data
 @pytest.mark.skipif(config['cluster_cookie'] == 'none',
                     reason='Cluster download cookie not set')
@@ -241,7 +241,7 @@ class TestCluster():
         check_datetime_index(df)
 
 
-@pytest.mark.skipif(no_pycdf, reason='Importing pycdf failed')
+@pytest.mark.skipif(no_cdflib, reason='Importing cdflib failed')
 @pytest.mark.data
 class TestWind:
     @classmethod
@@ -280,7 +280,7 @@ class TestWind:
         check_units(df)
 
 
-@pytest.mark.skipif(no_pycdf, reason='Importing pycdf failed')
+@pytest.mark.skipif(no_cdflib, reason='Importing cdflib failed')
 @pytest.mark.data
 class TestMMS:
     @classmethod
