@@ -75,9 +75,8 @@ def low(starttime, endtime, try_download=True):
         hour_list = list(thisdata['Hour'])
         len_ = len(thisdata)
         time_index = convert_datetime(year, day_list, hour_list, len_)
-        thisdata['Time'] = time_index
+        thisdata['Time'] = pd.to_datetime(time_index)
         thisdata = thisdata.set_index('Time')
-        print(thisdata)
         return thisdata
 
 
@@ -85,7 +84,7 @@ def low(starttime, endtime, try_download=True):
         datetime_index = []
         base_date = dt.datetime(year, 1, 1, 0, 0, 0)
         for x in range(0, len_):
-            time_delta = dt.timedelta(days=day_list[x], hours=hour_list[x])
+            time_delta = dt.timedelta(days=day_list[x] - 1, hours=hour_list[x])
             datetime_index.append(base_date + time_delta)
         return datetime_index
 
