@@ -58,23 +58,34 @@ def low(starttime, endtime, try_download=True):
         fnames.append("omni2_{}".format(year))
         dirs.append(local_dir)
 
-    # units = OrderedDict([('|B|', u.nT), ('Bz_dsl', u.nT),
-    #                     ('By_dsl', u.nT), ('Bx_dsl', u.nT)])
-
 
     def download_func(remote_base_url, local_base_dir,
                       directory, fname, extension):
         util.load()
 
     def processing_func():
-        badvalues = [float(9.999), float(99999), float(99.9), float(999.99), float(999),
-                float(99999.99), float(9999999), float(999.9), float(999999.99), float(99),
-                float(9999), float(99.99)]
-        thisdata = pandas.read_table(<>, names=names, delim_whitespace=True,
-                                     na_values = badvalues)
+        thisdata = pandas.read_table(<>, names=names, delim_whitespace=True)
+        year = thisdata['Year'][0]
+        day_list = list(thisdata['Decimal Day'])
+        hour_list = list(thisdata['Hour'])
+        len_ = len(thisdata)
+        time_index = convert_datetime(year, day_list, hour_list, len_)
+        thisdata['Time'] = time_index
+        thisdata.set_index('Time')
+        return thisdata
 
 
-    return util.process(dirs, fnames, extension, artemis_dir,
-                        remote_themis_dir, download_func, processing_func,
-                        starttime, endtime, units=units,
-                        processing_kwargs=processing_kwargs)
+    def convert_datetime(year, day_list, hour_list, len_):
+        datetime_index = []
+        base_date = dt.datetime(year, 1, 1, 0, 0, 0)
+        for x in range(0, len):
+            delta_day = day_list[x]
+            delta_hour = hour_list[x]
+            time_delta = dt.timedelta(days=day_list[x], hours=hour_list[x])
+            datetime_index.append(base_date + time_delta)
+        return datetime_index
+
+
+    return util.process(dirs, fnames, extension, omni_dir,
+                        remote_omni_dir, download_func, processing_func,
+                        starttime, endtime)
