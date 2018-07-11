@@ -9,6 +9,7 @@ import pathlib as path
 import pandas as pd
 import numpy as np
 import astropy.units as u
+import datetime as dt
 from collections import OrderedDict
 
 from heliopy.data import util
@@ -16,7 +17,7 @@ from heliopy import config
 
 data_dir = path.Path(config['download_dir'])
 omni_dir = data_dir / 'omni'
-remote_omni_dir = 'https://cdaweb.gsfc.nasa.gov/pub/data/omni/low_res_omni/'
+omni_url = 'https://cdaweb.gsfc.nasa.gov/pub/data/omni/'
 
 
 def low(starttime, endtime, try_download=True):
@@ -36,7 +37,8 @@ def low(starttime, endtime, try_download=True):
     """
 
     # Directory relative to main OMNI data directory
-    local_dir = omni_dir / 'low'
+    local_base_dir = omni_dir / 'low'
+    remote_base_url = omni_url + '/low_res_omni'
     dirs = []
     fnames = []
     names = ['Year', 'Decimal Day', 'Hour', 'Bartels Rotation Number',
@@ -56,7 +58,7 @@ def low(starttime, endtime, try_download=True):
     extension = '.dat'
     for year in range(starttime.year, endtime.year + 1):
         fnames.append("omni2_{}".format(year))
-        dirs.append(local_dir)
+        dirs.append(local_base_dir)
 
 
     def download_func(remote_base_url, local_base_dir,
@@ -67,26 +69,27 @@ def low(starttime, endtime, try_download=True):
                               local_base_dir / directory)
 
     def processing_func(file):
-        thisdata = pandas.read_table(file, names=names, delim_whitespace=True)
+        thisdata = pd.read_table(file, names=names, delim_whitespace=True)
         year = thisdata['Year'][0]
         day_list = list(thisdata['Decimal Day'])
         hour_list = list(thisdata['Hour'])
         len_ = len(thisdata)
         time_index = convert_datetime(year, day_list, hour_list, len_)
         thisdata['Time'] = time_index
-        thisdata.set_index('Time')
+        thisdata = thisdata.set_index('Time')
+        print(thisdata)
         return thisdata
 
 
     def convert_datetime(year, day_list, hour_list, len_):
         datetime_index = []
         base_date = dt.datetime(year, 1, 1, 0, 0, 0)
-        for x in range(0, len):
+        for x in range(0, len_):
             time_delta = dt.timedelta(days=day_list[x], hours=hour_list[x])
             datetime_index.append(base_date + time_delta)
         return datetime_index
 
 
-    return util.process(dirs, fnames, extension, local_dir,
-                        remote_omni_dir, download_func, processing_func,
+    return util.process(dirs, fnames, extension, local_base_dir,
+                        remote_base_url, download_func, processing_func,
                         starttime, endtime)
