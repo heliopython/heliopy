@@ -16,7 +16,7 @@ from heliopy import config
 
 data_dir = path.Path(config['download_dir'])
 omni_dir = data_dir / 'omni'
-remote_omni_dir = 'https://cdaweb.gsfc.nasa.gov/pub/data/omni/'
+remote_omni_dir = 'https://cdaweb.gsfc.nasa.gov/pub/data/omni/low_res_omni/'
 
 
 def low(starttime, endtime, try_download=True):
@@ -61,10 +61,13 @@ def low(starttime, endtime, try_download=True):
 
     def download_func(remote_base_url, local_base_dir,
                       directory, fname, extension):
-        util.load()
+        url = '{}{}'.format(remote_base_url, fname)
+        util._download_remote(url,
+                              fname + extension,
+                              local_base_dir / directory)
 
-    def processing_func():
-        thisdata = pandas.read_table(<>, names=names, delim_whitespace=True)
+    def processing_func(file):
+        thisdata = pandas.read_table(file, names=names, delim_whitespace=True)
         year = thisdata['Year'][0]
         day_list = list(thisdata['Decimal Day'])
         hour_list = list(thisdata['Hour'])
@@ -84,6 +87,6 @@ def low(starttime, endtime, try_download=True):
         return datetime_index
 
 
-    return util.process(dirs, fnames, extension, omni_dir,
+    return util.process(dirs, fnames, extension, local_dir,
                         remote_omni_dir, download_func, processing_func,
                         starttime, endtime)
