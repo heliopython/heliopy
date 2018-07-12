@@ -24,7 +24,7 @@ remote_wind_dir = 'ftp://spdf.gsfc.nasa.gov/pub/data/wind/'
 
 
 def _load_wind_cdf(starttime, endtime, instrument,
-                   data_product, fname, badvalues={}):
+                   data_product, fname, badvalues={}, keys=None):
     relative_dir = path.Path(instrument) / data_product
     # Get directories and filenames
     dirs = []
@@ -53,7 +53,7 @@ def _load_wind_cdf(starttime, endtime, instrument,
 
     return util.process(dirs, fnames, extension, local_base_dir,
                         remote_base_url, download_func, processing_func,
-                        starttime, endtime)
+                        starttime, endtime, keys=keys)
 
 
 def swe_h1(starttime, endtime):
@@ -109,8 +109,68 @@ def swe_h1(starttime, endtime):
                  'Proton_Wpar_moment': 99999.9,
                  'Alpha_Na_nonlin': 100000.0,
                  'Alpha_sigmaNa_nonlin': 100000.0}
+    keys = {'fit_flag': 'fit_flag',
+            'year': 'year',
+            'doy': 'doy',
+            'Proton_V_nonlin': 'Proton_V_nonlin',
+            'Proton_sigmaV_nonlin': 'Proton_sigmaV_nonlin',
+            'Proton_VX_nonlin': 'Proton_VX_nonlin',
+            'Proton_sigmaVX_nonlin': 'Proton_sigmaVX_nonlin',
+            'Proton_VY_nonlin': 'Proton_VY_nonlin',
+            'Proton_sigmaVY_nonlin': 'Proton_sigmaVY_nonlin',
+            'Proton_VZ_nonlin': 'Proton_VZ_nonlin',
+            'Proton_sigmaVZ_nonlin': 'Proton_sigmaVZ_nonlin',
+            'Proton_W_nonlin': 'Proton_W_nonlin',
+            'Proton_sigmaW_nonlin': 'Proton_sigmaW_nonlin',
+            'Proton_Wperp_nonlin': 'Proton_Wperp_nonlin',
+            'Proton_sigmaWperp_nonlin': 'Proton_sigmaWperp_nonlin',
+            'Proton_Wpar_nonlin': 'Proton_Wpar_nonlin',
+            'Proton_sigmaWpar_nonlin': 'Proton_sigmaWpar_nonlin',
+            'EW_flowangle': 'EW_flowangle',
+            'SigmaEW_flowangle': 'SigmaEW_flowangle',
+            'NS_flowangle': 'NS_flowangle',
+            'SigmaNS_flowangle': 'SigmaNS_flowangle',
+            'Proton_Np_nonlin': 'Proton_Np_nonlin',
+            'Proton_sigmaNp_nonlin': 'Proton_sigmaNp_nonlin',
+            'Alpha_V_nonlin': 'Alpha_V_nonlin',
+            'Alpha_sigmaV_nonlin': 'Alpha_sigmaV_nonlin',
+            'Alpha_VX_nonlin': 'Alpha_VX_nonlin',
+            'Alpha_sigmaVX_nonlin': 'Alpha_sigmaVX_nonlin',
+            'Alpha_VY_nonlin': 'Alpha_VY_nonlin',
+            'Alpha_sigmaVY_nonlin': 'Alpha_sigmaVY_nonlin',
+            'Alpha_VZ_nonlin': 'Alpha_VZ_nonlin',
+            'Alpha_sigmaVZ_nonlin': 'Alpha_sigmaVZ_nonlin',
+            'Alpha_W_nonlin': 'Alpha_W_nonlin',
+            'Alpha_sigmaW_nonlin': 'Alpha_sigmaW_nonlin',
+            'Alpha_Wperp_nonlin': 'Alpha_Wperp_nonlin',
+            'Alpha_sigmaWperp_nonlin': 'Alpha_sigmaWperp_nonlin',
+            'Alpha_Wpar_nonlin': 'Alpha_Wpar_nonlin',
+            'Alpha_sigmaWpar_nonlin': 'Alpha_sigmaWpar_nonlin',
+            'Alpha_Na_nonlin': 'Alpha_Na_nonlin',
+            'Alpha_sigmaNa_nonlin': 'Alpha_sigmaNa_nonlin',
+            'ChisQ_DOF_nonlin': 'ChisQ_DOF_nonlin',
+            'Peak_doy': 'Peak_doy',
+            'sigmaPeak_doy': 'sigmaPeak_doy',
+            'Proton_V_moment': 'Proton_V_moment',
+            'Proton_VX_moment': 'Proton_VX_moment',
+            'Proton_VY_moment': 'Proton_VY_moment',
+            'Proton_VZ_moment': 'Proton_VZ_moment',
+            'Proton_W_moment': 'Proton_W_moment',
+            'Proton_Wperp_moment': 'Proton_Wperp_moment',
+            'Proton_Wpar_moment': 'Proton_Wpar_moment',
+            'Proton_Np_moment': 'Proton_Np_moment',
+            'BX': 'BX',
+            'BY': 'BY',
+            'BZ': 'BZ',
+            'Ang_dev': 'Ang_dev',
+            'dev': 'dev',
+            'xgse': 'xgse',
+            'ygse': 'ygse',
+            'zgse': 'zgse',
+            'ygsm': 'ygsm',
+            'zgsm': 'zgsm'}
     return _load_wind_cdf(starttime, endtime, instrument,
-                          data_product, fname, badvalues)
+                          data_product, fname, badvalues, keys=keys)
 
 
 def swe_h3(starttime, endtime):
@@ -136,8 +196,22 @@ def swe_h3(starttime, endtime):
     # Get directories and filenames
     dirs = []
     fnames = []
-    units = OrderedDict([('Angle', u .deg),
+    units = OrderedDict([('Angle', u.deg),
                         ('Energy', u.eV)])
+    distkeys = []
+    for i in range(0, 13):
+        distkeys.append('f_pitch_E' + str(i).zfill(2))
+    anglelabels = []
+    for i in range(0, 30):
+        anglelabels.append((i + 0.5) * np.pi / 30)
+    timekey = 'Epoch'
+    energykey = 'Ve'
+    energy_dict = {energykey: 'Energy'}
+    time_dict = {timekey: 'Time'}
+    dist_dict = dict(zip(distkeys, distkeys))
+    keys = dist_dict
+    keys.update(time_dict)
+    keys.update(energy_dict)
     daylist = util._daysplitinterval(starttime, endtime)
     for day in daylist:
         date = day[0]
@@ -158,14 +232,6 @@ def swe_h3(starttime, endtime):
                   remote_url)
 
     def processing_func(cdf):
-        distkeys = []
-        for i in range(0, 13):
-            distkeys.append('f_pitch_E' + str(i).zfill(2))
-        anglelabels = []
-        for i in range(0, 30):
-            anglelabels.append((i + 0.5) * np.pi / 30)
-        timekey = 'Epoch'
-        energykey = 'Ve'
 
         df = util.pitchdist_cdf2df(cdf, distkeys, energykey, timekey,
                                    anglelabels)
@@ -174,7 +240,7 @@ def swe_h3(starttime, endtime):
 
     return util.process(dirs, fnames, extension, local_base_dir,
                         remote_base_url, download_func, processing_func,
-                        starttime, endtime, units=units)
+                        starttime, endtime, units=units, keys=keys)
 
 
 def mfi_h0(starttime, endtime):
