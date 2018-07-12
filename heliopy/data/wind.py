@@ -240,6 +240,14 @@ def _mfi(starttime, endtime, version, units=None):
     # Get directories and filenames
     dirs = []
     fnames = []
+    epoch_dict = {'h0': 'Epoch3', 'h2': 'Epoch'}
+    mag_dict = {'h0': 'B3GSE', 'h2': 'BGSE'}
+
+    epoch_key = epoch_dict[version]
+    mag_key = mag_dict[version]
+
+    keys = {mag_key: ['Bx_gse', 'By_gse', 'Bz_gse'],
+            epoch_key: 'Time'}
     daylist = util._daysplitinterval(starttime, endtime)
     for day in daylist:
         date = day[0]
@@ -265,14 +273,7 @@ def _mfi(starttime, endtime, version, units=None):
                   remote_url, guessversion=True)
 
     def processing_func(cdf):
-        epoch_dict = {'h0': 'Epoch3', 'h2': 'Epoch'}
-        mag_dict = {'h0': 'B3GSE', 'h2': 'BGSE'}
 
-        epoch_key = epoch_dict[version]
-        mag_key = mag_dict[version]
-
-        keys = {mag_key: ['Bx_gse', 'By_gse', 'Bz_gse'],
-                epoch_key: 'Time'}
         badvalues = {'Bx_gse': -1e+31,
                      'By_gse': -1e+31,
                      'Bz_gse': -1e+31}
@@ -282,7 +283,7 @@ def _mfi(starttime, endtime, version, units=None):
 
     return util.process(dirs, fnames, extension, local_base_dir,
                         remote_base_url, download_func, processing_func,
-                        starttime, endtime, units=units)
+                        starttime, endtime, units=units, keys=keys)
 
 
 def threedp_pm(starttime, endtime):
