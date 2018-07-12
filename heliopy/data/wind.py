@@ -109,6 +109,7 @@ def swe_h1(starttime, endtime):
                  'Proton_Wpar_moment': 99999.9,
                  'Alpha_Na_nonlin': 100000.0,
                  'Alpha_sigmaNa_nonlin': 100000.0}
+    
     keys = {'fit_flag': 'fit_flag',
             'year': 'year',
             'doy': 'doy',
@@ -169,6 +170,7 @@ def swe_h1(starttime, endtime):
             'zgse': 'zgse',
             'ygsm': 'ygsm',
             'zgsm': 'zgsm'}
+    
     return _load_wind_cdf(starttime, endtime, instrument,
                           data_product, fname, badvalues, keys=keys)
 
@@ -198,6 +200,7 @@ def swe_h3(starttime, endtime):
     fnames = []
     units = OrderedDict([('Angle', u.deg),
                         ('Energy', u.eV)])
+
     distkeys = []
     for i in range(0, 13):
         distkeys.append('f_pitch_E' + str(i).zfill(2))
@@ -212,6 +215,7 @@ def swe_h3(starttime, endtime):
     keys = dist_dict
     keys.update(time_dict)
     keys.update(energy_dict)
+
     daylist = util._daysplitinterval(starttime, endtime)
     for day in daylist:
         date = day[0]
@@ -260,7 +264,10 @@ def mfi_h0(starttime, endtime):
     """
     units = OrderedDict([('Bx_gse', u.nT), ('By_gse', u.nT),
                         ('Bz_gse', u.nT)])
-    return _mfi(starttime, endtime, 'h0', units=units)
+    keys = {'Bx_gse': 'Bx_gse',
+            'By_gse': 'By_gse',
+            'Bz_gse': 'Bz_gse'}
+    return _mfi(starttime, endtime, 'h0', units=units, keys=keys)
 
 
 def mfi_h2(starttime, endtime):
@@ -283,10 +290,14 @@ def mfi_h2(starttime, endtime):
     """
     units = OrderedDict([('Bx_gse', u.nT), ('By_gse', u.nT),
                         ('Bz_gse', u.nT)])
-    return _mfi(starttime, endtime, 'h2', units=units)
+    keys = {'Bx_gse': 'Bx_gse',
+            'By_gse': 'By_gse',
+            'Bz_gse': 'Bz_gse'}
+
+    return _mfi(starttime, endtime, 'h2', units=units, keys=keys)
 
 
-def _mfi(starttime, endtime, version, units=None):
+def _mfi(starttime, endtime, version, units=None, keys=None):
     """
     Import mfi magnetic field data products from WIND.
 
