@@ -109,7 +109,6 @@ def swe_h1(starttime, endtime):
                  'Proton_Wpar_moment': 99999.9,
                  'Alpha_Na_nonlin': 100000.0,
                  'Alpha_sigmaNa_nonlin': 100000.0}
-    
     keys = {'fit_flag': 'fit_flag',
             'year': 'year',
             'doy': 'doy',
@@ -170,7 +169,6 @@ def swe_h1(starttime, endtime):
             'zgse': 'zgse',
             'ygsm': 'ygsm',
             'zgsm': 'zgsm'}
-    
     return _load_wind_cdf(starttime, endtime, instrument,
                           data_product, fname, badvalues, keys=keys)
 
