@@ -229,7 +229,7 @@ def mitplasma_h0(probe, starttime, endtime, try_download=True):
                         try_download=try_download)
 
 
-def mag320ms(probe, startTime, endTime):
+def mag320ms(probe, starttime, endtime, try_download=True):
     """
     Import 320ms cadence magnetic field data.
 
@@ -248,46 +248,50 @@ def mag320ms(probe, startTime, endTime):
             Requested data.
     """
     data = []
-    dtimes = util._daysplitinterval(startTime, endTime)
+    fnames = []
+    dirs = []
+    extension = '.cdf'
+    keys = {'B': '|B|',
+            'BX': 'Bx',
+            'BY': 'By',
+            'BZ': 'Bz',
+            'Epoch': 'Time'}
+    dtimes = util._daysplitinterval(starttime, endtime)
     # Loop through years
     for dtime in dtimes:
         date = dtime[0]
         intervalstring = str(date.year) +\
             str(date.month).zfill(2) +\
             str(date.day).zfill(2)
-        filename = 'i8_320msec_mag_' + intervalstring + '_v01.cdf'
-        hdffname = filename[:-3] + '.hdf'
+        filename = 'i8_320msec_mag_' + intervalstring + '_v01'
+        fnames.append(filename)
         # Location of file relative to local directory or remote url
         relative_loc = 'imp' + probe + '/mag/mag_320msec_cdaweb/' +\
             str(date.year)
+        dirs.append(relative_loc)
 
-        local_dir = os.path.join(imp_dir, relative_loc)
-        hdffile = os.path.join(local_dir, hdffname)
-        if os.path.exists(hdffile):
-            thisdata = pd.read_hdf(hdffile)
-            data.append(thisdata)
-            continue
+    local_base_dir = imp_dir
+    remote_base_url = imp_url
 
-        remote_url = imp_url + relative_loc
-        cdf = util.load(filename, local_dir, remote_url)
-        keys = {'B': '|B|',
-                'BX': 'Bx',
-                'BY': 'By',
-                'BZ': 'Bz',
-                'Epoch': 'Time'}
-        thisdata = util.cdf2df(cdf, 'Epoch', keys)
-        data.append(thisdata)
-        if use_hdf:
-            thisdata.to_hdf(hdffile, key='merged', mode='w')
+    def download_func(remote_base_url, local_base_dir,
+                      directory, fname, extension):
+        remote_url = remote_base_url + str(directory)
+        filename = fname + extension
+        local_dir = local_base_dir / directory
+        util._download_remote(remote_url, filename, local_dir)
 
-    data = pd.concat(data)
-    data = data[(data['Time'] > startTime) & (data['Time'] < endTime)]
-    data = data.drop(columns='Time')
-    data.index.name = 'Time'
-    return data
+    def processing_func(f):
+        thisdata = util.cdf2df(f, 'Epoch', keys)
+        thisdata.index.name = 'Time'
+        return thisdata
+
+    return util.process(dirs, fnames, extension, local_base_dir,
+                        remote_base_url, download_func, processing_func,
+                        starttime, endtime, keys=keys,
+                        try_download=try_download)
 
 
-def mag15s(probe, starttime, endtime, verbose=False):
+def mag15s(probe, starttime, endtime, verbose=False, try_download=True):
     """
     Import 15s cadence magnetic field data.
 
@@ -308,6 +312,9 @@ def mag15s(probe, starttime, endtime, verbose=False):
             Requested data.
     """
     data = []
+    fnames = []
+    dirs = []
+    extension = '.asc'
     dtimes = util._daysplitinterval(starttime, endtime)
     # Loop through years
     for dtime in dtimes:
@@ -318,23 +325,29 @@ def mag15s(probe, starttime, endtime, verbose=False):
             print('Loading IMP 15s mag probe {}, {:03d}/{}'.format(probe,
                                                                    doy,
                                                                    year))
-        filename = '{}{:03d}_imp{}_mag_15s_v3.asc'.format(year, doy, probe)
-        hdffname = filename[:-3] + 'hdf'
+        filename = '{}{:03d}_imp{}_mag_15s_v3'.format(year, doy, probe)
+        fnames.append(filename)
         # Location of file relative to local directory or remote url
         relative_loc = os.path.join('imp{}'.format(probe),
                                     'mag',
                                     '15s_ascii_v3',
                                     str(year))
+        dirs.append(relative_loc)
 
-        local_dir = os.path.join(imp_dir, relative_loc)
-        hdffile = os.path.join(local_dir, hdffname)
-        if os.path.exists(hdffile):
-            thisdata = pd.read_hdf(hdffile)
-            data.append(thisdata)
-            continue
+    local_base_dir = imp_dir
+    remote_base_url = imp_url
 
-        remote_url = imp_url + relative_loc
-        f = util.load(filename, local_dir, remote_url)
+    def download_func(remote_base_url, local_base_dir,
+                      directory, fname, extension):
+        remote_url = remote_base_url + str(directory)
+        filename = fname + extension
+        local_dir = local_base_dir / directory
+        util._download_remote(remote_url, filename, local_dir)
+
+    remote_url = imp_url + relative_loc
+
+    # Read in data
+    def processing_func(f):
         readargs = {'names': ['Year', 'doy', 'Second', 'Source flag',
                               'n points', 'x gse', 'y gse', 'z gse',
                               'y gsm', 'z gsm',
@@ -352,7 +365,6 @@ def mag15s(probe, starttime, endtime, verbose=False):
                                   '9999.99', '9999.99', '9999.99',
                                   '999.9', '9'],
                     'delim_whitespace': True}
-        # Read in data
         thisdata = pd.read_table(f, **readargs)
         thisdata['Time'] = (pd.to_datetime(thisdata['Year'], format='%Y') +
                             pd.to_timedelta(thisdata['doy'] - 1,
@@ -360,7 +372,9 @@ def mag15s(probe, starttime, endtime, verbose=False):
                             pd.to_timedelta(thisdata['Second'], unit='s'))
         thisdata = thisdata.set_index('Time', drop=False)
         thisdata = thisdata.drop(['Year', 'doy', 'Second'], 1)
-        if use_hdf:
-            thisdata.to_hdf(hdffile, key='distparams', mode='w')
-        data.append(thisdata)
-    return util.timefilter(data, starttime, endtime)
+        return thisdata
+
+    return util.process(dirs, fnames, extension, local_base_dir,
+                        remote_base_url, download_func, processing_func,
+                        starttime, endtime,
+                        try_download=try_download)
