@@ -170,6 +170,8 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
 
     # Loaded all the data, now filter between times
     data = timefilter(data, starttime, endtime)
+
+    # Attach units
     if extension == '.cdf':
         cdf = _load_local(raw_file)
         units_cdf = cdf_units(cdf, keys=keys, manual_units=units)
@@ -231,10 +233,12 @@ def cdf_units(cdf_, keys=None, manual_units=None):
         Returns an OrderedDict with units of the selected keys.
     """
     units = coll.OrderedDict()
+    # If no keys provided, get list of all keys in the CDF file
     if keys is None:
         message = "No keys assigned for the CDF. Extracting manually."
         warnings.warn(message, Warning)
         keys = dict(zip(list(cdf_.keys()), list(cdf_.keys())))
+
     for key, val in keys.items():
         try:
             temp_unit = u.Unit(cdf_[key].attrs['UNITS'])
@@ -245,8 +249,8 @@ def cdf_units(cdf_, keys=None, manual_units=None):
             unknown_unit = (cdf_[key].attrs['UNITS'])
             temp_unit = helper.cdf_dict(unknown_unit)
             if temp_unit is None:
-                message = "The CDF provided units ({}) for key '{}' \
-                are unknown".format(unknown_unit, key)
+                message = ("The CDF provided units '{}'".format(unknown_unit) +
+                           " for key '{}' are unknown".format(key))
                 warnings.warn(message, Warning)
         except KeyError:
             continue
