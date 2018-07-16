@@ -385,18 +385,21 @@ def cdf2df(cdf, index_key, keys=None, dtimeindex=True, badvalues=None):
     """
     Converts a cdf file to a pandas dataframe.
 
+    Note that this only works for 1 dimensional data, other data such as
+    distribution functions or pitch angles will not work properly.
+
     Parameters
     ----------
     cdf : cdf
-        Opened cdf file
+        Opened CDF file.
     index_key : string
-        The key to use as indexing in the output dataframe
+        The CDF key to use as the index in the output DataFrame.
     keys : dict, optional
-        A dictionary that maps keys in the cdf file to the corresponding
-        desired keys in the ouput dataframe. If a particular cdf key has
+        A dictionary that maps keys in the CDF file to the corresponding
+        desired keys in the ouput dataframe. If a particular CDF key has
         multiple columns, the mapped keys must be in a list.
     dtimeindex : bool, optional
-        If ``True``, DataFrame index is parsed as a datetime.
+        If ``True``, the DataFrame index is parsed as a datetime.
         Default is ``True``.
     badvalues : dict, list, optional
         A dictionary that maps the new DataFrame column keys to a list of bad
@@ -406,7 +409,7 @@ def cdf2df(cdf, index_key, keys=None, dtimeindex=True, badvalues=None):
     Returns
     -------
     df : :class:`pandas.DataFrame`
-        Data frame with read in data
+        Data frame with read in data.
     """
     # Extract index values
     try:
@@ -415,9 +418,12 @@ def cdf2df(cdf, index_key, keys=None, dtimeindex=True, badvalues=None):
         index = cdf[index_key][...]
     # Parse datetime index
     if dtimeindex:
-        index = pd.DatetimeIndex(index)
+        index = pd.DatetimeIndex(index, name='Time')
     df = pd.DataFrame(index=index)
+    npoints = cdf[index_key].shape[0]
 
+    # If keys aren't provided, auotmatically get a copy of all the keys in
+    # the CDF file
     if keys is None:
         keys = {}
         for key in cdf.keys():
@@ -425,17 +431,31 @@ def cdf2df(cdf, index_key, keys=None, dtimeindex=True, badvalues=None):
                 keys['Epoch'] = 'Time'
             else:
                 keys[key] = key
+    # Remote index key, as we have already used it to create the index
+    keys.pop(index_key)
 
-    for key in keys:
-        df_key = keys[key]
+    # Remove keys for data that doesn't have the right shape to load in CDF
+    for cdf_key in keys.copy():
+        if cdf[cdf_key].shape[0] != npoints:
+            keys.pop(cdf_key)
+
+    # Loop through each key and put data into the dataframe
+    for cdf_key in keys:
+        df_key = keys[cdf_key]
         if isinstance(df_key, list):
             for i, subkey in enumerate(df_key):
-                df[subkey] = cdf[key][...][:, i]
+                df[subkey] = cdf[cdf_key][...][:, i]
         else:
-            try:
-                df[df_key] = cdf[key][...]
-            except Exception:
-                continue
+            # If ndims is 1, we just have a single column of data
+            # If ndims is 2, have multiple columns of data under same key
+            key_shape = cdf[cdf_key].shape
+            ndims = len(key_shape)
+            if ndims == 1:
+                df[df_key] = cdf[cdf_key][...]
+            elif ndims == 2:
+                for i in range(key_shape[1]):
+                    df[df_key + '_' + str(i)] = cdf[cdf_key][...][:, i]
+
     # Replace bad values with nans
     if badvalues is not None:
         df = df.replace(badvalues, np.nan)
