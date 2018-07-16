@@ -19,15 +19,11 @@ remote_ace_dir = 'ftp://spdf.gsfc.nasa.gov/pub/data/ace/'
 remote_cda_dir = 'ftp://cdaweb.gsfc.nasa.gov/pub/data/ace/'
 
 
-def _ace(starttime, endtime, instrument, product, fname, units=None, keys=None,
+def _ace(starttime, endtime, instrument, product, fname, units=None,
          version='01', badvalues={}):
     """
     Generic method for downloading ACE data from cdaweb.
     """
-    # Handling keys
-    if type(keys) is list:
-        keys = dict(zip(keys, keys))
-        keys.update({'Epoch': 'Time'})
     # Directory relative to main WIND data directory
     relative_dir = path.Path(instrument) / 'level_2_cdaweb' / product
     daylist = util._daysplitinterval(starttime, endtime)
@@ -63,11 +59,11 @@ def _ace(starttime, endtime, instrument, product, fname, units=None, keys=None,
 
     def processing_func(cdf):
         return util.cdf2df(cdf, index_key='Epoch',
-                           keys=keys, badvalues=badvalues)
+                           badvalues=badvalues)
 
     return util.process(dirs, fnames, extension, ace_dir, remote_ace_dir,
                         download_func, processing_func, starttime,
-                        endtime, units=units, keys=keys)
+                        endtime, units=units)
 
 
 def mfi_h0(starttime, endtime):
@@ -89,18 +85,10 @@ def mfi_h0(starttime, endtime):
     instrument = 'mag'
     product = 'mfi_h0'
     fname = 'h0_mfi'
-    keys = {'Magnitude': 'Magnitude',
-            'SC_pos_GSE': ['sc_gse_x', 'sc_gse_y', 'sc_gse_z'],
-            'SC_pos_GSM': ['sc_gsm_x', 'sc_gsm_y', 'sc_gsm_z'],
-            'BGSEc': ['BGSE_x', 'BGSE_y', 'BGSE_z'],
-            'BGSM': ['BGSM_x', 'BGSM_y', 'BGSM_z'],
-            'dBrms': 'dBrms',
-            'Q_FLAG': 'Q_FLAG',
-            'Epoch': 'Time'}
     version = '06'
     units = OrderedDict([('Q_FLAG', u.dimensionless_unscaled)])
     return _ace(starttime, endtime, instrument, product,
-                fname, units=units, keys=keys, version=version)
+                fname, units=units, version=version)
 
 
 def swe_h0(starttime, endtime):
@@ -123,19 +111,9 @@ def swe_h0(starttime, endtime):
     instrument = 'swepam'
     product = 'swe_h0'
     fname = 'h0_swe'
-    keys = {'Np': 'n_p',
-            'Tpr': 'T_pr',
-            'SC_pos_GSE': ['sc_gse_x', 'sc_gse_y', 'sc_gse_z'],
-            'SC_pos_GSM': ['sc_gsm_x', 'sc_gsm_y', 'sc_gsm_z'],
-            'V_GSE': ['vp_gse_x', 'vp_gse_y', 'vp_gse_z'],
-            'V_GSM': ['vp_gsm_x', 'vp_gsm_y', 'vp_gsm_z'],
-            'V_RTN': ['vp_rtn_r', 'vp_rtn_t', 'vp_rtn_n'],
-            'Vp': '|vp|',
-            'alpha_ratio': 'n_a/n_p',
-            'Epoch': 'Time'}
     version = '06'
     badvalues = -1e31
-    return _ace(starttime, endtime, instrument, product, fname, keys=keys,
+    return _ace(starttime, endtime, instrument, product, fname,
                 version=version, badvalues=badvalues)
 
 
@@ -161,17 +139,9 @@ def swi_h2(starttime, endtime):
     product = 'swi_h2'
     fname = 'h2_swi'
     version = '09'
-    keys = ['C5_qual', 'C6to4', 'C6to4_err', 'C6to4_qual', 'C6to5',
-            'C6to5_err', 'C6to5_qual', 'Fe10_qual', 'FetoO', 'FetoO_err',
-            'FetoO_qual', 'He_qual', 'O6_qual', 'O7to6', 'O7to6_err',
-            'O7to6_qual', 'avqC', 'avqC_err', 'avqC_qual', 'avqFe',
-            'avqFe_err', 'avqFe_qual', 'avqMg', 'avqMg_err', 'avqMg_qual',
-            'avqO', 'avqO_err', 'avqO_qual', 'avqSi', 'avqSi_err',
-            'avqSi_qual', 'nHe2', 'nHe2_err', 'vC5', 'vFe10', 'vHe2',
-            'vO6', 'vthC5', 'vthFe10', 'vthHe2', 'vthO6', 'SW_type']
     badvalues = -1e31
     return _ace(starttime, endtime, instrument, product, fname,
-                keys=keys, version=version, badvalues=badvalues)
+                version=version, badvalues=badvalues)
 
 
 def swi_h3(starttime, endtime):
@@ -197,19 +167,8 @@ def swi_h3(starttime, endtime):
     fname = 'h3_swi'
     version = '01'
     badvalues = -1e31
-    keys = ['C5_qual', 'C6to4', 'C6to4_err', 'C6to4_qual', 'C6to5',
-            'C6to5_err', 'C6to5_qual', 'CtoO', 'CtoO_err', 'CtoO_qual',
-            'Fe10_qual', 'FetoO', 'FetoO_err', 'FetoO_qual', 'He_qual',
-            'HetoO', 'HetoO_err', 'HetoO_qual', 'MgtoO', 'MgtoO_err',
-            'MgtoO_qual', 'NetoO', 'NetoO_err', 'NetoO_qual', 'O6_qual',
-            'O7to6', 'O7to6_err', 'O7to6_qual', 'SitoO', 'SitoO_err',
-            'SitoO_qual', 'avqC', 'avqC_err', 'avqC_qual', 'avqFe',
-            'avqFe_err', 'avqFe_qual', 'avqMg', 'avqMg_err', 'avqMg_qual',
-            'avqO', 'avqO_err', 'avqO_qual', 'avqSi', 'avqSi_err',
-            'avqSi_qual', 'nHe2', 'nHe2_err', 'vC5', 'vFe10', 'vHe2',
-            'vO6', 'vthC5', 'vthFe10', 'vthHe2', 'vthO6', 'SW_type']
     return _ace(starttime, endtime, instrument, product, fname,
-                keys=keys, version=version, badvalues=badvalues)
+                version=version, badvalues=badvalues)
 
 
 def swi_h6(starttime, endtime):
@@ -235,6 +194,5 @@ def swi_h6(starttime, endtime):
     fname = 'h6_swi'
     version = '09'
     badvalues = -1e31
-    keys = ['nH', 'nH_err', 'vH', 'vthH']
     return _ace(starttime, endtime, instrument, product, fname,
-                keys=keys, version=version, badvalues=badvalues)
+                version=version, badvalues=badvalues)
