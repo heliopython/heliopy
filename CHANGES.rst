@@ -21,6 +21,17 @@ Fixed bugs
 ^^^^^^^^^^
 - :func:`.data.imp.merged` no longer imports redundant columns.
 
+Version 0.5.3
+-------------
+
+New features
+^^^^^^^^^^^^
+
+- Lots of small documentation updates.
+- `.data.helios.distparams` now has an extra ``'data_rate'`` column, which
+  determines whether a given distribution function was transmitted in high or
+  low data mode. :issue:`529`
+
 Version 0.5.2
 -------------
 
