@@ -430,12 +430,12 @@ def cdf2df(cdf, index_key, keys=None, dtimeindex=True, badvalues=None):
     # the CDF file
     if keys is None:
         keys = {}
-        for key in cdf.keys():
-            if key == 'Epoch':
-                keys['Epoch'] = 'Time'
+        for cdf_key in cdf.keys():
+            if cdf_key == 'Epoch':
+                keys[cdf_key] = 'Time'
             else:
-                keys[key] = key
-    # Remote index key, as we have already used it to create the index
+                keys[cdf_key] = cdf_key
+    # Remove index key, as we have already used it to create the index
     keys.pop(index_key)
 
     # Remove keys for data that doesn't have the right shape to load in CDF
