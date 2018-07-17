@@ -9,6 +9,8 @@ New features
   the HelioPy modules now return units.
 - Added a new :func:`.data.util.cdf_units` function that can extract the UNIT
   attribute from the CDF files.
+- Low resolution OMNI data import has been added in
+  :func:`.data.omni.low` function.
 
 Backwards incompatible changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
