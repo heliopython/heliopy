@@ -440,7 +440,8 @@ def cdf2df(cdf, index_key, keys=None, dtimeindex=True, badvalues=None):
 
     # Remove keys for data that doesn't have the right shape to load in CDF
     for cdf_key in keys.copy():
-        if cdf[cdf_key].shape[0] != npoints:
+        key_shape = cdf[cdf_key].shape
+        if len(key_shape) == 0 or key_shape[0] != npoints:
             keys.pop(cdf_key)
 
     # Loop through each key and put data into the dataframe
