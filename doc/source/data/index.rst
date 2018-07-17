@@ -19,6 +19,7 @@ own sub-module:
    imp
    messenger
    mms
+   omni
    ulysses
    wind
 
