@@ -387,5 +387,5 @@ def mag15s(probe, starttime, endtime, verbose=False, try_download=True):
 
     return util.process(dirs, fnames, extension, local_base_dir,
                         remote_base_url, download_func, processing_func,
-                        starttime, endtime,
+                        starttime, endtime, units=units,
                         try_download=try_download)
