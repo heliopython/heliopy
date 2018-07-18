@@ -22,7 +22,8 @@ remote_wind_dir = 'ftp://spdf.gsfc.nasa.gov/pub/data/wind/'
 
 
 def _load_wind_cdf(starttime, endtime, instrument,
-                   data_product, fname, badvalues={}, keys=None):
+                   data_product, fname, badvalues={}, keys=None,
+                   units=None):
     relative_dir = path.Path(instrument) / data_product
     # Get directories and filenames
     dirs = []
@@ -51,7 +52,7 @@ def _load_wind_cdf(starttime, endtime, instrument,
 
     return util.process(dirs, fnames, extension, local_base_dir,
                         remote_base_url, download_func, processing_func,
-                        starttime, endtime, keys=keys)
+                        starttime, endtime, units=units, keys=keys)
 
 
 def swe_h1(starttime, endtime):
@@ -107,6 +108,8 @@ def swe_h1(starttime, endtime):
                  'Proton_Wpar_moment': 99999.9,
                  'Alpha_Na_nonlin': 100000.0,
                  'Alpha_sigmaNa_nonlin': 100000.0}
+    units = OrderedDict([('fit_flag', u.dimensionless_unscaled),
+                         ('ChisQ_DOF_nonlin', u.dimensionless_unscaled)])
     keys = {'T_a': 'T_a',
             'T_p': 'T_p',
             'n_a': 'n_a',
@@ -118,7 +121,8 @@ def swe_h1(starttime, endtime):
             'vp_y': 'vp_y',
             'vp_z': 'vp_z'}
     return _load_wind_cdf(starttime, endtime, instrument,
-                          data_product, fname, badvalues, keys=keys)
+                          data_product, fname, badvalues, units=units,
+                          keys=keys)
 
 
 def swe_h3(starttime, endtime):
@@ -145,7 +149,8 @@ def swe_h3(starttime, endtime):
     dirs = []
     fnames = []
     units = OrderedDict([('Angle', u .deg),
-                        ('Energy', u.eV)])
+                        ('Energy', u.eV),
+                        ('df', u.cm/u.s)])
     keys = {'Angle': 'Angle',
             'Energy': 'Energy',
             'df': 'df'}

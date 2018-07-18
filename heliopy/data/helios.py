@@ -1144,6 +1144,11 @@ def mag_ness(probe, starttime, endtime, try_download=True):
     dirs = []
     fnames = []
     extension = '.asc'
+    units = OrderedDict([('probe', u.dimensionless_unscaled),
+                         ('naverage', u.dimensionless_unscaled),
+                         ('Bx', u.nT), ('By', u.nT), ('Bz', u.nT),
+                         ('|B|', u.nT), ('sigma_Bx', u.nT),
+                         ('sigma_By', u.nT), ('sigma_Bz', u.nT)])
     daylist = util._daysplitinterval(starttime, endtime)
     for [day, _, _] in daylist:
         year = day.year
@@ -1184,4 +1189,5 @@ def mag_ness(probe, starttime, endtime, try_download=True):
 
     return util.process(dirs, fnames, extension, local_base_dir,
                         remote_base_url, download_func, processing_func,
-                        starttime, endtime, try_download=try_download)
+                        starttime, endtime, units=units,
+                        try_download=try_download)
