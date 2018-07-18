@@ -315,7 +315,18 @@ def mag15s(probe, starttime, endtime, verbose=False, try_download=True):
     fnames = []
     dirs = []
     extension = '.asc'
-    units = OrderedDict([('Source flag', u.dimensionless_unscaled)])
+    units = OrderedDict([('n points', u.dimensionless_unscaled),
+                         ('Source flag', u.dimensionless_unscaled),
+                         ('x gse', u.earthRad), ('y gse', u.earthRad),
+                         ('z gse', u.earthRad), ('y gsm', u.earthRad),
+                         ('z gsm', u.earthRad), ('|B|', u.nT),
+                         ('Bx gse', u.nT), ('By gse', u.nT),
+                         ('Bz gse', u.nT), ('By gsm', u.nT),
+                         ('Bz gsm', u.nT), ('Bxx gse', u.nT**2),
+                         ('Byy gse', u.nT**2), ('Bzz gse', u.nT**2),
+                         ('Byx gse', u.nT**2), ('Bzx gse', u.nT**2),
+                         ('Bzy gse', u.nT**2), ('Time shift', u.s),
+                         ('sw flag', u.dimensionless_unscaled)])
     dtimes = util._daysplitinterval(starttime, endtime)
     # Loop through years
     for dtime in dtimes:
@@ -377,5 +388,5 @@ def mag15s(probe, starttime, endtime, verbose=False, try_download=True):
 
     return util.process(dirs, fnames, extension, local_base_dir,
                         remote_base_url, download_func, processing_func,
-                        starttime, endtime,
+                        starttime, endtime, units=units,
                         try_download=try_download)
