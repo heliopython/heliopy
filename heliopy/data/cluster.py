@@ -37,7 +37,7 @@ generic_dict = {'DELIVERY_FORMAT': 'CDF',
 cda_time_fmt = '%Y-%m-%dT%H:%M:%SZ'
 
 
-def _load(probe, starttime, endtime, instrument, product_id, cdfkeys,
+def _load(probe, starttime, endtime, instrument, product_id,
           try_download):
     dirs = []
     fnames = []
@@ -71,12 +71,12 @@ def _load(probe, starttime, endtime, instrument, product_id, cdfkeys,
             if 'CDF_EPOCH' in str(value):
                 index_key = key
                 break
-        return util.cdf2df(file, index_key, cdfkeys)
+        return util.cdf2df(file, index_key)
 
     return util.process(dirs, fnames, extension, local_base_dir,
                         remote_base_url, download_func, processing_func,
                         starttime, endtime, try_download=try_download,
-                        units=None, keys=cdfkeys,
+                        units=None,
                         download_info=download_info)
 
 
@@ -168,10 +168,7 @@ def fgm(probe, starttime, endtime, try_download=True):
         data : DataFrame
             Requested data.
     """
-    cdfkeys = {'B_mag__C' + probe + '_CP_FGM_FULL': 'Bmag',
-               'B_vec_xyz_gse__C' + probe + '_CP_FGM_FULL': ['Bx', 'By', 'Bz'],
-               'time_tags__C' + probe + '_CP_FGM_FULL': 'Time'}
-    return _load(probe, starttime, endtime, 'fgm', 'CP_FGM_FULL', cdfkeys,
+    return _load(probe, starttime, endtime, 'fgm', 'CP_FGM_FULL',
                  try_download=try_download)
 
 
@@ -202,16 +199,7 @@ def cis_codif_h1_moms(probe, starttime, endtime, sensitivity='high',
     sensitivitydict = {'high': 'HS', 'low': 'LS'}
     sensitivity = sensitivitydict[sensitivity]
     endstr = '_CP_CIS-CODIF_' + sensitivity + '_H1_MOMENTS'
-    cdfkeys = {'density__C' + probe + endstr: 'n_h',
-               # 'pressure__C' + probe + endstr: 'p_h',
-               'T__C' + probe + endstr: 'Th',
-               'T_par__C' + probe + endstr: 'Th_par',
-               'T_perp__C' + probe + endstr: 'Tg_perp',
-               'velocity__C' + probe + endstr: ['vh_x',
-                                                'vh_y',
-                                                'vh_z'],
-               'time_tags__C' + probe + endstr: 'Time'}
-    return _load(probe, starttime, endtime, 'peace', endstr[1:], cdfkeys,
+    return _load(probe, starttime, endtime, 'peace', endstr[1:],
                  try_download=try_download)
 
 
@@ -236,20 +224,8 @@ def peace_moments(probe, starttime, endtime, try_download=True):
         data : DataFrame
             Requested data.
     """
-    cdfkeys = {'Data_Density__C' + probe + '_CP_PEA_MOMENTS': 'n_e',
-               'Data_HeatFlux_GSE__C' + probe + '_CP_PEA_MOMENTS': ['qe_x',
-                                                                    'qe_y',
-                                                                    'qe_z'],
-               'Data_Temperature_ComponentParallelToMagField__C' +
-               probe + '_CP_PEA_MOMENTS': 'Te_par',
-               'Data_Temperature_ComponentPerpendicularToMagField__C' +
-               probe + '_...MOMENTS': 'Te_perp',
-               'Data_Velocity_GSE__C' + probe + '_CP_PEA_MOMENTS': ['ve_x',
-                                                                    've_y',
-                                                                    've_z'],
-               'time_tags__C' + probe + '_CP_PEA_MOMENTS': 'Time'}
     return _load(probe, starttime, endtime, 'peace', 'CP_PEA_MOMENTS',
-                 cdfkeys, try_download=try_download)
+                 try_download=try_download)
 
 
 def cis_hia_onboard_moms(probe, starttime, endtime, try_download=True):
@@ -276,20 +252,7 @@ def cis_hia_onboard_moms(probe, starttime, endtime, try_download=True):
     if probe == '2' or probe == '4':
         raise ValueError('Onboard ion moment data is not available for '
                          'cluster probes 2 or 4')
-    cdfkeys = {'density__C' + probe + '_CP_CIS-HIA_ONBOARD_MOMENTS': 'n_i',
-               'pressure__C' + probe + '_CP_CIS-HIA_ONBOARD_MOMENTS': 'p_i',
-               'temperature__C' + probe + '_CP_CIS-HIA_ONBOARD_MOMENTS':
-               'Ti',
-               'temp_par__C' + probe + '_CP_CIS-HIA_ONBOARD_MOMENTS':
-               'Ti_par',
-               'temp_perp__C' + probe + '_CP_CIS-HIA_ONBOARD_MOMENTS':
-               'Ti_perp',
-               'velocity_gse__C' + probe + '_CP_CIS-HIA_ONBOARD_MOMENTS':
-               ['vi_x',
-                'vi_y',
-                'vi_z'],
-               'time_tags__C' + probe + '_CP_CIS-HIA_ONBOARD_MOMENTS': 'Time'}
     data = _load(probe, starttime, endtime, 'cis',
-                 'CP_CIS-HIA_ONBOARD_MOMENTS', cdfkeys,
+                 'CP_CIS-HIA_ONBOARD_MOMENTS',
                  try_download=try_download)
     return data
