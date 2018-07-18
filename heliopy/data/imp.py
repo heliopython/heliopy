@@ -315,6 +315,7 @@ def mag15s(probe, starttime, endtime, verbose=False, try_download=True):
     fnames = []
     dirs = []
     extension = '.asc'
+    units = OrderedDict([('Source flag', u.dimensionless_unscaled)])
     dtimes = util._daysplitinterval(starttime, endtime)
     # Loop through years
     for dtime in dtimes:
