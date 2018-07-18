@@ -166,7 +166,7 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
     # Attach units
     if extension == '.cdf':
         cdf = _load_local(raw_file)
-        units_cdf = cdf_units(cdf, keys=keys, manual_units=units)
+        units_cdf = cdf_units(cdf, manual_units=units)
         return units_attach(data, units_cdf)
     if type(units) is coll.OrderedDict:
         return units_attach(data, units)
@@ -204,7 +204,7 @@ def units_attach(data, units):
     return timeseries_data
 
 
-def cdf_units(cdf_, keys=None, manual_units=None):
+def cdf_units(cdf_, manual_units=None):
     """
     Takes the CDF File and the required keys, and finds the units of the
     selected keys.
@@ -213,11 +213,6 @@ def cdf_units(cdf_, keys=None, manual_units=None):
     ----------
     cdf_ : cdf
         Opened cdf file
-    keys : dict, optional
-        If the user knows the units they wish to extract
-        from the CDF file keys, keys can be passed as an arugment.
-        If not, the function extracts all the keys present which
-        have an UNIT attribute.
 
     Returns
     -------
@@ -225,11 +220,8 @@ def cdf_units(cdf_, keys=None, manual_units=None):
         Returns an OrderedDict with units of the selected keys.
     """
     units = coll.OrderedDict()
-    # If no keys provided, get list of all keys in the CDF file
-    if keys is None:
-        message = "No keys assigned for the CDF. Extracting manually."
-        warnings.warn(message, Warning)
-        keys = dict(zip(list(cdf_.keys()), list(cdf_.keys())))
+    # Get list of all keys in the CDF file
+    keys = dict(zip(list(cdf_.keys()), list(cdf_.keys())))
 
     for key, val in keys.items():
         try:
@@ -377,7 +369,7 @@ def pitchdist_cdf2df(cdf, distkeys, energykey, timekey, anglelabels):
     return data
 
 
-def cdf2df(cdf, index_key, keys=None, dtimeindex=True, badvalues=None):
+def cdf2df(cdf, index_key, dtimeindex=True, badvalues=None):
     """
     Converts a cdf file to a pandas dataframe.
 
@@ -390,10 +382,6 @@ def cdf2df(cdf, index_key, keys=None, dtimeindex=True, badvalues=None):
         Opened CDF file.
     index_key : string
         The CDF key to use as the index in the output DataFrame.
-    keys : dict, optional
-        A dictionary that maps keys in the CDF file to the corresponding
-        desired keys in the ouput dataframe. If a particular CDF key has
-        multiple columns, the mapped keys must be in a list.
     dtimeindex : bool, optional
         If ``True``, the DataFrame index is parsed as a datetime.
         Default is ``True``.
@@ -418,15 +406,12 @@ def cdf2df(cdf, index_key, keys=None, dtimeindex=True, badvalues=None):
     df = pd.DataFrame(index=index)
     npoints = cdf[index_key].shape[0]
 
-    # If keys aren't provided, auotmatically get a copy of all the keys in
-    # the CDF file
-    if keys is None:
-        keys = {}
-        for cdf_key in cdf.keys():
-            if cdf_key == 'Epoch':
-                keys[cdf_key] = 'Time'
-            else:
-                keys[cdf_key] = cdf_key
+    keys = {}
+    for cdf_key in cdf.keys():
+        if cdf_key == 'Epoch':
+            keys[cdf_key] = 'Time'
+        else:
+            keys[cdf_key] = cdf_key
     # Remove index key, as we have already used it to create the index
     keys.pop(index_key)
 
