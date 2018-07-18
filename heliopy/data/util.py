@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 
 def process(dirs, fnames, extension, local_base_dir, remote_base_url,
             download_func, processing_func, starttime, endtime,
-            try_download=True, units=None, keys=None,
+            try_download=True, units=None,
             processing_kwargs={}, download_info=[]):
     """
     The main utility method for systematically loading, downloading, and saving
@@ -91,14 +91,6 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
         Must map column headers (strings) to :class:`~astropy.units.Quantity`
         objects. If units are present, then a TimeSeries object is returned,
         else a Pandas DataFrame.
-
-    keys : dict, optional
-        Keys to be extracted from the CDF, along with their column names as the
-        values.
-
-        Must map keys from the CDF (strings) to the column name (strings).
-        If keys are present, then only the specified keys are extracted from
-        the CDF file.
 
     processing_kwargs : dict, optional
         Extra keyword arguments to be passed to the processing funciton.
