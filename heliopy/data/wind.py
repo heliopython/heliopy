@@ -1,6 +1,5 @@
 """
 Methods for importing data from the WIND spacecraft.
-
 All data is publically available at ftp://spdf.gsfc.nasa.gov/pub/data/wind.
 See https://wind.nasa.gov/data_sources.php for more information on different
 data products.
@@ -22,7 +21,7 @@ remote_wind_dir = 'ftp://spdf.gsfc.nasa.gov/pub/data/wind/'
 
 
 def _load_wind_cdf(starttime, endtime, instrument,
-                   data_product, fname, badvalues={}, keys=None):
+                   data_product, fname, badvalues={}):
     relative_dir = path.Path(instrument) / data_product
     # Get directories and filenames
     dirs = []
@@ -51,21 +50,19 @@ def _load_wind_cdf(starttime, endtime, instrument,
 
     return util.process(dirs, fnames, extension, local_base_dir,
                         remote_base_url, download_func, processing_func,
-                        starttime, endtime, keys=keys)
+                        starttime, endtime)
 
 
 def swe_h1(starttime, endtime):
     """
     Import 'h1' (Bi-Maxwellian, Anisotropic Analysis of Protons and Alphas)
     solar wind ion data product from WIND.
-
     Parameters
     ----------
     starttime : datetime
         Interval start time.
     endtime : datetime
         Interval end time.
-
     Returns
     -------
     data : :class:`~sunpy.timeseries.TimeSeries`
@@ -107,35 +104,22 @@ def swe_h1(starttime, endtime):
                  'Proton_Wpar_moment': 99999.9,
                  'Alpha_Na_nonlin': 100000.0,
                  'Alpha_sigmaNa_nonlin': 100000.0}
-    keys = {'T_a': 'T_a',
-            'T_p': 'T_p',
-            'n_a': 'n_a',
-            'n_p': 'n_p',
-            'va_x': 'va_x',
-            'va_y': 'va_y',
-            'va_z': 'va_z',
-            'vp_x': 'vp_x',
-            'vp_y': 'vp_y',
-            'vp_z': 'vp_z'}
     return _load_wind_cdf(starttime, endtime, instrument,
-                          data_product, fname, badvalues, keys=keys)
+                          data_product, fname, badvalues)
 
 
 def swe_h3(starttime, endtime):
     """
     Import 'h3' solar wind electron data product from WIND.
-
     Electron pitch angle files providing electron fluxes at 30 directional bins
     relative to the instantaneous magnetic field direction at 13 different
     energy levels
-
     Parameters
     ----------
     starttime : datetime
         Interval start time.
     endtime : datetime
         Interval end time.
-
     Returns
     -------
     data : :class:`~sunpy.timeseries.TimeSeries`
@@ -146,9 +130,6 @@ def swe_h3(starttime, endtime):
     fnames = []
     units = OrderedDict([('Angle', u .deg),
                         ('Energy', u.eV)])
-    keys = {'Angle': 'Angle',
-            'Energy': 'Energy',
-            'df': 'df'}
     daylist = util._daysplitinterval(starttime, endtime)
     for day in daylist:
         date = day[0]
@@ -185,70 +166,56 @@ def swe_h3(starttime, endtime):
 
     return util.process(dirs, fnames, extension, local_base_dir,
                         remote_base_url, download_func, processing_func,
-                        starttime, endtime, units=units, keys=keys)
+                        starttime, endtime, units=units)
 
 
 def mfi_h0(starttime, endtime):
     """
     Import 'mfi_h0' magnetic field data product from WIND.
-
     Parameters
     ----------
     starttime : datetime
         Interval start time.
     endtime : datetime
         Interval end time.
-
     Returns
     -------
     data : :class:`~sunpy.timeseries.TimeSeries`
     """
     units = OrderedDict([('Bx_gse', u.nT), ('By_gse', u.nT),
                         ('Bz_gse', u.nT)])
-    keys = {'Bx_gse': 'Bx_gse',
-            'By_gse': 'By_gse',
-            'Bz_gse': 'Bz_gse'}
-    return _mfi(starttime, endtime, 'h0', units=units, keys=keys)
+    return _mfi(starttime, endtime, 'h0', units=units)
 
 
 def mfi_h2(starttime, endtime):
     """
     Import 'mfi_h2' magnetic field data product from WIND.
-
     The highest time resolution data (11 vectors/sec usually, and
     22 vectors/sec when near Earth)
-
     Parameters
     ----------
     starttime : datetime
         Interval start time.
     endtime : datetime
         Interval end time.
-
     Returns
     -------
     data : :class:`~sunpy.timeseries.TimeSeries`
     """
     units = OrderedDict([('Bx_gse', u.nT), ('By_gse', u.nT),
                         ('Bz_gse', u.nT)])
-    keys = {'Bx_gse': 'Bx_gse',
-            'By_gse': 'By_gse',
-            'Bz_gse': 'Bz_gse'}
-
-    return _mfi(starttime, endtime, 'h2', units=units, keys=keys)
+    return _mfi(starttime, endtime, 'h2', units=units)
 
 
-def _mfi(starttime, endtime, version, units=None, keys=None):
+def _mfi(starttime, endtime, version, units=None):
     """
     Import mfi magnetic field data products from WIND.
-
     Parameters
     ----------
     starttime : datetime
         Interval start time.
     endtime : datetime
         Interval end time.
-
     Returns
     -------
     data : DataFrame
@@ -300,23 +267,20 @@ def _mfi(starttime, endtime, version, units=None, keys=None):
 
     return util.process(dirs, fnames, extension, local_base_dir,
                         remote_base_url, download_func, processing_func,
-                        starttime, endtime, units=units, keys=keys)
+                        starttime, endtime, units=units)
 
 
 def threedp_pm(starttime, endtime):
     """
     Import 'pm' wind data.
-
     3 second time resolution solar wind proton and alpha particle moments from
     the PESA LOW sensor, computed on-board the spacecraft
-
     Parameters
     ----------
     starttime : datetime
         Interval start time.
     endtime : datetime
         Interval end time.
-
     Returns
     -------
     data : :class:`~sunpy.timeseries.TimeSeries`
@@ -368,16 +332,13 @@ def threedp_pm(starttime, endtime):
 def threedp_sfpd(starttime, endtime):
     """
     Import 'sfpd' wind data.
-
     12 second energetic electron pitch-angle energy spectra from the foil SST
-
     Parameters
     ----------
     starttime : datetime
         Interval start time.
     endtime : datetime
         Interval end time.
-
     Returns
     -------
     data : :class:`~sunpy.timeseries.TimeSeries`
