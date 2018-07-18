@@ -251,17 +251,12 @@ def _mfi(starttime, endtime, version, units=None):
 
     def processing_func(cdf):
         epoch_dict = {'h0': 'Epoch3', 'h2': 'Epoch'}
-        mag_dict = {'h0': 'B3GSE', 'h2': 'BGSE'}
-
         epoch_key = epoch_dict[version]
-        mag_key = mag_dict[version]
 
-        keys = {mag_key: ['Bx_gse', 'By_gse', 'Bz_gse'],
-                epoch_key: 'Time'}
         badvalues = {'Bx_gse': -1e+31,
                      'By_gse': -1e+31,
                      'Bz_gse': -1e+31}
-        df = util.cdf2df(cdf, index_key=epoch_key, keys=keys,
+        df = util.cdf2df(cdf, index_key=epoch_key,
                          badvalues=badvalues)
         return df
 
@@ -314,14 +309,7 @@ def threedp_pm(starttime, endtime):
             print('File {}/{} not available\n'.format(remote_url, filename))
             continue
 
-        keys = {'A_DENS': 'n_a',
-                'A_TEMP': 'T_a',
-                'A_VELS': ['va_x', 'va_y', 'va_z'],
-                'P_DENS': 'n_p',
-                'P_TEMP': 'T_p',
-                'P_VELS': ['vp_x', 'vp_y', 'vp_z'],
-                'Epoch': 'Time'}
-        df = util.cdf2df(cdf, index_key='Epoch', keys=keys)
+        df = util.cdf2df(cdf, index_key='Epoch')
         if use_hdf:
             df.to_hdf(hdfloc, 'pm', mode='w')
         data.append(df)
