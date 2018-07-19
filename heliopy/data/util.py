@@ -208,10 +208,12 @@ def cdf_units(cdf_, manual_units=None):
     """
     Takes the CDF File and the required keys, and finds the units of the
     selected keys.
+
     Parameters
     ----------
     cdf_ : cdf
         Opened cdf file
+
     Returns
     -------
     out : :class:`collections.OrderedDict`
