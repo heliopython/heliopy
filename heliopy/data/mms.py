@@ -81,17 +81,7 @@ def fpi_dis_moms(probe, mode, starttime, endtime):
 
             probestr = 'mms' + probe + '_'
             # Convert cdf to dataframe
-            keys = {'Epoch': 'Time',
-                    probestr + 'dis_bulkv_gse_fast': ['bulkv_x',
-                                                      'bulkv_y',
-                                                      'bulkv_z'],
-                    probestr + 'dis_heatq_gse_fast': ['heatq_x',
-                                                      'heatq_y',
-                                                      'heatq_z'],
-                    probestr + 'dis_numberdensity_fast': 'n',
-                    probestr + 'dis_temppara_fast': 'T_par',
-                    probestr + 'dis_tempperp_fast': 'T_perp'}
-            df = util.cdf2df(cdf, 'Epoch', keys)
+            df = util.cdf2df(cdf, 'Epoch')
             data.append(df)
 
     return util.timefilter(data, starttime, endtime)
@@ -137,9 +127,7 @@ def fgm_survey(probe, starttime, endtime):
         cdf = util.load(filename, local_dir, remote_url)
 
         # Convert cdf to dataframe
-        keys = {'mms' + probe + '_fgm_b_gsm_srvy_l2': ['Bx', 'By', 'Bz', 'Br'],
-                'Epoch': 'Time'}
-        df = util.cdf2df(cdf, 'Epoch', keys)
+        df = util.cdf2df(cdf, 'Epoch')
         data.append(df)
 
     return util.timefilter(data, starttime, endtime)

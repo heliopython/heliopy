@@ -35,14 +35,6 @@ def mag_rtn(starttime, endtime, try_download=True):
     fnames = []
     dirs = []
     extension = '.cdf'
-    keys = {'B_normal': 'Bn',
-            'B_radial': 'Br',
-            'B_tangential': 'Bt',
-            'Epoch': 'Time',
-            'azimuth_ecliptic': 'sc_Az',
-            'latitude_ecliptic': 'sc_Lat',
-            'radialDistance': 'sc_r',
-            'MissionElapsedTime': 'mission_time'}
     data = []
     daylist = util._daysplitinterval(starttime, endtime)
     for day in daylist:
@@ -67,10 +59,10 @@ def mag_rtn(starttime, endtime, try_download=True):
         util._download_remote(remote_url, filename, local_dir)
 
     def processing_func(cdf):
-        thisdata = util.cdf2df(cdf, 'Epoch', keys)
+        thisdata = util.cdf2df(cdf, 'Epoch')
         return thisdata
 
     return util.process(dirs, fnames, extension, local_base_dir,
                         remote_base_url, download_func, processing_func,
-                        starttime, endtime, keys=keys,
+                        starttime, endtime,
                         try_download=try_download)

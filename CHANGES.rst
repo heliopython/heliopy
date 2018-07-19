@@ -14,6 +14,11 @@ New features
 
 Backwards incompatible changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+- Data import has had a major overhaul, so that every column in CDF files now
+  gets automatically imported and retains its name without being changed by
+  HelioPy. This means column names in several data products are now different,
+  to reflect their original name in the CDF files instead of a custom name
+  assinged by HelioPy.
 - :func:`.data.helios.merged`, :func:`.data.helios.mag_4hz`,
   :func:`.data.helios.corefit` and :func:`.data.helios.mag_ness` no longer take
   a `verbose` keyword argument. :issue:`467`
