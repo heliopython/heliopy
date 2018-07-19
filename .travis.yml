@@ -2,10 +2,9 @@ sudo: false
 language: python
 cache: pip
 
-matrix:
-  include:
-    - python: 3.6
-      env: RUN_PEP8=--pep8
+env:
+  - PYTHON_VERSION=3.6
+  - PYTHON_VERSION=3.7
 
 before_install:
 # Install conda
@@ -14,7 +13,7 @@ before_install:
 - "./miniconda.sh -b -p $HOME/miniconda"
 - export PATH="$HOME/miniconda/bin:$PATH"
 - conda update --yes conda
-- conda create --yes -n testenv python=$TRAVIS_PYTHON_VERSION
+- conda create --yes -n testenv python=$PYTHON_VERSION
 - source activate testenv
 
 - pip install --quiet $PRE -r requirements/test.txt
@@ -33,7 +32,7 @@ before_install:
 
 script:
 # Check that unit tests work
-- pytest heliopy/ --cov=heliopy/ -v --durations=5 $RUN_PEP8
+- pytest heliopy/ --cov=heliopy/ -v --durations=5 --pep8
 # Check building a source distribution works
 - python setup.py sdist
 after_success:
