@@ -24,8 +24,8 @@ install:
   - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
   - "activate test"
   - cmd: conda install hdf5
-  - "pip install --quiet -r requirements/test.txt"
-  - "pip install --quiet spiceypy --no-cache-di"
+  - "pip install -r requirements/test.txt"
+  - "pip install spiceypy --no-cache-di"
 
 
 # Not a .NET project, we build heliopy in the install step instead
