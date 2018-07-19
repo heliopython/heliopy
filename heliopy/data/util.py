@@ -240,10 +240,11 @@ def cdf_units(cdf_, manual_units=None):
         try:
             if len(cdf_[key][0]) > 1:
                 val = []
+                val.append(key)
                 for x in range(0, len(cdf_[key][0])):
                     field = key + "{}".format('_' + str(x))
                     val.append(field)
-        except TypeError:
+        except Exception as e:
             continue
         if isinstance(val, list):
             units.update(coll.OrderedDict.fromkeys(val, temp_unit))
