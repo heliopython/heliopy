@@ -208,12 +208,10 @@ def cdf_units(cdf_, manual_units=None):
     """
     Takes the CDF File and the required keys, and finds the units of the
     selected keys.
-
     Parameters
     ----------
     cdf_ : cdf
         Opened cdf file
-
     Returns
     -------
     out : :class:`collections.OrderedDict`
@@ -222,7 +220,6 @@ def cdf_units(cdf_, manual_units=None):
     units = coll.OrderedDict()
     # Get list of all keys in the CDF file
     keys = dict(zip(list(cdf_.keys()), list(cdf_.keys())))
-
     for key, val in keys.items():
         try:
             temp_unit = u.Unit(cdf_[key].attrs['UNITS'])
@@ -237,6 +234,14 @@ def cdf_units(cdf_, manual_units=None):
                            " for key '{}' are unknown".format(key))
                 warnings.warn(message, Warning)
         except KeyError:
+            continue
+        try:
+            if len(cdf_[key][0]) > 1:
+                val = []
+                for x in range(0, len(cdf_[key][0])):
+                    field = key + "{}".format('_' + str(x))
+                    val.append(field)
+        except TypeError:
             continue
         if isinstance(val, list):
             units.update(coll.OrderedDict.fromkeys(val, temp_unit))
