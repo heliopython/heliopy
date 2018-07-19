@@ -180,7 +180,8 @@ def mitplasma_h0(probe, starttime, endtime, try_download=True):
     fnames = []
     extension = '.cdf'
     units = OrderedDict([('mode', u.dimensionless_unscaled),
-                         ('Region', u.dimensionless_unscaled)])
+                         ('Region', u.dimensionless_unscaled),
+                         ('Spacecraft', u.dimensionless_unscaled)])
     for date, _, _ in util._daysplitinterval(starttime, endtime):
         intervalstring = str(date.year) +\
             str(date.month).zfill(2) +\
