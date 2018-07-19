@@ -107,7 +107,7 @@ def swe_h1(starttime, endtime):
                  'Alpha_sigmaNa_nonlin': 100000.0}
     units = OrderedDict([('fit_flag', u.dimensionless_unscaled),
                          ('ChisQ_DOF_nonlin', u.dimensionless_unscaled)])
-  
+
     return _load_wind_cdf(starttime, endtime, instrument,
                           data_product, fname, badvalues, units=units)
 
