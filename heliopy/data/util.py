@@ -245,7 +245,7 @@ def cdf_units(cdf_, manual_units=None):
                     field = key + "{}".format('_' + str(x))
                     val.append(field)
         except Exception as e:
-            continue
+            pass
         if isinstance(val, list):
             units.update(coll.OrderedDict.fromkeys(val, temp_unit))
         else:
