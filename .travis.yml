@@ -16,8 +16,8 @@ before_install:
 - conda create --yes -n testenv python=$PYTHON_VERSION
 - source activate testenv
 
-- pip install --quiet $PRE -r requirements/test.txt
-- pip install --quiet spiceypy --no-cache-di
+- pip install $PRE -r requirements/test.txt
+- pip install spiceypy --no-cache-di
 
 # Install CDF library
 - wget https://cdaweb.sci.gsfc.nasa.gov/pub/software/cdf/dist/cdf37_0/linux/cdf37_0-dist-all.tar.gz
