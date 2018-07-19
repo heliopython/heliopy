@@ -239,8 +239,7 @@ def cdf_units(cdf_, manual_units=None):
             continue
         ncols = cdf_[key].shape
         val = []
-        if len(ncols) == 1:
-            val.append(key)
+        val.append(key)
         if len(ncols) > 1:
             for x in range(0, ncols[1]):
                 field = key + "{}".format('_' + str(x))
