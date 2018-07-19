@@ -19,14 +19,13 @@ remote_ace_dir = 'ftp://spdf.gsfc.nasa.gov/pub/data/ace/'
 remote_cda_dir = 'ftp://cdaweb.gsfc.nasa.gov/pub/data/ace/'
 
 
-def _ace(starttime, endtime, instrument, product, fname, units=None, keys=None,
+def _ace(starttime, endtime, instrument, product, fname, units=None,
          version='01', badvalues={}):
     """
     Generic method for downloading ACE data from cdaweb.
     """
     # Directory relative to main WIND data directory
     relative_dir = path.Path(instrument) / 'level_2_cdaweb' / product
-
     daylist = util._daysplitinterval(starttime, endtime)
     dirs = []
     fnames = []
@@ -60,11 +59,11 @@ def _ace(starttime, endtime, instrument, product, fname, units=None, keys=None,
 
     def processing_func(cdf):
         return util.cdf2df(cdf, index_key='Epoch',
-                           keys=keys, badvalues=badvalues)
+                           badvalues=badvalues)
 
     return util.process(dirs, fnames, extension, ace_dir, remote_ace_dir,
                         download_func, processing_func, starttime,
-                        endtime, units=units, keys=keys)
+                        endtime, units=units)
 
 
 def mfi_h0(starttime, endtime):
@@ -86,18 +85,10 @@ def mfi_h0(starttime, endtime):
     instrument = 'mag'
     product = 'mfi_h0'
     fname = 'h0_mfi'
-    keys = {'Magnitude': 'Magnitude',
-            'SC_pos_GSE': ['sc_gse_x', 'sc_gse_y', 'sc_gse_z'],
-            'SC_pos_GSM': ['sc_gsm_x', 'sc_gsm_y', 'sc_gsm_z'],
-            'BGSEc': ['BGSE_x', 'BGSE_y', 'BGSE_z'],
-            'BGSM': ['BGSM_x', 'BGSM_y', 'BGSM_z'],
-            'dBrms': 'dBrms',
-            'Q_FLAG': 'Q_FLAG',
-            'Epoch': 'Time'}
     version = '06'
     units = OrderedDict([('Q_FLAG', u.dimensionless_unscaled)])
     return _ace(starttime, endtime, instrument, product,
-                fname, units=units, keys=keys, version=version)
+                fname, units=units, version=version)
 
 
 def swe_h0(starttime, endtime):
@@ -120,19 +111,9 @@ def swe_h0(starttime, endtime):
     instrument = 'swepam'
     product = 'swe_h0'
     fname = 'h0_swe'
-    keys = {'Np': 'n_p',
-            'Tpr': 'T_pr',
-            'SC_pos_GSE': ['sc_gse_x', 'sc_gse_y', 'sc_gse_z'],
-            'SC_pos_GSM': ['sc_gsm_x', 'sc_gsm_y', 'sc_gsm_z'],
-            'V_GSE': ['vp_gse_x', 'vp_gse_y', 'vp_gse_z'],
-            'V_GSM': ['vp_gsm_x', 'vp_gsm_y', 'vp_gsm_z'],
-            'V_RTN': ['vp_rtn_r', 'vp_rtn_t', 'vp_rtn_n'],
-            'Vp': '|vp|',
-            'alpha_ratio': 'n_a/n_p',
-            'Epoch': 'Time'}
     version = '06'
     badvalues = -1e31
-    return _ace(starttime, endtime, instrument, product, fname, keys=keys,
+    return _ace(starttime, endtime, instrument, product, fname,
                 version=version, badvalues=badvalues)
 
 

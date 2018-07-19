@@ -1,6 +1,5 @@
 """
 Methods for importing data from the WIND spacecraft.
-
 All data is publically available at ftp://spdf.gsfc.nasa.gov/pub/data/wind.
 See https://wind.nasa.gov/data_sources.php for more information on different
 data products.
@@ -58,14 +57,12 @@ def swe_h1(starttime, endtime):
     """
     Import 'h1' (Bi-Maxwellian, Anisotropic Analysis of Protons and Alphas)
     solar wind ion data product from WIND.
-
     Parameters
     ----------
     starttime : datetime
         Interval start time.
     endtime : datetime
         Interval end time.
-
     Returns
     -------
     data : :class:`~sunpy.timeseries.TimeSeries`
@@ -114,18 +111,15 @@ def swe_h1(starttime, endtime):
 def swe_h3(starttime, endtime):
     """
     Import 'h3' solar wind electron data product from WIND.
-
     Electron pitch angle files providing electron fluxes at 30 directional bins
     relative to the instantaneous magnetic field direction at 13 different
     energy levels
-
     Parameters
     ----------
     starttime : datetime
         Interval start time.
     endtime : datetime
         Interval end time.
-
     Returns
     -------
     data : :class:`~sunpy.timeseries.TimeSeries`
@@ -178,14 +172,12 @@ def swe_h3(starttime, endtime):
 def mfi_h0(starttime, endtime):
     """
     Import 'mfi_h0' magnetic field data product from WIND.
-
     Parameters
     ----------
     starttime : datetime
         Interval start time.
     endtime : datetime
         Interval end time.
-
     Returns
     -------
     data : :class:`~sunpy.timeseries.TimeSeries`
@@ -198,17 +190,14 @@ def mfi_h0(starttime, endtime):
 def mfi_h2(starttime, endtime):
     """
     Import 'mfi_h2' magnetic field data product from WIND.
-
     The highest time resolution data (11 vectors/sec usually, and
     22 vectors/sec when near Earth)
-
     Parameters
     ----------
     starttime : datetime
         Interval start time.
     endtime : datetime
         Interval end time.
-
     Returns
     -------
     data : :class:`~sunpy.timeseries.TimeSeries`
@@ -221,14 +210,12 @@ def mfi_h2(starttime, endtime):
 def _mfi(starttime, endtime, version, units=None):
     """
     Import mfi magnetic field data products from WIND.
-
     Parameters
     ----------
     starttime : datetime
         Interval start time.
     endtime : datetime
         Interval end time.
-
     Returns
     -------
     data : DataFrame
@@ -264,17 +251,12 @@ def _mfi(starttime, endtime, version, units=None):
 
     def processing_func(cdf):
         epoch_dict = {'h0': 'Epoch3', 'h2': 'Epoch'}
-        mag_dict = {'h0': 'B3GSE', 'h2': 'BGSE'}
-
         epoch_key = epoch_dict[version]
-        mag_key = mag_dict[version]
 
-        keys = {mag_key: ['Bx_gse', 'By_gse', 'Bz_gse'],
-                epoch_key: 'Time'}
         badvalues = {'Bx_gse': -1e+31,
                      'By_gse': -1e+31,
                      'Bz_gse': -1e+31}
-        df = util.cdf2df(cdf, index_key=epoch_key, keys=keys,
+        df = util.cdf2df(cdf, index_key=epoch_key,
                          badvalues=badvalues)
         return df
 
@@ -286,17 +268,14 @@ def _mfi(starttime, endtime, version, units=None):
 def threedp_pm(starttime, endtime):
     """
     Import 'pm' wind data.
-
     3 second time resolution solar wind proton and alpha particle moments from
     the PESA LOW sensor, computed on-board the spacecraft
-
     Parameters
     ----------
     starttime : datetime
         Interval start time.
     endtime : datetime
         Interval end time.
-
     Returns
     -------
     data : :class:`~sunpy.timeseries.TimeSeries`
@@ -330,14 +309,7 @@ def threedp_pm(starttime, endtime):
             print('File {}/{} not available\n'.format(remote_url, filename))
             continue
 
-        keys = {'A_DENS': 'n_a',
-                'A_TEMP': 'T_a',
-                'A_VELS': ['va_x', 'va_y', 'va_z'],
-                'P_DENS': 'n_p',
-                'P_TEMP': 'T_p',
-                'P_VELS': ['vp_x', 'vp_y', 'vp_z'],
-                'Epoch': 'Time'}
-        df = util.cdf2df(cdf, index_key='Epoch', keys=keys)
+        df = util.cdf2df(cdf, index_key='Epoch')
         if use_hdf:
             df.to_hdf(hdfloc, 'pm', mode='w')
         data.append(df)
@@ -348,16 +320,13 @@ def threedp_pm(starttime, endtime):
 def threedp_sfpd(starttime, endtime):
     """
     Import 'sfpd' wind data.
-
     12 second energetic electron pitch-angle energy spectra from the foil SST
-
     Parameters
     ----------
     starttime : datetime
         Interval start time.
     endtime : datetime
         Interval end time.
-
     Returns
     -------
     data : :class:`~sunpy.timeseries.TimeSeries`

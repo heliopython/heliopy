@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 
 def process(dirs, fnames, extension, local_base_dir, remote_base_url,
             download_func, processing_func, starttime, endtime,
-            try_download=True, units=None, keys=None,
+            try_download=True, units=None,
             processing_kwargs={}, download_info=[]):
     """
     The main utility method for systematically loading, downloading, and saving
@@ -91,14 +91,6 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
         Must map column headers (strings) to :class:`~astropy.units.Quantity`
         objects. If units are present, then a TimeSeries object is returned,
         else a Pandas DataFrame.
-
-    keys : dict, optional
-        Keys to be extracted from the CDF, along with their column names as the
-        values.
-
-        Must map keys from the CDF (strings) to the column name (strings).
-        If keys are present, then only the specified keys are extracted from
-        the CDF file.
 
     processing_kwargs : dict, optional
         Extra keyword arguments to be passed to the processing funciton.
@@ -170,9 +162,11 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
 
     # Loaded all the data, now filter between times
     data = timefilter(data, starttime, endtime)
+
+    # Attach units
     if extension == '.cdf':
         cdf = _load_local(raw_file)
-        units_cdf = cdf_units(cdf, keys=keys, manual_units=units)
+        units_cdf = cdf_units(cdf, manual_units=units)
         return units_attach(data, units_cdf)
     if type(units) is coll.OrderedDict:
         return units_attach(data, units)
@@ -210,7 +204,7 @@ def units_attach(data, units):
     return timeseries_data
 
 
-def cdf_units(cdf_, keys=None, manual_units=None):
+def cdf_units(cdf_, manual_units=None):
     """
     Takes the CDF File and the required keys, and finds the units of the
     selected keys.
@@ -219,11 +213,6 @@ def cdf_units(cdf_, keys=None, manual_units=None):
     ----------
     cdf_ : cdf
         Opened cdf file
-    keys : dict, optional
-        If the user knows the units they wish to extract
-        from the CDF file keys, keys can be passed as an arugment.
-        If not, the function extracts all the keys present which
-        have an UNIT attribute.
 
     Returns
     -------
@@ -231,10 +220,9 @@ def cdf_units(cdf_, keys=None, manual_units=None):
         Returns an OrderedDict with units of the selected keys.
     """
     units = coll.OrderedDict()
-    if keys is None:
-        message = "No keys assigned for the CDF. Extracting manually."
-        warnings.warn(message, Warning)
-        keys = dict(zip(list(cdf_.keys()), list(cdf_.keys())))
+    # Get list of all keys in the CDF file
+    keys = dict(zip(list(cdf_.keys()), list(cdf_.keys())))
+
     for key, val in keys.items():
         try:
             temp_unit = u.Unit(cdf_[key].attrs['UNITS'])
@@ -245,8 +233,8 @@ def cdf_units(cdf_, keys=None, manual_units=None):
             unknown_unit = (cdf_[key].attrs['UNITS'])
             temp_unit = helper.cdf_dict(unknown_unit)
             if temp_unit is None:
-                message = "The CDF provided units ({}) for key '{}' \
-                are unknown".format(unknown_unit, key)
+                message = ("The CDF provided units '{}'".format(unknown_unit) +
+                           " for key '{}' are unknown".format(key))
                 warnings.warn(message, Warning)
         except KeyError:
             continue
@@ -381,22 +369,21 @@ def pitchdist_cdf2df(cdf, distkeys, energykey, timekey, anglelabels):
     return data
 
 
-def cdf2df(cdf, index_key, keys=None, dtimeindex=True, badvalues=None):
+def cdf2df(cdf, index_key, dtimeindex=True, badvalues=None):
     """
     Converts a cdf file to a pandas dataframe.
+
+    Note that this only works for 1 dimensional data, other data such as
+    distribution functions or pitch angles will not work properly.
 
     Parameters
     ----------
     cdf : cdf
-        Opened cdf file
+        Opened CDF file.
     index_key : string
-        The key to use as indexing in the output dataframe
-    keys : dict, optional
-        A dictionary that maps keys in the cdf file to the corresponding
-        desired keys in the ouput dataframe. If a particular cdf key has
-        multiple columns, the mapped keys must be in a list.
+        The CDF key to use as the index in the output DataFrame.
     dtimeindex : bool, optional
-        If ``True``, DataFrame index is parsed as a datetime.
+        If ``True``, the DataFrame index is parsed as a datetime.
         Default is ``True``.
     badvalues : dict, list, optional
         A dictionary that maps the new DataFrame column keys to a list of bad
@@ -406,7 +393,7 @@ def cdf2df(cdf, index_key, keys=None, dtimeindex=True, badvalues=None):
     Returns
     -------
     df : :class:`pandas.DataFrame`
-        Data frame with read in data
+        Data frame with read in data.
     """
     # Extract index values
     try:
@@ -415,27 +402,42 @@ def cdf2df(cdf, index_key, keys=None, dtimeindex=True, badvalues=None):
         index = cdf[index_key][...]
     # Parse datetime index
     if dtimeindex:
-        index = pd.DatetimeIndex(index)
+        index = pd.DatetimeIndex(index, name='Time')
     df = pd.DataFrame(index=index)
+    npoints = cdf[index_key].shape[0]
 
-    if keys is None:
-        keys = {}
-        for key in cdf.keys():
-            if key == 'Epoch':
-                keys['Epoch'] = 'Time'
-            else:
-                keys[key] = key
+    keys = {}
+    for cdf_key in cdf.keys():
+        if cdf_key == 'Epoch':
+            keys[cdf_key] = 'Time'
+        else:
+            keys[cdf_key] = cdf_key
+    # Remove index key, as we have already used it to create the index
+    keys.pop(index_key)
 
-    for key in keys:
-        df_key = keys[key]
+    # Remove keys for data that doesn't have the right shape to load in CDF
+    for cdf_key in keys.copy():
+        key_shape = cdf[cdf_key].shape
+        if len(key_shape) == 0 or key_shape[0] != npoints:
+            keys.pop(cdf_key)
+
+    # Loop through each key and put data into the dataframe
+    for cdf_key in keys:
+        df_key = keys[cdf_key]
         if isinstance(df_key, list):
             for i, subkey in enumerate(df_key):
-                df[subkey] = cdf[key][...][:, i]
+                df[subkey] = cdf[cdf_key][...][:, i]
         else:
-            try:
-                df[df_key] = cdf[key][...]
-            except Exception:
-                continue
+            # If ndims is 1, we just have a single column of data
+            # If ndims is 2, have multiple columns of data under same key
+            key_shape = cdf[cdf_key].shape
+            ndims = len(key_shape)
+            if ndims == 1:
+                df[df_key] = cdf[cdf_key][...]
+            elif ndims == 2:
+                for i in range(key_shape[1]):
+                    df[df_key + '_' + str(i)] = cdf[cdf_key][...][:, i]
+
     # Replace bad values with nans
     if badvalues is not None:
         df = df.replace(badvalues, np.nan)
