@@ -222,7 +222,6 @@ def cdf_units(cdf_, manual_units=None):
     units = coll.OrderedDict()
     # Get list of all keys in the CDF file
     keys = dict(zip(list(cdf_.keys()), list(cdf_.keys())))
-
     for key, val in keys.items():
         try:
             temp_unit = u.Unit(cdf_[key].attrs['UNITS'])
@@ -238,6 +237,15 @@ def cdf_units(cdf_, manual_units=None):
                 warnings.warn(message, Warning)
         except KeyError:
             continue
+        ncols = cdf_[key].shape
+        if len(ncols) == 1:
+            val = key
+        if len(ncols) > 1:
+            val = []
+            val.append(key)
+            for x in range(0, ncols[1]):
+                field = key + "{}".format('_' + str(x))
+                val.append(field)
         if isinstance(val, list):
             units.update(coll.OrderedDict.fromkeys(val, temp_unit))
         else:
