@@ -238,9 +238,11 @@ def cdf_units(cdf_, manual_units=None):
         except KeyError:
             continue
         ncols = cdf_[key].shape
-        val = []
-        val.append(key)
+        if len(ncols) == 1:
+            val = key
         if len(ncols) > 1:
+            val = []
+            val.append(key)
             for x in range(0, ncols[1]):
                 field = key + "{}".format('_' + str(x))
                 val.append(field)
