@@ -237,15 +237,14 @@ def cdf_units(cdf_, manual_units=None):
                 warnings.warn(message, Warning)
         except KeyError:
             continue
-        try:
-            if len(cdf_[key][0]) > 1:
-                val = []
-                val.append(key)
-                for x in range(0, len(cdf_[key][0])):
-                    field = key + "{}".format('_' + str(x))
-                    val.append(field)
-        except Exception as e:
-            pass
+        ncols = cdf_[key].shape
+        val = []
+        if len(ncols) == 1:
+            val.append(key)
+        if len(ncols) > 1:
+            for x in range(0, ncols[1]):
+                field = key + "{}".format('_' + str(x))
+                val.append(field)
         if isinstance(val, list):
             units.update(coll.OrderedDict.fromkeys(val, temp_unit))
         else:
