@@ -20,8 +20,9 @@ use_hdf = config['use_hdf']
 remote_wind_dir = 'ftp://spdf.gsfc.nasa.gov/pub/data/wind/'
 
 
-def _load_wind_cdf(starttime, endtime, instrument,
-                   data_product, fname, badvalues={}):
+def _load_wind_cdf(starttime, endtime, instrument, data_product,
+                   fname, badvalues={}, units=None):
+
     relative_dir = path.Path(instrument) / data_product
     # Get directories and filenames
     dirs = []
@@ -50,7 +51,7 @@ def _load_wind_cdf(starttime, endtime, instrument,
 
     return util.process(dirs, fnames, extension, local_base_dir,
                         remote_base_url, download_func, processing_func,
-                        starttime, endtime)
+                        starttime, endtime, units=units)
 
 
 def swe_h1(starttime, endtime):
@@ -104,8 +105,11 @@ def swe_h1(starttime, endtime):
                  'Proton_Wpar_moment': 99999.9,
                  'Alpha_Na_nonlin': 100000.0,
                  'Alpha_sigmaNa_nonlin': 100000.0}
+    units = OrderedDict([('fit_flag', u.dimensionless_unscaled),
+                         ('ChisQ_DOF_nonlin', u.dimensionless_unscaled)])
+
     return _load_wind_cdf(starttime, endtime, instrument,
-                          data_product, fname, badvalues)
+                          data_product, fname, badvalues, units=units)
 
 
 def swe_h3(starttime, endtime):
@@ -129,7 +133,8 @@ def swe_h3(starttime, endtime):
     dirs = []
     fnames = []
     units = OrderedDict([('Angle', u .deg),
-                        ('Energy', u.eV)])
+                        ('Energy', u.eV),
+                        ('df', u.cm/u.s)])
     daylist = util._daysplitinterval(starttime, endtime)
     for day in daylist:
         date = day[0]

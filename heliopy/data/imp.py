@@ -295,6 +295,7 @@ def mag15s(probe, starttime, endtime, verbose=False, try_download=True):
     dirs = []
     extension = '.asc'
     units = OrderedDict([('n points', u.dimensionless_unscaled),
+                         ('Source flag', u.dimensionless_unscaled),
                          ('x gse', u.earthRad), ('y gse', u.earthRad),
                          ('z gse', u.earthRad), ('y gsm', u.earthRad),
                          ('z gsm', u.earthRad), ('|B|', u.nT),
