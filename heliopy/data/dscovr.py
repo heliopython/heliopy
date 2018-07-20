@@ -18,6 +18,7 @@ data_dir = path.Path(config['download_dir'])
 dscovr_dir = data_dir / 'dscovr'
 dscovr_url = 'https://spdf.gsfc.nasa.gov/pub/data/dscovr/'
 
+
 def mag_h0(starttime, endtime):
     """
     Imports  magnetic field data from DSCOVR Spacecraft.
@@ -48,14 +49,13 @@ def mag_h0(starttime, endtime):
     remote_base_url = dscovr_url
 
     def download_func(remote_base_url, local_base_dir,
-                          directory, fname, extension):
+                      directory, fname, extension):
             remote_url = remote_base_url + str(directory)
             filename = fname + extension
             local_dir = local_base_dir / directory
             util.load(fname + extension,
-                  local_base_dir / directory,
-                  remote_url)
-
+                      local_base_dir / directory,
+                      remote_url)
 
     def processing_func(cdf):
         df = util.cdf2df(cdf, 'Epoch1')
