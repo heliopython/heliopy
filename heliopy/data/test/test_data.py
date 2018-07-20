@@ -340,6 +340,7 @@ class TestHelios:
         check_datetime_index(df)
         check_units(df)
 
+
 @pytest.mark.data
 class TestOmni:
     @classmethod
@@ -351,6 +352,7 @@ class TestOmni:
         df = omni.low(self.starttime, self.endtime)
         check_datetime_index(df)
         check_units(df)
+
 
 @pytest.mark.data
 class TestDSCOVR:
