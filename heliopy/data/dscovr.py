@@ -60,7 +60,6 @@ def mag_h0(starttime, endtime):
     def processing_func(cdf):
         df = util.cdf2df(cdf, 'Epoch1')
         df.index.name = 'Time'
-        df = df.drop(['Epoch1'], 1)
         return df
 
     return util.process(dirs, fnames, extension, local_base_dir,
