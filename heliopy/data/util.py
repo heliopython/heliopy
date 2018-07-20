@@ -377,7 +377,7 @@ def pitchdist_cdf2df(cdf, distkeys, energykey, timekey, anglelabels):
     return data
 
 
-def cdf2df(cdf, index_key, dtimeindex=True, badvalues=None):
+def cdf2df(cdf, index_key, dtimeindex=True, badvalues=None, ignore=None):
     """
     Converts a cdf file to a pandas dataframe.
 
@@ -416,6 +416,9 @@ def cdf2df(cdf, index_key, dtimeindex=True, badvalues=None):
 
     keys = {}
     for cdf_key in cdf.keys():
+        if ignore:
+            if cdf_key in ignore:
+                continue
         if cdf_key == 'Epoch':
             keys[cdf_key] = 'Time'
         else:

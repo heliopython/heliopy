@@ -184,7 +184,8 @@ def mfi_h0(starttime, endtime):
     """
     units = OrderedDict([('Bx_gse', u.nT), ('By_gse', u.nT),
                         ('Bz_gse', u.nT)])
-    return _mfi(starttime, endtime, 'h0', units=units)
+    ignore = ['Time3_PB5']
+    return _mfi(starttime, endtime, 'h0', units=units, ignore=ignore)
 
 
 def mfi_h2(starttime, endtime):
@@ -204,10 +205,11 @@ def mfi_h2(starttime, endtime):
     """
     units = OrderedDict([('Bx_gse', u.nT), ('By_gse', u.nT),
                         ('Bz_gse', u.nT)])
-    return _mfi(starttime, endtime, 'h2', units=units)
+    ignore = ['Time_PB5']
+    return _mfi(starttime, endtime, 'h2', units=units, ignore=ignore)
 
 
-def _mfi(starttime, endtime, version, units=None):
+def _mfi(starttime, endtime, version, units=None, ignore=None):
     """
     Import mfi magnetic field data products from WIND.
     Parameters
@@ -257,7 +259,7 @@ def _mfi(starttime, endtime, version, units=None):
                      'By_gse': -1e+31,
                      'Bz_gse': -1e+31}
         df = util.cdf2df(cdf, index_key=epoch_key,
-                         badvalues=badvalues)
+                         badvalues=badvalues, ignore=ignore)
         return df
 
     return util.process(dirs, fnames, extension, local_base_dir,
