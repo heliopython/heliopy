@@ -200,7 +200,7 @@ def fgm_hires(starttime, endtime, try_download=True):
     local_base_dir = ulysses_dir / 'fgm' / 'hires'
     remote_base_url = ulysses_url
     units = OrderedDict([('Bx', u.nT), ('By', u.nT),
-    	                 ('Bz', u.nT), ('|B|', u.nT)])
+                         ('Bz', u.nT), ('|B|', u.nT)])
 
     def download_func(remote_base_url, local_base_dir,
                       directory, fname, extension):
