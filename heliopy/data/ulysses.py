@@ -199,6 +199,8 @@ def fgm_hires(starttime, endtime, try_download=True):
     extension = '.ASC'
     local_base_dir = ulysses_dir / 'fgm' / 'hires'
     remote_base_url = ulysses_url
+    units = OrderedDict([('Bx', u.nT), ('By', u.nT),
+    	                 ('Bz', u.nT), ('|B|', u.nT)])
 
     def download_func(remote_base_url, local_base_dir,
                       directory, fname, extension):
@@ -209,7 +211,6 @@ def fgm_hires(starttime, endtime, try_download=True):
         remote_url = ulysses_url
         for key in fgm_options:
             remote_url += key + '=' + fgm_options[key] + '&'
-            print("{} THIS".format(remote_url))
         try:
             util._load_remote(remote_url, fname + extension, local_dir, 'ascii')
         except Exception as err:
@@ -233,7 +234,7 @@ def fgm_hires(starttime, endtime, try_download=True):
 
     return util.process(
         dirs, fnames, extension, local_base_dir, remote_base_url,
-        download_func, processing_func, starttime, endtime,
+        download_func, processing_func, starttime, endtime, units=units,
         try_download=True)
 
 
