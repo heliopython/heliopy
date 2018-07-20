@@ -397,6 +397,9 @@ def cdf2df(cdf, index_key, dtimeindex=True, badvalues=None, ignore=None):
         A dictionary that maps the new DataFrame column keys to a list of bad
         values to replace with nans. Alternatively a list of numbers which are
         replaced with nans in all columns.
+    ignore : list, optional
+        In case a CDF file has columns that are unused / not required, then
+        the column names can be passed as a list into the function.
 
     Returns
     -------
