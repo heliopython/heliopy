@@ -20,7 +20,7 @@ dscovr_url = 'https://spdf.gsfc.nasa.gov/pub/data/dscovr/'
 
 def mag_h0(starttime, endtime):
     """
-    Import data from DSCOVR Spacecraft.
+    Imports  magnetic field data from DSCOVR Spacecraft.
     Parameters
     ----------
         starttime : datetime
@@ -31,9 +31,6 @@ def mag_h0(starttime, endtime):
     -------
         data : :class:`~sunpy.timeseries.TimeSeries`
     """
-
-#     relative_loc = dscovr_dir / 'h0' / 'mag'
-#     remote_base_url = dscovr_url + 'h0/mag/'
 
     dirs = []
     fnames = []
