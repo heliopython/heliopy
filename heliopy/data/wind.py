@@ -289,39 +289,38 @@ def threedp_pm(starttime, endtime):
     """
     # Directory relative to main WIND data directory
     relative_dir = path.Path('3dp') / '3dp_pm'
-
     daylist = util._daysplitinterval(starttime, endtime)
     data = []
+    dirs = []
+    fnames = []
+    extension = '.cdf'
     for day in daylist:
         date = day[0]
         this_relative_dir = relative_dir / str(day[0].year)
-        # Absolute path to local directory for this data file
-        local_dir = wind_dir / this_relative_dir
         filename = 'wi_pm_3dp_' +\
             str(date.year) +\
             str(date.month).zfill(2) +\
             str(date.day).zfill(2) +\
-            '_v05.cdf'
-        hdfname = filename[:-4] + 'hdf'
-        hdfloc = local_dir / hdfname
-        if hdfloc.exists():
-            df = pd.read_hdf(hdfloc)
-            data.append(df)
-            continue
+            '_v05'
+        fnames.append(filename)
+        dirs.append(this_relative_dir)
 
-        util._checkdir(local_dir)
-        remote_url = remote_wind_dir + str(this_relative_dir)
-        cdf = util.load(filename, local_dir, remote_url, guessversion=True)
-        if cdf is None:
-            print('File {}/{} not available\n'.format(remote_url, filename))
-            continue
+    local_base_dir = wind_dir
+    remote_base_url = remote_wind_dir
 
-        df = util.cdf2df(cdf, index_key='Epoch')
-        if use_hdf:
-            df.to_hdf(hdfloc, 'pm', mode='w')
-        data.append(df)
+    def download_func(remote_base_url, local_base_dir, directory,
+                      fname, extension):
+        remote_url = remote_base_url + str(directory)
+        util.load(fname + extension,
+                  local_base_dir / directory,
+                  remote_url, guessversion=True)
 
-    return util.timefilter(data, starttime, endtime)
+    def processing_func(cdf):
+        return util.cdf2df(cdf, 'Epoch')
+
+    return util.process(dirs, fnames, extension, local_base_dir,
+                        remote_base_url, download_func, processing_func,
+                        starttime, endtime)
 
 
 def threedp_sfpd(starttime, endtime):
