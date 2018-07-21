@@ -5,7 +5,7 @@ All data is publically available at
 ftp://spdf.gsfc.nasa.gov/pub/data/dscovr/.
 """
 import pathlib as path
-
+import os
 import pandas as pd
 import astropy.units as u
 import datetime as dt
