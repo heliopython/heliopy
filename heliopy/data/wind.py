@@ -301,7 +301,7 @@ def threedp_pm(starttime, endtime):
             str(date.year) +\
             str(date.month).zfill(2) +\
             str(date.day).zfill(2) +\
-            '_v05'
+            '_v04'
         fnames.append(filename)
         dirs.append(this_relative_dir)
 
