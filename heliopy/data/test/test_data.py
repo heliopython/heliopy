@@ -354,6 +354,7 @@ class TestOmni:
         check_units(df)
 
 
+@pytest.mark.skipif(no_pycdf, reason='Importing pycdf failed')
 @pytest.mark.data
 class TestDSCOVR:
     @classmethod
