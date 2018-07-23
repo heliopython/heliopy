@@ -290,9 +290,18 @@ def threedp_pm(starttime, endtime):
     # Directory relative to main WIND data directory
     relative_dir = path.Path('3dp') / '3dp_pm'
     daylist = util._daysplitinterval(starttime, endtime)
-    data = []
+    ignore = ['TIME']
     dirs = []
     fnames = []
+    units = OrderedDict([('P_DENS', u.cm**-3),
+                         ('P_VELS', u.km / u.s),
+                         ('P_TEMP', u.eV),
+                         ('A_DENS', u.cm**-3),
+                         ('A_VELS', u.km / u.s),
+                         ('A_TEMP', u.eV),
+                         ('GAP', u.dimensionless_unscaled),
+                         ('E_RANGE', u.eV),
+                         ('VALID', u.dimensionless_unscaled)])
     extension = '.cdf'
     for day in daylist:
         date = day[0]
@@ -316,11 +325,11 @@ def threedp_pm(starttime, endtime):
                   remote_url, guessversion=True)
 
     def processing_func(cdf):
-        return util.cdf2df(cdf, 'Epoch')
+        return util.cdf2df(cdf, 'Epoch', ignore=ignore)
 
     return util.process(dirs, fnames, extension, local_base_dir,
                         remote_base_url, download_func, processing_func,
-                        starttime, endtime)
+                        starttime, endtime, units=units)
 
 
 def threedp_sfpd(starttime, endtime):
@@ -339,11 +348,16 @@ def threedp_sfpd(starttime, endtime):
     """
     # Directory relative to main WIND data directory
     relative_dir = path.Path('3dp') / '3dp_sfpd'
-
     daylist = util._daysplitinterval(starttime, endtime)
     data = []
     fnames = []
     dirs = []
+    units = OrderedDict([('Energy', u.eV),
+                         ('Bx', u.nT),
+                         ('By', u.nT),
+                         ('Bz', u.nT),
+                         ('Pitch angle', u.deg),
+                         ('Flux', (u.cm**2 * u.sr * u.eV * u.s)**-1)])
     extension = '.cdf'
     for (date, _, _) in daylist:
         this_relative_dir = relative_dir / str(date.year)
@@ -385,4 +399,4 @@ def threedp_sfpd(starttime, endtime):
 
     return util.process(dirs, fnames, extension, local_base_dir,
                         remote_base_url, download_func, processing_func,
-                        starttime, endtime)
+                        starttime, endtime, units=units)
