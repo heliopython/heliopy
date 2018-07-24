@@ -289,39 +289,47 @@ def threedp_pm(starttime, endtime):
     """
     # Directory relative to main WIND data directory
     relative_dir = path.Path('3dp') / '3dp_pm'
-
     daylist = util._daysplitinterval(starttime, endtime)
-    data = []
+    ignore = ['TIME']
+    dirs = []
+    fnames = []
+    units = OrderedDict([('P_DENS', u.cm**-3),
+                         ('P_VELS', u.km / u.s),
+                         ('P_TEMP', u.eV),
+                         ('A_DENS', u.cm**-3),
+                         ('A_VELS', u.km / u.s),
+                         ('A_TEMP', u.eV),
+                         ('GAP', u.dimensionless_unscaled),
+                         ('E_RANGE', u.eV),
+                         ('VALID', u.dimensionless_unscaled)])
+    extension = '.cdf'
     for day in daylist:
         date = day[0]
         this_relative_dir = relative_dir / str(day[0].year)
-        # Absolute path to local directory for this data file
-        local_dir = wind_dir / this_relative_dir
         filename = 'wi_pm_3dp_' +\
             str(date.year) +\
             str(date.month).zfill(2) +\
             str(date.day).zfill(2) +\
-            '_v05.cdf'
-        hdfname = filename[:-4] + 'hdf'
-        hdfloc = local_dir / hdfname
-        if hdfloc.exists():
-            df = pd.read_hdf(hdfloc)
-            data.append(df)
-            continue
+            '_v04'
+        fnames.append(filename)
+        dirs.append(this_relative_dir)
 
-        util._checkdir(local_dir)
-        remote_url = remote_wind_dir + str(this_relative_dir)
-        cdf = util.load(filename, local_dir, remote_url, guessversion=True)
-        if cdf is None:
-            print('File {}/{} not available\n'.format(remote_url, filename))
-            continue
+    local_base_dir = wind_dir
+    remote_base_url = remote_wind_dir
 
-        df = util.cdf2df(cdf, index_key='Epoch')
-        if use_hdf:
-            df.to_hdf(hdfloc, 'pm', mode='w')
-        data.append(df)
+    def download_func(remote_base_url, local_base_dir, directory,
+                      fname, extension):
+        remote_url = remote_base_url + str(directory)
+        util.load(fname + extension,
+                  local_base_dir / directory,
+                  remote_url, guessversion=True)
 
-    return util.timefilter(data, starttime, endtime)
+    def processing_func(cdf):
+        return util.cdf2df(cdf, 'Epoch', ignore=ignore)
+
+    return util.process(dirs, fnames, extension, local_base_dir,
+                        remote_base_url, download_func, processing_func,
+                        starttime, endtime, units=units)
 
 
 def threedp_sfpd(starttime, endtime):
@@ -340,31 +348,35 @@ def threedp_sfpd(starttime, endtime):
     """
     # Directory relative to main WIND data directory
     relative_dir = path.Path('3dp') / '3dp_sfpd'
-
     daylist = util._daysplitinterval(starttime, endtime)
     data = []
-    mag = []
+    fnames = []
+    dirs = []
+    units = OrderedDict([('Energy', u.eV),
+                         ('Bx', u.nT),
+                         ('By', u.nT),
+                         ('Bz', u.nT),
+                         ('Pitch angle', u.deg),
+                         ('Flux', (u.cm**2 * u.sr * u.eV * u.s)**-1)])
+    extension = '.cdf'
     for (date, _, _) in daylist:
         this_relative_dir = relative_dir / str(date.year)
-        # Absolute path to local directory for this data file
-        local_dir = wind_dir / this_relative_dir
+        dirs.append(this_relative_dir)
         filename = 'wi_sfpd_3dp_{:{dfmt}}_v02'.format(
             date, dfmt='%Y%m%d')
-        hdfname = filename + '.hdf'
-        hdfloc = local_dir / hdfname
-        if hdfloc.exists():
-            df = pd.read_hdf(hdfloc)
-            data.append(df)
-            continue
+        fnames.append(filename)
 
-        util._checkdir(local_dir)
-        remote_url = remote_wind_dir + str(this_relative_dir)
-        cdf = util.load(filename + '.cdf', local_dir, remote_url,
-                        guessversion=True)
-        if cdf is None:
-            print('File {}/{} not available\n'.format(remote_url, filename))
-            continue
+    local_base_dir = wind_dir
+    remote_base_url = remote_wind_dir
 
+    def download_func(remote_base_url, local_base_dir, directory,
+                      fname, extension):
+        remote_url = remote_base_url + str(directory)
+        util.load(fname + extension,
+                  local_base_dir / directory,
+                  remote_url, guessversion=True)
+
+    def processing_func(cdf):
         data_today = []
         # Loop through each timestamp to build up fluxes
         for i, time in enumerate(cdf['Epoch'][...]):
@@ -376,17 +388,15 @@ def threedp_sfpd(starttime, endtime):
                 ([time], energies, angles),
                 names=['Time', 'Energy', 'Pitch angle'])
             df = pd.DataFrame(fluxes.ravel(), index=index, columns=['Flux'])
+            df = df.reset_index(level=['Energy', 'Pitch angle'])
             df['Bx'] = magfield[0]
             df['By'] = magfield[1]
             df['Bz'] = magfield[2]
             data_today.append(df)
         data_today = pd.concat(data_today)
         data_today = data_today.sort_index()
+        return data_today
 
-        if use_hdf:
-            data_today.to_hdf(hdfloc, 'sfpd', mode='w')
-        data.append(data_today)
-
-    data = util.timefilter(data, starttime, endtime)
-    data = data.reset_index(level=['Energy', 'Pitch angle'])
-    return data
+    return util.process(dirs, fnames, extension, local_base_dir,
+                        remote_base_url, download_func, processing_func,
+                        starttime, endtime, units=units)
