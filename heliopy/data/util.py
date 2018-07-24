@@ -222,7 +222,6 @@ def cdf_units(cdf_, manual_units=None):
     units = coll.OrderedDict()
     # Get list of all keys in the CDF file
     keys = dict(zip(list(cdf_.keys()), list(cdf_.keys())))
-
     for key, val in keys.items():
         try:
             temp_unit = u.Unit(cdf_[key].attrs['UNITS'])
@@ -238,6 +237,15 @@ def cdf_units(cdf_, manual_units=None):
                 warnings.warn(message, Warning)
         except KeyError:
             continue
+        ncols = cdf_[key].shape
+        if len(ncols) == 1:
+            val = key
+        if len(ncols) > 1:
+            val = []
+            val.append(key)
+            for x in range(0, ncols[1]):
+                field = key + "{}".format('_' + str(x))
+                val.append(field)
         if isinstance(val, list):
             units.update(coll.OrderedDict.fromkeys(val, temp_unit))
         else:
@@ -369,7 +377,7 @@ def pitchdist_cdf2df(cdf, distkeys, energykey, timekey, anglelabels):
     return data
 
 
-def cdf2df(cdf, index_key, dtimeindex=True, badvalues=None):
+def cdf2df(cdf, index_key, dtimeindex=True, badvalues=None, ignore=None):
     """
     Converts a cdf file to a pandas dataframe.
 
@@ -389,6 +397,9 @@ def cdf2df(cdf, index_key, dtimeindex=True, badvalues=None):
         A dictionary that maps the new DataFrame column keys to a list of bad
         values to replace with nans. Alternatively a list of numbers which are
         replaced with nans in all columns.
+    ignore : list, optional
+        In case a CDF file has columns that are unused / not required, then
+        the column names can be passed as a list into the function.
 
     Returns
     -------
@@ -408,6 +419,9 @@ def cdf2df(cdf, index_key, dtimeindex=True, badvalues=None):
 
     keys = {}
     for cdf_key in cdf.keys():
+        if ignore:
+            if cdf_key in ignore:
+                continue
         if cdf_key == 'Epoch':
             keys[cdf_key] = 'Time'
         else:
