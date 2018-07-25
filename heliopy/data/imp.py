@@ -101,7 +101,7 @@ def merged(probe, starttime, endtime, try_download=True):
             dirs.append('')
 
     def download_func(remote_base_url, local_base_dir,
-                      directory, fname, extension):
+                      directory, fname, remote_fname, extension):
         filename = fname + extension
         local_dir = path.Path(local_base_dir) / directory
         util._download_remote(remote_base_url, filename, local_dir)
@@ -197,7 +197,7 @@ def mitplasma_h0(probe, starttime, endtime, try_download=True):
     remote_base_url = imp_url
 
     def download_func(remote_base_url, local_base_dir,
-                      directory, fname, extension):
+                      directory, fname, remote_fname, extension):
         remote_url = remote_base_url + str(directory)
         filename = fname + extension
         local_dir = local_base_dir / directory
@@ -254,7 +254,7 @@ def mag320ms(probe, starttime, endtime, try_download=True):
     remote_base_url = imp_url
 
     def download_func(remote_base_url, local_base_dir,
-                      directory, fname, extension):
+                      directory, fname, remote_fname, extension):
         remote_url = remote_base_url + str(directory)
         filename = fname + extension
         local_dir = local_base_dir / directory
@@ -330,7 +330,7 @@ def mag15s(probe, starttime, endtime, verbose=False, try_download=True):
     remote_base_url = imp_url
 
     def download_func(remote_base_url, local_base_dir,
-                      directory, fname, extension):
+                      directory, fname, remote_fname, extension):
         remote_url = remote_base_url + str(directory)
         filename = fname + extension
         local_dir = local_base_dir / directory
