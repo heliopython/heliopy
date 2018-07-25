@@ -127,12 +127,14 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
         if hdf_fname is not None:
             hdf_file_path = local_dir / hdf_fname
             raw_file_path = hdf_file_path.with_suffix(extension)
+            logger.info('Loading {}'.format(hdf_file_path))
             data.append(pd.read_hdf(hdf_file_path))
             continue
 
         raw_fname = _file_match(local_dir, fname + extension)
         if raw_fname is not None:
             raw_file_path = local_dir / raw_fname
+            logger.info('Loading {}'.format(raw_file_path))
             df = _load_raw_file(raw_file_path,
                                 processing_func, processing_kwargs)
             data.append(df)
