@@ -102,7 +102,7 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
     remote_fnames : list of str, optional
         If the remote filenames are different from the desired downloaded
         filenames, this should be a list of length ``len(fnames)`` with the
-        files to be downloaded. The ordering must be the same as *fnames.
+        files to be downloaded. The ordering must be the same as *fnames*.
 
     Returns
     -------
