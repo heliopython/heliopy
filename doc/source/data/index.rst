@@ -15,6 +15,7 @@ own sub-module:
    artemis
    cassini
    cluster
+   dscovr
    helios
    imp
    messenger

@@ -12,6 +12,7 @@ import heliopy.data.helper as helper
 import heliopy.data.spice as spice
 import heliopy.data.sunspot as sunspot
 import heliopy.data.omni as omni
+import heliopy.data.dscovr as dscovr
 import astropy.units as u
 from heliopy import config
 
@@ -324,6 +325,7 @@ class TestHelios:
         check_data_output(df)
 
 
+@pytest.mark.data
 class TestOmni:
     @classmethod
     def setup_class(self):
@@ -333,6 +335,20 @@ class TestOmni:
     def test_mag(self):
         df = omni.low(self.starttime, self.endtime)
         check_data_output(df)
+
+
+@pytest.mark.skipif(no_pycdf, reason='Importing pycdf failed')
+@pytest.mark.data
+class TestDSCOVR:
+    @classmethod
+    def setup_class(self):
+        self.starttime = datetime(2015, 6, 8, 0, 0, 0)
+        self.endtime = datetime(2015, 6, 9, 0, 0, 0)
+
+    def test_mag_h0(self):
+        df = dscovr.mag_h0(self.starttime, self.endtime)
+        check_datetime_index(df)
+        check_units(df)
 
 
 class TestHelper:

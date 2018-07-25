@@ -11,6 +11,8 @@ New features
   attribute from the CDF files.
 - Low resolution OMNI data import has been added in
   :func:`.data.omni.low` function.
+- Magnetic Field data from DSCOVR Spacecraft
+  can now be imported using the :func:`.data.dscovr.mag_h0` function.
 
 Backwards incompatible changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
