@@ -122,46 +122,48 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
         # Fist try to load local HDF file
         hdf_file = local_file.with_suffix('.hdf')
         raw_file = local_file.with_suffix(extension)
+
         if hdf_file.exists():
             data.append(pd.read_hdf(hdf_file))
             continue
-        # If we can't find local file, try downloading
-        if not raw_file.exists():
-            if try_download:
-                _checkdir(local_dir)
-                args = ()
-                if dl_info is not None:
-                    args = (dl_info,)
-                new_fname = download_func(remote_base_url, local_base_dir,
-                                          directory, fname, remote_fname,
-                                          extension, *args)
-                if new_fname is not None:
-                    fname = new_fname
-                    local_file = local_base_dir / directory / fname
-                    raw_file = local_file.with_suffix(extension)
-                    hdf_file = local_file.with_suffix('.hdf')
-                    if hdf_file.exists():
-                        data.append(pd.read_hdf(hdf_file))
-                        continue
-
-                # Print a message if file hasn't been downloaded
-                if not raw_file.exists():
-                    logger.info('File {}{}/{}{} not available\n'.format(
-                                remote_base_url, directory, fname, extension))
-                    continue
 
         if raw_file.exists():
             df = _load_raw_file(raw_file, processing_func, processing_kwargs)
-            if df is None:
-                continue
-
-            # Save dataframe to disk
-            if use_hdf:
-                _save_hdf(df, raw_file)
             data.append(df)
+            continue
+
+        # If we can't find local file, try downloading
+        if try_download:
+            _checkdir(local_dir)
+            args = ()
+            if dl_info is not None:
+                args = (dl_info,)
+            new_fname = download_func(remote_base_url, local_base_dir,
+                                      directory, fname, remote_fname,
+                                      extension, *args)
+            if new_fname is not None:
+                fname = new_fname
+                local_file = local_base_dir / directory / fname
+                raw_file = local_file.with_suffix(extension)
+                hdf_file = local_file.with_suffix('.hdf')
+                if hdf_file.exists():
+                    data.append(pd.read_hdf(hdf_file))
+                    continue
+
+            # Print a message if file hasn't been downloaded
+            if raw_file.exists():
+                df = _load_raw_file(raw_file, processing_func, processing_kwargs)
+                if df is not None:
+                    data.append(df)
+                continue
+            else:
+                logger.info('File {}{}/{}{} not available remotely\n'.format(
+                            remote_base_url, directory, fname, extension))
+                continue
         else:
-            logger.info('File {}/{}{} not available\n'.format(
-                        local_dir, fname, extension))
+            msg = ('File {a}/{b}{c} not available locally,\n'
+                   'and "try_download" set to False')
+            logger.info(msg.format(a=local_dir, b=fname, c=extension))
 
     # Loaded all the data, now filter between times
     data = timefilter(data, starttime, endtime)
@@ -190,6 +192,8 @@ def _load_raw_file(raw_file, processing_func, processing_kwargs):
     try:
         file = _load_local(raw_file)
         df = processing_func(file, **processing_kwargs)
+        if use_hdf:
+            _save_hdf(df, raw_file)
         if isinstance(file, io.IOBase) and not file.closed:
             file.close()
         return df
