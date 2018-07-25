@@ -137,8 +137,9 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
             logger.info('Loading {}'.format(raw_file_path))
             df = _load_raw_file(raw_file_path,
                                 processing_func, processing_kwargs)
-            data.append(df)
-            continue
+            if df is not None:
+                data.append(df)
+                continue
 
         local_file = local_base_dir / directory / fname
         # Fist try to load local HDF file
@@ -164,9 +165,10 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
 
             raw_fname = _file_match(local_dir, fname + extension)
             # Print a message if file hasn't been downloaded
-            if raw_file.exists():
-                df = _load_raw_file(raw_file, processing_func,
-                                    processing_kwargs)
+            if raw_fname is not None:
+                raw_file_path = local_dir / raw_fname
+                df = _load_raw_file(raw_file_path,
+                                    processing_func, processing_kwargs)
                 if df is not None:
                     data.append(df)
                 continue
