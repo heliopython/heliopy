@@ -40,7 +40,7 @@ def _load_wind_cdf(starttime, endtime, instrument, data_product,
     remote_base_url = remote_wind_dir
 
     def download_func(remote_base_url, local_base_dir, directory,
-                      fname, extension):
+                      fname, remote_fname, extension):
         remote_url = '{}{}'.format(remote_base_url, directory)
         util.load(fname + extension,
                   local_base_dir / directory,
@@ -148,7 +148,7 @@ def swe_h3(starttime, endtime):
     remote_base_url = remote_wind_dir
 
     def download_func(remote_base_url, local_base_dir, directory,
-                      fname, extension):
+                      fname, remote_fname, extension):
         remote_url = '{}{}'.format(remote_base_url, directory)
         util.load(fname + extension,
                   local_base_dir / directory,
@@ -250,7 +250,7 @@ def _mfi(starttime, endtime, version, units=None, ignore=None):
     remote_base_url = remote_wind_dir
 
     def download_func(remote_base_url, local_base_dir, directory,
-                      fname, extension):
+                      fname, remote_fname, extension):
         remote_url = '{}{}'.format(remote_base_url, directory)
         util.load(fname + extension,
                   local_base_dir / directory,
@@ -318,7 +318,7 @@ def threedp_pm(starttime, endtime):
     remote_base_url = remote_wind_dir
 
     def download_func(remote_base_url, local_base_dir, directory,
-                      fname, extension):
+                      fname, remote_fname, extension):
         remote_url = remote_base_url + str(directory)
         util.load(fname + extension,
                   local_base_dir / directory,
@@ -370,7 +370,7 @@ def threedp_sfpd(starttime, endtime):
     remote_base_url = remote_wind_dir
 
     def download_func(remote_base_url, local_base_dir, directory,
-                      fname, extension):
+                      fname, remote_fname, extension):
         remote_url = remote_base_url + str(directory)
         util.load(fname + extension,
                   local_base_dir / directory,

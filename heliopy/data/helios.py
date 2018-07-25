@@ -908,7 +908,7 @@ def corefit(probe, starttime, endtime, try_download=True):
     remote_base_url = 'ftp://apollo.ssl.berkeley.edu/pub/helios-data/'
 
     def download_func(remote_base_url, local_base_dir, directory,
-                      fname, extension):
+                      fname, remote_fname, extension):
         remote_url = '{}{}'.format(remote_base_url, directory)
         util.load(fname + extension,
                   local_base_dir / directory,
@@ -996,7 +996,7 @@ def merged(probe, starttime, endtime, try_download=True):
         dirs.append('')
 
     def download_func(remote_base_url, local_base_dir,
-                      directory, fname, extension):
+                      directory, fname, remote_fname, extension):
         remote_url = remote_base_url + str(directory)
         local_dir = local_base_dir / directory
         util._download_remote(remote_url, fname + extension, local_dir)
@@ -1070,7 +1070,7 @@ def mag_4hz(probe, starttime, endtime, try_download=True):
         fnames.append('he{}1s{}{:03}'.format(probe, year - 1900, doy))
 
     def download_func(remote_base_url, local_base_dir,
-                      directory, fname, extension):
+                      directory, fname, remote_fname, extension):
         local_dir = local_base_dir / directory
         remote_dir = ('pub/helios-data/E2_experiment/'
                       'Data_Cologne_Nov2016_bestdata/'
@@ -1157,7 +1157,7 @@ def mag_ness(probe, starttime, endtime, try_download=True):
         fnames.append('h{}{}{:03}'.format(probe, year - 1900, doy))
 
     def download_func(remote_base_url, local_base_dir,
-                      directory, fname, extension):
+                      directory, fname, remote_fname, extension):
         remote_url = remote_base_url + str(directory)
         local_dir = local_base_dir / directory
         filename = fname + extension

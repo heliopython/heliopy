@@ -61,7 +61,8 @@ def _load(probe, starttime, endtime, instrument, product_id,
     remote_base_url = csa_url
 
     def download_func(remote_base_url, local_base_dir,
-                      directory, fname, extension, download_info):
+                      directory, fname, remote_fname, extension,
+                      download_info):
         starttime, endtime = download_info
         _download(probe, starttime, endtime, instrument, product_id)
 

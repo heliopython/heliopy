@@ -29,7 +29,7 @@ logger = logging.getLogger(__name__)
 def process(dirs, fnames, extension, local_base_dir, remote_base_url,
             download_func, processing_func, starttime, endtime,
             try_download=True, units=None,
-            processing_kwargs={}, download_info=[]):
+            processing_kwargs={}, download_info=[], remote_fnames=None):
     """
     The main utility method for systematically loading, downloading, and saving
     data.
@@ -57,13 +57,14 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
         - The remote base url
         - The local base directory
         - The relative directory (relative to the base url)
-        - A filename
+        - The local filename to download to
+        - The remote filename
         - A file extension
 
         and downloads the remote file. The signature must be::
 
             def download_func(remote_base_url, local_base_dir,
-                              directory, fname, extension)
+                              directory, fname, remote_fname, extension)
 
         The function can also return the filename of the file it downloaded,
         if this is different to the filename it is given. *download_func*
@@ -98,6 +99,10 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
     download_info : list, optional
         A list with the same length as *fnames*, which contains extra info
         that is handed to *download_func* for each file individually.
+    remote_fnames : list of str, optional
+        If the remote filenames are different from the desired downloaded
+        filenames, this should be a list of length ``len(fnames)`` with the
+        files to be downloaded. The ordering must be the same as *fnames*.
 
     Returns
     -------
@@ -108,7 +113,10 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
     data = []
     if download_info == []:
         download_info = [None] * len(dirs)
-    for directory, fname, dl_info in zip(dirs, fnames, download_info):
+    if remote_fnames is None:
+        remote_fnames = fnames.copy()
+    zips = zip(dirs, fnames, remote_fnames, download_info)
+    for directory, fname, remote_fname, dl_info in zips:
         local_dir = local_base_dir / directory
         local_file = local_base_dir / directory / fname
         # Fist try to load local HDF file
@@ -125,8 +133,8 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
                 if dl_info is not None:
                     args = (dl_info,)
                 new_fname = download_func(remote_base_url, local_base_dir,
-                                          directory, fname, extension,
-                                          *args)
+                                          directory, fname, remote_fname,
+                                          extension,  *args)
                 if new_fname is not None:
                     fname = new_fname
                     local_file = local_base_dir / directory / fname
@@ -172,6 +180,18 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
         return units_attach(data, units)
     else:
         return data
+
+
+def _file_match(directory, fname_regex):
+    """
+    Check if a file in *directory* matchs the regular expression given by
+    *fname_regex*. If it does, return the filename. Otherwise returns None.
+    """
+    if directory.exists():
+        for f in directory.iterdir():
+            if f.is_file():
+                if re.match(fname_regex, f.name):
+                    return f.name
 
 
 class _NoDataError(RuntimeError):
