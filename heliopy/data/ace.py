@@ -39,12 +39,8 @@ def _ace(starttime, endtime, instrument, product, fname, units=None,
         this_relative_dir = relative_dir / str(date.year)
         dirs.append(this_relative_dir)
 
-    def download_func(remote_base_url, local_base_dir,
-                      directory, fname, remote_fname, extension):
-        remote_url_dir = remote_base_url + str(directory)
-        fname = util._get_remote_fname(remote_url_dir, fname)
-        local_dir = local_base_dir / directory
-        util._download_remote(remote_url_dir, fname, local_dir)
+    def download_func(*args):
+        util._download_remote_unknown_version(*args)
 
     def processing_func(cdf):
         return util.cdf2df(cdf, index_key='Epoch',

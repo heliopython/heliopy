@@ -673,6 +673,19 @@ def _reporthook(blocknum, blocksize, totalsize):
         sys.stderr.write("\rRead %d" % (readsofar,))
 
 
+def _download_remote_unknown_version(
+    remote_base_url, local_base_dir, directory,
+        fname, remote_fname, extension):
+    """
+    Generic donwload code that can be used by data methods to download
+    data where the version is unknown and specified in regex.
+    """
+    remote_url_dir = remote_base_url + str(directory)
+    fname = _get_remote_fname(remote_url_dir, fname)
+    local_dir = local_base_dir / directory
+    _download_remote(remote_url_dir, fname, local_dir)
+
+
 def _download_remote(remote_url, filename, local_dir):
     local_dir = path.Path(local_dir)
     remote_url = _fix_url(remote_url)

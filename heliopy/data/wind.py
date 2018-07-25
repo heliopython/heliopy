@@ -39,12 +39,8 @@ def _load_wind_cdf(starttime, endtime, instrument, data_product,
     local_base_dir = wind_dir
     remote_base_url = remote_wind_dir
 
-    def download_func(remote_base_url, local_base_dir, directory,
-                      fname, remote_fname, extension):
-        remote_url_dir = remote_base_url + str(directory)
-        fname = util._get_remote_fname(remote_url_dir, fname)
-        local_dir = local_base_dir / directory
-        util._download_remote(remote_url_dir, fname, local_dir)
+    def download_func(*args):
+        util._download_remote_unknown_version(*args)
 
     def processing_func(cdf):
         return util.cdf2df(cdf, 'Epoch', badvalues=badvalues)
@@ -147,12 +143,8 @@ def swe_h3(starttime, endtime):
     local_base_dir = wind_dir
     remote_base_url = remote_wind_dir
 
-    def download_func(remote_base_url, local_base_dir, directory,
-                      fname, remote_fname, extension):
-        remote_url_dir = remote_base_url + str(directory)
-        fname = util._get_remote_fname(remote_url_dir, fname)
-        local_dir = local_base_dir / directory
-        util._download_remote(remote_url_dir, fname, local_dir)
+    def download_func(*args):
+        util._download_remote_unknown_version(*args)
 
     def processing_func(cdf):
         distkeys = []
@@ -249,12 +241,8 @@ def _mfi(starttime, endtime, version, units=None, ignore=None):
     local_base_dir = wind_dir
     remote_base_url = remote_wind_dir
 
-    def download_func(remote_base_url, local_base_dir, directory,
-                      fname, remote_fname, extension):
-        remote_url_dir = remote_base_url + str(directory)
-        fname = util._get_remote_fname(remote_url_dir, fname)
-        local_dir = local_base_dir / directory
-        util._download_remote(remote_url_dir, fname, local_dir)
+    def download_func(*args):
+        util._download_remote_unknown_version(*args)
 
     def processing_func(cdf):
         epoch_dict = {'h0': 'Epoch3', 'h2': 'Epoch'}
@@ -317,12 +305,8 @@ def threedp_pm(starttime, endtime):
     local_base_dir = wind_dir
     remote_base_url = remote_wind_dir
 
-    def download_func(remote_base_url, local_base_dir, directory,
-                      fname, remote_fname, extension):
-        remote_url_dir = remote_base_url + str(directory)
-        fname = util._get_remote_fname(remote_url_dir, fname)
-        local_dir = local_base_dir / directory
-        util._download_remote(remote_url_dir, fname, local_dir)
+    def download_func(*args):
+        util._download_remote_unknown_version(*args)
 
     def processing_func(cdf):
         return util.cdf2df(cdf, 'Epoch', ignore=ignore)
@@ -369,12 +353,8 @@ def threedp_sfpd(starttime, endtime):
     local_base_dir = wind_dir
     remote_base_url = remote_wind_dir
 
-    def download_func(remote_base_url, local_base_dir, directory,
-                      fname, remote_fname, extension):
-        remote_url_dir = remote_base_url + str(directory)
-        fname = util._get_remote_fname(remote_url_dir, fname)
-        local_dir = local_base_dir / directory
-        util._download_remote(remote_url_dir, fname, local_dir)
+    def download_func(*args):
+        util._download_remote_unknown_version(*args)
 
     def processing_func(cdf):
         data_today = []
