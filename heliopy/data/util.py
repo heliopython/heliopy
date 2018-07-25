@@ -151,13 +151,8 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
                     continue
 
         if raw_file.exists():
-            # Convert raw file to a dataframe
-            try:
-                file = _load_local(raw_file)
-                df = processing_func(file, **processing_kwargs)
-                if isinstance(file, io.IOBase) and not file.closed:
-                    file.close()
-            except _NoDataError:
+            df = _load_raw_file(raw_file, processing_func, processing_kwargs)
+            if df is None:
                 continue
 
             # Save dataframe to disk
@@ -185,6 +180,21 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
 def _save_hdf(df, raw_file):
     hdf_file = raw_file.with_suffix('.hdf')
     df.to_hdf(hdf_file, 'data', mode='w', format='f')
+
+
+def _load_raw_file(raw_file, processing_func, processing_kwargs):
+    if not raw_file.exists():
+        return
+    # Convert raw file to a dataframe
+    logger.info('Loading {}'.format(raw_file))
+    try:
+        file = _load_local(raw_file)
+        df = processing_func(file, **processing_kwargs)
+        if isinstance(file, io.IOBase) and not file.closed:
+            file.close()
+        return df
+    except _NoDataError:
+        return
 
 
 class _NoDataError(RuntimeError):
