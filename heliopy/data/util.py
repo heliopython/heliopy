@@ -182,6 +182,18 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
         return data
 
 
+def _file_match(directory, fname_regex):
+    """
+    Check if a file in *directory* matchs the regular expression given by
+    *fname_regex*. If it does, return the filename. Otherwise returns None.
+    """
+    if directory.exists():
+        for f in directory.iterdir():
+            if f.is_file():
+                if re.match(fname_regex, f.name):
+                    return f.name
+
+
 class _NoDataError(RuntimeError):
     pass
 
