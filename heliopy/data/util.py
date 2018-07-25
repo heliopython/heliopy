@@ -9,6 +9,7 @@ import io
 import logging
 import os
 import pathlib as path
+import re
 import sys
 import urllib.error as urlerror
 import urllib.request as urlreq
@@ -38,11 +39,12 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
     ----------
     dirs : list
         A list of directories relative to *local_base_dir*.
-    fnames : list
+    fnames : list or str or regex
         A list of filenames **without** their extension. These are the
         filenames that will be downloaded from the remote source. Must be the
         same length as *dirs*. Each filename is saved in it's respective entry
-        in *dirs*.
+        in *dirs*. Can also be a regular expression that is used to match
+        the filename (e.g. for version numbers)
     extension : str
         File extension of the raw files. **Must include leading dot**.
     local_base_dir : str
@@ -115,22 +117,30 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
         download_info = [None] * len(dirs)
     if remote_fnames is None:
         remote_fnames = fnames.copy()
+
     zips = zip(dirs, fnames, remote_fnames, download_info)
     for directory, fname, remote_fname, dl_info in zips:
         local_dir = local_base_dir / directory
+        local_file = local_dir / fname
+
+        hdf_fname = _file_match(local_dir, fname + '.hdf')
+        if hdf_fname is not None:
+            hdf_file_path = local_dir / hdf_fname
+            raw_file_path = hdf_file_path.with_suffix(extension)
+            data.append(pd.read_hdf(hdf_file_path))
+            continue
+
+        raw_fname = _file_match(local_dir, fname + extension)
+        if raw_fname is not None:
+            raw_file_path = local_dir / raw_fname
+            df = _load_raw_file(raw_file_path,
+                                processing_func, processing_kwargs)
+            data.append(df)
+            continue
+
         local_file = local_base_dir / directory / fname
         # Fist try to load local HDF file
         hdf_file = local_file.with_suffix('.hdf')
-        raw_file = local_file.with_suffix(extension)
-
-        if hdf_file.exists():
-            data.append(pd.read_hdf(hdf_file))
-            continue
-
-        if raw_file.exists():
-            df = _load_raw_file(raw_file, processing_func, processing_kwargs)
-            data.append(df)
-            continue
 
         # If we can't find local file, try downloading
         if try_download:
@@ -150,6 +160,7 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
                     data.append(pd.read_hdf(hdf_file))
                     continue
 
+            raw_fname = _file_match(local_dir, fname + extension)
             # Print a message if file hasn't been downloaded
             if raw_file.exists():
                 df = _load_raw_file(raw_file, processing_func,
@@ -171,13 +182,36 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
 
     # Attach units
     if extension == '.cdf':
-        cdf = _load_local(raw_file)
+        cdf = _load_local(raw_file_path)
         units_cdf = cdf_units(cdf, manual_units=units)
         return units_attach(data, units_cdf)
     if type(units) is coll.OrderedDict:
         return units_attach(data, units)
     else:
         return data
+
+
+def _file_match(directory, fname_regex):
+    """
+    Check if a file in *directory* matchs the regular expression given by
+    *fname_regex*. If it does, return the filename. Otherwise returns None.
+
+    Parameters
+    ----------
+    directory : Path
+    fname_regex : str
+        Must include file extension.
+
+    Returns
+    -------
+    fname : str
+        Includes file extension.
+    """
+    if directory.exists():
+        for f in directory.iterdir():
+            if f.is_file():
+                if re.match(fname_regex, f.name):
+                    return f.name
 
 
 def _save_hdf(df, raw_file):
@@ -496,7 +530,7 @@ class RemoteFileNotPresentError(RuntimeError):
     pass
 
 
-def load(filename, local_dir, remote_url, guessversion=False,
+def load(filename, local_dir, remote_url,
          try_download=True, remote_error=False):
     """
     Try to load a file from *local_dir*.
@@ -511,9 +545,6 @@ def load(filename, local_dir, remote_url, guessversion=False,
         Local location of file
     remote_url : string
         Remote location of file
-    guessversion : bool
-        If *True*, try to guess the version number in the filename. Only
-        works for cdf files. Default is *False*.
     try_download : bool
         If a file isn't available locally, try to downloaded it. Default is
         *True*.
@@ -540,22 +571,14 @@ def load(filename, local_dir, remote_url, guessversion=False,
     # If not a cdf file assume ascii file
     else:
         filetype = 'ascii'
-        if guessversion:
-            raise RuntimeError('Cannot guess version for ascii files')
 
     # Try to load locally
     if _checkdir(local_dir):
         local_dir = path.Path(local_dir)
         for f in local_dir.iterdir():
-            if str(f) == filename or (guessversion and
-                                      (str(f)[:-6] == filename[:-6])):
+            if str(f) == filename or ((str(f)[:-6] == filename[:-6])):
                 filename = str(f)
                 return _load_local(local_dir / f, filetype)
-
-    # Loading locally failed, but directory has been made so try to download
-    # file.
-    if guessversion:
-        filename = _get_remote_version(remote_url, filename)
 
     if try_download:
         try:
@@ -570,7 +593,22 @@ def load(filename, local_dir, remote_url, guessversion=False,
         return None
 
 
-def _get_remote_version(remote_url, filename):
+def _get_remote_fname(remote_url, fname_regex):
+    '''
+    Return a remote filename that matches a regular expression.
+
+    Parameters
+    ----------
+    remote_url : str
+        FTP directory
+    fname_regex : str
+        Must include extension.
+
+    Retruns
+    -------
+    fname : str
+        Filename that matches including extension.
+    '''
     remote_url = _fix_url(remote_url)
     # Split remote url into a server name and directory
     # Strip ftp:// from front of url
@@ -586,8 +624,8 @@ def _get_remote_version(remote_url, filename):
         ftp.cwd(server_dir)
         # Loop through and find files
         for (f, _) in ftp.mlsd():
-            if f[-len(filename):-8] == filename[:-8]:
-                return f[-len(filename):]
+            if re.match(fname_regex, f):
+                return f
 
 
 def _load_cdf(file_path):
