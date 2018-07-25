@@ -113,7 +113,10 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
     data = []
     if download_info == []:
         download_info = [None] * len(dirs)
-    for directory, fname, dl_info in zip(dirs, fnames, download_info):
+    if remote_fnames is None:
+        remote_fnames = fnames.copy()
+    zips = zip(dirs, fnames, remote_fnames, download_info)
+    for directory, fname, remote_fname, dl_info in zips:
         local_dir = local_base_dir / directory
         local_file = local_base_dir / directory / fname
         # Fist try to load local HDF file
