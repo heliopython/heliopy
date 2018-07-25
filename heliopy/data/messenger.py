@@ -52,7 +52,7 @@ def mag_rtn(starttime, endtime, try_download=True):
     remote_base_url = remote_mess_dir
 
     def download_func(remote_base_url, local_base_dir,
-                      directory, fname, extension):
+                      directory, fname, remote_fname, extension):
         remote_url = remote_base_url + str(directory)
         filename = fname + extension
         local_dir = local_base_dir / directory

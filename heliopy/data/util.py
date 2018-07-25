@@ -29,7 +29,7 @@ logger = logging.getLogger(__name__)
 def process(dirs, fnames, extension, local_base_dir, remote_base_url,
             download_func, processing_func, starttime, endtime,
             try_download=True, units=None,
-            processing_kwargs={}, download_info=[]):
+            processing_kwargs={}, download_info=[], remote_fnames=None):
     """
     The main utility method for systematically loading, downloading, and saving
     data.
@@ -57,13 +57,14 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
         - The remote base url
         - The local base directory
         - The relative directory (relative to the base url)
-        - A filename
+        - The local filename to download to
+        - The remote filename
         - A file extension
 
         and downloads the remote file. The signature must be::
 
             def download_func(remote_base_url, local_base_dir,
-                              directory, fname, extension)
+                              directory, fname, remote_fname, extension)
 
         The function can also return the filename of the file it downloaded,
         if this is different to the filename it is given. *download_func*
@@ -98,6 +99,10 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
     download_info : list, optional
         A list with the same length as *fnames*, which contains extra info
         that is handed to *download_func* for each file individually.
+    remote_fnames : list of str, optional
+        If the remote filenames are different from the desired downloaded
+        filenames, this should be a list of length ``len(fnames)`` with the
+        files to be downloaded. The ordering must be the same as *fnames.
 
     Returns
     -------

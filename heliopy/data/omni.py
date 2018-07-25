@@ -118,7 +118,7 @@ def low(starttime, endtime, try_download=True):
         dirs.append(local_base_dir)
 
     def download_func(remote_base_url, local_base_dir,
-                      directory, fname, extension):
+                      directory, fname, remote_fname, extension):
         url = '{}'.format(remote_base_url)
         util._download_remote(url,
                               fname + extension,
