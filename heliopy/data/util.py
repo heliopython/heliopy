@@ -254,7 +254,8 @@ def cdf_units(cdf_, manual_units=None):
             units.update(coll.OrderedDict.fromkeys(val, temp_unit))
         else:
             units[val] = temp_unit
-    units.update(manual_units)
+    if manuals_units:
+        units.update(manual_units)
     return units
 
 
