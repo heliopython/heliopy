@@ -109,7 +109,7 @@ def mag_1min(starttime, endtime, coords):
         fnames.append('{}_FGM_{}_1M'.format(year, coords))
 
     def download_func(remote_base_url, local_base_dir,
-                      directory, fname, extension):
+                      directory, fname, remote_fname, extension):
         url = '{}/{}'.format(base_url, year)
         util._download_remote(url,
                               fname + extension,
@@ -185,7 +185,7 @@ def mag_hires(starttime, endtime, try_download=True):
         fnames.append(str(year)[2:] + doy + '_FGM_{}'.format(coords))
 
     def download_func(remote_base_url, local_base_dir,
-                      directory, fname, extension):
+                      directory, fname, remote_fname, extension):
             url = remote_base_url + '/' + str(directory)
             util._download_remote(url, fname + extension,
                                   local_base_dir / directory)

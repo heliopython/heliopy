@@ -39,7 +39,7 @@ def _ace(starttime, endtime, instrument, product, fname, units=None,
         dirs.append(this_relative_dir)
 
     def download_func(remote_base_url, local_base_dir,
-                      directory, fname, extension):
+                      directory, fname, remote_fname, extension):
         def check_exists():
             # Because the version might be different to the one we guess, work
             # out the downloaded filename

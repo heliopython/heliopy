@@ -142,7 +142,7 @@ def _swics(starttime, endtime, names, product, units=None, try_download=True):
     remote_base_url = ulysses_url
 
     def download_func(remote_base_url, local_base_dir,
-                      directory, fname, extension):
+                      directory, fname, remote_fname, extension):
         local_dir = local_base_dir / directory
         swics_options = url_options
         swics_options['FILE_NAME'] = fname + extension
@@ -203,7 +203,7 @@ def fgm_hires(starttime, endtime, try_download=True):
                          ('Bz', u.nT), ('|B|', u.nT)])
 
     def download_func(remote_base_url, local_base_dir,
-                      directory, fname, extension):
+                      directory, fname, remote_fname, extension):
         local_dir = local_base_dir / directory
         fgm_options = url_options
         fgm_options['FILE_NAME'] = fname + extension
@@ -269,7 +269,7 @@ def swoops_ions(starttime, endtime, try_download=True):
                         ('iqual', u.dimensionless_unscaled)])
 
     def download_func(remote_base_url, local_base_dir,
-                      directory, fname, extension):
+                      directory, fname, remote_fname, extension):
         local_dir = local_base_dir / directory
         swoops_options = url_options
         year = fname[1:3]

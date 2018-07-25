@@ -49,7 +49,7 @@ def mag_h0(starttime, endtime):
     remote_base_url = dscovr_url
 
     def download_func(remote_base_url, local_base_dir,
-                      directory, fname, extension):
+                      directory, fname, remote_fname, extension):
             remote_url = remote_base_url + str(directory)
             filename = fname + extension
             local_dir = local_base_dir / directory
