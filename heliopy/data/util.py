@@ -154,7 +154,7 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
 
             # Save dataframe to disk
             if use_hdf:
-                df.to_hdf(hdf_file, 'data', mode='w', format='f')
+                _save_hdf(df, raw_file)
             data.append(df)
         else:
             logger.info('File {}/{}{} not available\n'.format(
@@ -172,6 +172,11 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
         return units_attach(data, units)
     else:
         return data
+
+
+def _save_hdf(df, raw_file):
+    hdf_file = raw_file.with_suffix('.hdf')
+    df.to_hdf(hdf_file, 'data', mode='w', format='f')
 
 
 class _NoDataError(RuntimeError):
