@@ -134,7 +134,7 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
                     args = (dl_info,)
                 new_fname = download_func(remote_base_url, local_base_dir,
                                           directory, fname, remote_fname,
-                                          extension,  *args)
+                                          extension, *args)
                 if new_fname is not None:
                     fname = new_fname
                     local_file = local_base_dir / directory / fname
