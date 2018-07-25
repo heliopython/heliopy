@@ -33,7 +33,6 @@ def _ace(starttime, endtime, instrument, product, fname, units=None,
     extension = '.cdf'
     for day in daylist:
         date = day[0]
-        # This does not include a version number, whihc can be evaluated later
         filename = 'ac_{}_{}{:02}{:02}_v[0-9][0-9]'.format(
             fname, date.year, date.month, date.day)
         fnames.append(filename)
