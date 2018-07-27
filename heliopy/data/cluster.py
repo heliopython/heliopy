@@ -50,7 +50,7 @@ def _load(probe, starttime, endtime, instrument, product_id,
 
         dirs.append(year)
         local_fname = 'C' + probe + '_' + product_id + '__' +\
-            year + month + day + '.cdf'
+            year + month + day
         fnames.append(local_fname)
         thisstart = datetime.combine(date, time.min)
         thisend = datetime.combine(date, time.max)
