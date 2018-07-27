@@ -235,11 +235,13 @@ def cdf_units(cdf_, manual_units=None):
     """
     Takes the CDF File and the required keys, and finds the units of the
     selected keys.
-
     Parameters
     ----------
     cdf_ : cdf
         Opened cdf file
+    manual_units : ~collections.OrderedDict, optional
+        Manually defined units to be attached to the data that will be
+        returned.
 
     Returns
     -------
@@ -247,38 +249,41 @@ def cdf_units(cdf_, manual_units=None):
         Returns an OrderedDict with units of the selected keys.
     """
     units = coll.OrderedDict()
-    # Get list of all keys in the CDF file
-    keys = dict(zip(list(cdf_.keys()), list(cdf_.keys())))
-    for key, val in keys.items():
-        try:
-            temp_unit = u.Unit(cdf_[key].attrs['UNITS'])
-        except ValueError:
-            if manual_units is not None:
-                if key in manual_units:
-                    continue
-            unknown_unit = (cdf_[key].attrs['UNITS'])
-            temp_unit = helper.cdf_dict(unknown_unit)
-            if temp_unit is None:
-                message = ("The CDF provided units '{}'".format(unknown_unit) +
-                           " for key '{}' are unknown".format(key))
-                warnings.warn(message, Warning)
-        except KeyError:
-            continue
+    key_dict = {}
+    for key in cdf_.keys():
         ncols = cdf_[key].shape
         if len(ncols) == 1:
-            val = key
+            key_dict[key] = key
         if len(ncols) > 1:
             val = []
             val.append(key)
             for x in range(0, ncols[1]):
                 field = key + "{}".format('_' + str(x))
                 val.append(field)
+            key_dict[key] = val
+    for key, val in key_dict.items():
+        temp_unit = None
+        if manual_units:
+            if key in manual_units:
+                temp_unit = manual_units[key]
+        if temp_unit is None:
+            try:
+                temp_unit = u.Unit(cdf_[key].attrs['UNITS'])
+            except ValueError:
+                unknown_unit = (cdf_[key].attrs['UNITS'])
+                temp_unit = helper.cdf_dict(unknown_unit)
+                if temp_unit is None:
+                    message = ("CDF provided units '{}'".format(unknown_unit) +
+                               " for key '{}' are unknown".format(key))
+                    warnings.warn(message, Warning)
+                    continue
+            except KeyError:
+                continue
         if isinstance(val, list):
             units.update(coll.OrderedDict.fromkeys(val, temp_unit))
         else:
-            if temp_unit is not None:
-                units[val] = temp_unit
-    if manual_units is not None:
+            units[val] = temp_unit
+    if manual_units:
         units.update(manual_units)
     return units
 
