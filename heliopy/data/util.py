@@ -152,7 +152,8 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
 
             # Print a message if file hasn't been downloaded
             if raw_file.exists():
-                df = _load_raw_file(raw_file, processing_func, processing_kwargs)
+                df = _load_raw_file(raw_file, processing_func,
+                                    processing_kwargs)
                 if df is not None:
                     data.append(df)
                 continue
