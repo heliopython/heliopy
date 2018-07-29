@@ -1,7 +1,7 @@
 """
 Methods for importing data from the Messenger spacecraft.
 
-All data is publically available at ftp://spdf.gsfc.nasa.gov/pub/data/messenger
+All data is publically available at http://spdf.gsfc.nasa.gov/pub/data/messenger
 """
 import os
 import pandas as pd
