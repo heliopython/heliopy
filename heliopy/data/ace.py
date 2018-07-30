@@ -6,6 +6,7 @@ ACE spacecraft homepage can be found at http://www.srl.caltech.edu/ACE/.
 """
 from collections import OrderedDict
 import pathlib as path
+import re
 
 import astropy.units as u
 import pandas as pd
@@ -32,30 +33,14 @@ def _ace(starttime, endtime, instrument, product, fname, units=None,
     extension = '.cdf'
     for day in daylist:
         date = day[0]
-        filename = 'ac_{}_{}{:02}{:02}_v{}'.format(
-            fname, date.year, date.month, date.day, version)
+        filename = 'ac_{}_{}{:02}{:02}_v[0-9][0-9]'.format(
+            fname, date.year, date.month, date.day)
         fnames.append(filename)
         this_relative_dir = relative_dir / str(date.year)
         dirs.append(this_relative_dir)
 
-    def download_func(remote_base_url, local_base_dir,
-                      directory, fname, remote_fname, extension):
-        def check_exists():
-            # Because the version might be different to the one we guess, work
-            # out the downloaded filename
-            for f in (local_base_dir / directory).iterdir():
-                fstr = str(f.name)
-                if (fstr[:-6] == (fname + extension)[:-6]):
-                    # Return filename with '.cdf' stripped off the end
-                    return fstr[:-4]
-        if check_exists() is not None:
-            return check_exists()
-
-        # Now load remotely
-        util.load(fname + extension,
-                  local_base_dir / directory,
-                  remote_base_url + str(directory), guessversion=True)
-        return check_exists()
+    def download_func(*args):
+        util._download_remote_unknown_version(*args)
 
     def processing_func(cdf):
         return util.cdf2df(cdf, index_key='Epoch',

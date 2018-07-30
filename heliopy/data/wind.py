@@ -30,7 +30,7 @@ def _load_wind_cdf(starttime, endtime, instrument, data_product,
     daylist = util._daysplitinterval(starttime, endtime)
     for day in daylist:
         date = day[0]
-        filename = 'wi_{}_{}{:02}{:02}_v01'.format(
+        filename = 'wi_{}_{}{:02}{:02}_v[0-9][0-9]'.format(
             fname, date.year, date.month, date.day)
         fnames.append(filename)
         local_dir = relative_dir / str(date.year)
@@ -39,12 +39,8 @@ def _load_wind_cdf(starttime, endtime, instrument, data_product,
     local_base_dir = wind_dir
     remote_base_url = remote_wind_dir
 
-    def download_func(remote_base_url, local_base_dir, directory,
-                      fname, remote_fname, extension):
-        remote_url = '{}{}'.format(remote_base_url, directory)
-        util.load(fname + extension,
-                  local_base_dir / directory,
-                  remote_url)
+    def download_func(*args):
+        util._download_remote_unknown_version(*args)
 
     def processing_func(cdf):
         return util.cdf2df(cdf, 'Epoch', badvalues=badvalues)
@@ -138,7 +134,7 @@ def swe_h3(starttime, endtime):
     daylist = util._daysplitinterval(starttime, endtime)
     for day in daylist:
         date = day[0]
-        filename = 'wi_h3_swe_{}{:02}{:02}_v01'.format(
+        filename = 'wi_h3_swe_{}{:02}{:02}_v[0-9][0-9]'.format(
             date.year, date.month, date.day)
         fnames.append(filename)
         local_dir = relative_dir / str(date.year)
@@ -147,12 +143,8 @@ def swe_h3(starttime, endtime):
     local_base_dir = wind_dir
     remote_base_url = remote_wind_dir
 
-    def download_func(remote_base_url, local_base_dir, directory,
-                      fname, remote_fname, extension):
-        remote_url = '{}{}'.format(remote_base_url, directory)
-        util.load(fname + extension,
-                  local_base_dir / directory,
-                  remote_url)
+    def download_func(*args):
+        util._download_remote_unknown_version(*args)
 
     def processing_func(cdf):
         distkeys = []
@@ -242,19 +234,15 @@ def _mfi(starttime, endtime, version, units=None, ignore=None):
             str(date.year) +\
             str(date.month).zfill(2) +\
             str(date.day).zfill(2) +\
-            '_v05'
+            '_v[0-9][0-9]'
         fnames.append(filename)
 
     extension = '.cdf'
     local_base_dir = wind_dir
     remote_base_url = remote_wind_dir
 
-    def download_func(remote_base_url, local_base_dir, directory,
-                      fname, remote_fname, extension):
-        remote_url = '{}{}'.format(remote_base_url, directory)
-        util.load(fname + extension,
-                  local_base_dir / directory,
-                  remote_url, guessversion=True)
+    def download_func(*args):
+        util._download_remote_unknown_version(*args)
 
     def processing_func(cdf):
         epoch_dict = {'h0': 'Epoch3', 'h2': 'Epoch'}
@@ -310,19 +298,15 @@ def threedp_pm(starttime, endtime):
             str(date.year) +\
             str(date.month).zfill(2) +\
             str(date.day).zfill(2) +\
-            '_v04'
+            '_v[0-9][0-9]'
         fnames.append(filename)
         dirs.append(this_relative_dir)
 
     local_base_dir = wind_dir
     remote_base_url = remote_wind_dir
 
-    def download_func(remote_base_url, local_base_dir, directory,
-                      fname, remote_fname, extension):
-        remote_url = remote_base_url + str(directory)
-        util.load(fname + extension,
-                  local_base_dir / directory,
-                  remote_url, guessversion=True)
+    def download_func(*args):
+        util._download_remote_unknown_version(*args)
 
     def processing_func(cdf):
         return util.cdf2df(cdf, 'Epoch', ignore=ignore)
@@ -369,12 +353,8 @@ def threedp_sfpd(starttime, endtime):
     local_base_dir = wind_dir
     remote_base_url = remote_wind_dir
 
-    def download_func(remote_base_url, local_base_dir, directory,
-                      fname, remote_fname, extension):
-        remote_url = remote_base_url + str(directory)
-        util.load(fname + extension,
-                  local_base_dir / directory,
-                  remote_url, guessversion=True)
+    def download_func(*args):
+        util._download_remote_unknown_version(*args)
 
     def processing_func(cdf):
         data_today = []
