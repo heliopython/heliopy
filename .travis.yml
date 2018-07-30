@@ -16,6 +16,7 @@ before_install:
 - conda create --yes -n testenv python=$PYTHON_VERSION
 - source activate testenv
 
+- conda install hdf5
 - pip install $PRE -r requirements/test.txt
 - pip install spiceypy --no-cache-di
 
