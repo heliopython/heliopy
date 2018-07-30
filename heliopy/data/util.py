@@ -9,6 +9,7 @@ import io
 import logging
 import os
 import pathlib as path
+import re
 import sys
 import urllib.error as urlerror
 import urllib.request as urlreq
@@ -16,7 +17,6 @@ import astropy.units as u
 import sunpy.timeseries as ts
 import warnings
 import collections as coll
-import cdflib
 
 import numpy as np
 import pandas as pd
@@ -29,8 +29,8 @@ logger = logging.getLogger(__name__)
 
 def process(dirs, fnames, extension, local_base_dir, remote_base_url,
             download_func, processing_func, starttime, endtime,
-            try_download=True, units=None, keys=None,
-            processing_kwargs={}, download_info=[]):
+            try_download=True, units=None,
+            processing_kwargs={}, download_info=[], remote_fnames=None):
     """
     The main utility method for systematically loading, downloading, and saving
     data.
@@ -39,11 +39,12 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
     ----------
     dirs : list
         A list of directories relative to *local_base_dir*.
-    fnames : list
+    fnames : list or str or regex
         A list of filenames **without** their extension. These are the
         filenames that will be downloaded from the remote source. Must be the
         same length as *dirs*. Each filename is saved in it's respective entry
-        in *dirs*.
+        in *dirs*. Can also be a regular expression that is used to match
+        the filename (e.g. for version numbers)
     extension : str
         File extension of the raw files. **Must include leading dot**.
     local_base_dir : str
@@ -58,13 +59,14 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
         - The remote base url
         - The local base directory
         - The relative directory (relative to the base url)
-        - A filename
+        - The local filename to download to
+        - The remote filename
         - A file extension
 
         and downloads the remote file. The signature must be::
 
             def download_func(remote_base_url, local_base_dir,
-                              directory, fname, extension)
+                              directory, fname, remote_fname, extension)
 
         The function can also return the filename of the file it downloaded,
         if this is different to the filename it is given. *download_func*
@@ -93,20 +95,16 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
         objects. If units are present, then a TimeSeries object is returned,
         else a Pandas DataFrame.
 
-    keys : dict, optional
-        Keys to be extracted from the CDF, along with their column names as the
-        values.
-
-        Must map keys from the CDF (strings) to the column name (strings).
-        If keys are present, then only the specified keys are extracted from
-        the CDF file.
-
     processing_kwargs : dict, optional
         Extra keyword arguments to be passed to the processing funciton.
 
     download_info : list, optional
         A list with the same length as *fnames*, which contains extra info
         that is handed to *download_func* for each file individually.
+    remote_fnames : list of str, optional
+        If the remote filenames are different from the desired downloaded
+        filenames, this should be a list of length ``len(fnames)`` with the
+        files to be downloaded. The ordering must be the same as *fnames*.
 
     Returns
     -------
@@ -117,68 +115,129 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
     data = []
     if download_info == []:
         download_info = [None] * len(dirs)
-    for directory, fname, dl_info in zip(dirs, fnames, download_info):
+    if remote_fnames is None:
+        remote_fnames = fnames.copy()
+
+    zips = zip(dirs, fnames, remote_fnames, download_info)
+    for directory, fname, remote_fname, dl_info in zips:
         local_dir = local_base_dir / directory
+        local_file = local_dir / fname
+
+        hdf_fname = _file_match(local_dir, fname + '.hdf')
+        if hdf_fname is not None:
+            hdf_file_path = local_dir / hdf_fname
+            raw_file_path = hdf_file_path.with_suffix(extension)
+            logger.info('Loading {}'.format(hdf_file_path))
+            data.append(pd.read_hdf(hdf_file_path))
+            continue
+
+        raw_fname = _file_match(local_dir, fname + extension)
+        if raw_fname is not None:
+            raw_file_path = local_dir / raw_fname
+            logger.info('Loading {}'.format(raw_file_path))
+            df = _load_raw_file(raw_file_path,
+                                processing_func, processing_kwargs)
+            if df is not None:
+                data.append(df)
+                continue
+
         local_file = local_base_dir / directory / fname
         # Fist try to load local HDF file
         hdf_file = local_file.with_suffix('.hdf')
-        raw_file = local_file.with_suffix(extension)
-        if hdf_file.exists():
-            data.append(pd.read_hdf(hdf_file))
-            continue
-        # If we can't find local file, try downloading
-        if not raw_file.exists():
-            if try_download:
-                _checkdir(local_dir)
-                args = ()
-                if dl_info is not None:
-                    args = (dl_info,)
-                new_fname = download_func(remote_base_url, local_base_dir,
-                                          directory, fname, extension,
-                                          *args)
-                if new_fname is not None:
-                    fname = new_fname
-                    local_file = local_base_dir / directory / fname
-                    raw_file = local_file.with_suffix(extension)
-                    hdf_file = local_file.with_suffix('.hdf')
-                    if hdf_file.exists():
-                        data.append(pd.read_hdf(hdf_file))
-                        continue
 
-                # Print a message if file hasn't been downloaded
-                if not raw_file.exists():
-                    logger.info('File {}{}/{}{} not available\n'.format(
-                                remote_base_url, directory, fname, extension))
+        # If we can't find local file, try downloading
+        if try_download:
+            _checkdir(local_dir)
+            args = ()
+            if dl_info is not None:
+                args = (dl_info,)
+            new_fname = download_func(remote_base_url, local_base_dir,
+                                      directory, fname, remote_fname,
+                                      extension, *args)
+            if new_fname is not None:
+                fname = new_fname
+                local_file = local_base_dir / directory / fname
+                raw_file = local_file.with_suffix(extension)
+                hdf_file = local_file.with_suffix('.hdf')
+                if hdf_file.exists():
+                    data.append(pd.read_hdf(hdf_file))
                     continue
 
-        if raw_file.exists():
-            # Convert raw file to a dataframe
-            try:
-                file = _load_local(raw_file)
-                df = processing_func(file, **processing_kwargs)
-                if isinstance(file, io.IOBase) and not file.closed:
-                    file.close()
-            except _NoDataError:
+            raw_fname = _file_match(local_dir, fname + extension)
+            # Print a message if file hasn't been downloaded
+            if raw_fname is not None:
+                raw_file_path = local_dir / raw_fname
+                df = _load_raw_file(raw_file_path,
+                                    processing_func, processing_kwargs)
+                if df is not None:
+                    data.append(df)
                 continue
-
-            # Save dataframe to disk
-            if use_hdf:
-                df.to_hdf(hdf_file, 'data', mode='w', format='f')
-            data.append(df)
+            else:
+                logger.info('File {}{}/{}{} not available remotely\n'.format(
+                            remote_base_url, directory, fname, extension))
+                continue
         else:
-            logger.info('File {}/{}{} not available\n'.format(
-                        local_dir, fname, extension))
+            msg = ('File {a}/{b}{c} not available locally,\n'
+                   'and "try_download" set to False')
+            logger.info(msg.format(a=local_dir, b=fname, c=extension))
 
     # Loaded all the data, now filter between times
     data = timefilter(data, starttime, endtime)
+
+    # Attach units
     if extension == '.cdf':
-        cdf = _load_local(raw_file)
-        units_cdf = cdf_units(cdf, keys=keys, manual_units=units)
+        cdf = _load_local(raw_file_path)
+        units_cdf = cdf_units(cdf, manual_units=units)
         return units_attach(data, units_cdf)
     if type(units) is coll.OrderedDict:
         return units_attach(data, units)
     else:
         return data
+
+
+def _file_match(directory, fname_regex):
+    """
+    Check if a file in *directory* matchs the regular expression given by
+    *fname_regex*. If it does, return the filename. Otherwise returns None.
+
+    Parameters
+    ----------
+    directory : Path
+    fname_regex : str
+        Must include file extension.
+
+    Returns
+    -------
+    fname : str
+        Includes file extension.
+    """
+    if directory.exists():
+        for f in directory.iterdir():
+            if f.is_file():
+                if re.match(fname_regex, f.name):
+                    return f.name
+
+
+def _save_hdf(df, raw_file):
+    hdf_file = raw_file.with_suffix('.hdf')
+    df.to_hdf(hdf_file, 'data', mode='w', format='f')
+
+
+def _load_raw_file(raw_file, processing_func, processing_kwargs):
+    if not raw_file.exists():
+        return
+    # Convert raw file to a dataframe
+    logger.info('Loading {}'.format(raw_file))
+    try:
+        file = _load_local(raw_file)
+        df = processing_func(file, **processing_kwargs)
+        if use_hdf:
+            _save_hdf(df, raw_file)
+        if isinstance(file, io.IOBase) and not file.closed:
+            file.close()
+        return df
+    except _NoDataError:
+        return
 
 
 class _NoDataError(RuntimeError):
@@ -211,7 +270,7 @@ def units_attach(data, units):
     return timeseries_data
 
 
-def cdf_units(cdf_, keys=None, manual_units=None):
+def cdf_units(cdf_, manual_units=None):
     """
     Takes the CDF File and the required keys, and finds the units of the
     selected keys.
@@ -220,11 +279,9 @@ def cdf_units(cdf_, keys=None, manual_units=None):
     ----------
     cdf_ : cdf
         Opened cdf file
-    keys : dict, optional
-        If the user knows the units they wish to extract
-        from the CDF file keys, keys can be passed as an arugment.
-        If not, the function extracts all the keys present which
-        have an UNIT attribute.
+    manual_units : ~collections.OrderedDict, optional
+        Manually defined units to be attached to the data that will be
+        returned.
 
     Returns
     -------
@@ -232,37 +289,47 @@ def cdf_units(cdf_, keys=None, manual_units=None):
         Returns an OrderedDict with units of the selected keys.
     """
     units = coll.OrderedDict()
+    key_dict = {}
     for non_empty_var in list(cdf_.cdf_info().keys()):
         if 'variable' in non_empty_var.lower():
             if len(cdf_.cdf_info()[non_empty_var]) > 0:
                 var_list = non_empty_var
                 break
-    if keys is None:
-        message = "No keys assigned for the CDF. Extracting manually."
-        warnings.warn(message, Warning)
-        keys_ = list(cdf_.cdf_info()[var_list])
-        keys = dict(zip(keys_, keys_))
-    for key, val in keys.items():
-        try:
-            temp_unit = u.Unit(cdf_.varattsget(key)['UNITS'])
-        except ValueError:
-            if manual_units is not None:
-                if key in manual_units:
+    for key in cdf_.cdf_info()[var_list]:
+        if type(cdf_.varget(key)) is np.ndarray:
+            ncols = cdf_.varget(key).shape
+            if len(ncols) == 1:
+                key_dict[key] = key
+            if len(ncols) > 1:
+                val = []
+                val.append(key)
+                for x in range(0, ncols[1]):
+                    field = key + "{}".format('_' + str(x))
+                    val.append(field)
+                key_dict[key] = val
+    for key, val in key_dict.items():
+        temp_unit = None
+        if manual_units:
+            if key in manual_units:
+                temp_unit = manual_units[key]
+        if temp_unit is None:
+            try:
+                temp_unit = u.Unit(cdf_.varattsget(key)['UNITS'])
+            except ValueError:
+                unknown_unit = cdf_.varattsget(key)['UNITS']
+                temp_unit = helper.cdf_dict(unknown_unit)
+                if temp_unit is None:
+                    message = ("CDF provided units '{}'".format(unknown_unit) +
+                               " for key '{}' are unknown".format(key))
+                    warnings.warn(message, Warning)
                     continue
-            unknown_unit = cdf_.varattsget(key)['UNITS']
-            temp_unit = helper.cdf_dict(unknown_unit)
-            if temp_unit is None:
-                message = "The CDF provided units ({}) for key '{}' \
-                are unknown".format(unknown_unit, key)
-                warnings.warn(message, Warning)
-        except KeyError:
-            continue
+            except KeyError:
+                continue
         if isinstance(val, list):
             units.update(coll.OrderedDict.fromkeys(val, temp_unit))
         else:
-            if temp_unit is not None:
-                units[val] = temp_unit
-    if manual_units is not None:
+            units[val] = temp_unit
+    if manual_units:
         units.update(manual_units)
     return units
 
@@ -390,32 +457,34 @@ def pitchdist_cdf2df(cdf, distkeys, energykey, timekey, anglelabels):
     return data
 
 
-def cdf2df(cdf, index_key, keys=None, dtimeindex=True, badvalues=None):
+def cdf2df(cdf, index_key, dtimeindex=True, badvalues=None, ignore=None):
     """
     Converts a cdf file to a pandas dataframe.
+
+    Note that this only works for 1 dimensional data, other data such as
+    distribution functions or pitch angles will not work properly.
 
     Parameters
     ----------
     cdf : cdf
-        Opened cdf file
+        Opened CDF file.
     index_key : string
-        The key to use as indexing in the output dataframe
-    keys : dict, optional
-        A dictionary that maps keys in the cdf file to the corresponding
-        desired keys in the ouput dataframe. If a particular cdf key has
-        multiple columns, the mapped keys must be in a list.
+        The CDF key to use as the index in the output DataFrame.
     dtimeindex : bool, optional
-        If ``True``, DataFrame index is parsed as a datetime.
+        If ``True``, the DataFrame index is parsed as a datetime.
         Default is ``True``.
     badvalues : dict, list, optional
         A dictionary that maps the new DataFrame column keys to a list of bad
         values to replace with nans. Alternatively a list of numbers which are
         replaced with nans in all columns.
+    ignore : list, optional
+        In case a CDF file has columns that are unused / not required, then
+        the column names can be passed as a list into the function.
 
     Returns
     -------
     df : :class:`pandas.DataFrame`
-        Data frame with read in data
+        Data frame with read in data.
     """
     # Extract index values
     try:
@@ -438,36 +507,53 @@ def cdf2df(cdf, index_key, keys=None, dtimeindex=True, badvalues=None):
     except Exception:
         index = index_
     if dtimeindex:
-        index = pd.DatetimeIndex(index)
+        index = pd.DatetimeIndex(index, name='Time')
     df = pd.DataFrame(index=index)
+    npoints = cdf.varget(index_key).shape[0]
 
-    for non_empty_var in list(cdf.cdf_info().keys()):
-        if 'variable' in non_empty_var.lower():
-            if len(cdf.cdf_info()[non_empty_var]) > 0:
-                var_list = non_empty_var
+    for var_list in list(cdf.cdf_info().keys()):
+        if 'variable' in var_list.lower():
+            if len(cdf.cdf_info()[var_list]) > 0:
                 break
 
-    if keys is None:
-        keys = {}
-        for key in cdf.cdf_info()[var_list]:
-            if key == 'Epoch':
-                keys['Epoch'] = 'Time'
-            else:
-                keys[key] = key
+    keys = {}
+    for cdf_key in cdf.cdf_info()[var_list]:
+        if ignore:
+            if cdf_key in ignore:
+                continue
+        if cdf_key == 'Epoch':
+            keys[cdf_key] = 'Time'
+        else:
+            keys[cdf_key] = cdf_key
+    # Remove index key, as we have already used it to create the index
+    keys.pop(index_key)
 
-    for key in keys:
-        if keys[key] == 'Time':
-            df['Time'] = index
-            continue
-        df_key = keys[key]
+    # Remove keys for data that doesn't have the right shape to load in CDF
+    for cdf_key in keys.copy():
+        if type(cdf.varget(cdf_key)) is np.ndarray:
+            key_shape = cdf.varget(cdf_key).shape
+            if len(key_shape) == 0 or key_shape[0] != npoints:
+                keys.pop(cdf_key)
+        else:
+            keys.pop(cdf_key)
+
+    # Loop through each key and put data into the dataframe
+    for cdf_key in keys:
+        df_key = keys[cdf_key]
         if isinstance(df_key, list):
             for i, subkey in enumerate(df_key):
-                df[subkey] = cdf.varget(key)[...][:, i]
+                df[subkey] = cdf.varget(cdf_key)[...][:, i]
         else:
-            try:
-                df[df_key] = cdf.varget(key)[...]
-            except Exception:
-                continue
+            # If ndims is 1, we just have a single column of data
+            # If ndims is 2, have multiple columns of data under same key
+            key_shape = cdf.varget(cdf_key).shape
+            ndims = len(key_shape)
+            if ndims == 1:
+                df[df_key] = cdf.varget(cdf_key)[...]
+            elif ndims == 2:
+                for i in range(key_shape[1]):
+                    df[df_key + '_' + str(i)] = cdf.varget(cdf_key)[...][:, i]
+
     # Replace bad values with nans
     if badvalues is not None:
         df = df.replace(badvalues, np.nan)
@@ -478,7 +564,7 @@ class RemoteFileNotPresentError(RuntimeError):
     pass
 
 
-def load(filename, local_dir, remote_url, guessversion=False,
+def load(filename, local_dir, remote_url,
          try_download=True, remote_error=False):
     """
     Try to load a file from *local_dir*.
@@ -493,9 +579,6 @@ def load(filename, local_dir, remote_url, guessversion=False,
         Local location of file
     remote_url : string
         Remote location of file
-    guessversion : bool
-        If *True*, try to guess the version number in the filename. Only
-        works for cdf files. Default is *False*.
     try_download : bool
         If a file isn't available locally, try to downloaded it. Default is
         *True*.
@@ -522,22 +605,14 @@ def load(filename, local_dir, remote_url, guessversion=False,
     # If not a cdf file assume ascii file
     else:
         filetype = 'ascii'
-        if guessversion:
-            raise RuntimeError('Cannot guess version for ascii files')
 
     # Try to load locally
     if _checkdir(local_dir):
         local_dir = path.Path(local_dir)
         for f in local_dir.iterdir():
-            if str(f) == filename or (guessversion and
-                                      (str(f)[:-6] == filename[:-6])):
+            if str(f) == filename or ((str(f)[:-6] == filename[:-6])):
                 filename = str(f)
                 return _load_local(local_dir / f, filetype)
-
-    # Loading locally failed, but directory has been made so try to download
-    # file.
-    if guessversion:
-        filename = _get_remote_version(remote_url, filename)
 
     if try_download:
         try:
@@ -552,7 +627,22 @@ def load(filename, local_dir, remote_url, guessversion=False,
         return None
 
 
-def _get_remote_version(remote_url, filename):
+def _get_remote_fname(remote_url, fname_regex):
+    '''
+    Return a remote filename that matches a regular expression.
+
+    Parameters
+    ----------
+    remote_url : str
+        FTP directory
+    fname_regex : str
+        Must include extension.
+
+    Retruns
+    -------
+    fname : str
+        Filename that matches including extension.
+    '''
     remote_url = _fix_url(remote_url)
     # Split remote url into a server name and directory
     # Strip ftp:// from front of url
@@ -568,8 +658,8 @@ def _get_remote_version(remote_url, filename):
         ftp.cwd(server_dir)
         # Loop through and find files
         for (f, _) in ftp.mlsd():
-            if f[-len(filename):-8] == filename[:-8]:
-                return f[-len(filename):]
+            if re.match(fname_regex, f):
+                return f
 
 
 def _load_cdf(file_path):
@@ -615,6 +705,19 @@ def _reporthook(blocknum, blocksize, totalsize):
     # Total size is unknown
     else:
         sys.stderr.write("\rRead %d" % (readsofar,))
+
+
+def _download_remote_unknown_version(
+    remote_base_url, local_base_dir, directory,
+        fname, remote_fname, extension):
+    """
+    Generic donwload code that can be used by data methods to download
+    data where the version is unknown and specified in regex.
+    """
+    remote_url_dir = remote_base_url + str(directory)
+    fname = _get_remote_fname(remote_url_dir, fname)
+    local_dir = local_base_dir / directory
+    _download_remote(remote_url_dir, fname, local_dir)
 
 
 def _download_remote(remote_url, filename, local_dir):

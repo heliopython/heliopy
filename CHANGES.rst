@@ -9,9 +9,18 @@ New features
   the HelioPy modules now return units.
 - Added a new :func:`.data.util.cdf_units` function that can extract the UNIT
   attribute from the CDF files.
+- Low resolution OMNI data import has been added in
+  :func:`.data.omni.low` function.
+- Magnetic Field data from DSCOVR Spacecraft
+  can now be imported using the :func:`.data.dscovr.mag_h0` function.
 
 Backwards incompatible changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+- Data import has had a major overhaul, so that every column in CDF files now
+  gets automatically imported and retains its name without being changed by
+  HelioPy. This means column names in several data products are now different,
+  to reflect their original name in the CDF files instead of a custom name
+  assinged by HelioPy.
 - :func:`.data.helios.merged`, :func:`.data.helios.mag_4hz`,
   :func:`.data.helios.corefit` and :func:`.data.helios.mag_ness` no longer take
   a `verbose` keyword argument. :issue:`467`
@@ -20,6 +29,17 @@ Backwards incompatible changes
 Fixed bugs
 ^^^^^^^^^^
 - :func:`.data.imp.merged` no longer imports redundant columns.
+
+Version 0.5.3
+-------------
+
+New features
+^^^^^^^^^^^^
+
+- Lots of small documentation updates.
+- `.data.helios.distparams` now has an extra ``'data_rate'`` column, which
+  determines whether a given distribution function was transmitted in high or
+  low data mode. :issue:`529`
 
 Version 0.5.2
 -------------

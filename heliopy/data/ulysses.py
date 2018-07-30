@@ -142,7 +142,7 @@ def _swics(starttime, endtime, names, product, units=None, try_download=True):
     remote_base_url = ulysses_url
 
     def download_func(remote_base_url, local_base_dir,
-                      directory, fname, extension):
+                      directory, fname, remote_fname, extension):
         local_dir = local_base_dir / directory
         swics_options = url_options
         swics_options['FILE_NAME'] = fname + extension
@@ -176,7 +176,7 @@ def _swics(starttime, endtime, names, product, units=None, try_download=True):
         units=units, try_download=True)
 
 
-def fgm_hires(starttime, endtime):
+def fgm_hires(starttime, endtime, try_download=True):
     """
     Import high resolution fluxgate magnetometer data.
 
@@ -192,42 +192,50 @@ def fgm_hires(starttime, endtime):
     data : DataFrame
         Requested data
     """
-    fgm_options = url_options
-    readargs = {'names': ['year', 'doy', 'hour', 'minute', 'second',
-                          'Bx', 'By', 'Bz', '|B|'],
-                'delim_whitespace': True}
-
     data = []
     dtimes = util._daysplitinterval(starttime, endtime)
-    # Loop through years
+    dirs = []
+    fnames = []
+    extension = '.ASC'
+    local_base_dir = ulysses_dir / 'fgm' / 'hires'
+    remote_base_url = ulysses_url
+    units = OrderedDict([('Bx', u.nT), ('By', u.nT),
+                         ('Bz', u.nT), ('|B|', u.nT)])
+
+    def download_func(remote_base_url, local_base_dir,
+                      directory, fname, remote_fname, extension):
+        local_dir = local_base_dir / directory
+        fgm_options = url_options
+        fgm_options['FILE_NAME'] = fname + extension
+        fgm_options['FILE_PATH'] = '/ufa/HiRes/VHM-FGM/' + yearstr
+        remote_url = ulysses_url
+        for key in fgm_options:
+            remote_url += key + '=' + fgm_options[key] + '&'
+        try:
+            util._load_remote(remote_url, fname + extension, local_dir, 'ascii')
+        except Exception as err:
+            return
+
+    def processing_func(f):
+        readargs = {'names': ['year', 'doy', 'hour', 'minute', 'second',
+                              'Bx', 'By', 'Bz', '|B|'],
+                    'delim_whitespace': True}
+        thisdata = pd.read_table(f, **readargs)
+        thisdata = _convert_ulysses_time(thisdata)
+        return thisdata
+
     for dtime in dtimes:
         date = dtime[0]
         yearstr = date.strftime('%Y')
-        fgm_options['FILE_NAME'] = ('U' + yearstr[-2:] +
-                                    date.strftime('%j') + 'SH.ASC')
-        # Local locaiton to download to
-        local_dir = ulysses_dir / 'fgm' / 'hires' / yearstr
-        local_file = local_dir / fgm_options['FILE_NAME']
-        local_hdf = local_file.with_suffix('.hdf')
-        # If we have already saved a hdf file
-        if local_hdf.exists():
-            thisdata = pd.read_hdf(local_hdf)
-        else:
-            # Put together remote url
-            fgm_options['FILE_PATH'] = '/ufa/HiRes/VHM-FGM/' + yearstr
-            remote_url = ulysses_url
-            for key in fgm_options:
-                remote_url += key + '=' + fgm_options[key] + '&'
-            f = util.load(fgm_options['FILE_NAME'], local_dir, remote_url)
+        filename = ('U' + yearstr[-2:] + date.strftime('%j') + 'SH')
+        fnames.append(filename)
+        this_relative_dir = local_base_dir / yearstr
+        dirs.append(this_relative_dir)
 
-            # Read in data
-            thisdata = pd.read_table(f, **readargs)
-            # Process data/time
-            thisdata = _convert_ulysses_time(thisdata)
-            if use_hdf:
-                thisdata.to_hdf(local_hdf, 'fgm_hires')
-        data.append(thisdata)
-    return util.timefilter(data, starttime, endtime)
+    return util.process(
+        dirs, fnames, extension, local_base_dir, remote_base_url,
+        download_func, processing_func, starttime, endtime, units=units,
+        try_download=True)
 
 
 def swoops_ions(starttime, endtime, try_download=True):
@@ -261,7 +269,7 @@ def swoops_ions(starttime, endtime, try_download=True):
                         ('iqual', u.dimensionless_unscaled)])
 
     def download_func(remote_base_url, local_base_dir,
-                      directory, fname, extension):
+                      directory, fname, remote_fname, extension):
         local_dir = local_base_dir / directory
         swoops_options = url_options
         year = fname[1:3]

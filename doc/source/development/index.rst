@@ -6,3 +6,4 @@ Development guide
 
    testing
    release
+   minor_releases

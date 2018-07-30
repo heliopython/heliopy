@@ -159,6 +159,7 @@ def cdf_dict(unit_string):
                         ('deg (from moments)', u.deg),
                         ('#/{cc*(cm/s)^3}', (u.cm**3 * (u.cm / u.s)**3)**-1),
                         ('sec', u.s),
+                        ('seconds', u.s),
                         ('nT GSE', u.nT),
                         ('nT GSM', u.nT),
                         ('nT DSL', u.nT),

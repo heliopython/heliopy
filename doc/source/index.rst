@@ -14,6 +14,13 @@ Getting started
    auto_examples/index
    guide/index
 
+Requesting new features
+=======================
+
+If you would like a new feature to be built into HelioPy, you can either open a bug report
+in the `github issue tracker <https://github.com/heliopython/heliopy>`_, or send an email to
+heliopy@googlegroups.com.
+
 Module documentation
 ====================
 

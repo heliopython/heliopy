@@ -77,7 +77,7 @@ def fgm(probe, rate, coords, starttime, endtime):
         dirs.append(this_relative_dir)
 
     def download_func(remote_base_url, local_base_dir,
-                      directory, fname, extension):
+                      directory, fname, remote_fname, extension):
         remote_url = remote_base_url + str(directory)
         # Now load remotely
         util.load(fname + extension,
@@ -91,11 +91,7 @@ def fgm(probe, rate, coords, starttime, endtime):
 
         probestr = 'th' + probe
         ratestr = '_fg' + rate + '_'
-        keys = {probestr + ratestr + 'btotal': '|B|',
-                probestr + ratestr + coords: ['Bx_' + coords,
-                                              'By_' + coords,
-                                              'Bz_' + coords]}
-        df = util.cdf2df(cdf, probestr + ratestr + 'time', keys,
+        df = util.cdf2df(cdf, probestr + ratestr + 'time',
                          dtimeindex=False)
         df = df.set_index(pd.to_datetime(df.index.values, unit='s'))
         df.index.name = 'Time'
