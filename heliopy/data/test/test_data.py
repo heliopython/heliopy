@@ -337,7 +337,7 @@ class TestOmni:
         check_data_output(df)
 
 
-@pytest.mark.skipif(no_pycdf, reason='Importing pycdf failed')
+@pytest.mark.skipif(no_cdflib, reason='Importing cdflib failed')
 @pytest.mark.data
 class TestDSCOVR:
     @classmethod
