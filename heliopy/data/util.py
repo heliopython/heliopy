@@ -667,7 +667,7 @@ def _load_cdf(file_path):
     A function to handle loading cdflib, and printing a nice error if things
     go wrong.
     '''
-
+    import cdflib
     try:
         cdf = cdflib.CDF(str(file_path))
     except Exception as err:
