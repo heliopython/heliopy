@@ -290,12 +290,13 @@ def cdf_units(cdf_, manual_units=None):
     """
     units = coll.OrderedDict()
     key_dict = {}
+    keys = []
     for non_empty_var in list(cdf_.cdf_info().keys()):
         if 'variable' in non_empty_var.lower():
-            if len(cdf_.cdf_info()[non_empty_var]) > 1:
-                var_list = non_empty_var
-                break
-    for key in cdf_.cdf_info()[var_list]:
+            if len(cdf_.cdf_info()[non_empty_var]) > 0:
+                keys += cdf_.cdf_info()[non_empty_var]
+                continue
+    for key in keys:
         if type(cdf_.varget(key)) is np.ndarray:
             ncols = cdf_.varget(key).shape
             if len(ncols) == 1:
