@@ -17,6 +17,7 @@ import astropy.units as u
 import sunpy.timeseries as ts
 import warnings
 import collections as coll
+import cdflib
 
 import numpy as np
 import pandas as pd
@@ -431,7 +432,6 @@ def pitchdist_cdf2df(cdf, distkeys, energykey, timekey, anglelabels):
     df : :class:`pandas.DataFrame`
         Data frame with read in data.
     """
-    import cdflib
     times_ = cdf.varget(timekey)[...]
     utc_comp = cdflib.cdfepoch.breakdown(times_)
     times = np.asarray([dt.datetime(*x) for x in utc_comp])
@@ -499,7 +499,6 @@ def cdf2df(cdf, index_key, dtimeindex=True, badvalues=None, ignore=None):
     df : :class:`pandas.DataFrame`
         Data frame with read in data.
     """
-    import cdflib
     # Extract index values
     try:
         index_ = cdf.varget(index_key)[...][:, 0]
@@ -681,7 +680,6 @@ def _load_cdf(file_path):
     A function to handle loading cdflib, and printing a nice error if things
     go wrong.
     '''
-    import cdflib
     try:
         cdf = cdflib.CDF(str(file_path))
     except Exception as err:
