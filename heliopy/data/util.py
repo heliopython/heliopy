@@ -290,48 +290,59 @@ def cdf_units(cdf_, manual_units=None):
     """
     units = coll.OrderedDict()
     key_dict = {}
-    keys = []
-    for non_empty_var in list(cdf_.cdf_info().keys()):
-        if 'variable' in non_empty_var.lower():
-            if len(cdf_.cdf_info()[non_empty_var]) > 0:
-                keys += cdf_.cdf_info()[non_empty_var]
+    var_list = []
+    if manual_units is None:
+        manual_units = {'NOTEXIST': 'NOTEXIST'}
+    # To figure out whether rVariable or zVariable needs to be taken
+    for attr in list(cdf_.cdf_info().keys()):
+        if 'variable' in attr.lower():
+            if len(cdf_.cdf_info()[attr]) > 0:
+                var_list += [attr]
+
+    # Extract the list of valid keys in the zVar or rVar
+    for attr in var_list:
+        for key in cdf_.cdf_info()[attr]:
+            try:
+                y = cdf_.varget(key)
+                ncols = y.shape
+                if len(ncols) == 1:
+                    key_dict[key] = key
+                if len(ncols) > 1:
+                    val = []
+                    val.append(key)
+                    for x in range(0, ncols[1]):
+                        field = key + "{}".format('_' + str(x))
+                        val.append(field)
+                    key_dict[key] = val
+            except Exception as e:
+                print("{}-Variable{}".format(e, key))
                 continue
-    for key in keys:
-        if type(cdf_.varget(key)) is np.ndarray:
-            ncols = cdf_.varget(key).shape
-            if len(ncols) == 1:
-                key_dict[key] = key
-            if len(ncols) > 1:
-                val = []
-                val.append(key)
-                for x in range(0, ncols[1]):
-                    field = key + "{}".format('_' + str(x))
-                    val.append(field)
-                key_dict[key] = val
+
+    # Assigning units to the keys
     for key, val in key_dict.items():
+        unit_str = None
         temp_unit = None
-        if manual_units:
+        try:
+            unit_str = cdf_.varattsget(key)['UNITS']
+        except KeyError:
+            pass
+        try:
+            temp_unit = u.Unit(unit_str)
+        except (TypeError, ValueError):
             if key in manual_units:
                 temp_unit = manual_units[key]
-        if temp_unit is None:
-            try:
-                temp_unit = u.Unit(cdf_.varattsget(key)['UNITS'])
-            except ValueError:
-                unknown_unit = cdf_.varattsget(key)['UNITS']
-                temp_unit = helper.cdf_dict(unknown_unit)
-                if temp_unit is None:
-                    message = ("CDF provided units '{}'".format(unknown_unit) +
-                               " for key '{}' are unknown".format(key))
-                    warnings.warn(message, Warning)
-                    continue
-            except KeyError:
+            elif helper.cdf_dict(unit_str):
+                temp_unit = helper.cdf_dict(unit_str)
+            if temp_unit is None:
+                message = "The CDF provided units ({}) for key '{}' \
+                are unknown".format(unit_str, key)
+                warnings.warn(message, Warning)
                 continue
         if isinstance(val, list):
             units.update(coll.OrderedDict.fromkeys(val, temp_unit))
         else:
             units[val] = temp_unit
-    if manual_units:
-        units.update(manual_units)
+    units.update(manual_units)
     return units
 
 
