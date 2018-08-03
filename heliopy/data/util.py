@@ -183,12 +183,15 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
             logger.info(msg.format(a=local_dir, b=fname, c=extension))
 
     # Loaded all the data, now filter between times
+    length = None
     data = timefilter(data, starttime, endtime)
+    if type(data) is sunpy.timeseries.timeseriesbase.GenericTimeSeries:
+        length = data.data.shape[0]
 
     # Attach units
     if extension == '.cdf':
         cdf = _load_local(raw_file_path)
-        units_cdf = cdf_units(cdf, manual_units=units)
+        units_cdf = cdf_units(cdf, manual_units=units, length=length)
         return units_attach(data, units_cdf)
     if type(units) is coll.OrderedDict:
         return units_attach(data, units)
@@ -271,7 +274,7 @@ def units_attach(data, units):
     return timeseries_data
 
 
-def cdf_units(cdf_, manual_units=None):
+def cdf_units(cdf_, manual_units=None, length=None):
     """
     Takes the CDF File and the required keys, and finds the units of the
     selected keys.
@@ -306,6 +309,9 @@ def cdf_units(cdf_, manual_units=None):
             try:
                 y = cdf_.varget(key)
                 ncols = y.shape
+                if length:
+                    if ncols[0] is not length:
+                        continue
                 if len(ncols) == 1:
                     key_dict[key] = key
                 if len(ncols) > 1:
