@@ -524,23 +524,24 @@ def cdf2df(cdf, index_key, dtimeindex=True, badvalues=None, ignore=None):
     df = pd.DataFrame(index=index)
     npoints = cdf.varget(index_key).shape[0]
 
-    for var_list in list(cdf.cdf_info().keys()):
-        if 'variable' in var_list.lower():
-            if len(cdf.cdf_info()[var_list]) > 0:
-                break
+    var_list = []
+    for attr in list(cdf.cdf_info().keys()):
+        if 'variable' in attr.lower():
+            if len(cdf.cdf_info()[attr]) > 0:
+                var_list += [attr]
 
     keys = {}
-    for cdf_key in cdf.cdf_info()[var_list]:
-        if ignore:
-            if cdf_key in ignore:
-                continue
-        if cdf_key == 'Epoch':
-            keys[cdf_key] = 'Time'
-        else:
-            keys[cdf_key] = cdf_key
+    for attr in var_list:
+        for cdf_key in cdf.cdf_info()[attr]:
+            if ignore:
+                if cdf_key in ignore:
+                    continue
+            if cdf_key == 'Epoch':
+                keys[cdf_key] = 'Time'
+            else:
+                keys[cdf_key] = cdf_key
     # Remove index key, as we have already used it to create the index
     keys.pop(index_key)
-
     # Remove keys for data that doesn't have the right shape to load in CDF
     for cdf_key in keys.copy():
         if type(cdf.varget(cdf_key)) is np.ndarray:
