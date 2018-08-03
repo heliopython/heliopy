@@ -2,10 +2,9 @@ sudo: false
 language: python
 cache: pip
 
-matrix:
-  include:
-    - python: 3.6
-      env: RUN_PEP8=--pep8
+env:
+  - PYTHON_VERSION=3.6
+  - PYTHON_VERSION=3.7
 
 before_install:
 # Install conda
@@ -14,17 +13,18 @@ before_install:
 - "./miniconda.sh -b -p $HOME/miniconda"
 - export PATH="$HOME/miniconda/bin:$PATH"
 - conda update --yes conda
-- conda create --yes -n testenv python=$TRAVIS_PYTHON_VERSION
+- conda create --yes -n testenv python=$PYTHON_VERSION
 - source activate testenv
 
-- pip install --quiet $PRE -r requirements/test.txt
-- pip install --quiet spiceypy --no-cache-di
+- conda install --yes hdf5
+- pip install $PRE -r requirements/test.txt
+- pip install spiceypy --no-cache-di
 
 - export CLUSTERCOOKIE=2F1B4760251B51783700055F1A037271685A64680A1450722A465D302F0947606504526F370C40752A0640633228546C2A015F2F28075E
 
 script:
 # Check that unit tests work
-- pytest heliopy/ --cov=heliopy/ -v --durations=20 $RUN_PEP8
+- pytest heliopy/ --cov=heliopy/ -v --durations=5 --pep8
 # Check building a source distribution works
 - python setup.py sdist
 after_success:
