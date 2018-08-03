@@ -431,6 +431,7 @@ def pitchdist_cdf2df(cdf, distkeys, energykey, timekey, anglelabels):
     df : :class:`pandas.DataFrame`
         Data frame with read in data.
     """
+    import cdflib
     times_ = cdf.varget(timekey)[...]
     utc_comp = cdflib.cdfepoch.breakdown(times_)
     times = np.asarray([dt.datetime(*x) for x in utc_comp])

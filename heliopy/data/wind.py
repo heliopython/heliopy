@@ -143,6 +143,14 @@ def swe_h3(starttime, endtime):
     extension = '.cdf'
     local_base_dir = wind_dir
     remote_base_url = remote_wind_dir
+    distkeys = []
+    for i in range(0, 13):
+        distkeys.append('f_pitch_E' + str(i).zfill(2))
+    anglelabels = []
+    for i in range(0, 30):
+        anglelabels.append((i + 0.5) * np.pi / 30)
+    timekey = 'Epoch'
+    energykey = 'Ve'
 
     def download_func(*args):
         util._download_remote_unknown_version(*args)
