@@ -293,7 +293,7 @@ def cdf_units(cdf_, manual_units=None):
     key_dict = {}
     var_list = []
     if manual_units is None:
-        manual_units = {'NOTEXIST': 'NOTEXIST'}
+        manual_units = {'NOTEXIST': u.dimensionless_unscaled}
     # To figure out whether rVariable or zVariable needs to be taken
     for attr in list(cdf_.cdf_info().keys()):
         if 'variable' in attr.lower():

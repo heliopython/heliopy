@@ -36,6 +36,7 @@ def mag_rtn(starttime, endtime, try_download=True):
     dirs = []
     extension = '.cdf'
     data = []
+    ignore = ['Quality_Flag']
     daylist = util._daysplitinterval(starttime, endtime)
     for day in daylist:
         date = day[0]
@@ -59,7 +60,7 @@ def mag_rtn(starttime, endtime, try_download=True):
         util._download_remote(remote_url, filename, local_dir)
 
     def processing_func(cdf):
-        thisdata = util.cdf2df(cdf, 'Epoch')
+        thisdata = util.cdf2df(cdf, 'Epoch', ignore=ignore)
         return thisdata
 
     return util.process(dirs, fnames, extension, local_base_dir,
