@@ -185,8 +185,7 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
     # Loaded all the data, now filter between times
     length = None
     data = timefilter(data, starttime, endtime)
-    if type(data) is sunpy.timeseries.timeseriesbase.GenericTimeSeries:
-        length = data.data.shape[0]
+    length = data.shape[0]
 
     # Attach units
     if extension == '.cdf':
