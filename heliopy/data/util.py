@@ -326,19 +326,23 @@ def cdf_units(cdf_, manual_units=None, length=None):
         try:
             unit_str = cdf_.varattsget(key)['UNITS']
         except KeyError:
-            pass
-        try:
-            temp_unit = u.Unit(unit_str)
-        except (TypeError, ValueError):
             if key in manual_units:
                 temp_unit = manual_units[key]
-            elif helper.cdf_dict(unit_str):
-                temp_unit = helper.cdf_dict(unit_str)
-            if temp_unit is None:
-                message = "The CDF provided units ({}) for key '{}' \
-                are unknown".format(unit_str, key)
-                warnings.warn(message, Warning)
+            else:
                 continue
+        if temp_unit is None:
+            try:
+                temp_unit = u.Unit(unit_str)
+            except (TypeError, ValueError):
+                if key in manual_units:
+                    temp_unit = manual_units[key]
+                elif helper.cdf_dict(unit_str):
+                    temp_unit = helper.cdf_dict(unit_str)
+                if unit_str is None:
+                    message = "The CDF provided units ({}) for key '{}' \
+                    are unknown".format(unit_str, key)
+                    warnings.warn(message, Warning)
+                    continue
         if isinstance(val, list):
             units.update(coll.OrderedDict.fromkeys(val, temp_unit))
         else:
