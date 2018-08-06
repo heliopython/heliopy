@@ -23,7 +23,6 @@ install:
   - "powershell ci-helpers/appveyor/install-miniconda.ps1"
   - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
   - "activate test"
-  - cmd: conda install hdf5
   - "pip install -r requirements/test.txt"
   - "pip install spiceypy --no-cache-di"
 
