@@ -9,6 +9,8 @@ import pathlib as path
 import pandas as pd
 import numpy as np
 import astropy.units as u
+import cdflib
+import datetime as dt
 from collections import OrderedDict
 
 from heliopy.data import util
@@ -103,7 +105,6 @@ def swe_h1(starttime, endtime):
                  'Alpha_sigmaNa_nonlin': 100000.0}
     units = OrderedDict([('fit_flag', u.dimensionless_unscaled),
                          ('ChisQ_DOF_nonlin', u.dimensionless_unscaled)])
-
     return _load_wind_cdf(starttime, endtime, instrument,
                           data_product, fname, badvalues, units=units)
 
@@ -142,19 +143,19 @@ def swe_h3(starttime, endtime):
     extension = '.cdf'
     local_base_dir = wind_dir
     remote_base_url = remote_wind_dir
+    distkeys = []
+    for i in range(0, 13):
+        distkeys.append('f_pitch_E' + str(i).zfill(2))
+    anglelabels = []
+    for i in range(0, 30):
+        anglelabels.append((i + 0.5) * np.pi / 30)
+    timekey = 'Epoch'
+    energykey = 'Ve'
 
     def download_func(*args):
         util._download_remote_unknown_version(*args)
 
     def processing_func(cdf):
-        distkeys = []
-        for i in range(0, 13):
-            distkeys.append('f_pitch_E' + str(i).zfill(2))
-        anglelabels = []
-        for i in range(0, 30):
-            anglelabels.append((i + 0.5) * np.pi / 30)
-        timekey = 'Epoch'
-        energykey = 'Ve'
 
         df = util.pitchdist_cdf2df(cdf, distkeys, energykey, timekey,
                                    anglelabels)
@@ -224,6 +225,14 @@ def _mfi(starttime, endtime, version, units=None, ignore=None):
     # Get directories and filenames
     dirs = []
     fnames = []
+    epoch_dict = {'h0': 'Epoch3', 'h2': 'Epoch'}
+    mag_dict = {'h0': 'B3GSE', 'h2': 'BGSE'}
+
+    epoch_key = epoch_dict[version]
+    mag_key = mag_dict[version]
+
+    keys = {mag_key: ['Bx_gse', 'By_gse', 'Bz_gse'],
+            epoch_key: 'Time'}
     daylist = util._daysplitinterval(starttime, endtime)
     for day in daylist:
         date = day[0]
@@ -359,11 +368,24 @@ def threedp_sfpd(starttime, endtime):
     def processing_func(cdf):
         data_today = []
         # Loop through each timestamp to build up fluxes
-        for i, time in enumerate(cdf['Epoch'][...]):
-            energies = cdf['ENERGY'][i, :]
-            angles = cdf['PANGLE'][i, :]
-            fluxes = cdf['FLUX'][i, :, :]
-            magfield = cdf['MAGF'][i, :]
+        for non_empty_var in list(cdf.cdf_info().keys()):
+            if 'variable' in non_empty_var.lower():
+                if len(cdf.cdf_info()[non_empty_var]) > 0:
+                    var_list = non_empty_var
+                    break
+
+        index_ = cdf.varget('Epoch')[...]
+        index_ = cdflib.cdfepoch.breakdown(index_)
+        index_ = np.asarray([dt.datetime(*x) for x in index_])
+        energies_ = cdf.varget('ENERGY')[...]
+        angles_ = cdf.varget('PANGLE')[...]
+        fluxes_ = cdf.varget('FLUX')[...]
+        magfield_ = cdf.varget('MAGF')[...]
+        for i, time in enumerate(index_):
+            energies = energies_[i, :]
+            angles = angles_[i, :]
+            fluxes = fluxes_[i, :, :]
+            magfield = magfield_[i, :]
             index = pd.MultiIndex.from_product(
                 ([time], energies, angles),
                 names=['Time', 'Energy', 'Pitch angle'])

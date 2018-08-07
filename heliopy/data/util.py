@@ -17,6 +17,7 @@ import astropy.units as u
 import sunpy.timeseries as ts
 import warnings
 import collections as coll
+import cdflib
 
 import numpy as np
 import pandas as pd
@@ -270,7 +271,7 @@ def units_attach(data, units):
     return timeseries_data
 
 
-def cdf_units(cdf_, manual_units=None):
+def cdf_units(cdf_, manual_units=None, length=None):
     """
     Takes the CDF File and the required keys, and finds the units of the
     selected keys.
@@ -290,41 +291,63 @@ def cdf_units(cdf_, manual_units=None):
     """
     units = coll.OrderedDict()
     key_dict = {}
-    for key in cdf_.keys():
-        ncols = cdf_[key].shape
-        if len(ncols) == 1:
-            key_dict[key] = key
-        if len(ncols) > 1:
-            val = []
-            val.append(key)
-            for x in range(0, ncols[1]):
-                field = key + "{}".format('_' + str(x))
-                val.append(field)
-            key_dict[key] = val
+    var_list = []
+    if manual_units is None:
+        manual_units = {'NOTEXIST': u.dimensionless_unscaled}
+    # To figure out whether rVariable or zVariable needs to be taken
+    for attr in list(cdf_.cdf_info().keys()):
+        if 'variable' in attr.lower():
+            if len(cdf_.cdf_info()[attr]) > 0:
+                var_list += [attr]
+
+    # Extract the list of valid keys in the zVar or rVar
+    for attr in var_list:
+        for key in cdf_.cdf_info()[attr]:
+            try:
+                y = cdf_.varget(key)
+                ncols = y.shape
+                if len(ncols) == 1:
+                    key_dict[key] = key
+                if len(ncols) > 1:
+                    val = []
+                    val.append(key)
+                    for x in range(0, ncols[1]):
+                        field = key + "{}".format('_' + str(x))
+                        val.append(field)
+                    key_dict[key] = val
+            except Exception as e:
+                print("{}-Variable{}".format(e, key))
+                continue
+
+    # Assigning units to the keys
     for key, val in key_dict.items():
+        unit_str = None
         temp_unit = None
-        if manual_units:
+        try:
+            unit_str = cdf_.varattsget(key)['UNITS']
+        except KeyError:
             if key in manual_units:
                 temp_unit = manual_units[key]
+            else:
+                continue
         if temp_unit is None:
             try:
-                temp_unit = u.Unit(cdf_[key].attrs['UNITS'])
-            except ValueError:
-                unknown_unit = (cdf_[key].attrs['UNITS'])
-                temp_unit = helper.cdf_dict(unknown_unit)
-                if temp_unit is None:
-                    message = ("CDF provided units '{}'".format(unknown_unit) +
-                               " for key '{}' are unknown".format(key))
+                temp_unit = u.Unit(unit_str)
+            except (TypeError, ValueError):
+                if key in manual_units:
+                    temp_unit = manual_units[key]
+                elif helper.cdf_dict(unit_str):
+                    temp_unit = helper.cdf_dict(unit_str)
+                if unit_str is None:
+                    message = "The CDF provided units ({}) for key '{}' \
+                    are unknown".format(unit_str, key)
                     warnings.warn(message, Warning)
                     continue
-            except KeyError:
-                continue
         if isinstance(val, list):
             units.update(coll.OrderedDict.fromkeys(val, temp_unit))
         else:
             units[val] = temp_unit
-    if manual_units:
-        units.update(manual_units)
+    units.update(manual_units)
     return units
 
 
@@ -413,9 +436,11 @@ def pitchdist_cdf2df(cdf, distkeys, energykey, timekey, anglelabels):
     df : :class:`pandas.DataFrame`
         Data frame with read in data.
     """
-    times = cdf[timekey][...]
+    times_ = cdf.varget(timekey)[...]
+    utc_comp = cdflib.cdfepoch.breakdown(times_)
+    times = np.asarray([dt.datetime(*x) for x in utc_comp])
     ntimesteps = times.size
-    energies = cdf[energykey][...]
+    energies = cdf.varget(energykey)[...]
     # If energies is 2D, just take first set of energies
     if len(energies.shape) == 2:
         energies = energies[0, :]
@@ -427,7 +452,7 @@ def pitchdist_cdf2df(cdf, distkeys, energykey, timekey, anglelabels):
     # Loop through energies
     for i, key in enumerate(distkeys):
         thisenergy = energies[i]
-        this_e_data = cdf[key][...]
+        this_e_data = cdf.varget(key)[...]
         # Loop through angles
         for j in range(0, this_e_data.shape[1]):
             # Time steps
@@ -480,31 +505,54 @@ def cdf2df(cdf, index_key, dtimeindex=True, badvalues=None, ignore=None):
     """
     # Extract index values
     try:
-        index = cdf[index_key][...][:, 0]
+        index_ = cdf.varget(index_key)[...][:, 0]
     except IndexError:
-        index = cdf[index_key][...]
-    # Parse datetime index
+        index_ = cdf.varget(index_key)[...]
+    try:
+        utc_comp = cdflib.cdfepoch.breakdown(index_, to_np=True)
+        if utc_comp.shape[1] == 9:
+            millis = utc_comp[:, 6]*(10**3)
+            micros = utc_comp[:, 8]*(10**2)
+            nanos = utc_comp[:, 7]
+            utc_comp[:, 6] = millis + micros + nanos
+            utc_comp = np.delete(utc_comp,  np.s_[-2:], axis=1)
+        try:
+            index = np.asarray([dt.datetime(*x) for x in utc_comp])
+        except ValueError:
+            utc_comp[:, 6] -= micros
+            index = np.asarray([dt.datetime(*x) for x in utc_comp])
+    except Exception:
+        index = index_
     if dtimeindex:
         index = pd.DatetimeIndex(index, name='Time')
     df = pd.DataFrame(index=index)
-    npoints = cdf[index_key].shape[0]
+    npoints = cdf.varget(index_key).shape[0]
+
+    var_list = []
+    for attr in list(cdf.cdf_info().keys()):
+        if 'variable' in attr.lower():
+            if len(cdf.cdf_info()[attr]) > 0:
+                var_list += [attr]
 
     keys = {}
-    for cdf_key in cdf.keys():
-        if ignore:
-            if cdf_key in ignore:
-                continue
-        if cdf_key == 'Epoch':
-            keys[cdf_key] = 'Time'
-        else:
-            keys[cdf_key] = cdf_key
+    for attr in var_list:
+        for cdf_key in cdf.cdf_info()[attr]:
+            if ignore:
+                if cdf_key in ignore:
+                    continue
+            if cdf_key == 'Epoch':
+                keys[cdf_key] = 'Time'
+            else:
+                keys[cdf_key] = cdf_key
     # Remove index key, as we have already used it to create the index
     keys.pop(index_key)
-
     # Remove keys for data that doesn't have the right shape to load in CDF
     for cdf_key in keys.copy():
-        key_shape = cdf[cdf_key].shape
-        if len(key_shape) == 0 or key_shape[0] != npoints:
+        if type(cdf.varget(cdf_key)) is np.ndarray:
+            key_shape = cdf.varget(cdf_key).shape
+            if len(key_shape) == 0 or key_shape[0] != npoints:
+                keys.pop(cdf_key)
+        else:
             keys.pop(cdf_key)
 
     # Loop through each key and put data into the dataframe
@@ -512,17 +560,17 @@ def cdf2df(cdf, index_key, dtimeindex=True, badvalues=None, ignore=None):
         df_key = keys[cdf_key]
         if isinstance(df_key, list):
             for i, subkey in enumerate(df_key):
-                df[subkey] = cdf[cdf_key][...][:, i]
+                df[subkey] = cdf.varget(cdf_key)[...][:, i]
         else:
             # If ndims is 1, we just have a single column of data
             # If ndims is 2, have multiple columns of data under same key
-            key_shape = cdf[cdf_key].shape
+            key_shape = cdf.varget(cdf_key).shape
             ndims = len(key_shape)
             if ndims == 1:
-                df[df_key] = cdf[cdf_key][...]
+                df[df_key] = cdf.varget(cdf_key)[...]
             elif ndims == 2:
                 for i in range(key_shape[1]):
-                    df[df_key + '_' + str(i)] = cdf[cdf_key][...][:, i]
+                    df[df_key + '_' + str(i)] = cdf.varget(cdf_key)[...][:, i]
 
     # Replace bad values with nans
     if badvalues is not None:
@@ -634,12 +682,11 @@ def _get_remote_fname(remote_url, fname_regex):
 
 def _load_cdf(file_path):
     '''
-    A function to handle loading pycdf, and printing a nice error if things
+    A function to handle loading cdflib, and printing a nice error if things
     go wrong.
     '''
-    from pycdf import pycdf
     try:
-        cdf = pycdf.CDF(str(file_path))
+        cdf = cdflib.CDF(str(file_path))
     except Exception as err:
         print('Error whilst trying to load {}\n'.format(file_path))
         raise err

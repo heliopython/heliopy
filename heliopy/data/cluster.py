@@ -67,9 +67,14 @@ def _load(probe, starttime, endtime, instrument, product_id,
         _download(probe, starttime, endtime, instrument, product_id)
 
     def processing_func(file):
-        for key, value in file.items():
-            print(value)
-            if 'CDF_EPOCH' in str(value):
+        for non_empty_var in list(file.cdf_info().keys()):
+            if 'variable' in non_empty_var.lower():
+                if len(file.cdf_info()[non_empty_var]) > 0:
+                    var_list = non_empty_var
+                    break
+
+        for key in file.cdf_info()[var_list]:
+            if 'CDF_EPOCH' in file.varget(key, expand=True).values():
                 index_key = key
                 break
         return util.cdf2df(file, index_key)
