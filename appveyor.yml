@@ -22,6 +22,7 @@ install:
   - "git clone git://github.com/astropy/ci-helpers.git"
   - "powershell ci-helpers/appveyor/install-miniconda.ps1"
   - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
+  - cmd: conda install --yes hdf5
   - "activate test"
   - "pip install -r requirements/test.txt"
   - "pip install spiceypy --no-cache-di"
