@@ -298,7 +298,9 @@ def threedp_pm(starttime, endtime):
                          ('A_TEMP', u.eV),
                          ('GAP', u.dimensionless_unscaled),
                          ('E_RANGE', u.eV),
-                         ('VALID', u.dimensionless_unscaled)])
+                         ('VALID', u.dimensionless_unscaled),
+                         ('VC', u.dimensionless_unscaled),
+                         ('SPIN', u.dimensionless_unscaled)])
     extension = '.cdf'
     for day in daylist:
         date = day[0]
