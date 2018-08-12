@@ -343,10 +343,11 @@ def cdf_units(cdf_, manual_units=None, length=None):
                     are unknown".format(unit_str, key)
                     warnings.warn(message, Warning)
                     continue
-        if isinstance(val, list):
-            units.update(coll.OrderedDict.fromkeys(val, temp_unit))
-        else:
-            units[val] = temp_unit
+        if temp_unit is not None:
+            if isinstance(val, list):
+                units.update(coll.OrderedDict.fromkeys(val, temp_unit))
+            else:
+                units[val] = temp_unit
     units.update(manual_units)
     return units
 
