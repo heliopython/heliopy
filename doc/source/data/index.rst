@@ -56,20 +56,11 @@ util module:
 SunPy and AstroPy Integration
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-HelioPy is built to be used alongside SunPy and AstroPy. Before v0.6, HelioPy returned
-a Pandas DataFrame object. After implementation of physical units into the data, HelioPy
-returns a SunPy TimeSeries object. The TimeSeries object is capable of storing data like Pandas DataFrame,
-with added benefit of being used alongside AstroPy units.
+HelioPy is built to be used alongside SunPy and astropy. Before v0.6, HelioPy
+returned a pandas DataFrame object. After adding physical units to the data,
+HelioPy now returns a SunPy TimeSeries object.
+The TimeSeries object is capable of storing the data in a DataFrame, and also
+stores the units that are associated with each data column.
 
-SunPy Documentation is available at http://docs.sunpy.org/
-You can also read more about `TimeSeries <http://docs.sunpy.org/en/stable/guide/data_types/timeseries.html>`_
-
-AstroPy Documentation is available at http://docs.astropy.org/
-You can also read more about `Units <http://docs.astropy.org/en/stable/units/>`_
-
-An example on how to use TimeSeries Data and AstroPy Units is also available in the Examples section:
-
-.. include:: ../gen_modules/backreferences/sunpy.timeseries.TimeSeries.examples
-.. raw:: html
-
-    <div style='clear:both'></div>
+An example on how to use TimeSeries data and astropy units is also available
+in :ref:`sphx_glr_auto_examples_plot_timeseries.py`.
