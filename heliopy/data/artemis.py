@@ -67,7 +67,9 @@ def fgm(probe, rate, coords, starttime, endtime):
     fnames = []
     extension = '.cdf'
     units = OrderedDict([('|B|', u.nT), ('Bz_dsl', u.nT),
-                        ('By_dsl', u.nT), ('Bx_dsl', u.nT)])
+                        ('By_dsl', u.nT), ('Bx_dsl', u.nT),
+                        ('th{}_fgm_fg{}_quality'.format(probe, rate),
+                         u.dimensionless_unscaled)])
     for day in daylist:
         date = day[0]
         filename = 'th{}_l2_fgm_{}{:02}{:02}_v01'.format(
