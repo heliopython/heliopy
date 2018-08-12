@@ -9,13 +9,14 @@ from datetime import datetime
 import numpy as np
 import pandas as pd
 import os
+import pathlib as path
 import urllib
 
 from heliopy.data import util
 from heliopy import config
 
-data_dir = config['download_dir']
-mms_dir = os.path.join(data_dir, 'mms')
+data_dir = path.Path(config['download_dir'])
+mms_dir = data_dir / 'mms'
 remote_mms_dir = 'https://lasp.colorado.edu/mms/sdc/public/data/'
 
 
@@ -43,10 +44,12 @@ def fpi_dis_moms(probe, mode, starttime, endtime):
     if mode not in valid_modes:
         raise RuntimeError('Mode must be either fast or brst')
     # Directory relative to main MMS data directory
-    relative_dir = os.path.join('mms' + probe, 'fpi', mode, 'l2', 'dis-moms')
-
+    relative_dir = path.Path('mms' + probe) / 'fpi' / mode / 'l2' / 'dis-moms'
+    dirs = []
+    fnames = []
     daylist = util._daysplitinterval(starttime, endtime)
     data = []
+    extension = '.cdf'
     for day in daylist:
         date = day[0]
         starthour = day[1].hour
@@ -56,35 +59,33 @@ def fpi_dis_moms(probe, mode, starttime, endtime):
         starthour -= np.mod(starthour, 2)
         endhour += np.mod(endhour, 2)
         for h in range(starthour, endhour, 2):
-            this_relative_dir = os.path.join(relative_dir,
-                                             str(date.year),
-                                             str(date.month).zfill(2))
+            this_relative_dir = (relative_dir /
+                                 str(date.year) /
+                                 str(date.month).zfill(2))
             filename = ('mms{}_fpi_{}_l2_dis-moms_'
-                        '{}{:02}{:02}{:02}0000_v3.3.0.cdf').format(
+                        '{}{:02}{:02}{:02}0000_v3.3.0').format(
                             probe, mode, date.year, date.month, date.day, h)
+            fnames.append(filename)
+            dirs.append(this_relative_dir)
 
-            # Absolute path to local directory for this data file
-            local_dir = os.path.join(mms_dir, this_relative_dir)
-            util._checkdir(local_dir)
+    remote_base_url = remote_mms_dir
+    local_base_dir = mms_dir
 
-            remote_url = remote_mms_dir + this_relative_dir
-            # Load cdf file
-            try:
-                cdf = util.load(filename, local_dir, remote_url)
-            except urllib.error.HTTPError as e:
-                if str(e) == 'HTTP Error 404: Not Found':
-                    print('No data available for hours', str(h) + '-' +
-                          str(h + 2), 'on', date.strftime('%d/%m/%Y'))
-                    continue
-                else:
-                    raise
+    def download_func(remote_base_url, local_base_dir, directory,
+                      fname, remote_fname, extension):
+        remote_url = remote_base_url + str(directory)
+        util.load(fname + extension,
+                  local_base_dir / directory,
+                  remote_url)
 
-            probestr = 'mms' + probe + '_'
-            # Convert cdf to dataframe
-            df = util.cdf2df(cdf, 'Epoch')
-            data.append(df)
+    def processing_func(cdf):
+        probestr = 'mms' + probe + '_'
+        df = util.cdf2df(cdf, 'Epoch')
+        return df
 
-    return util.timefilter(data, starttime, endtime)
+    return util.process(dirs, fnames, extension, local_base_dir,
+                        remote_base_url, download_func, processing_func,
+                        starttime, endtime)
 
 
 def fgm_survey(probe, starttime, endtime):
@@ -106,28 +107,37 @@ def fgm_survey(probe, starttime, endtime):
         Imported data.
     """
     # Directory relative to main MMS data directory
-    relative_dir = os.path.join('mms' + probe, 'fgm', 'srvy', 'l2')
+    relative_dir = path.Path('mms' + probe) / 'fgm' / 'srvy' / 'l2'
 
     daylist = util._daysplitinterval(starttime, endtime)
+    dirs = []
+    fnames = []
+    extension = '.cdf'
     data = []
     for day in daylist:
         date = day[0]
-        this_relative_dir = os.path.join(relative_dir,
-                                         str(date.year),
-                                         str(date.month).zfill(2))
-        filename = 'mms{}_fgm_srvy_l2_{}{:02}{:02}_v4.18.0.cdf'.format(
+        this_relative_dir = (relative_dir /
+                             str(date.year) /
+                             str(date.month).zfill(2))
+        filename = 'mms{}_fgm_srvy_l2_{}{:02}{:02}_v4.18.0'.format(
             probe, date.year, date.month, date.day)
+        fnames.append(filename)
+        dirs.append(this_relative_dir)
 
-        # Absolute path to local directory for this data file
-        local_dir = os.path.join(mms_dir, this_relative_dir)
-        util._checkdir(local_dir)
+    remote_base_url = remote_mms_dir
+    local_base_dir = mms_dir
 
-        remote_url = remote_mms_dir + this_relative_dir
-        # Load cdf file
-        cdf = util.load(filename, local_dir, remote_url)
+    def download_func(remote_base_url, local_base_dir, directory,
+                      fname, remote_fname, extension):
+        remote_url = remote_base_url + str(directory)
+        util.load(fname + extension,
+                  local_base_dir / directory,
+                  remote_url)
 
-        # Convert cdf to dataframe
+    def processing_func(cdf):
         df = util.cdf2df(cdf, 'Epoch')
-        data.append(df)
+        return df
 
-    return util.timefilter(data, starttime, endtime)
+    return util.process(dirs, fnames, extension, local_base_dir,
+                        remote_base_url, download_func, processing_func,
+                        starttime, endtime)
