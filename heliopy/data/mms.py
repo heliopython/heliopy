@@ -44,7 +44,7 @@ def fpi_dis_moms(probe, mode, starttime, endtime):
     if mode not in valid_modes:
         raise RuntimeError('Mode must be either fast or brst')
     # Directory relative to main MMS data directory
-    relative_dir = path.Path('mms' + probe) / 'fpi' / mode /  'l2' / 'dis-moms'
+    relative_dir = path.Path('mms' + probe) / 'fpi' / mode / 'l2' / 'dis-moms'
     dirs = []
     fnames = []
     daylist = util._daysplitinterval(starttime, endtime)
@@ -59,7 +59,9 @@ def fpi_dis_moms(probe, mode, starttime, endtime):
         starthour -= np.mod(starthour, 2)
         endhour += np.mod(endhour, 2)
         for h in range(starthour, endhour, 2):
-            this_relative_dir = relative_dir / str(date.year) / str(date.month).zfill(2)
+            this_relative_dir = (relative_dir /
+                                 str(date.year) /
+                                 str(date.month).zfill(2))
             filename = ('mms{}_fpi_{}_l2_dis-moms_'
                         '{}{:02}{:02}{:02}0000_v3.3.0').format(
                             probe, mode, date.year, date.month, date.day, h)
@@ -114,12 +116,13 @@ def fgm_survey(probe, starttime, endtime):
     data = []
     for day in daylist:
         date = day[0]
-        this_relative_dir = relative_dir / str(date.year) / str(date.month).zfill(2)
+        this_relative_dir = (relative_dir /
+                             str(date.year) /
+                             str(date.month).zfill(2))
         filename = 'mms{}_fgm_srvy_l2_{}{:02}{:02}_v4.18.0'.format(
             probe, date.year, date.month, date.day)
         fnames.append(filename)
         dirs.append(this_relative_dir)
-
 
     remote_base_url = remote_mms_dir
     local_base_dir = mms_dir
