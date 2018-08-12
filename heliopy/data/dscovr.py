@@ -36,6 +36,7 @@ def mag_h0(starttime, endtime):
     dirs = []
     fnames = []
     extension = '.cdf'
+    ignore = ['Time1_PB5']
     daylist = util._daysplitinterval(starttime, endtime)
     for day in daylist:
         date = day[0]
@@ -58,7 +59,7 @@ def mag_h0(starttime, endtime):
                       remote_url)
 
     def processing_func(cdf):
-        df = util.cdf2df(cdf, 'Epoch1')
+        df = util.cdf2df(cdf, 'Epoch1', ignore=ignore)
         df.index.name = 'Time'
         return df
 
