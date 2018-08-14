@@ -51,7 +51,8 @@ def fpi_dis_moms(probe, mode, starttime, endtime):
     fnames = []
     daylist = util._daysplitinterval(starttime, endtime)
     data = []
-    units = OrderedDict([('mms1_dis_errorflags_fast', u.dimensionless_unscaled),
+    units = OrderedDict([('mms1_dis_errorflags_fast',
+                          u.dimensionless_unscaled),
                          ('mms1_dis_startdelphi_count_fast',
                           u.dimensionless_unscaled)])
     extension = '.cdf'
