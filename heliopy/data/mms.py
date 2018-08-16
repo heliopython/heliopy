@@ -51,9 +51,9 @@ def fpi_dis_moms(probe, mode, starttime, endtime):
     fnames = []
     daylist = util._daysplitinterval(starttime, endtime)
     data = []
-    units = OrderedDict([('mms1_dis_errorflags_fast',
+    units = OrderedDict([('mms{}_dis_errorflags_fast'.format(probe),
                           u.dimensionless_unscaled),
-                         ('mms1_dis_startdelphi_count_fast',
+                         ('mms{}_dis_startdelphi_count_fast'.format(probe),
                           u.dimensionless_unscaled)])
     extension = '.cdf'
     for day in daylist:
@@ -118,7 +118,7 @@ def fgm_survey(probe, starttime, endtime):
     dirs = []
     fnames = []
     extension = '.cdf'
-    units = OrderedDict([('mms1_fgm_mode_srvy_l2', u.dimensionless_unscaled)])
+    units = OrderedDict([('mms{}_fgm_mode_srvy_l2'.format(probe), u.dimensionless_unscaled)])
     data = []
     for day in daylist:
         date = day[0]
