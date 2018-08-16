@@ -118,7 +118,8 @@ def fgm_survey(probe, starttime, endtime):
     dirs = []
     fnames = []
     extension = '.cdf'
-    units = OrderedDict([('mms{}_fgm_mode_srvy_l2'.format(probe), u.dimensionless_unscaled)])
+    units = OrderedDict([('mms{}_fgm_mode_srvy_l2'.format(probe),
+                          u.dimensionless_unscaled)])
     data = []
     for day in daylist:
         date = day[0]
