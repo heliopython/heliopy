@@ -11,6 +11,8 @@ import pandas as pd
 import os
 import pathlib as path
 import urllib
+from collections import OrderedDict
+import astropy.units as u
 
 from heliopy.data import util
 from heliopy import config
@@ -49,6 +51,10 @@ def fpi_dis_moms(probe, mode, starttime, endtime):
     fnames = []
     daylist = util._daysplitinterval(starttime, endtime)
     data = []
+    units = OrderedDict([('mms{}_dis_errorflags_fast'.format(probe),
+                          u.dimensionless_unscaled),
+                         ('mms{}_dis_startdelphi_count_fast'.format(probe),
+                          u.dimensionless_unscaled)])
     extension = '.cdf'
     for day in daylist:
         date = day[0]
@@ -85,7 +91,7 @@ def fpi_dis_moms(probe, mode, starttime, endtime):
 
     return util.process(dirs, fnames, extension, local_base_dir,
                         remote_base_url, download_func, processing_func,
-                        starttime, endtime)
+                        starttime, endtime, units=units)
 
 
 def fgm_survey(probe, starttime, endtime):
@@ -108,11 +114,12 @@ def fgm_survey(probe, starttime, endtime):
     """
     # Directory relative to main MMS data directory
     relative_dir = path.Path('mms' + probe) / 'fgm' / 'srvy' / 'l2'
-
     daylist = util._daysplitinterval(starttime, endtime)
     dirs = []
     fnames = []
     extension = '.cdf'
+    units = OrderedDict([('mms{}_fgm_mode_srvy_l2'.format(probe),
+                          u.dimensionless_unscaled)])
     data = []
     for day in daylist:
         date = day[0]
@@ -140,4 +147,4 @@ def fgm_survey(probe, starttime, endtime):
 
     return util.process(dirs, fnames, extension, local_base_dir,
                         remote_base_url, download_func, processing_func,
-                        starttime, endtime)
+                        starttime, endtime, units=units)
