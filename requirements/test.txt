@@ -1,4 +1,4 @@
--r base.txt
+-r extras.txt
 
 pytest
 pytest-cov
