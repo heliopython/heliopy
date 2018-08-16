@@ -35,7 +35,7 @@ setup(name='HelioPy',
                         'astropy'],
       extras_require={'spice': ['spiceypy'],
                       'data': ['pandas', 'sunpy', 'requests', 'cdflib'],
-                      'coordinates': ['sunpy']}
+                      'coordinates': ['sunpy']},
       python_requires='>=3.6',
       packages=['heliopy',
                 'heliopy.coordinates',
