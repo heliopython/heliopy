@@ -32,7 +32,7 @@ setup(name='HelioPy',
       keywords='physics, space-physics',
       include_package_data=True,
       install_requires=['numpy',
-                        'astropy']
+                        'astropy'],
       extras_require={'spice': ['spiceypy'],
                       'data': ['pandas', 'sunpy', 'requests', 'cdflib'],
                       'coordinates': ['sunpy']}
