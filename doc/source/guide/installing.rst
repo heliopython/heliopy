@@ -19,8 +19,8 @@ or pip::
 Module requirements
 -------------------
 
-Each module has a set of dependencies that are required that module to be used.
-To automatically install dependencies for a specific module, use
+Each module has a set of dependencies that are required for that module to
+be used. To automatically install dependencies for a specific module, use
 `pip install heliopy[modname]`, e.g. for the 'coordinates' module::
 
   pip install heliopy[coordinates]
