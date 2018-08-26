@@ -267,7 +267,10 @@ def units_attach(data, units):
             units[column_name] = u.dimensionless_unscaled
             message = "{} column has missing units.".format(column_name)
             warnings.warn(message, Warning)
-    timeseries_data = ts.TimeSeries(data, units)
+    with warnings.catch_warnings():
+        warnings.simplefilter(
+            'ignore', 'Discarding nonzero nanoseconds in conversion')
+        timeseries_data = ts.TimeSeries(data, units)
     return timeseries_data
 
 
