@@ -10,6 +10,7 @@ environment:
 
   matrix:
     - PYTHON_VERSION: "3.6"
+    - PYTHON_VERSION: "3.7"
 
 matrix:
   fast_finish: true
@@ -22,8 +23,9 @@ install:
   - "powershell ci-helpers/appveyor/install-miniconda.ps1"
   - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
   - "activate test"
-  - "pip install --quiet -r requirements/test.txt"
-  - "pip install --quiet spiceypy --no-cache-di"
+  - cmd: conda install --yes hdf5
+  - "pip install -r requirements/test.txt"
+  - "pip install spiceypy"
 
 
 # Not a .NET project, we build heliopy in the install step instead
