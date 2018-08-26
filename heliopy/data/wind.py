@@ -271,15 +271,18 @@ def _mfi(starttime, endtime, version, units=None, ignore=None):
 
 def threedp_pm(starttime, endtime):
     """
-    Import 'pm' wind data.
+    Import 'pm' WIND data.
+
     3 second time resolution solar wind proton and alpha particle moments from
-    the PESA LOW sensor, computed on-board the spacecraft
+    the PESA LOW sensor, computed on-board the spacecraft.
+
     Parameters
     ----------
     starttime : datetime
         Interval start time.
     endtime : datetime
         Interval end time.
+
     Returns
     -------
     data : :class:`~sunpy.timeseries.TimeSeries`
