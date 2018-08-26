@@ -231,11 +231,11 @@ def _load_raw_file(raw_file, processing_func, processing_kwargs):
         if isinstance(file, io.IOBase) and not file.closed:
             file.close()
         return df
-    except _NoDataError:
+    except NoDataError:
         return
 
 
-class _NoDataError(RuntimeError):
+class NoDataError(RuntimeError):
     pass
 
 

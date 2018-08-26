@@ -13,6 +13,7 @@ import pandas as pd
 
 from heliopy import config
 from heliopy.data import util
+from heliopy.data import cdasrest
 
 data_dir = path.Path(config['download_dir'])
 ace_dir = data_dir / 'ace'
@@ -20,27 +21,29 @@ remote_ace_dir = 'ftp://spdf.gsfc.nasa.gov/pub/data/ace/'
 remote_cda_dir = 'ftp://cdaweb.gsfc.nasa.gov/pub/data/ace/'
 
 
-def _ace(starttime, endtime, instrument, product, fname, units=None,
-         version='01', badvalues={}):
+def _ace(starttime, endtime, identifier, units=None, badvalues={}):
     """
-    Generic method for downloading ACE data from cdaweb.
+    Generic method for downloading ACE data.
     """
+    relative_dir = path.Path(identifier)
     # Directory relative to main WIND data directory
-    relative_dir = path.Path(instrument) / 'level_2_cdaweb' / product
     daylist = util._daysplitinterval(starttime, endtime)
     dirs = []
     fnames = []
+    dates = []
     extension = '.cdf'
     for day in daylist:
         date = day[0]
-        filename = 'ac_{}_{}{:02}{:02}_v[0-9][0-9]'.format(
-            fname, date.year, date.month, date.day)
+        dates.append(date)
+        filename = 'ac_{}_{}{:02}{:02}'.format(
+            identifier, date.year, date.month, date.day)
         fnames.append(filename)
         this_relative_dir = relative_dir / str(date.year)
         dirs.append(this_relative_dir)
 
-    def download_func(*args):
-        util._download_remote_unknown_version(*args)
+    def download_func(remote_base_url, local_base_dir,
+                      directory, fname, remote_fname, extension, date):
+        return cdasrest.get_data(identifier, date)
 
     def processing_func(cdf):
         return util.cdf2df(cdf, index_key='Epoch',
@@ -48,7 +51,7 @@ def _ace(starttime, endtime, instrument, product, fname, units=None,
 
     return util.process(dirs, fnames, extension, ace_dir, remote_ace_dir,
                         download_func, processing_func, starttime,
-                        endtime, units=units)
+                        endtime, units=units, download_info=dates)
 
 
 def mfi_h0(starttime, endtime):
@@ -67,13 +70,9 @@ def mfi_h0(starttime, endtime):
     -------
     data : :class:`~sunpy.timeseries.TimeSeries`
     """
-    instrument = 'mag'
-    product = 'mfi_h0'
-    fname = 'h0_mfi'
-    version = '06'
+    identifier = 'AC_H0_MFI'
     units = OrderedDict([('Q_FLAG', u.dimensionless_unscaled)])
-    return _ace(starttime, endtime, instrument, product,
-                fname, units=units, version=version)
+    return _ace(starttime, endtime, identifier, units=units)
 
 
 def swe_h0(starttime, endtime):
@@ -93,13 +92,9 @@ def swe_h0(starttime, endtime):
     -------
     data : :class:`~sunpy.timeseries.TimeSeries`
     """
-    instrument = 'swepam'
-    product = 'swe_h0'
-    fname = 'h0_swe'
-    version = '06'
+    identifier = 'AC_H0_SWE'
     badvalues = -1e31
-    return _ace(starttime, endtime, instrument, product, fname,
-                version=version, badvalues=badvalues)
+    return _ace(starttime, endtime, identifier, badvalues=badvalues)
 
 
 def swi_h2(starttime, endtime):
@@ -120,13 +115,9 @@ def swi_h2(starttime, endtime):
     -------
     data : :class:`~sunpy.timeseries.TimeSeries`
     """
-    instrument = 'swics'
-    product = 'swi_h2'
-    fname = 'h2_swi'
-    version = '09'
+    identifier = 'AC_H2_SWI'
     badvalues = -1e31
-    return _ace(starttime, endtime, instrument, product, fname,
-                version=version, badvalues=badvalues)
+    return _ace(starttime, endtime, identifier, badvalues=badvalues)
 
 
 def swi_h3(starttime, endtime):
@@ -147,13 +138,9 @@ def swi_h3(starttime, endtime):
     -------
     data : :class:`~sunpy.timeseries.TimeSeries`
     """
-    instrument = 'swics'
-    product = 'swi_h3'
-    fname = 'h3_swi'
-    version = '01'
+    identifier = 'AC_H3_SWI'
     badvalues = -1e31
-    return _ace(starttime, endtime, instrument, product, fname,
-                version=version, badvalues=badvalues)
+    return _ace(starttime, endtime, identifier, badvalues=badvalues)
 
 
 def swi_h6(starttime, endtime):
@@ -174,10 +161,6 @@ def swi_h6(starttime, endtime):
     -------
     data : :class:`~sunpy.timeseries.TimeSeries`
     """
-    instrument = 'swics'
-    product = 'swi_h6'
-    fname = 'h6_swi'
-    version = '09'
+    identifier = 'AC_H6_SWI'
     badvalues = -1e31
-    return _ace(starttime, endtime, instrument, product, fname,
-                version=version, badvalues=badvalues)
+    return _ace(starttime, endtime, identifier, badvalues=badvalues)
