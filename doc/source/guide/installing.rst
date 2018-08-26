@@ -16,24 +16,27 @@ or pip::
 
   pip install heliopy
 
-Optional dependencies
----------------------
+Module requirements
+-------------------
+
+Each module has a set of dependencies that are required that module to be used.
+To automatically install dependencies for a specific module, use
+`pip install heliopy[modname]`, e.g. for the 'coordinates' module::
+
+  pip install heliopy[coordinates]
+
+Alternatively, to install all of the optional dependencies use::
+
+  pip install heliopy[all]
+
+In addition, there are the following optional requirements that add extra
+functionality to HelioPy.
 
 HDF file reader/writer
 ^^^^^^^^^^^^^^^^^^^^^^
 Saving data to hdf files for quicker access requires the *PyTables* python
 package. (see :ref:`sphx_glr_auto_examples_fast_file_loading.py`
 for more information)
-
-CDF Library
-^^^^^^^^^^^
-Reading in any data that is stored in .cdf files requires a local installation
-of the CDF library: https://cdf.gsfc.nasa.gov/
-
-SPICE Toolkit
-^^^^^^^^^^^^^
-Working with spice kernels using the :mod:`heliopy.spice` module requires
-the python package `spiceypy <https://spiceypy.readthedocs.io>`_.
 
 Installing from source
 ----------------------
