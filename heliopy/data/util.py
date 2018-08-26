@@ -69,7 +69,7 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
             def download_func(remote_base_url, local_base_dir,
                               directory, fname, remote_fname, extension)
 
-        The function can also return the filename of the file it downloaded,
+        The function can also return the path of the file it downloaded,
         if this is different to the filename it is given. *download_func*
         should **not** raise any errors, and just silently do nothing if a
         given file is not available.
@@ -152,11 +152,11 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
             args = ()
             if dl_info is not None:
                 args = (dl_info,)
-            new_fname = download_func(remote_base_url, local_base_dir,
-                                      directory, fname, remote_fname,
-                                      extension, *args)
-            if new_fname is not None:
-                fname = new_fname
+            new_path = download_func(remote_base_url, local_base_dir,
+                                     directory, fname, remote_fname,
+                                     extension, *args)
+            if new_path is not None:
+                fname = new_path.stem
                 local_file = local_base_dir / directory / fname
                 raw_file = local_file.with_suffix(extension)
                 hdf_file = local_file.with_suffix('.hdf')
