@@ -195,7 +195,7 @@ def mag_hires(starttime, endtime, try_download=True):
             location = f.name
             f.close()
             os.remove(f.name)
-            raise util._NoDataError()
+            raise util.NoDataError()
         df = pd.read_table(f, names=['Time', 'Bx', 'By', 'Bz'],
                            delim_whitespace=True,
                            parse_dates=[0], index_col=0)
