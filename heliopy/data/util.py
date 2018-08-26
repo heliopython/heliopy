@@ -156,13 +156,7 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
                                      directory, fname, remote_fname,
                                      extension, *args)
             if new_path is not None:
-                fname = new_path.stem
-                local_file = local_base_dir / directory / fname
-                raw_file = local_file.with_suffix(extension)
-                hdf_file = local_file.with_suffix('.hdf')
-                if hdf_file.exists():
-                    data.append(pd.read_hdf(hdf_file))
-                    continue
+                os.rename(new_path, local_file.with_suffix(extension))
 
             raw_fname = _file_match(local_dir, fname + extension)
             # Print a message if file hasn't been downloaded
