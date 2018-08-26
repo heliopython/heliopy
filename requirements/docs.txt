@@ -1,8 +1,7 @@
--r base.txt
+-r extras.txt
 
 matplotlib
 mock
-spiceypy>=2.1.2
 sphinx
 sphinx-automodapi
 sphinx-bootstrap-theme
