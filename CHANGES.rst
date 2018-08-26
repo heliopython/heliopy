@@ -6,9 +6,9 @@ HelioPy now only supports Python versions 3.6 and higher.
 New features
 ^^^^^^^^^^^^
 - HelioPy has been integrated with SunPy TimeSeries and AstroPy Units. All of
-  the HelioPy modules now return units.
+  the HelioPy modules now return physical units with data.
 - Added a new :func:`.data.util.cdf_units` function that can extract the UNIT
-  attribute from the CDF files.
+  attribute from CDF files.
 - Low resolution OMNI data import has been added in
   :func:`.data.omni.low` function.
 - Magnetic Field data from DSCOVR Spacecraft
@@ -16,15 +16,23 @@ New features
 
 Backwards incompatible changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+- Methods in :mod:`heliopy.data` no longer returns a Pandas DataFrame, but
+  now return a SunPy timeseries object. To get the underlying data, you can
+  still do::
+
+    dataframe = timeseries.data
+
+  For an example of how to use the new object, see
+  :ref:`sphx_glr_auto_examples_plot_timeseries.py`.
 - Data import has had a major overhaul, so that every column in CDF files now
   gets automatically imported and retains its name without being changed by
   HelioPy. This means column names in several data products are now different,
   to reflect their original name in the CDF files instead of a custom name
-  assinged by HelioPy.
+  that was previously assigned by HelioPy.
 - :func:`.data.helios.merged`, :func:`.data.helios.mag_4hz`,
   :func:`.data.helios.corefit` and :func:`.data.helios.mag_ness` no longer take
   a `verbose` keyword argument. :issue:`467`
-- Methods in :mod:`heliopy.data` no longer returns a Pandas DataFrame.
+
 
 Fixed bugs
 ^^^^^^^^^^
