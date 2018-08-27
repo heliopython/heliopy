@@ -21,6 +21,29 @@ remote_ace_dir = 'ftp://spdf.gsfc.nasa.gov/pub/data/ace/'
 remote_cda_dir = 'ftp://cdaweb.gsfc.nasa.gov/pub/data/ace/'
 
 
+def _docstring(function_name, identifier, extra=''):
+    ds = r"""
+    Import {function_name} {extra} data.
+
+    See https://cdaweb.sci.gsfc.nasa.gov/misc/NotesA.html#{identifier}
+    for more information.
+
+    Parameters
+    ----------
+    starttime : datetime
+        Interval start time.
+    endtime : datetime
+        Interval end time.
+
+    Returns
+    -------
+    data : :class:`~sunpy.timeseries.TimeSeries`
+    """.format(function_name=function_name,
+               identifier=identifier,
+               extra=extra)
+    return ds
+
+
 def _ace(starttime, endtime, identifier, units=None):
     """
     Generic method for downloading ACE data.
@@ -55,111 +78,43 @@ def _ace(starttime, endtime, identifier, units=None):
                         endtime, units=units, download_info=dates)
 
 
+# Actual download functions start here
 def mfi_h0(starttime, endtime):
-    """
-    Import 'mfi_h0' magnetic field data.
-
-    See ftp://spdf.gsfc.nasa.gov/pub/data/ace/mag/ for more information.
-
-    Parameters
-    ----------
-    starttime : datetime
-        Interval start time.
-    endtime : datetime
-        Interval end time.
-
-    Returns
-    -------
-    data : :class:`~sunpy.timeseries.TimeSeries`
-    """
     identifier = 'AC_H0_MFI'
     units = OrderedDict([('Q_FLAG', u.dimensionless_unscaled)])
     return _ace(starttime, endtime, identifier, units=units)
 
 
+mfi_h0.__doc__ = _docstring('mfi_h0', 'AC_H0_MFI', 'magnetic field')
+
+
 def swe_h0(starttime, endtime):
-    """
-    Import swe_h0 particle moment data.
-
-    See https://cdaweb.sci.gsfc.nasa.gov/misc/NotesA.html#AC_H0_SWE
-    for more information.
-
-    Parameters
-    ----------
-    starttime : datetime
-        Interval start time.
-    endtime : datetime
-        Interval end time.
-
-    Returns
-    -------
-    data : :class:`~sunpy.timeseries.TimeSeries`
-    """
     identifier = 'AC_H0_SWE'
     return _ace(starttime, endtime, identifier)
 
 
+swe_h0.__doc__ = _docstring('swe_h0', 'AC_H0_SWE', 'particle moment')
+
+
 def swi_h2(starttime, endtime):
-    """
-    Import hourly SWICS data.
-
-    See https://cdaweb.sci.gsfc.nasa.gov/misc/NotesA.html#AC_H2_SWI for more
-    information.
-
-    Parameters
-    ----------
-    starttime : datetime
-        Interval start time.
-    endtime : datetime
-        Interval end time.
-
-    Returns
-    -------
-    data : :class:`~sunpy.timeseries.TimeSeries`
-    """
     identifier = 'AC_H2_SWI'
     return _ace(starttime, endtime, identifier)
 
 
+swe_h0.__doc__ = _docstring('swi_h2', 'AC_H2_SWI', 'composition')
+
+
 def swi_h3(starttime, endtime):
-    """
-    Import hourly SWICS composition data.
-
-    See https://cdaweb.sci.gsfc.nasa.gov/misc/NotesA.html#AC_H3_SWI for more
-    information.
-
-    Parameters
-    ----------
-    starttime : datetime
-        Interval start time.
-    endtime : datetime
-        Interval end time.
-
-    Returns
-    -------
-    data : :class:`~sunpy.timeseries.TimeSeries`
-    """
     identifier = 'AC_H3_SWI'
     return _ace(starttime, endtime, identifier)
 
 
+swe_h0.__doc__ = _docstring('swi_h3', 'AC_H3_SWI', 'hourly composition')
+
+
 def swi_h6(starttime, endtime):
-    """
-    Import 12 minute SWICS proton data.
-
-    See https://cdaweb.sci.gsfc.nasa.gov/misc/NotesA.html#AC_H6_SWI for more
-    information.
-
-    Parameters
-    ----------
-    starttime : datetime
-        Interval start time.
-    endtime : datetime
-        Interval end time.
-
-    Returns
-    -------
-    data : :class:`~sunpy.timeseries.TimeSeries`
-    """
     identifier = 'AC_H6_SWI'
     return _ace(starttime, endtime, identifier)
+
+
+swe_h0.__doc__ = _docstring('swi_h6', 'AC_H6_SWI', '12 minute proton')
