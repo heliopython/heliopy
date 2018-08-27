@@ -57,8 +57,9 @@ def _ace(starttime, endtime, identifier, units=None):
 
 def mfi_h0(starttime, endtime):
     """
-    Import 'mfi_h0' magnetic field data product from ACE. See
-    ftp://spdf.gsfc.nasa.gov/pub/data/ace/mag/ for more information.
+    Import 'mfi_h0' magnetic field data.
+
+    See ftp://spdf.gsfc.nasa.gov/pub/data/ace/mag/ for more information.
 
     Parameters
     ----------
@@ -78,8 +79,9 @@ def mfi_h0(starttime, endtime):
 
 def swe_h0(starttime, endtime):
     """
-    Import swe_h0 particle moment data product from ACE. See
-    https://cdaweb.sci.gsfc.nasa.gov/misc/NotesA.html#AC_H0_SWE
+    Import swe_h0 particle moment data.
+
+    See https://cdaweb.sci.gsfc.nasa.gov/misc/NotesA.html#AC_H0_SWE
     for more information.
 
     Parameters
