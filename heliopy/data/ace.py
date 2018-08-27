@@ -21,10 +21,11 @@ remote_ace_dir = 'ftp://spdf.gsfc.nasa.gov/pub/data/ace/'
 remote_cda_dir = 'ftp://cdaweb.gsfc.nasa.gov/pub/data/ace/'
 
 
-def _ace(starttime, endtime, identifier, units=None, badvalues={}):
+def _ace(starttime, endtime, identifier, units=None):
     """
     Generic method for downloading ACE data.
     """
+    badvalues = -1e31
     relative_dir = path.Path(identifier)
     # Directory relative to main WIND data directory
     daylist = util._daysplitinterval(starttime, endtime)
@@ -93,8 +94,7 @@ def swe_h0(starttime, endtime):
     data : :class:`~sunpy.timeseries.TimeSeries`
     """
     identifier = 'AC_H0_SWE'
-    badvalues = -1e31
-    return _ace(starttime, endtime, identifier, badvalues=badvalues)
+    return _ace(starttime, endtime, identifier)
 
 
 def swi_h2(starttime, endtime):
@@ -116,8 +116,7 @@ def swi_h2(starttime, endtime):
     data : :class:`~sunpy.timeseries.TimeSeries`
     """
     identifier = 'AC_H2_SWI'
-    badvalues = -1e31
-    return _ace(starttime, endtime, identifier, badvalues=badvalues)
+    return _ace(starttime, endtime, identifier)
 
 
 def swi_h3(starttime, endtime):
@@ -139,8 +138,7 @@ def swi_h3(starttime, endtime):
     data : :class:`~sunpy.timeseries.TimeSeries`
     """
     identifier = 'AC_H3_SWI'
-    badvalues = -1e31
-    return _ace(starttime, endtime, identifier, badvalues=badvalues)
+    return _ace(starttime, endtime, identifier)
 
 
 def swi_h6(starttime, endtime):
@@ -162,5 +160,4 @@ def swi_h6(starttime, endtime):
     data : :class:`~sunpy.timeseries.TimeSeries`
     """
     identifier = 'AC_H6_SWI'
-    badvalues = -1e31
-    return _ace(starttime, endtime, identifier, badvalues=badvalues)
+    return _ace(starttime, endtime, identifier)
