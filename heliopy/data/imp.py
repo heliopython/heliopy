@@ -173,7 +173,7 @@ def mitplasma_h0(probe, starttime, endtime, try_download=True):
 
     Returns
     -------
-    data : DataFrame
+    data : :class:`~sunpy.timeseries.TimeSeries`
         Requested data.
     """
     dirs = []
@@ -229,7 +229,7 @@ def mag320ms(probe, starttime, endtime, try_download=True):
 
     Returns
     -------
-        data : DataFrame
+        data : :class:`~sunpy.timeseries.TimeSeries`
             Requested data.
     """
     data = []
@@ -288,7 +288,7 @@ def mag15s(probe, starttime, endtime, verbose=False, try_download=True):
 
     Returns
     -------
-        data : DataFrame
+        data : :class:`~sunpy.timeseries.TimeSeries`
             Requested data.
     """
     data = []

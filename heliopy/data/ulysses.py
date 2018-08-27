@@ -189,7 +189,7 @@ def fgm_hires(starttime, endtime, try_download=True):
 
     Returns
     -------
-    data : DataFrame
+    data : :class:`~sunpy.timeseries.TimeSeries`
         Requested data
     """
     data = []

@@ -171,7 +171,7 @@ def fgm(probe, starttime, endtime, try_download=True):
 
     Returns
     -------
-        data : DataFrame
+        data : :class:`~sunpy.timeseries.TimeSeries`
             Requested data.
     """
     return _load(probe, starttime, endtime, 'fgm', 'CP_FGM_FULL',

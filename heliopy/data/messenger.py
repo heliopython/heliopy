@@ -28,7 +28,7 @@ def mag_rtn(starttime, endtime, try_download=True):
 
     Returns
     -------
-    data : DataFrame
+    data : :class:`~sunpy.timeseries.TimeSeries`
     """
     # Directory relative to main WIND data directory
     relative_dir = path.Path('rtn')
