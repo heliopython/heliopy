@@ -39,7 +39,7 @@ def fpi_dis_moms(probe, mode, starttime, endtime):
 
     Returns
     -------
-    data : DataFrame
+    data : :class:`~sunpy.timeseries.TimeSeries`
         Imported data.
     """
     valid_modes = ['fast', 'brst']
@@ -109,7 +109,7 @@ def fgm_survey(probe, starttime, endtime):
 
     Returns
     -------
-    data : DataFrame
+    data : :class:`~sunpy.timeseries.TimeSeries`
         Imported data.
     """
     # Directory relative to main MMS data directory

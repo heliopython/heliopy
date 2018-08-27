@@ -157,7 +157,7 @@ def mag_hires(starttime, endtime, try_download=True):
 
     Returns
     -------
-    data : DataFrame
+    data : :class:`~sunpy.timeseries.TimeSeries`
         Requested data
     """
     remote_base_url = ('http://pds-ppi.igpp.ucla.edu/ditdos/download?id='
