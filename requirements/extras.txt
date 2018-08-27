@@ -1,7 +1,8 @@
 -r base.txt
 
+cdflib
 pandas
 requests
 sunpy<=0.9.0
-cdflib
 spiceypy
+wget
