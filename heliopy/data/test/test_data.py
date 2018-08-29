@@ -160,6 +160,18 @@ class TestAce:
         df = ace.mfi_h0(self.starttime, self.endtime)
         check_data_output(df)
 
+    def test_mfi_h1(self):
+        df = ace.mfi_h1(self.starttime, self.endtime)
+        check_data_output(df)
+
+    def test_mfi_h2(self):
+        df = ace.mfi_h2(self.starttime, self.endtime)
+        check_data_output(df)
+
+    def test_mfi_h3(self):
+        df = ace.mfi_h3(self.starttime, self.endtime)
+        check_data_output(df)
+
     def test_swe_h0(self):
         df = ace.swe_h0(self.starttime, self.endtime)
         check_data_output(df)
