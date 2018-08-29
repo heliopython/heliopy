@@ -93,7 +93,16 @@ def swe_h0(starttime, endtime):
     return _ace(starttime, endtime, identifier)
 
 
-swe_h0.__doc__ = _docstring('swe_h0', 'AC_H0_SWE', 'particle moment')
+swe_h0.__doc__ = _docstring('swe_h0', 'AC_H0_SWE',
+                            '64-second particle moments')
+
+
+def swe_h2(starttime, endtime):
+    identifier = 'AC_H2_SWE'
+    return _ace(starttime, endtime, identifier)
+
+
+swe_h2.__doc__ = _docstring('swe_h2', 'AC_H2_SWE', '1-hour particle moments')
 
 
 def swi_h2(starttime, endtime):
