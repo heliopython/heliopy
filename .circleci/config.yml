@@ -32,3 +32,7 @@ jobs:
       - run:
           name: "Built documentation is available at:"
           command: echo "${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}/${CIRCLE_WORKING_DIRECTORY/#\~/$HOME}/doc/build/html/index.html"
+
+notify:
+  webhooks:
+    - url: https://giles.cadair.com/circleci
