@@ -1,8 +1,8 @@
 """
 Methods for importing data from the ACE spacecraft.
 
-All data is publically available at ftp://spdf.gsfc.nasa.gov/pub/data/ace/. The
-ACE spacecraft homepage can be found at http://www.srl.caltech.edu/ACE/.
+All data is publically available at ftp://spdf.gsfc.nasa.gov/pub/data/ace/.
+The ACE spacecraft homepage can be found at http://www.srl.caltech.edu/ACE/.
 """
 from collections import OrderedDict
 import pathlib as path
@@ -85,7 +85,31 @@ def mfi_h0(starttime, endtime):
     return _ace(starttime, endtime, identifier, units=units)
 
 
-mfi_h0.__doc__ = _docstring('mfi_h0', 'AC_H0_MFI', 'magnetic field')
+mfi_h0.__doc__ = _docstring('mfi_h0', 'AC_H0_MFI', '16-second magnetic field')
+
+
+def mfi_h1(starttime, endtime):
+    identifier = 'AC_H1_MFI'
+    return _ace(starttime, endtime, identifier)
+
+
+mfi_h1.__doc__ = _docstring('mfi_h1', 'AC_H1_MFI', '4-minute magnetic field')
+
+
+def mfi_h2(starttime, endtime):
+    identifier = 'AC_H2_MFI'
+    return _ace(starttime, endtime, identifier)
+
+
+mfi_h2.__doc__ = _docstring('mfi_h2', 'AC_H2_MFI', 'hourly magnetic field')
+
+
+def mfi_h3(starttime, endtime):
+    identifier = 'AC_H3_MFI'
+    return _ace(starttime, endtime, identifier)
+
+
+mfi_h3.__doc__ = _docstring('mfi_h3', 'AC_H3_MFI', '1-second magnetic field')
 
 
 def swe_h0(starttime, endtime):
