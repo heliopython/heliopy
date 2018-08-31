@@ -5,6 +5,7 @@ New features
 ^^^^^^^^^^^^
 - The :mod:`heliopy.data.ace` module now contains all the magnetic field and
   particle data produces produced by ACE. :issue:`577`, :issue:`578`
+- STEREO-A spice kernels have been added. :issue:`585`
 
 
 Bug fixes
