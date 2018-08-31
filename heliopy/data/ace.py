@@ -143,6 +143,22 @@ def swi_h3(starttime, endtime):
 swi_h3.__doc__ = _docstring('AC_H3_SWI', '2-hour composition')
 
 
+def swi_h4(starttime, endtime):
+    identifier = 'AC_H4_SWI'
+    return _ace(starttime, endtime, identifier)
+
+
+swi_h4.__doc__ = _docstring('AC_H4_SWI', '1-day composition')
+
+
+def swi_h5(starttime, endtime):
+    identifier = 'AC_H5_SWI'
+    return _ace(starttime, endtime, identifier)
+
+
+swi_h5.__doc__ = _docstring('AC_H5_SWI', '2-hour charge state')
+
+
 def swi_h6(starttime, endtime):
     identifier = 'AC_H6_SWI'
     return _ace(starttime, endtime, identifier)
