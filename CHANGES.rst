@@ -1,3 +1,16 @@
+Version 0.6.1
+-------------
+
+New features
+^^^^^^^^^^^^
+- The :mod:`heliopy.data.ace` module now contains all the magnetic field and
+  particle data produces produced by ACE. :issue:`577`, :issue:`578`
+
+
+Bug fixes
+^^^^^^^^^
+- The accidentally removed Ulysses spice kernel has returned. :issue:`582`
+
 Version 0.6.0
 -------------
 
