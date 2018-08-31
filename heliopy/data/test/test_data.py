@@ -148,6 +148,8 @@ class TestArtemis:
             artemis.fgm('1', 'h', '123', self.starttime, self.endtime)
 
 
+# Since ACE download uses lots of common code, to save time on tests only
+# run one test. Others are commented out.
 @pytest.mark.skipif(no_cdflib, reason='Importing cdflib failed')
 @pytest.mark.data
 class TestAce:
@@ -160,6 +162,7 @@ class TestAce:
         df = ace.mfi_h0(self.starttime, self.endtime)
         check_data_output(df)
 
+    '''
     def test_mfi_h1(self):
         df = ace.mfi_h1(self.starttime, self.endtime)
         check_data_output(df)
@@ -191,6 +194,7 @@ class TestAce:
     def test_swi_h6(self):
         df = ace.swi_h6(self.starttime, self.endtime)
         check_data_output(df)
+    '''
 
 
 @pytest.mark.skipif(no_cdflib, reason='Importing cdflib failed')
