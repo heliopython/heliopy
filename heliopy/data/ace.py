@@ -21,9 +21,9 @@ remote_ace_dir = 'ftp://spdf.gsfc.nasa.gov/pub/data/ace/'
 remote_cda_dir = 'ftp://cdaweb.gsfc.nasa.gov/pub/data/ace/'
 
 
-def _docstring(function_name, identifier, extra=''):
+def _docstring(identifier, extra=''):
     ds = r"""
-    Import {function_name} {extra} data.
+    Import {extra} data.
 
     See https://cdaweb.sci.gsfc.nasa.gov/misc/NotesA.html#{identifier}
     for more information.
@@ -38,8 +38,7 @@ def _docstring(function_name, identifier, extra=''):
     Returns
     -------
     data : :class:`~sunpy.timeseries.TimeSeries`
-    """.format(function_name=function_name,
-               identifier=identifier,
+    """.format(identifier=identifier,
                extra=extra)
     return ds
 
@@ -85,7 +84,7 @@ def mfi_h0(starttime, endtime):
     return _ace(starttime, endtime, identifier, units=units)
 
 
-mfi_h0.__doc__ = _docstring('mfi_h0', 'AC_H0_MFI', '16-second magnetic field')
+mfi_h0.__doc__ = _docstring('AC_H0_MFI', '16-second magnetic field')
 
 
 def mfi_h1(starttime, endtime):
@@ -93,7 +92,7 @@ def mfi_h1(starttime, endtime):
     return _ace(starttime, endtime, identifier)
 
 
-mfi_h1.__doc__ = _docstring('mfi_h1', 'AC_H1_MFI', '4-minute magnetic field')
+mfi_h1.__doc__ = _docstring('AC_H1_MFI', '4-minute magnetic field')
 
 
 def mfi_h2(starttime, endtime):
@@ -101,7 +100,7 @@ def mfi_h2(starttime, endtime):
     return _ace(starttime, endtime, identifier)
 
 
-mfi_h2.__doc__ = _docstring('mfi_h2', 'AC_H2_MFI', 'hourly magnetic field')
+mfi_h2.__doc__ = _docstring('AC_H2_MFI', 'hourly magnetic field')
 
 
 def mfi_h3(starttime, endtime):
@@ -109,7 +108,7 @@ def mfi_h3(starttime, endtime):
     return _ace(starttime, endtime, identifier)
 
 
-mfi_h3.__doc__ = _docstring('mfi_h3', 'AC_H3_MFI', '1-second magnetic field')
+mfi_h3.__doc__ = _docstring('AC_H3_MFI', '1-second magnetic field')
 
 
 def swe_h0(starttime, endtime):
@@ -117,8 +116,7 @@ def swe_h0(starttime, endtime):
     return _ace(starttime, endtime, identifier)
 
 
-swe_h0.__doc__ = _docstring('swe_h0', 'AC_H0_SWE',
-                            '64-second particle moments')
+swe_h0.__doc__ = _docstring('AC_H0_SWE', '64-second particle moments')
 
 
 def swe_h2(starttime, endtime):
@@ -126,7 +124,7 @@ def swe_h2(starttime, endtime):
     return _ace(starttime, endtime, identifier)
 
 
-swe_h2.__doc__ = _docstring('swe_h2', 'AC_H2_SWE', '1-hour particle moments')
+swe_h2.__doc__ = _docstring('AC_H2_SWE', '1-hour particle moments')
 
 
 def swi_h2(starttime, endtime):
@@ -134,7 +132,7 @@ def swi_h2(starttime, endtime):
     return _ace(starttime, endtime, identifier)
 
 
-swe_h0.__doc__ = _docstring('swi_h2', 'AC_H2_SWI', 'composition')
+swi_h2.__doc__ = _docstring('AC_H2_SWI', 'composition')
 
 
 def swi_h3(starttime, endtime):
@@ -142,7 +140,7 @@ def swi_h3(starttime, endtime):
     return _ace(starttime, endtime, identifier)
 
 
-swe_h0.__doc__ = _docstring('swi_h3', 'AC_H3_SWI', 'hourly composition')
+swi_h3.__doc__ = _docstring('AC_H3_SWI', 'hourly composition')
 
 
 def swi_h6(starttime, endtime):
@@ -150,4 +148,4 @@ def swi_h6(starttime, endtime):
     return _ace(starttime, endtime, identifier)
 
 
-swe_h0.__doc__ = _docstring('swi_h6', 'AC_H6_SWI', '12 minute proton')
+swi_h6.__doc__ = _docstring('AC_H6_SWI', '12 minute proton')
