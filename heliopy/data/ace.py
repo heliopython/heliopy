@@ -23,7 +23,7 @@ remote_cda_dir = 'ftp://cdaweb.gsfc.nasa.gov/pub/data/ace/'
 
 def _docstring(identifier, extra=''):
     ds = r"""
-    Import {extra} data.
+    {extra} data.
 
     See https://cdaweb.sci.gsfc.nasa.gov/misc/NotesA.html#{identifier}
     for more information.
@@ -100,7 +100,7 @@ def mfi_h2(starttime, endtime):
     return _ace(starttime, endtime, identifier)
 
 
-mfi_h2.__doc__ = _docstring('AC_H2_MFI', 'hourly magnetic field')
+mfi_h2.__doc__ = _docstring('AC_H2_MFI', '1-hour magnetic field')
 
 
 def mfi_h3(starttime, endtime):
@@ -132,7 +132,7 @@ def swi_h2(starttime, endtime):
     return _ace(starttime, endtime, identifier)
 
 
-swi_h2.__doc__ = _docstring('AC_H2_SWI', 'composition')
+swi_h2.__doc__ = _docstring('AC_H2_SWI', '1-hour composition')
 
 
 def swi_h3(starttime, endtime):
@@ -140,7 +140,7 @@ def swi_h3(starttime, endtime):
     return _ace(starttime, endtime, identifier)
 
 
-swi_h3.__doc__ = _docstring('AC_H3_SWI', 'hourly composition')
+swi_h3.__doc__ = _docstring('AC_H3_SWI', '2-hour composition')
 
 
 def swi_h6(starttime, endtime):
@@ -148,4 +148,4 @@ def swi_h6(starttime, endtime):
     return _ace(starttime, endtime, identifier)
 
 
-swi_h6.__doc__ = _docstring('AC_H6_SWI', '12 minute proton')
+swi_h6.__doc__ = _docstring('AC_H6_SWI', '12-minute protons')
