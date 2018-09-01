@@ -145,7 +145,15 @@ swi_h3.__doc__ = _docstring('AC_H3_SWI', '2-hour composition')
 
 def swi_h4(starttime, endtime):
     identifier = 'AC_H4_SWI'
-    return _ace(starttime, endtime, identifier)
+    units = {}
+    for var in ['C6to4', 'C6to5', 'O7to6', 'HetoO', 'CtoO', 'NtoO', 'MgtoO',
+                'NetoO', 'SitoO', 'StoO', 'FetoO']:
+        units[var] = u.dimensionless_unscaled
+        units[var + '_err'] = u.dimensionless_unscaled
+        units[var + '_qual'] = u.dimensionless_unscaled
+    for var in ['He', 'avqC', 'avqO', 'avqMg', 'avqSi', 'avqFe']:
+        units[var + '_qual'] = u.dimensionless_unscaled
+    return _ace(starttime, endtime, identifier, units=units)
 
 
 swi_h4.__doc__ = _docstring('AC_H4_SWI', '1-day composition')
