@@ -17,7 +17,7 @@ import astropy.units as u
 from heliopy import config
 
 import pandas as pd
-from datetime import datetime
+from datetime import datetime, timedelta
 import urllib
 import pytest
 import sunpy
@@ -163,7 +163,7 @@ class TestAce:
         check_data_output(df)
 
     def test_swi_h4(self):
-        df = ace.swi_h4(self.starttime, self.endtime)
+        df = ace.swi_h4(self.starttime, self.endtime + timedelta(days=2))
         check_data_output(df)
 
     def test_swi_h5(self):
