@@ -39,22 +39,21 @@ def get_variables(dataset):
     return response.json()
 
 
-def get_data(dataset, date, verbose=True):
+def get_data(dataset, date, vars=None, verbose=True):
     """
     Download CDAS data.
-
 
     Parameters
     ----------
     dataset : string
         Dataset identifier.
-
-    Args:
-        dataset (string): Dataset.
-        startTime (datatime): First datetime for the requested data.
-        stopTime (datetime): Last datetime for the requested data.
-        progress (bool, optional): If True displays the download
-            progress bar. Defaults to True.
+    date : datetime.date
+        Date to download data for.
+    vars : list of str, optional
+        Variables to download. If ``None``, all variables for the given
+        dataset will be downloaded.
+    verbose : bool, optional
+        If ``True``, show a progress bar whilst downloading.
 
     Returns
     -------
@@ -64,8 +63,9 @@ def get_data(dataset, date, verbose=True):
     starttime = datetime.combine(date, time.min)
     endtime = datetime.combine(date, time.max)
     dataview = 'sp_phys'
-    var_info = get_variables(dataset)
-    vars = [v['Name'] for v in var_info['VariableDescription']]
+    if not len(vars):
+        var_info = get_variables(dataset)
+        vars = [v['Name'] for v in var_info['VariableDescription']]
     uri = '/'.join(['dataviews', dataview,
                     'datasets', dataset,
                     'data',
