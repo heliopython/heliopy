@@ -63,7 +63,7 @@ def get_data(dataset, date, vars=None, verbose=True):
     starttime = datetime.combine(date, time.min)
     endtime = datetime.combine(date, time.max)
     dataview = 'sp_phys'
-    if not len(vars):
+    if vars is not None:
         var_info = get_variables(dataset)
         vars = [v['Name'] for v in var_info['VariableDescription']]
     uri = '/'.join(['dataviews', dataview,
