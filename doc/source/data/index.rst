@@ -46,11 +46,12 @@ a module with helper functions that apply generally to all data is available:
    helper
 
 and utility functions that much of the data import uses are also available in the
-util module:
+cdas and util modules:
 
 .. toctree::
    :maxdepth: 1
 
+   cdas
    util
 
 SunPy and AstroPy Integration
