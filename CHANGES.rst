@@ -11,6 +11,8 @@ New features
 Bug fixes
 ^^^^^^^^^
 - The accidentally removed Ulysses spice kernel has returned. :issue:`582`
+- `heliopy.data.helper.cdfpeek` has been updated to work with cdflib, and now
+  prints all CDF file information.
 
 Version 0.6.0
 -------------
