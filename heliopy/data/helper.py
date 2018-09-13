@@ -28,8 +28,14 @@ def cdfpeek(cdf_loc):
         Local location of the cdf file.
     """
     import cdflib
+    cdf_loc = os.path.expanduser(cdf_loc)
     cdf = cdflib.CDF(cdf_loc)
-    print(cdf)
+    info = cdf.cdf_info()
+    for key in info:
+        print('=' * len(key))
+        print(key)
+        print('=' * len(key))
+        print(info[key])
 
 
 def listdata(probes=None):
