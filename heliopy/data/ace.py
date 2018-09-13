@@ -43,7 +43,8 @@ def _docstring(identifier, extra=''):
     return ds
 
 
-def _ace(starttime, endtime, identifier, units=None):
+def _ace(starttime, endtime, identifier, units=None,
+         warn_missing_units=True):
     """
     Generic method for downloading ACE data.
     """
@@ -74,7 +75,8 @@ def _ace(starttime, endtime, identifier, units=None):
 
     return util.process(dirs, fnames, extension, ace_dir, remote_ace_dir,
                         download_func, processing_func, starttime,
-                        endtime, units=units, download_info=dates)
+                        endtime, units=units, download_info=dates,
+                        warn_missing_units=warn_missing_units)
 
 
 # Actual download functions start here
@@ -145,15 +147,8 @@ swi_h3.__doc__ = _docstring('AC_H3_SWI', '2-hour composition')
 
 def swi_h4(starttime, endtime):
     identifier = 'AC_H4_SWI'
-    units = {}
-    for var in ['C6to4', 'C6to5', 'O7to6', 'HetoO', 'CtoO', 'NtoO', 'MgtoO',
-                'NetoO', 'SitoO', 'StoO', 'FetoO']:
-        units[var] = u.dimensionless_unscaled
-        units[var + '_err'] = u.dimensionless_unscaled
-        units[var + '_qual'] = u.dimensionless_unscaled
-    for var in ['He', 'avqC', 'avqO', 'avqMg', 'avqSi', 'avqFe']:
-        units[var + '_qual'] = u.dimensionless_unscaled
-    return _ace(starttime, endtime, identifier, units=units)
+    # All variables with missing CDF units are dimensionless
+    return _ace(starttime, endtime, identifier, warn_missing_units=False)
 
 
 swi_h4.__doc__ = _docstring('AC_H4_SWI', '1-day composition')
@@ -161,7 +156,8 @@ swi_h4.__doc__ = _docstring('AC_H4_SWI', '1-day composition')
 
 def swi_h5(starttime, endtime):
     identifier = 'AC_H5_SWI'
-    return _ace(starttime, endtime, identifier)
+    # All variables with missing CDF units are dimensionless
+    return _ace(starttime, endtime, identifier, warn_missing_units=False)
 
 
 swi_h5.__doc__ = _docstring('AC_H5_SWI', '2-hour charge state')

@@ -31,7 +31,8 @@ logger = logging.getLogger(__name__)
 def process(dirs, fnames, extension, local_base_dir, remote_base_url,
             download_func, processing_func, starttime, endtime,
             try_download=True, units=None,
-            processing_kwargs={}, download_info=[], remote_fnames=None):
+            processing_kwargs={}, download_info=[], remote_fnames=None,
+            warn_missing_units=True):
     """
     The main utility method for systematically loading, downloading, and saving
     data.
@@ -106,6 +107,9 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
         If the remote filenames are different from the desired downloaded
         filenames, this should be a list of length ``len(fnames)`` with the
         files to be downloaded. The ordering must be the same as *fnames*.
+    warn_missing_units : bool, optional
+        If ``True``, warnings will be shown for each variable that does not
+        have associated units.
 
     Returns
     -------
@@ -182,12 +186,8 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
     # Attach units
     if extension == '.cdf':
         cdf = _load_local(raw_file_path)
-        units_cdf = cdf_units(cdf, manual_units=units)
-        return units_attach(data, units_cdf)
-    if type(units) is coll.OrderedDict:
-        return units_attach(data, units)
-    else:
-        return data
+        units = cdf_units(cdf, manual_units=units)
+    return units_attach(data, units, warn_missing_units=warn_missing_units)
 
 
 def _file_match(directory, fname_regex):
@@ -239,7 +239,7 @@ class NoDataError(RuntimeError):
     pass
 
 
-def units_attach(data, units):
+def units_attach(data, units, warn_missing_units=True):
     """
     Takes the units defined by the user and attaches them to the TimeSeries.
 
@@ -259,8 +259,9 @@ def units_attach(data, units):
     for column_name in data.columns:
         if column_name not in unit_key:
             units[column_name] = u.dimensionless_unscaled
-            message = "{} column has missing units.".format(column_name)
-            warnings.warn(message, Warning)
+            if warn_missing_units:
+                message = "{} column has missing units.".format(column_name)
+                warnings.warn(message, Warning)
     with warnings.catch_warnings():
         warnings.simplefilter(
             'ignore', 'Discarding nonzero nanoseconds in conversion')
@@ -327,6 +328,7 @@ def cdf_units(cdf_, manual_units=None, length=None):
                 temp_unit = manual_units[key]
             else:
                 continue
+
         if temp_unit is None:
             try:
                 temp_unit = u.Unit(unit_str)
