@@ -17,8 +17,6 @@ from heliopy.data import cdasrest
 
 data_dir = path.Path(config['download_dir'])
 ace_dir = data_dir / 'ace'
-remote_ace_dir = 'ftp://spdf.gsfc.nasa.gov/pub/data/ace/'
-remote_cda_dir = 'ftp://cdaweb.gsfc.nasa.gov/pub/data/ace/'
 
 
 def _docstring(identifier, extra=''):
@@ -48,35 +46,13 @@ def _ace(starttime, endtime, identifier, units=None,
     """
     Generic method for downloading ACE data.
     """
-    badvalues = -1e31
-    relative_dir = path.Path(identifier)
-    # Directory relative to main WIND data directory
-    daylist = util._daysplitinterval(starttime, endtime)
-    dirs = []
-    fnames = []
-    dates = []
-    extension = '.cdf'
-    for day in daylist:
-        date = day[0]
-        dates.append(date)
-        filename = 'ac_{}_{}{:02}{:02}'.format(
-            identifier, date.year, date.month, date.day)
-        fnames.append(filename)
-        this_relative_dir = relative_dir / str(date.year)
-        dirs.append(this_relative_dir)
-
-    def download_func(remote_base_url, local_base_dir,
-                      directory, fname, remote_fname, extension, date):
-        return cdasrest.get_data(identifier, date)
-
-    def processing_func(cdf):
-        return util.cdf2df(cdf, index_key='Epoch',
-                           badvalues=badvalues)
-
-    return util.process(dirs, fnames, extension, ace_dir, remote_ace_dir,
-                        download_func, processing_func, starttime,
-                        endtime, units=units, download_info=dates,
-                        warn_missing_units=warn_missing_units)
+    dataset = 'ac'
+    badvalues = 1e-31
+    return cdasrest._process_cdas(starttime, endtime, identifier, dataset,
+                                  ace_dir,
+                                  units=units,
+                                  badvalues=badvalues,
+                                  warn_missing_units=warn_missing_units)
 
 
 # Actual download functions start here
