@@ -19,26 +19,8 @@ data_dir = path.Path(config['download_dir'])
 ace_dir = data_dir / 'ace'
 
 
-def _docstring(identifier, extra=''):
-    ds = r"""
-    {extra} data.
-
-    See https://cdaweb.sci.gsfc.nasa.gov/misc/NotesA.html#{identifier}
-    for more information.
-
-    Parameters
-    ----------
-    starttime : datetime
-        Interval start time.
-    endtime : datetime
-        Interval end time.
-
-    Returns
-    -------
-    data : :class:`~sunpy.timeseries.TimeSeries`
-    """.format(identifier=identifier,
-               extra=extra)
-    return ds
+def _docstring(identifier, extra):
+    return cdasrest._docstring(indentifier, 'A', extra)
 
 
 def _ace(starttime, endtime, identifier, units=None,
