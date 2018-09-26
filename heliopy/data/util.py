@@ -72,8 +72,9 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
 
         The function can also return the path of the file it downloaded,
         if this is different to the filename it is given. *download_func*
-        should **not** raise any errors, and just silently do nothing if a
-        given file is not available.
+        can either silently do nothing if a given file is not available, or
+        raise a `NoDataError` with a descriptive error message that will be
+        printed.
 
     processing_func
         Function that takes an open CDF file or open plain text file,
@@ -156,9 +157,13 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
             args = ()
             if dl_info is not None:
                 args = (dl_info,)
-            new_path = download_func(remote_base_url, local_base_dir,
-                                     directory, fname, remote_fname,
-                                     extension, *args)
+            try:
+                new_path = download_func(remote_base_url, local_base_dir,
+                                         directory, fname, remote_fname,
+                                         extension, *args)
+            except NoDataError as e:
+                print(str(e))
+                continue
             if new_path is not None:
                 os.rename(new_path, local_file.with_suffix(extension))
 
