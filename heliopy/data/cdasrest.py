@@ -4,6 +4,7 @@ Helper methods for using the CDAS REST web services.
 For more information see https://cdaweb.sci.gsfc.nasa.gov/WebServices/REST/
 """
 from datetime import datetime, time
+import pathlib
 import requests
 import tempfile
 import wget
@@ -12,6 +13,41 @@ import heliopy.data.util as util
 
 CDAS_BASEURL = 'https://cdaweb.gsfc.nasa.gov/WS/cdasr/1'
 CDAS_HEADERS = {'Accept': 'application/json'}
+
+
+def _process_cdas(starttime, endtime, identifier, dataset, base_dir,
+                  units=None, badvalues=None, warn_missing_units=True):
+    """
+    Generic method for downloading cdas  data.
+    """
+    relative_dir = pathlib.Path(identifier)
+    # Directory relative to main WIND data directory
+    daylist = util._daysplitinterval(starttime, endtime)
+    dirs = []
+    fnames = []
+    dates = []
+    extension = '.cdf'
+    for day in daylist:
+        date = day[0]
+        dates.append(date)
+        filename = '{}_{}_{}{:02}{:02}'.format(
+            dataset, identifier, date.year, date.month, date.day)
+        fnames.append(filename)
+        this_relative_dir = relative_dir / str(date.year)
+        dirs.append(this_relative_dir)
+
+    def download_func(remote_base_url, local_base_dir,
+                      directory, fname, remote_fname, extension, date):
+        return get_data(identifier, date)
+
+    def processing_func(cdf):
+        return util.cdf2df(cdf, index_key='Epoch',
+                           badvalues=badvalues)
+
+    return util.process(dirs, fnames, extension, base_dir, '',
+                        download_func, processing_func, starttime,
+                        endtime, units=units, download_info=dates,
+                        warn_missing_units=warn_missing_units)
 
 
 def get_variables(dataset):
