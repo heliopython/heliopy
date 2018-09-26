@@ -15,6 +15,29 @@ CDAS_BASEURL = 'https://cdaweb.gsfc.nasa.gov/WS/cdasr/1'
 CDAS_HEADERS = {'Accept': 'application/json'}
 
 
+def _docstring(identifier, letter, description):
+    ds = r"""
+    {description} data.
+
+    See https://cdaweb.sci.gsfc.nasa.gov/misc/Notes{letter}.html#{identifier}
+    for more information.
+
+    Parameters
+    ----------
+    starttime : datetime
+        Interval start time.
+    endtime : datetime
+        Interval end time.
+
+    Returns
+    -------
+    data : :class:`~sunpy.timeseries.TimeSeries`
+    """.format(identifier=identifier,
+               letter=letter,
+               description=description)
+    return ds
+
+
 def _process_cdas(starttime, endtime, identifier, dataset, base_dir,
                   units=None, badvalues=None, warn_missing_units=True):
     """
