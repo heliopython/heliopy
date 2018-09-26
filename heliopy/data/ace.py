@@ -20,7 +20,7 @@ ace_dir = data_dir / 'ace'
 
 
 def _docstring(identifier, extra):
-    return cdasrest._docstring(indentifier, 'A', extra)
+    return cdasrest._docstring(identifier, 'A', extra)
 
 
 def _ace(starttime, endtime, identifier, units=None,
