@@ -13,6 +13,7 @@ import cdflib
 import datetime as dt
 from collections import OrderedDict
 
+from heliopy.data import cdasrest
 from heliopy.data import util
 from heliopy import config
 
@@ -20,6 +21,37 @@ data_dir = path.Path(config['download_dir'])
 wind_dir = data_dir / 'wind'
 use_hdf = config['use_hdf']
 remote_wind_dir = 'ftp://spdf.gsfc.nasa.gov/pub/data/wind/'
+
+
+def _docstring(identifier, description):
+    return cdasrest._docstring(identifier, 'W', description)
+
+
+def _wind(starttime, endtime, identifier, units=None,
+          warn_missing_units=True, badvalues=None):
+    """
+    Generic method for downloading ACE data.
+    """
+    dataset = 'wi'
+    return cdasrest._process_cdas(starttime, endtime, identifier, dataset,
+                                  wind_dir,
+                                  units=units,
+                                  badvalues=badvalues,
+                                  warn_missing_units=warn_missing_units)
+
+
+# Actual download functions start here
+def swe_h1(starttime, endtime):
+    identifier = 'WI_H1_SWE'
+    badvalues = 99999.9
+    units = OrderedDict([('fit_flag', u.dimensionless_unscaled),
+                         ('ChisQ_DOF_nonlin', u.dimensionless_unscaled)])
+    return _wind(starttime, endtime, identifier,
+                 units=units, badvalues=badvalues)
+
+
+swe_h1.__doc__ = _docstring(
+    'WI_H1_SWE', '92-second Solar Wind Alpha and Proton Anisotropy Analysis')
 
 
 def _load_wind_cdf(starttime, endtime, instrument, data_product,
@@ -50,63 +82,6 @@ def _load_wind_cdf(starttime, endtime, instrument, data_product,
     return util.process(dirs, fnames, extension, local_base_dir,
                         remote_base_url, download_func, processing_func,
                         starttime, endtime, units=units)
-
-
-def swe_h1(starttime, endtime):
-    """
-    Import 'h1' (Bi-Maxwellian, Anisotropic Analysis of Protons and Alphas)
-    solar wind ion data product from WIND.
-    Parameters
-    ----------
-    starttime : datetime
-        Interval start time.
-    endtime : datetime
-        Interval end time.
-    Returns
-    -------
-    data : :class:`~sunpy.timeseries.TimeSeries`
-    """
-    instrument = 'swe'
-    data_product = 'swe_h1'
-    fname = 'h1_swe'
-    badvalues = {'Proton_V_nonlin': 99999.9,
-                 'Proton_sigmaV_nonlin': 99999.9,
-                 'Proton_VY_nonlin': 99999.9,
-                 'Proton_sigmaVY_nonlin': 99999.9,
-                 'Proton_W_nonlin': 99999.9,
-                 'Proton_sigmaW_nonlin': 99999.9,
-                 'Proton_Wperp_nonlin': 99999.9,
-                 'Proton_sigmaWperp_nonlin': 99999.9,
-                 'Proton_Wpar_nonlin': 99999.9,
-                 'Proton_sigmaWpar_nonlin': 99999.9,
-                 'EW_flowangle': 99999.9,
-                 'SigmaEW_flowangle': 99999.9,
-                 'NS_flowangle': 99999.9,
-                 'SigmaNS_flowangle': 99999.9,
-                 'Alpha_V_nonlin': 99999.9,
-                 'Alpha_sigmaV_nonlin': 99999.9,
-                 'Alpha_VX_nonlin': 99999.9,
-                 'Alpha_sigmaVX_nonlin': 99999.9,
-                 'Alpha_VY_nonlin': 99999.9,
-                 'Alpha_sigmaVY_nonlin': 99999.9,
-                 'Alpha_VZ_nonlin': 99999.9,
-                 'Alpha_sigmaVZ_nonlin': 99999.9,
-                 'Alpha_W_nonlin': 99999.9,
-                 'Alpha_sigmaW_nonlin': 99999.9,
-                 'Alpha_Wperp_nonlin': 99999.9,
-                 'Alpha_sigmaWperp_nonlin': 99999.9,
-                 'Alpha_Wpar_nonlin': 99999.9,
-                 'Alpha_sigmaWpar_nonlin': 99999.9,
-                 'Alpha_Na_nonlin': 99999.9,
-                 'Alpha_sigmaNa_nonlin': 99999.9,
-                 'Proton_Wperp_moment': 99999.9,
-                 'Proton_Wpar_moment': 99999.9,
-                 'Alpha_Na_nonlin': 100000.0,
-                 'Alpha_sigmaNa_nonlin': 100000.0}
-    units = OrderedDict([('fit_flag', u.dimensionless_unscaled),
-                         ('ChisQ_DOF_nonlin', u.dimensionless_unscaled)])
-    return _load_wind_cdf(starttime, endtime, instrument,
-                          data_product, fname, badvalues, units=units)
 
 
 def swe_h3(starttime, endtime):
