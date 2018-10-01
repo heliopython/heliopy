@@ -271,8 +271,8 @@ class TestCluster():
 class TestWind:
     @classmethod
     def setup_class(self):
-        self.starttime = datetime(2010, 1, 1, 0, 0, 0)
-        self.endtime = datetime(2010, 1, 1, 23, 59, 59)
+        self.starttime = datetime(2009, 2, 23, 0, 0, 0)
+        self.endtime = datetime(2009, 2, 24, 23, 59, 59)
 
     def test_mfi_h0(self):
         df = wind.mfi_h0(self.starttime, self.endtime)
