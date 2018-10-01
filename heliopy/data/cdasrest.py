@@ -139,6 +139,7 @@ def get_data(dataset, date, vars=None, verbose=True):
     ext = 'cdf'
     response = requests.get(url, params=params, headers=CDAS_HEADERS)
     if 'FileDescription' in response.json():
+        print('Downloading {} for date {}'.format(dataset, date))
         data_path = wget.download(
             response.json()['FileDescription'][0]['Name'],
             tempfile.gettempdir(),
