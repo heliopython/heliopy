@@ -147,5 +147,6 @@ def get_data(dataset, date, vars=None, verbose=True):
         if verbose:
             print('')
     else:
-        raise util.NoDataError
+        raise util.NoDataError(
+            'No {} data available for date {}'.format(dataset, date))
     return data_path
