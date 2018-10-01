@@ -55,6 +55,31 @@ swe_h1.__doc__ = _docstring(
     'WI_H1_SWE', '92-second Solar Wind Alpha and Proton Anisotropy Analysis')
 
 
+def mfi_h0(starttime, endtime):
+    identifier = 'WI_H0_MFI'
+    units = OrderedDict([('Bx_gse', u.nT), ('By_gse', u.nT),
+                        ('Bz_gse', u.nT)])
+    return _wind(starttime, endtime, identifier,
+                 units=units)
+
+
+mfi_h0.__doc__ = _docstring(
+    'WI_H0_MFI', 'Composite magnetic field data')
+
+
+def mfi_h2(starttime, endtime):
+    identifier = 'WI_H2_MFI'
+    units = OrderedDict([('Bx_gse', u.nT), ('By_gse', u.nT),
+                        ('Bz_gse', u.nT)])
+    return _wind(starttime, endtime, identifier,
+                 units=units)
+
+
+mfi_h2.__doc__ = _docstring(
+    'WI_H2_MFI', 'High resolution magnetic field data')
+
+
+# Old (non-CDAS) functions start here
 def _load_wind_cdf(starttime, endtime, instrument, data_product,
                    fname, badvalues={}, units=None):
 
@@ -136,108 +161,6 @@ def swe_h3(starttime, endtime):
         df = util.pitchdist_cdf2df(cdf, distkeys, energykey, timekey,
                                    anglelabels)
         df = df.reset_index(level=['Energy', 'Angle'])
-        return df
-
-    return util.process(dirs, fnames, extension, local_base_dir,
-                        remote_base_url, download_func, processing_func,
-                        starttime, endtime, units=units)
-
-
-def mfi_h0(starttime, endtime):
-    """
-    Import 'mfi_h0' magnetic field data product from WIND.
-    Parameters
-    ----------
-    starttime : datetime
-        Interval start time.
-    endtime : datetime
-        Interval end time.
-    Returns
-    -------
-    data : :class:`~sunpy.timeseries.TimeSeries`
-    """
-    units = OrderedDict([('Bx_gse', u.nT), ('By_gse', u.nT),
-                        ('Bz_gse', u.nT)])
-    ignore = ['Time3_PB5']
-    return _mfi(starttime, endtime, 'h0', units=units, ignore=ignore)
-
-
-def mfi_h2(starttime, endtime):
-    """
-    Import 'mfi_h2' magnetic field data product from WIND.
-    The highest time resolution data (11 vectors/sec usually, and
-    22 vectors/sec when near Earth)
-    Parameters
-    ----------
-    starttime : datetime
-        Interval start time.
-    endtime : datetime
-        Interval end time.
-    Returns
-    -------
-    data : :class:`~sunpy.timeseries.TimeSeries`
-    """
-    units = OrderedDict([('Bx_gse', u.nT), ('By_gse', u.nT),
-                        ('Bz_gse', u.nT)])
-    ignore = ['Time_PB5']
-    return _mfi(starttime, endtime, 'h2', units=units, ignore=ignore)
-
-
-def _mfi(starttime, endtime, version, units=None, ignore=None):
-    """
-    Import mfi magnetic field data products from WIND.
-    Parameters
-    ----------
-    starttime : datetime
-        Interval start time.
-    endtime : datetime
-        Interval end time.
-    Returns
-    -------
-    data : DataFrame
-    """
-    # Directory relative to main WIND data directory
-    relative_dir = path.Path('mfi') / ('mfi_' + version)
-    # Get directories and filenames
-    dirs = []
-    fnames = []
-    epoch_dict = {'h0': 'Epoch3', 'h2': 'Epoch'}
-    mag_dict = {'h0': 'B3GSE', 'h2': 'BGSE'}
-
-    epoch_key = epoch_dict[version]
-    mag_key = mag_dict[version]
-
-    keys = {mag_key: ['Bx_gse', 'By_gse', 'Bz_gse'],
-            epoch_key: 'Time'}
-    daylist = util._daysplitinterval(starttime, endtime)
-    for day in daylist:
-        date = day[0]
-        # Absolute path to local directory for this data file
-        local_dir = relative_dir / str(day[0].year)
-        dirs.append(local_dir)
-        filename = 'wi_' + version + '_mfi_' +\
-            str(date.year) +\
-            str(date.month).zfill(2) +\
-            str(date.day).zfill(2) +\
-            '_v[0-9][0-9]'
-        fnames.append(filename)
-
-    extension = '.cdf'
-    local_base_dir = wind_dir
-    remote_base_url = remote_wind_dir
-
-    def download_func(*args):
-        util._download_remote_unknown_version(*args)
-
-    def processing_func(cdf):
-        epoch_dict = {'h0': 'Epoch3', 'h2': 'Epoch'}
-        epoch_key = epoch_dict[version]
-
-        badvalues = {'Bx_gse': -1e+31,
-                     'By_gse': -1e+31,
-                     'Bz_gse': -1e+31}
-        df = util.cdf2df(cdf, index_key=epoch_key,
-                         badvalues=badvalues, ignore=ignore)
         return df
 
     return util.process(dirs, fnames, extension, local_base_dir,
