@@ -24,7 +24,6 @@ install:
   - "activate test"
   - cmd: conda install --yes hdf5
   - "pip install -r requirements/test.txt"
-  - "pip install spiceypy"
 
 
 # Not a .NET project, we build heliopy in the install step instead
