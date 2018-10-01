@@ -44,7 +44,8 @@ def _wind(starttime, endtime, identifier, units=None,
 def swe_h1(starttime, endtime):
     identifier = 'WI_H1_SWE'
     badvalues = 99999.9
-    units = OrderedDict([('fit_flag', u.dimensionless_unscaled),
+    units = OrderedDict([('year', u.year),
+                         ('fit_flag', u.dimensionless_unscaled),
                          ('ChisQ_DOF_nonlin', u.dimensionless_unscaled)])
     return _wind(starttime, endtime, identifier,
                  units=units, badvalues=badvalues)
