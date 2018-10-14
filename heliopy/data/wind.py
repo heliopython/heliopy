@@ -80,36 +80,6 @@ mfi_h2.__doc__ = _docstring(
 
 
 # Old (non-CDAS) functions start here
-def _load_wind_cdf(starttime, endtime, instrument, data_product,
-                   fname, badvalues={}, units=None):
-
-    relative_dir = path.Path(instrument) / data_product
-    # Get directories and filenames
-    dirs = []
-    fnames = []
-    daylist = util._daysplitinterval(starttime, endtime)
-    for day in daylist:
-        date = day[0]
-        filename = 'wi_{}_{}{:02}{:02}_v[0-9][0-9]'.format(
-            fname, date.year, date.month, date.day)
-        fnames.append(filename)
-        local_dir = relative_dir / str(date.year)
-        dirs.append(local_dir)
-    extension = '.cdf'
-    local_base_dir = wind_dir
-    remote_base_url = remote_wind_dir
-
-    def download_func(*args):
-        util._download_remote_unknown_version(*args)
-
-    def processing_func(cdf):
-        return util.cdf2df(cdf, 'Epoch', badvalues=badvalues)
-
-    return util.process(dirs, fnames, extension, local_base_dir,
-                        remote_base_url, download_func, processing_func,
-                        starttime, endtime, units=units)
-
-
 def swe_h3(starttime, endtime):
     """
     Import 'h3' solar wind electron data product from WIND.
