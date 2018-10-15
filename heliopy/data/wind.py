@@ -79,6 +79,15 @@ mfi_h2.__doc__ = _docstring(
     'WI_H2_MFI', 'High resolution magnetic field data')
 
 
+def threedp_pm(starttime, endtime):
+    identifier = 'WI_PM_3DP'
+    return _wind(starttime, endtime, identifier)
+
+
+threedp_pm.__doc__ = _docstring(
+    'WI_PM_3DP', '1 spin resolution ion (proton and alpha) moments')
+
+
 # Old (non-CDAS) functions start here
 def swe_h3(starttime, endtime):
     """
@@ -138,71 +147,11 @@ def swe_h3(starttime, endtime):
                         starttime, endtime, units=units)
 
 
-def threedp_pm(starttime, endtime):
-    """
-    Import 'pm' WIND data.
-
-    3 second time resolution solar wind proton and alpha particle moments from
-    the PESA LOW sensor, computed on-board the spacecraft.
-
-    Parameters
-    ----------
-    starttime : datetime
-        Interval start time.
-    endtime : datetime
-        Interval end time.
-
-    Returns
-    -------
-    data : :class:`~sunpy.timeseries.TimeSeries`
-    """
-    # Directory relative to main WIND data directory
-    relative_dir = path.Path('3dp') / '3dp_pm'
-    daylist = util._daysplitinterval(starttime, endtime)
-    ignore = ['TIME']
-    dirs = []
-    fnames = []
-    units = OrderedDict([('P_DENS', u.cm**-3),
-                         ('P_VELS', u.km / u.s),
-                         ('P_TEMP', u.eV),
-                         ('A_DENS', u.cm**-3),
-                         ('A_VELS', u.km / u.s),
-                         ('A_TEMP', u.eV),
-                         ('GAP', u.dimensionless_unscaled),
-                         ('E_RANGE', u.eV),
-                         ('VALID', u.dimensionless_unscaled),
-                         ('VC', u.dimensionless_unscaled),
-                         ('SPIN', u.dimensionless_unscaled)])
-    extension = '.cdf'
-    for day in daylist:
-        date = day[0]
-        this_relative_dir = relative_dir / str(day[0].year)
-        filename = 'wi_pm_3dp_' +\
-            str(date.year) +\
-            str(date.month).zfill(2) +\
-            str(date.day).zfill(2) +\
-            '_v[0-9][0-9]'
-        fnames.append(filename)
-        dirs.append(this_relative_dir)
-
-    local_base_dir = wind_dir
-    remote_base_url = remote_wind_dir
-
-    def download_func(*args):
-        util._download_remote_unknown_version(*args)
-
-    def processing_func(cdf):
-        return util.cdf2df(cdf, 'Epoch', ignore=ignore)
-
-    return util.process(dirs, fnames, extension, local_base_dir,
-                        remote_base_url, download_func, processing_func,
-                        starttime, endtime, units=units)
-
-
 def threedp_sfpd(starttime, endtime):
     """
     Import 'sfpd' wind data.
     12 second energetic electron pitch-angle energy spectra from the foil SST
+
     Parameters
     ----------
     starttime : datetime
