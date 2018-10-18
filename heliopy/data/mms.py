@@ -140,11 +140,7 @@ def fgm_survey(probe, starttime, endtime):
         # expect it to hold old file versions past their prime
         datestring = '{}-{:02}-{:02}'.format(date.year,date.month,
                                              date.day)
-        sdc_fgm_srvy = requests.get(
-            'https://lasp.colorado.edu/mms/sdc/sitl/files/api/v1'+
-            '/file_info/science?start_date='+datestring+'&end_date='+
-            datestring+'&sc_id=mms1&data_rate_mode=srvy&'+
-            'instrument_id=fgm&data_level=l2')
+        sdc_fgm_srvy = requests.get('https://lasp.colorado.edu/mms/sdc/public/files/api/v1/file_info/science?start_date='+datestring+'&end_date='+datestring+'&sc_id=mms'+probe+'&data_rate_mode=srvy&'+'instrument_id=fgm&data_level=l2')
         filename = sdc_fgm_srvy.json()['files'][0]['file_name']
 
         fnames.append(filename)
