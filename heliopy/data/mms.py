@@ -13,6 +13,7 @@ import pathlib as path
 import urllib
 from collections import OrderedDict
 import astropy.units as u
+import requests
 
 from heliopy.data import util
 from heliopy import config
@@ -56,6 +57,7 @@ def fpi_dis_moms(probe, mode, starttime, endtime):
                          ('mms{}_dis_startdelphi_count_fast'.format(probe),
                           u.dimensionless_unscaled)])
     extension = '.cdf'
+    
     for day in daylist:
         date = day[0]
         starthour = day[1].hour
@@ -73,7 +75,12 @@ def fpi_dis_moms(probe, mode, starttime, endtime):
                             probe, mode, date.year, date.month, date.day, h)
             fnames.append(filename)
             dirs.append(this_relative_dir)
-
+            filename = ('mms{}_fpi_{}_l2_des-moms_'
+                        '{}{:02}{:02}{:02}0000_v3.3.0').format(
+                            probe, mode, date.year, date.month, date.day, h)
+            fnames.append(filename)
+            dirs.append(this_relative_dir)
+            
     remote_base_url = remote_mms_dir
     local_base_dir = mms_dir
 
@@ -117,7 +124,8 @@ def fgm_survey(probe, starttime, endtime):
     daylist = util._daysplitinterval(starttime, endtime)
     dirs = []
     fnames = []
-    extension = '.cdf'
+    #don't need so much string munging since we're asking SDC for things
+    #extension = '.cdf'
     units = OrderedDict([('mms{}_fgm_mode_srvy_l2'.format(probe),
                           u.dimensionless_unscaled)])
     data = []
@@ -126,8 +134,19 @@ def fgm_survey(probe, starttime, endtime):
         this_relative_dir = (relative_dir /
                              str(date.year) /
                              str(date.month).zfill(2))
-        filename = 'mms{}_fgm_srvy_l2_{}{:02}{:02}_v4.18.0'.format(
-            probe, date.year, date.month, date.day)
+        
+        # Don't try to request specific versions like this - use the
+        # API to grab the most recent file.  The SDC weeps when you
+        # expect it to hold old file versions past their prime
+        datestring = '{}-{:02}-{:02}'.format(date.year,date.month,
+                                             date.day)
+        sdc_fgm_srvy = requests.get(
+            https://lasp.colorado.edu/mms/sdc/sitl/files/api/v1
+            /file_info/science?start_date=2016-03-14&end_date=
+            2016-03-14&sc_id=mms1&data_rate_mode=srvy&
+            instrument_id=fgm&data_level=l2)
+        filename = sdc_fgm_srvy.json()['files'][0]['file_name']
+
         fnames.append(filename)
         dirs.append(this_relative_dir)
 
