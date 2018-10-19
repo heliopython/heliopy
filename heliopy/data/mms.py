@@ -126,6 +126,7 @@ def fgm_survey(probe, starttime, endtime):
     fnames = []
     #don't need so much string munging since we're asking SDC for things
     #extension = '.cdf'
+    extension=''
     units = OrderedDict([('mms{}_fgm_mode_srvy_l2'.format(probe),
                           u.dimensionless_unscaled)])
     data = []
