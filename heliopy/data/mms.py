@@ -56,8 +56,9 @@ def fpi_dis_moms(probe, mode, starttime, endtime):
                           u.dimensionless_unscaled),
                          ('mms{}_dis_startdelphi_count_fast'.format(probe),
                           u.dimensionless_unscaled)])
+
     extension = '.cdf'
-    
+
     for day in daylist:
         date = day[0]
         starthour = day[1].hour
@@ -75,7 +76,7 @@ def fpi_dis_moms(probe, mode, starttime, endtime):
                             probe, mode, date.year, date.month, date.day, h)
             fnames.append(filename)
             dirs.append(this_relative_dir)
-            
+
     remote_base_url = remote_mms_dir
     local_base_dir = mms_dir
 
@@ -95,9 +96,10 @@ def fpi_dis_moms(probe, mode, starttime, endtime):
                         remote_base_url, download_func, processing_func,
                         starttime, endtime, units=units)
 
+
 def fpi_des_moms(probe, mode, starttime, endtime):
     """
-    Import fpi ion distribution moment data.
+    Import fpi electron distribution moment data.
 
     Parameters
     ----------
@@ -128,8 +130,9 @@ def fpi_des_moms(probe, mode, starttime, endtime):
                           u.dimensionless_unscaled),
                          ('mms{}_des_startdelphi_count_fast'.format(probe),
                           u.dimensionless_unscaled)])
+
     extension = '.cdf'
-    
+
     for day in daylist:
         date = day[0]
         starthour = day[1].hour
@@ -147,7 +150,7 @@ def fpi_des_moms(probe, mode, starttime, endtime):
                             probe, mode, date.year, date.month, date.day, h)
             fnames.append(filename)
             dirs.append(this_relative_dir)
-            
+
     remote_base_url = remote_mms_dir
     local_base_dir = mms_dir
 
@@ -186,36 +189,40 @@ def fgm_survey(probe, starttime, endtime):
     data : :class:`~sunpy.timeseries.TimeSeries`
         Imported data.
     """
-    
+
     # Directory relative to main MMS data directory
     relative_dir = path.Path('mms' + probe) / 'fgm' / 'srvy' / 'l2'
     daylist = util._daysplitinterval(starttime, endtime)
     dirs = []
     fnames = []
-    #don't need so much string munging since we're asking SDC for things
+    # don't need so much string munging since we're asking SDC for things
     extension = '.cdf'
-    #extension=''
     units = OrderedDict([('mms{}_fgm_mode_srvy_l2'.format(probe),
                           u.dimensionless_unscaled)])
+
     data = []
     for day in daylist:
         date = day[0]
         this_relative_dir = (relative_dir /
                              str(date.year) /
                              str(date.month).zfill(2))
-        
+
         # Don't try to request specific versions like this - use the
         # API to grab the most recent file.  The SDC weeps when you
         # expect it to hold old file versions past their prime
-        datestring = '{}-{:02}-{:02}'.format(date.year,date.month,
-                                             date.day)
-        sdc_req_url = 'https://lasp.colorado.edu/mms/sdc/public/files/api/v1/file_info/science?'
-        sdc_opts = 'start_date='+datestring+'&end_date='+datestring+'&sc_id=mms'+probe+'&data_rate_mode=srvy&'+'instrument_id=fgm&data_level=l2'
+        datestring = '{}-{:02}-{:02}'.format(date.year, date.month, date.day)
+        datacenter = 'https://lasp.colorado.edu/mms/sdc/public'
+        query_base = '/files/api/v1/file_info/science?'
+        sdc_req_url = datacenter + query_base
+        sdc_date_opts = 'start_date='+datestring+'&end_date='+datestring
+        sdc_inst_opts = '&sc_id=mms'+probe+'instrument_id=fgm&'
+        sdc_data_opts = '&data_rate_mode=srvy&data_level=l2'  
+        sdc_opts = sdc_date_opts + sdc_inst_opts + sdc_data_opts
         sdc_fgm_srvy = requests.get(sdc_req_url + sdc_opts)
         filename = sdc_fgm_srvy.json()['files'][0]['file_name']
 
         filename = filename[:-4]
-        
+
         fnames.append(filename)
         dirs.append(this_relative_dir)
 
