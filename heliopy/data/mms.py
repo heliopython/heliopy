@@ -215,7 +215,7 @@ def fgm_survey(probe, starttime, endtime):
         query_base = '/files/api/v1/file_info/science?'
         sdc_req_url = datacenter + query_base
         sdc_date_opts = 'start_date='+datestring+'&end_date='+datestring
-        sdc_inst_opts = '&sc_id=mms'+probe+'instrument_id=fgm&'
+        sdc_inst_opts = '&sc_id=mms'+probe+'&instrument_id=fgm'
         sdc_data_opts = '&data_rate_mode=srvy&data_level=l2'  
         sdc_opts = sdc_date_opts + sdc_inst_opts + sdc_data_opts
         sdc_fgm_srvy = requests.get(sdc_req_url + sdc_opts)
