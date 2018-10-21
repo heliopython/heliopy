@@ -236,7 +236,7 @@ class TestImp:
 @pytest.mark.data
 @pytest.mark.skipif(config['cluster_cookie'] == 'none',
                     reason='Cluster download cookie not set')
-class TestCluster():
+class TestCluster:
     @classmethod
     def setup_class(self):
         self.probe = '3'
@@ -274,6 +274,7 @@ class TestWind:
         self.starttime = datetime(2010, 1, 1, 0, 0, 0)
         self.endtime = datetime(2010, 1, 1, 23, 59, 59)
 
+    '''
     def test_mfi_h0(self):
         df = wind.mfi_h0(self.starttime, self.endtime)
         check_data_output(df)
@@ -283,6 +284,11 @@ class TestWind:
         check_data_output(df)
 
     def test_threedp_pm(self):
+        df = wind.threedp_pm(self.starttime, self.endtime)
+        check_data_output(df)
+    '''
+
+    def test_threedp_e0_emfits(self):
         df = wind.threedp_pm(self.starttime, self.endtime)
         check_data_output(df)
 

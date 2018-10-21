@@ -88,6 +88,15 @@ threedp_pm.__doc__ = _docstring(
     'WI_PM_3DP', '1 spin resolution ion (proton and alpha) moments')
 
 
+def threedp_e0_emfits(starttime, endtime):
+    identifier = 'WI_EMFITS_E0_3DP'
+    return _wind(starttime, endtime, identifier)
+
+
+threedp_pm.__doc__ = _docstring(
+    'WI_EMFITS_E0_3DP', 'electron moments')
+
+
 # Old (non-CDAS) functions start here
 def swe_h3(starttime, endtime):
     """
