@@ -318,6 +318,10 @@ class TestMMS:
         df = mms.fpi_dis_moms(self.probe, 'fast', self.starttime, self.endtime)
         check_data_output(df)
 
+    def test_fpi_des_moms(self):
+        df = mms.fpi_des_moms(self.probe, 'fast', self.starttime, self.endtime)
+        check_data_output(df)
+
 
 @pytest.mark.data
 class TestHelios:
