@@ -1,3 +1,17 @@
+Version 0.6.2
+-------------
+
+New features
+^^^^^^^^^^^^
+
+- Added `heliopy.data.mms.fpi_des_moms` function.
+
+Bug fixes
+^^^^^^^^^
+
+Backwards incompatible changes
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 Version 0.6.1
 -------------
 

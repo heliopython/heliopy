@@ -150,7 +150,7 @@ def swe_h3(starttime, endtime):
 def threedp_sfpd(starttime, endtime):
     """
     Import 'sfpd' wind data.
-    12 second energetic electron pitch-angle energy spectra from the foil SST
+    12 second energetic electron pitch-angle energy spectra from the foil SST.
 
     Parameters
     ----------
