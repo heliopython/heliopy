@@ -20,11 +20,11 @@ h4 {
 }
 
 a {
-  color: #fab81e;
+  color: #0069d6;
 }
 
 a:hover {
-  color: #fe7900;
+  color: #00438a;
 }
 
 p.content {
@@ -347,6 +347,10 @@ input {
   font-weight: bold;
 }
 
+.doc-title > a {
+  color: #fab81e;
+}
+
 /* End Sidebar */
 
 .divider {
@@ -398,13 +402,13 @@ a code {
 }
 
 code {
-  color: #fab81e;
+  color: inherit;
   padding: 2px;
   background-color: transparent;
 }
 
 code:hover {
-  color: #fe7900;
+  color: inherit;
 }
 
 code.descname {
@@ -516,6 +520,10 @@ div.figure p.caption span.caption-text {
   padding-top: 13px;
   font-size: 16px;
   text-align: center;
+}
+
+.footer a {
+    color: #fab81e
 }
 
 .center-footer {
