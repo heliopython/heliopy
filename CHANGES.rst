@@ -4,10 +4,13 @@ Version 0.6.2
 New features
 ^^^^^^^^^^^^
 
-- Added `heliopy.data.mms.fpi_des_moms` function.
+- Added `heliopy.data.mms.fpi_des_moms` function. :issue:`601`
+- Added `heliopy.data.wind.threedp_e0_emfits` function. :issue:`606`
 
 Bug fixes
 ^^^^^^^^^
+
+- Fixed `heliopy.data.mms.fgm_survey` data loading. :issue:`601`
 
 Backwards incompatible changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
