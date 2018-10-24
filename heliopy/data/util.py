@@ -266,7 +266,7 @@ def units_attach(data, units, warn_missing_units=True):
             units[column_name] = u.dimensionless_unscaled
             if warn_missing_units:
                 message = "{} column has missing units.".format(column_name)
-                warnings.warn(message, Warning)
+                warnings.warn(message, Warning, stacklevel=2)
     with warnings.catch_warnings():
         warnings.simplefilter(
             'ignore', 'Discarding nonzero nanoseconds in conversion')
