@@ -4,13 +4,13 @@ Version 0.6.2
 New features
 ^^^^^^^^^^^^
 
-- Added `heliopy.data.mms.fpi_des_moms` function. :issue:`601`
-- Added `heliopy.data.wind.threedp_e0_emfits` function. :issue:`606`
+- Added :meth:`heliopy.data.mms.fpi_des_moms` function. :issue:`601`
+- Added :meth:`heliopy.data.wind.threedp_e0_emfits` function. :issue:`606`
 
 Bug fixes
 ^^^^^^^^^
 
-- Fixed `heliopy.data.mms.fgm_survey` data loading. :issue:`601`
+- Fixed :meth:`heliopy.data.mms.fgm_survey` data loading. :issue:`601`
 
 Backwards incompatible changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -28,7 +28,7 @@ New features
 Bug fixes
 ^^^^^^^^^
 - The accidentally removed Ulysses spice kernel has returned. :issue:`582`
-- `heliopy.data.helper.cdfpeek` has been updated to work with cdflib, and now
+- :func:`heliopy.data.helper.cdfpeek` has been updated to work with cdflib, and now
   prints all CDF file information.
 
 Version 0.6.0

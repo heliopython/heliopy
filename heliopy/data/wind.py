@@ -93,7 +93,7 @@ def threedp_e0_emfits(starttime, endtime):
     return _wind(starttime, endtime, identifier)
 
 
-threedp_pm.__doc__ = _docstring(
+threedp_e0_emfits.__doc__ = _docstring(
     'WI_EMFITS_E0_3DP', 'electron moments')
 
 
