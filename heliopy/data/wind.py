@@ -41,6 +41,15 @@ def _wind(starttime, endtime, identifier, units=None,
 
 
 # Actual download functions start here
+def swe_h0(starttime, endtime):
+    identifier = 'WI_H0_SWE'
+    return _wind(starttime, endtime, identifier)
+
+
+swe_h0.__doc__ = _docstring(
+    'WI_H0_SWE', '6 - 12 sec Solar Wind Electron Moments')
+
+
 def swe_h1(starttime, endtime):
     identifier = 'WI_H1_SWE'
     badvalues = 99999.9

@@ -6,6 +6,7 @@ New features
 
 - Added `heliopy.data.mms.fpi_des_moms` function. :issue:`601`
 - Added `heliopy.data.wind.threedp_e0_emfits` function. :issue:`606`
+- Added `heliopy.data.wind.swe_h0` function. :issue:`611`
 
 Bug fixes
 ^^^^^^^^^
