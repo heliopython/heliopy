@@ -1,3 +1,15 @@
+
+Version 0.6.3
+-------------
+
+New features
+^^^^^^^^^^^^
+
+Bug fixes
+^^^^^^^^^
+
+- Updated links to the STEREO-A spice kernels.
+
 Version 0.6.2
 -------------
 
