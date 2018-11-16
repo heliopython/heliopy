@@ -10,6 +10,7 @@ https://github.com/heliopython/heliopy/issues.
 """
 import os
 from urllib.request import urlretrieve
+import urllib.error
 
 from heliopy import config
 import heliopy.data.util as util
@@ -112,7 +113,11 @@ spacecraft_kernels = [_Kernel('Solar Orbiter 2020', 'solo_2020',
                                'https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/depm/ahead/ahead_2015_076_01.depm.bsp',
                                'https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/depm/ahead/ahead_2015_219_01.depm.bsp',
                                'https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/depm/ahead/ahead_2018_019_01.depm.bsp',
-                               'https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/depm/ahead/ahead_2018_241_01.depm.bsp',
+                               'https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/depm/ahead/ahead_2018_270_01.depm.bsp',
+                               'https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/depm/ahead/ahead_2018_275_01.depm.bsp',
+                               'https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/depm/ahead/ahead_2018_292_01.depm.bsp',
+                               'https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/depm/ahead/ahead_2018_305_01.depm.bsp',
+                               'https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/depm/ahead/ahead_2018_316_01.depm.bsp',
                                'https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/epm/ahead/ahead_2017_061_5295day_predict.epm.bsp'],
                               ''),
                       _Kernel('Ulysses', 'ulysses',
@@ -182,5 +187,9 @@ def get_kernel(name):
             os.makedirs(spice_dir)
         if not os.path.exists(local_loc):
             print('Downloading {}'.format(url))
-            urlretrieve(url, local_loc, reporthook=util._reporthook)
+            try:
+                urlretrieve(url, local_loc, reporthook=util._reporthook)
+            except urllib.error.HTTPError as err:
+                print('Failed to download {}'.format(url))
+                raise err
     return locs
