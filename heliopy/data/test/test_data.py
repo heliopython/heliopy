@@ -58,9 +58,10 @@ def check_units(df):
 
 @pytest.mark.data
 class TestSpice:
-    def test_built_in(self):
-        for kernel in spice.kernel_dict:
-            spice.get_kernel(kernel)
+
+    @pytest.mark.parametrize('kernel', spice.kernel_dict)
+    def test_kernel_download(self, kernel):
+        spice.get_kernel(kernel)
 
 
 @pytest.mark.data
