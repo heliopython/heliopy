@@ -10,6 +10,7 @@ https://github.com/heliopython/heliopy/issues.
 """
 import os
 from urllib.request import urlretrieve
+import urllib.error
 
 from heliopy import config
 import heliopy.data.util as util
@@ -186,5 +187,9 @@ def get_kernel(name):
             os.makedirs(spice_dir)
         if not os.path.exists(local_loc):
             print('Downloading {}'.format(url))
-            urlretrieve(url, local_loc, reporthook=util._reporthook)
+            try:
+                urlretrieve(url, local_loc, reporthook=util._reporthook)
+            except urllib.error.HTTPError as err:
+                print('Failed to download {}'.format(url))
+                raise err
     return locs
