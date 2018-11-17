@@ -1,6 +1,6 @@
 -r base.txt
 
-cdflib
+cdflib<=0.3.5
 pandas
 requests
 sunpy<=0.9.0
