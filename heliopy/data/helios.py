@@ -1161,7 +1161,10 @@ def mag_ness(probe, starttime, endtime, try_download=True):
         remote_url = remote_base_url + str(directory)
         local_dir = local_base_dir / directory
         filename = fname + extension
-        util._download_remote(remote_url, filename, local_dir)
+        try:
+            util._download_remote(remote_url, filename, local_dir)
+        except URLError:
+            raise util.NoDataError
 
     def processing_func(f):
         # Read in data

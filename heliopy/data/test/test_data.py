@@ -357,7 +357,10 @@ class TestHelios:
             helios.corefit(self.probe, starttime, endtime)
 
     def test_6sec_ness(self):
-        df = helios.mag_ness(self.probe, self.starttime, self.endtime)
+        starttime = datetime(1976, 1, 16)
+        endtime = datetime(1976, 1, 18)
+        probe = '2'
+        df = helios.mag_ness(probe, starttime, endtime)
         check_data_output(df)
 
     def test_mag_4hz(self):
