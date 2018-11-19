@@ -364,7 +364,10 @@ class TestHelios:
         check_data_output(df)
 
     def test_mag_4hz(self):
-        df = helios.mag_4hz(self.probe, self.starttime, self.endtime)
+        starttime = datetime(1976, 1, 16)
+        endtime = datetime(1976, 1, 18)
+        probe = '2'
+        df = helios.mag_4hz(probe, starttime, endtime)
         check_data_output(df)
 
 
