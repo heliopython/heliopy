@@ -150,6 +150,7 @@ def merged(probe, starttime, endtime, try_download=True):
                         pd.to_timedelta(data['Minute'], unit='m'))
         data = data.drop(['Year', 'doy', 'Hour', 'Minute', 'FCm', 'DWm'],
                          axis=1)
+        data = data.set_index('Time', drop=True)
         return data
 
     return util.process(dirs, fnames, extension, local_base_dir,

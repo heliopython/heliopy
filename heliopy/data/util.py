@@ -129,6 +129,7 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
         local_dir = local_base_dir / directory
         local_file = local_dir / fname
 
+        # Try to load hdf file
         hdf_fname = _file_match(local_dir, fname + '.hdf')
         if hdf_fname is not None:
             hdf_file_path = local_dir / hdf_fname
@@ -137,6 +138,7 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
             data.append(pd.read_hdf(hdf_file_path))
             continue
 
+        # Try to load raw file
         raw_fname = _file_match(local_dir, fname + extension)
         if raw_fname is not None:
             raw_file_path = local_dir / raw_fname
@@ -146,10 +148,6 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
             if df is not None:
                 data.append(df)
                 continue
-
-        local_file = local_base_dir / directory / fname
-        # Fist try to load local HDF file
-        hdf_file = local_file.with_suffix('.hdf')
 
         # If we can't find local file, try downloading
         if try_download:
