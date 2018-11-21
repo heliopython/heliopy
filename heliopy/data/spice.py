@@ -121,8 +121,13 @@ spacecraft_kernels = [_Kernel('Solar Orbiter 2020', 'solo_2020',
                                'https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/epm/ahead/ahead_2017_061_5295day_predict.epm.bsp'],
                               ''),
                       _Kernel('Ulysses', 'ulysses',
-                              'https://naif.jpl.nasa.gov/pub/naif/ULYSSES/kernels/spk/ulysses_1990_2009_2050.bsp',
-                              'https://naif.jpl.nasa.gov/pub/naif/ULYSSES/kernels/spk/ulysses_1990_2009_2050.cmt')]
+                              ['https://naif.jpl.nasa.gov/pub/naif/ULYSSES/kernels/spk/ulysses_1990_2009_2050.bsp',
+                               'https://naif.jpl.nasa.gov/pub/naif/ULYSSES/kernels/spk/ulysses_1990_2009_2050.cmt']),
+                      _Kernel('Parker Solar Probe', 'psp',
+                              ['https://sppgway.jhuapl.edu/MOC/reconstructed_ephemeris/2018/spp_recon_20180812_20181008_v001.bsp',
+                               'https://sppgway.jhuapl.edu/MOC/ephemeris_predict/2018/spp_pred_20181003_20190401_od035_v001.bsp',
+                               'https://sppgway.jhuapl.edu/MOC/ephemeris//spp_nom_20180812_20250831_v034_RO1_TCM1.bsp'
+                               ])]
 
 kernel_dict = {}
 for kernel in generic_kernels + spacecraft_kernels:

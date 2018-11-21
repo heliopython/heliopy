@@ -5,6 +5,7 @@ Version 0.6.3
 New features
 ^^^^^^^^^^^^
 
+- Added Parker Solar Probe spice kernels to :mod:`heliopy.data.spice`.
 Bug fixes
 ^^^^^^^^^
 
