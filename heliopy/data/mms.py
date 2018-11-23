@@ -8,9 +8,7 @@ is at https://lasp.colorado.edu/mms/sdc/public/.
 from datetime import datetime
 import numpy as np
 import pandas as pd
-import os
 import pathlib as path
-import urllib
 from collections import OrderedDict
 import astropy.units as u
 import requests
@@ -120,7 +118,6 @@ def fpi_dis_moms(probe, mode, starttime, endtime):
     dirs = []
     fnames = []
     daylist = util._daysplitinterval(starttime, endtime)
-    data = []
     units = OrderedDict([('mms{}_dis_errorflags_fast'.format(probe),
                           u.dimensionless_unscaled),
                          ('mms{}_dis_startdelphi_count_fast'.format(probe),

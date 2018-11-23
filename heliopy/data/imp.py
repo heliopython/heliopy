@@ -233,7 +233,6 @@ def mag320ms(probe, starttime, endtime, try_download=True):
         data : :class:`~sunpy.timeseries.TimeSeries`
             Requested data.
     """
-    data = []
     fnames = []
     dirs = []
     extension = '.cdf'
@@ -292,7 +291,6 @@ def mag15s(probe, starttime, endtime, verbose=False, try_download=True):
         data : :class:`~sunpy.timeseries.TimeSeries`
             Requested data.
     """
-    data = []
     fnames = []
     dirs = []
     extension = '.asc'
@@ -337,7 +335,6 @@ def mag15s(probe, starttime, endtime, verbose=False, try_download=True):
         local_dir = local_base_dir / directory
         util._download_remote(remote_url, filename, local_dir)
 
-    remote_url = imp_url + relative_loc
 
     # Read in data
     def processing_func(f):

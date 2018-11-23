@@ -174,7 +174,6 @@ def threedp_sfpd(starttime, endtime):
     # Directory relative to main WIND data directory
     relative_dir = path.Path('3dp') / '3dp_sfpd'
     daylist = util._daysplitinterval(starttime, endtime)
-    data = []
     fnames = []
     dirs = []
     units = OrderedDict([('Energy', u.eV),
@@ -203,7 +202,6 @@ def threedp_sfpd(starttime, endtime):
         for non_empty_var in list(cdf.cdf_info().keys()):
             if 'variable' in non_empty_var.lower():
                 if len(cdf.cdf_info()[non_empty_var]) > 0:
-                    var_list = non_empty_var
                     break
 
         index_ = cdf.varget('Epoch')[...]

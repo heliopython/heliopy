@@ -5,11 +5,6 @@ All data is publically available at
 ftp://spdf.gsfc.nasa.gov/pub/data/dscovr/.
 """
 import pathlib as path
-import os
-import pandas as pd
-import astropy.units as u
-import datetime as dt
-from collections import OrderedDict
 
 from heliopy.data import util
 from heliopy import config
@@ -52,8 +47,6 @@ def mag_h0(starttime, endtime):
     def download_func(remote_base_url, local_base_dir,
                       directory, fname, remote_fname, extension):
             remote_url = remote_base_url + str(directory)
-            filename = fname + extension
-            local_dir = local_base_dir / directory
             util.load(fname + extension,
                       local_base_dir / directory,
                       remote_url)

@@ -6,13 +6,11 @@ The ACE spacecraft homepage can be found at http://www.srl.caltech.edu/ACE/.
 """
 from collections import OrderedDict
 import pathlib as path
-import re
 
 import astropy.units as u
 import pandas as pd
 
 from heliopy import config
-from heliopy.data import util
 from heliopy.data import cdasrest
 
 data_dir = path.Path(config['download_dir'])

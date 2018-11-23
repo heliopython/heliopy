@@ -93,7 +93,6 @@ class Trajectory:
         # Spice needs a funny set of times
         fmt = '%Y %b %d, %H:%M:%S'
         spice_times = [spiceypy.str2et(time.strftime(fmt)) for time in times]
-        observing_body = observing_body
         # 'None' specifies no light-travel time correction
         positions, lightTimes = spiceypy.spkpos(
             self.target, spice_times, frame, 'None', observing_body)
