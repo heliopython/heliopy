@@ -27,11 +27,11 @@ dl_url = mms_url + '/files/api/v1/download/science'
 
 def _validate_instrument(instrument):
     allowed_instruments = ['afg', 'aspoc', 'dfg', 'dsp', 'edi',
-                           'edp', 'fields', 'scm', 'sdp']
+                           'edp', 'fpi', 'fields', 'scm', 'sdp', ]
     if instrument not in allowed_instruments:
         raise ValueError(
             'Instrument {} not in list of allowed instruments: {}'.format(
-                instrument, allowed_instrument))
+                instrument, allowed_instruments))
 
 
 def _validate_probe(probe):
@@ -45,14 +45,14 @@ def _validate_probe(probe):
 
 
 def _validate_data_rate(data_rate):
-    allowed_rates = ['slow', 'fast', 'brst', 'srvy']
+    allowed_rates = ['slow', 'fast', 'brst', 'srvy', '']
     if data_rate not in allowed_rates:
         raise ValueError(
             'Data rate {} not in list of allowed data rates: {}'.format(
                 data_rate, allowed_rates))
 
 
-def mms_available_files(probe, instrument, data_rate, starttime, endtime):
+def available_files(probe, instrument, starttime, endtime, data_rate=''):
     """
     Get available MMS files as a list.
 
@@ -67,12 +67,12 @@ def mms_available_files(probe, instrument, data_rate, starttime, endtime):
     instrument : str
         MMS instrument. Must be in ``['afg', 'aspoc', 'dfg', 'dsp', 'edi',
         'edp', 'fields', 'scm', 'sdp']``
-    data_rate : str
-        Data rate. Must be in ``['slow', 'fast', 'brst', 'srvy']``
     starttime : datetime
         Start time.
     endtime : datetime
         End time.
+    data_rate : str, optional
+        Data rate. Must be in ``['slow', 'fast', 'brst', 'srvy']``
 
     Returns
     -------
@@ -88,7 +88,8 @@ def mms_available_files(probe, instrument, data_rate, starttime, endtime):
     query = {}
     query['sc_id'] = 'mms' + probe
     query['instrument_id'] = instrument
-    query['data_rate_mode'] = data_rate
+    if len(data_rate):
+        query['data_rate_mode'] = data_rate
     query['start_date'] = start_date
     query['end_date'] = end_date
 
@@ -98,7 +99,7 @@ def mms_available_files(probe, instrument, data_rate, starttime, endtime):
 
 
 def download_files(probe, instrument, data_rate, starttime, endtime,
-                   verbose=True):
+                   verbose=True, product_string=''):
     """
     Get available MMS files as a list.
 
@@ -121,6 +122,9 @@ def download_files(probe, instrument, data_rate, starttime, endtime,
         End time.
     verbose : bool, optional
         If ``True``, show a progress bar while downloading.
+    product_string : str, optional
+        If not empty, this string has to be in the filename for it to be
+        downloaded.
 
     Returns
     -------
@@ -129,19 +133,19 @@ def download_files(probe, instrument, data_rate, starttime, endtime,
     """
     _validate_instrument(instrument)
     probe = _validate_probe(probe)
-    _validate_data_rate(data_rate)
 
     dirs = []
     fnames = []
     daylist = util._daysplitinterval(starttime, endtime)
     for date, stime, etime in daylist:
-        files = mms_available_files(probe, instrument, data_rate,
-                                    starttime, endtime)
+        files = available_files(probe, instrument,
+                                starttime, endtime, data_rate)
         # TODO: make files a proper list
         dirs.append('')
         for file in files:
             fname = pathlib.Path(file).stem
-            fnames.append(fname)
+            if product_string in fname:
+                fnames.append(fname)
 
     extension = '.cdf'
     local_base_dir = mms_dir / probe / instrument / data_rate
@@ -181,56 +185,8 @@ def fpi_dis_moms(probe, mode, starttime, endtime):
     data : :class:`~sunpy.timeseries.TimeSeries`
         Imported data.
     """
-    valid_modes = ['fast', 'brst']
-    if mode not in valid_modes:
-        raise RuntimeError('Mode must be either fast or brst')
-    # Directory relative to main MMS data directory
-    relative_dir = pathlib.Path('mms' + probe) / 'fpi' / mode / 'l2' / 'dis-moms'
-    dirs = []
-    fnames = []
-    daylist = util._daysplitinterval(starttime, endtime)
-    units = OrderedDict([('mms{}_dis_errorflags_fast'.format(probe),
-                          u.dimensionless_unscaled),
-                         ('mms{}_dis_startdelphi_count_fast'.format(probe),
-                          u.dimensionless_unscaled)])
-
-    extension = '.cdf'
-
-    for day in daylist:
-        date = day[0]
-        starthour = day[1].hour
-        endhour = day[2].hour + 1
-        # fips fast data product has files every two hours, so get nearest two
-        # hour stamps
-        starthour -= np.mod(starthour, 2)
-        endhour += np.mod(endhour, 2)
-        for h in range(starthour, endhour, 2):
-            this_relative_dir = (relative_dir /
-                                 str(date.year) /
-                                 str(date.month).zfill(2))
-            filename = ('mms{}_fpi_{}_l2_dis-moms_'
-                        '{}{:02}{:02}{:02}0000_v3.3.0').format(
-                            probe, mode, date.year, date.month, date.day, h)
-            fnames.append(filename)
-            dirs.append(this_relative_dir)
-
-    remote_base_url = remote_mms_dir
-    local_base_dir = mms_dir
-
-    def download_func(remote_base_url, local_base_dir, directory,
-                      fname, remote_fname, extension):
-        remote_url = remote_base_url + str(directory)
-        util.load(fname + extension,
-                  local_base_dir / directory,
-                  remote_url)
-
-    def processing_func(cdf):
-        df = util.cdf2df(cdf, 'Epoch')
-        return df
-
-    return util.process(dirs, fnames, extension, local_base_dir,
-                        remote_base_url, download_func, processing_func,
-                        starttime, endtime, units=units)
+    return download_files(probe, 'fpi', mode, starttime, endtime,
+                          product_string='dis-moms')
 
 
 def fpi_des_moms(probe, mode, starttime, endtime):
@@ -253,58 +209,8 @@ def fpi_des_moms(probe, mode, starttime, endtime):
     data : :class:`~sunpy.timeseries.TimeSeries`
         Imported data.
     """
-    valid_modes = ['fast', 'brst']
-    if mode not in valid_modes:
-        raise RuntimeError('Mode must be either fast or brst')
-    # Directory relative to main MMS data directory
-    relative_dir = pathlib.Path('mms' + probe) / 'fpi' / mode / 'l2' / 'des-moms'
-    dirs = []
-    fnames = []
-    daylist = util._daysplitinterval(starttime, endtime)
-    data = []
-    units = OrderedDict([('mms{}_des_errorflags_fast'.format(probe),
-                          u.dimensionless_unscaled),
-                         ('mms{}_des_startdelphi_count_fast'.format(probe),
-                          u.dimensionless_unscaled)])
-
-    extension = '.cdf'
-
-    for day in daylist:
-        date = day[0]
-        starthour = day[1].hour
-        endhour = day[2].hour + 1
-        # fips fast data product has files every two hours, so get nearest two
-        # hour stamps
-        starthour -= np.mod(starthour, 2)
-        endhour += np.mod(endhour, 2)
-        for h in range(starthour, endhour, 2):
-            this_relative_dir = (relative_dir /
-                                 str(date.year) /
-                                 str(date.month).zfill(2))
-            filename = ('mms{}_fpi_{}_l2_des-moms_'
-                        '{}{:02}{:02}{:02}0000_v3.3.0').format(
-                            probe, mode, date.year, date.month, date.day, h)
-            fnames.append(filename)
-            dirs.append(this_relative_dir)
-
-    remote_base_url = remote_mms_dir
-    local_base_dir = mms_dir
-
-    def download_func(remote_base_url, local_base_dir, directory,
-                      fname, remote_fname, extension):
-        remote_url = remote_base_url + str(directory)
-        util.load(fname + extension,
-                  local_base_dir / directory,
-                  remote_url)
-
-    def processing_func(cdf):
-        probestr = 'mms' + probe + '_'
-        df = util.cdf2df(cdf, 'Epoch')
-        return df
-
-    return util.process(dirs, fnames, extension, local_base_dir,
-                        remote_base_url, download_func, processing_func,
-                        starttime, endtime, units=units)
+    return download_files(probe, 'fpi', mode, starttime, endtime,
+                          product_string='des-moms')
 
 
 def fgm_survey(probe, starttime, endtime):
