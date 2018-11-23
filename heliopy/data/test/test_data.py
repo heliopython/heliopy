@@ -329,6 +329,15 @@ class TestMMS:
         df = mms.fpi_des_moms(self.probe, 'fast', self.starttime, self.endtime)
         check_data_output(df)
 
+    def test_get_files(self):
+        probe = '1'
+        instrument = 'scm'
+        data_rate = 'srvy'
+
+        out = mms.mms_available_files(probe, instrument, data_rate,
+                                      self.starttime, self.endtime)
+        assert len(out) == 1
+
 
 @pytest.mark.data
 class TestHelios:
