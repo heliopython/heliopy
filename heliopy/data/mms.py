@@ -20,8 +20,9 @@ from heliopy import config
 
 data_dir = path.Path(config['download_dir'])
 mms_dir = data_dir / 'mms'
-remote_mms_dir = 'https://lasp.colorado.edu/mms/sdc/public/data/'
-query_url = 'https://lasp.colorado.edu/mms/sdc/public/files/api/v1/file_names/science'
+mms_url = 'https://lasp.colorado.edu/mms/sdc/public'
+remote_mms_dir = mms_url + '/data/'
+query_url = mms_url + '/files/api/v1/file_names/science'
 
 
 def _validate_instrument(instrument):
