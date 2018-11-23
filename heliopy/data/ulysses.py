@@ -192,7 +192,6 @@ def fgm_hires(starttime, endtime, try_download=True):
     data : :class:`~sunpy.timeseries.TimeSeries`
         Requested data
     """
-    data = []
     dtimes = util._daysplitinterval(starttime, endtime)
     dirs = []
     fnames = []
