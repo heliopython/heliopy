@@ -8,15 +8,16 @@ is at https://lasp.colorado.edu/mms/sdc/public/.
 from datetime import datetime
 import numpy as np
 import pandas as pd
-import pathlib as path
+import pathlib
 from collections import OrderedDict
 import astropy.units as u
 import requests
+import wget
 
 from heliopy.data import util
 from heliopy import config
 
-data_dir = path.Path(config['download_dir'])
+data_dir = pathlib.Path(config['download_dir'])
 mms_dir = data_dir / 'mms'
 mms_url = 'https://lasp.colorado.edu/mms/sdc/public'
 remote_mms_dir = mms_url + '/data/'
@@ -96,7 +97,36 @@ def mms_available_files(probe, instrument, data_rate, starttime, endtime):
     return files
 
 
-def download_files(probe, instrument, data_rate, starttime, endtime):
+def download_files(probe, instrument, data_rate, starttime, endtime,
+                   verbose=True):
+    """
+    Get available MMS files as a list.
+
+    See the "Query paramters" section of
+    https://lasp.colorado.edu/mms/sdc/public/about/how-to/ for more information
+    on the query paramters.
+
+    Parameters
+    ----------
+    probe : int or str
+        MMS probe number. Must be in 1-4 inclusive.
+    instrument : str
+        MMS instrument. Must be in ``['afg', 'aspoc', 'dfg', 'dsp', 'edi',
+        'edp', 'fields', 'scm', 'sdp']``
+    data_rate : str
+        Data rate. Must be in ``['slow', 'fast', 'brst', 'srvy']``
+    starttime : datetime
+        Start time.
+    endtime : datetime
+        End time.
+    verbose : bool, optional
+        If ``True``, show a progress bar while downloading.
+
+    Returns
+    -------
+    df : TimeSeries
+        Requested data.
+    """
     _validate_instrument(instrument)
     probe = _validate_probe(probe)
     _validate_data_rate(data_rate)
@@ -109,7 +139,9 @@ def download_files(probe, instrument, data_rate, starttime, endtime):
                                     starttime, endtime)
         # TODO: make files a proper list
         dirs.append('')
-        fnames.append(files[0])
+        for file in files:
+            fname = pathlib.Path(file).stem
+            fnames.append(fname)
 
     extension = '.cdf'
     local_base_dir = mms_dir / probe / instrument / data_rate
@@ -117,7 +149,9 @@ def download_files(probe, instrument, data_rate, starttime, endtime):
 
     def download_func(remote_base_url, local_base_dir,
                       directory, fname, remote_fname, extension):
-            requests.get(remote_base_url, params={file: fname})
+            url = remote_base_url + '?file=' + fname + extension
+            wget.download(url, str(local_base_dir),
+                          bar=wget.bar_adaptive if verbose else None)
 
     def processing_func(cdf):
         return util.cdf2df(cdf, index_key='Epoch')
@@ -151,7 +185,7 @@ def fpi_dis_moms(probe, mode, starttime, endtime):
     if mode not in valid_modes:
         raise RuntimeError('Mode must be either fast or brst')
     # Directory relative to main MMS data directory
-    relative_dir = path.Path('mms' + probe) / 'fpi' / mode / 'l2' / 'dis-moms'
+    relative_dir = pathlib.Path('mms' + probe) / 'fpi' / mode / 'l2' / 'dis-moms'
     dirs = []
     fnames = []
     daylist = util._daysplitinterval(starttime, endtime)
@@ -223,7 +257,7 @@ def fpi_des_moms(probe, mode, starttime, endtime):
     if mode not in valid_modes:
         raise RuntimeError('Mode must be either fast or brst')
     # Directory relative to main MMS data directory
-    relative_dir = path.Path('mms' + probe) / 'fpi' / mode / 'l2' / 'des-moms'
+    relative_dir = pathlib.Path('mms' + probe) / 'fpi' / mode / 'l2' / 'des-moms'
     dirs = []
     fnames = []
     daylist = util._daysplitinterval(starttime, endtime)
@@ -293,7 +327,7 @@ def fgm_survey(probe, starttime, endtime):
     """
 
     # Directory relative to main MMS data directory
-    relative_dir = path.Path('mms' + probe) / 'fgm' / 'srvy' / 'l2'
+    relative_dir = pathlib.Path('mms' + probe) / 'fgm' / 'srvy' / 'l2'
     daylist = util._daysplitinterval(starttime, endtime)
     dirs = []
     fnames = []
