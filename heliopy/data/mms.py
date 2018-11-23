@@ -27,7 +27,7 @@ dl_url = mms_url + '/files/api/v1/download/science'
 
 def _validate_instrument(instrument):
     allowed_instruments = ['afg', 'aspoc', 'dfg', 'dsp', 'edi',
-                           'edp', 'fpi', 'fields', 'scm', 'sdp', ]
+                           'edp', 'fgm', 'fpi', 'fields', 'scm', 'sdp', ]
     if instrument not in allowed_instruments:
         raise ValueError(
             'Instrument {} not in list of allowed instruments: {}'.format(
@@ -140,11 +140,10 @@ def download_files(probe, instrument, data_rate, starttime, endtime,
     for date, stime, etime in daylist:
         files = available_files(probe, instrument,
                                 starttime, endtime, data_rate)
-        # TODO: make files a proper list
         dirs.append('')
         for file in files:
             fname = pathlib.Path(file).stem
-            if product_string in fname:
+            if product_string in fname and len(fname):
                 fnames.append(fname)
 
     extension = '.cdf'
@@ -213,7 +212,7 @@ def fpi_des_moms(probe, mode, starttime, endtime):
                           product_string='des-moms')
 
 
-def fgm_survey(probe, starttime, endtime):
+def fgm(probe, mode, starttime, endtime):
     """
     Import fgm survey mode magnetic field data.
 
@@ -221,6 +220,8 @@ def fgm_survey(probe, starttime, endtime):
     ----------
     probe : string
         Probe number, must be 1, 2, 3, or 4
+    mode : str
+        Data rate.
     starttime : datetime
         Interval start time.
     endtime : datetime
@@ -231,57 +232,4 @@ def fgm_survey(probe, starttime, endtime):
     data : :class:`~sunpy.timeseries.TimeSeries`
         Imported data.
     """
-
-    # Directory relative to main MMS data directory
-    relative_dir = pathlib.Path('mms' + probe) / 'fgm' / 'srvy' / 'l2'
-    daylist = util._daysplitinterval(starttime, endtime)
-    dirs = []
-    fnames = []
-    # don't need so much string munging since we're asking SDC for things
-    extension = '.cdf'
-    units = OrderedDict([('mms{}_fgm_mode_srvy_l2'.format(probe),
-                          u.dimensionless_unscaled)])
-
-    data = []
-    for day in daylist:
-        date = day[0]
-        this_relative_dir = (relative_dir /
-                             str(date.year) /
-                             str(date.month).zfill(2))
-
-        # Don't try to request specific versions like this - use the
-        # API to grab the most recent file.  The SDC weeps when you
-        # expect it to hold old file versions past their prime
-        datestring = '{}-{:02}-{:02}'.format(date.year, date.month, date.day)
-        datacenter = 'https://lasp.colorado.edu/mms/sdc/public'
-        query_base = '/files/api/v1/file_info/science?'
-        sdc_req_url = datacenter + query_base
-        sdc_date_opts = 'start_date='+datestring+'&end_date='+datestring
-        sdc_inst_opts = '&sc_id=mms'+probe+'&instrument_id=fgm'
-        sdc_data_opts = '&data_rate_mode=srvy&data_level=l2'
-        sdc_opts = sdc_date_opts + sdc_inst_opts + sdc_data_opts
-        sdc_fgm_srvy = requests.get(sdc_req_url + sdc_opts)
-        filename = sdc_fgm_srvy.json()['files'][0]['file_name']
-
-        filename = filename[:-4]
-
-        fnames.append(filename)
-        dirs.append(this_relative_dir)
-
-    remote_base_url = remote_mms_dir
-    local_base_dir = mms_dir
-
-    def download_func(remote_base_url, local_base_dir, directory,
-                      fname, remote_fname, extension):
-        remote_url = remote_base_url + str(directory)
-        util.load(fname + extension,
-                  local_base_dir / directory,
-                  remote_url)
-
-    def processing_func(cdf):
-        df = util.cdf2df(cdf, 'Epoch')
-        return df
-
-    return util.process(dirs, fnames, extension, local_base_dir,
-                        remote_base_url, download_func, processing_func,
-                        starttime, endtime, units=units)
+    return download_files(probe, 'fgm', mode, starttime, endtime)

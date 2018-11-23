@@ -317,8 +317,8 @@ class TestMMS:
         self.endtime = datetime(2016, 1, 2, 1, 0, 0)
         self.probe = '1'
 
-    def test_fgm_survey(self):
-        df = mms.fgm_survey(self.probe, self.starttime, self.endtime)
+    def test_fgm(self):
+        df = mms.fgm(self.probe, 'srvy', self.starttime, self.endtime)
         check_data_output(df)
 
     def test_fpi_dis_moms(self):
@@ -327,15 +327,6 @@ class TestMMS:
 
     def test_fpi_des_moms(self):
         df = mms.fpi_des_moms(self.probe, 'fast', self.starttime, self.endtime)
-        check_data_output(df)
-
-    def test_get_files(self):
-        probe = '1'
-        instrument = 'scm'
-        data_rate = 'srvy'
-
-        df = mms.download_files(probe, instrument, data_rate,
-                                self.starttime, self.endtime)
         check_data_output(df)
 
 
