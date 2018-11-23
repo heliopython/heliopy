@@ -2,12 +2,11 @@ sudo: false
 language: python
 cache: pip
 
-env:
-  - PYTHON_VERSION=3.6
-  - PYTHON_VERSION=3.7
-  - PYTHON_VERSION=3.7, PRE=--pre
-
-allow_failures:
+matrix:
+  env:
+    - PYTHON_VERSION=3.6
+    - PYTHON_VERSION=3.7
+  allow_failures:
     env: PYTHON_VERSION=3.7, PRE=--pre
 
 before_install:
