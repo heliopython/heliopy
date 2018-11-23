@@ -21,6 +21,7 @@ mms_dir = data_dir / 'mms'
 mms_url = 'https://lasp.colorado.edu/mms/sdc/public'
 remote_mms_dir = mms_url + '/data/'
 query_url = mms_url + '/files/api/v1/file_names/science'
+dl_url = mms_url + '/files/api/v1/download/science'
 
 
 def _validate_instrument(instrument):
@@ -71,6 +72,11 @@ def mms_available_files(probe, instrument, data_rate, starttime, endtime):
         Start time.
     endtime : datetime
         End time.
+
+    Returns
+    -------
+    list
+        List of file names.
     """
     _validate_instrument(instrument)
     probe = _validate_probe(probe)
@@ -88,6 +94,37 @@ def mms_available_files(probe, instrument, data_rate, starttime, endtime):
     r = requests.get(query_url, params=query)
     files = r.text.split(',')
     return files
+
+
+def download_files(probe, instrument, data_rate, starttime, endtime):
+    _validate_instrument(instrument)
+    probe = _validate_probe(probe)
+    _validate_data_rate(data_rate)
+
+    dirs = []
+    fnames = []
+    daylist = util._daysplitinterval(starttime, endtime)
+    for date, stime, etime in daylist:
+        files = mms_available_files(probe, instrument, data_rate,
+                                    starttime, endtime)
+        # TODO: make files a proper list
+        dirs.append('')
+        fnames.append(files[0])
+
+    extension = '.cdf'
+    local_base_dir = mms_dir / probe / instrument / data_rate
+    remote_base_url = dl_url
+
+    def download_func(remote_base_url, local_base_dir,
+                      directory, fname, remote_fname, extension):
+            requests.get(remote_base_url, params={file: fname})
+
+    def processing_func(cdf):
+        return util.cdf2df(cdf, index_key='Epoch')
+
+    return util.process(dirs, fnames, extension, local_base_dir,
+                        remote_base_url, download_func, processing_func,
+                        starttime, endtime)
 
 
 def fpi_dis_moms(probe, mode, starttime, endtime):
@@ -154,7 +191,6 @@ def fpi_dis_moms(probe, mode, starttime, endtime):
                   remote_url)
 
     def processing_func(cdf):
-        probestr = 'mms' + probe + '_'
         df = util.cdf2df(cdf, 'Epoch')
         return df
 

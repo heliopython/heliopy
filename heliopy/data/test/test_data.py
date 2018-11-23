@@ -334,9 +334,9 @@ class TestMMS:
         instrument = 'scm'
         data_rate = 'srvy'
 
-        out = mms.mms_available_files(probe, instrument, data_rate,
-                                      self.starttime, self.endtime)
-        assert len(out) == 1
+        df = mms.download_files(probe, instrument, data_rate,
+                                self.starttime, self.endtime)
+        check_data_output(df)
 
 
 @pytest.mark.data
