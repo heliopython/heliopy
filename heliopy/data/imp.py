@@ -335,7 +335,6 @@ def mag15s(probe, starttime, endtime, verbose=False, try_download=True):
         local_dir = local_base_dir / directory
         util._download_remote(remote_url, filename, local_dir)
 
-
     # Read in data
     def processing_func(f):
         readargs = {'names': ['Year', 'doy', 'Second', 'Source flag',
