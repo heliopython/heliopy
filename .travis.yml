@@ -6,11 +6,11 @@ cache: pip
 env:
   - PYTHON_VERSION=3.6
   - PYTHON_VERSION=3.7
-  - PYTHON_VERSION=3.7, PRE=--pre
+  - PYTHON_VERSION=3.7 PRE=--pre
 
 matrix:
   allow_failures:
-    env: PYTHON_VERSION=3.7, PRE=--pre
+    env: PYTHON_VERSION=3.7 PRE=--pre
 
 before_install:
 # Install conda
