@@ -3,14 +3,13 @@ language: python
 cache: pip
 
 
-env:
-  - PYTHON_VERSION=3.6
-  - PYTHON_VERSION=3.7
-  - PYTHON_VERSION=3.7 PRE=--pre
-
 matrix:
+  include:
+    - env: PYTHON_VERSION=3.6
+    - env: PYTHON_VERSION=3.7
+    - env: PYTHON_VERSION=3.7 PRE=--pre
   allow_failures:
-    env: PYTHON_VERSION=3.7 PRE=--pre
+    - env: PRE=--pre
 
 before_install:
 # Install conda
