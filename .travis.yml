@@ -13,7 +13,7 @@ matrix:
 
 before_install:
 # Install conda
-- wget http://repo.continuum.io/miniconda/Miniconda-latest-LPYTHON_VERSION=3.7 PRE=--preinux-x86_64.sh -O miniconda.sh
+- wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
 - chmod +x miniconda.sh
 - "./miniconda.sh -b -p $HOME/miniconda"
 - export PATH="$HOME/miniconda/bin:$PATH"
