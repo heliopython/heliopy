@@ -3,6 +3,6 @@
 cdflib<=0.3.5
 pandas
 requests
-sunpy<=0.9.0
+sunpy
 spiceypy
 wget
