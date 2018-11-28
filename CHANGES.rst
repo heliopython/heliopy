@@ -15,6 +15,13 @@ Bug fixes
 
 - Updated links to the STEREO-A spice kernels.
 
+Backwards incompatible changes
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+- :meth:`heliopy.data.mms.fgm_survey` has been removed in favour of the more
+  general :meth:`heliopy.data.mms.fgm`. To download survey mode FGM data use
+  the new method and set the ``mode`` keyword argument to ``srvy``.
+
 Version 0.6.2
 -------------
 
