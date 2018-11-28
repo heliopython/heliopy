@@ -6,6 +6,9 @@ New features
 ^^^^^^^^^^^^
 
 - Added Parker Solar Probe spice kernels to :mod:`heliopy.data.spice`.
+- Added a generic functions to download MMS data. Available files can be
+  queried using :meth:`heliopy.data.mms.available_files`, and files can be
+  downloaded using :meth:`heliopy.data.mms.download_files`
 
 Bug fixes
 ^^^^^^^^^
