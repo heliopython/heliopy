@@ -195,6 +195,9 @@ def fpi_des_moms(probe, mode, starttime, endtime):
                           product_string='des-moms')
 
 
+fpi_des_moms.__doc__ = _fpi_docstring('electron distribution moment')
+
+
 def fgm(probe, mode, starttime, endtime):
     """
     Import fgm survey mode magnetic field data.
