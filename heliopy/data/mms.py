@@ -198,6 +198,22 @@ def fpi_des_moms(probe, mode, starttime, endtime):
 fpi_des_moms.__doc__ = _fpi_docstring('electron distribution moment')
 
 
+def fpi_dis_dist(probe, mode, starttime, endtime):
+    return download_files(probe, 'fpi', mode, starttime, endtime,
+                          product_string='dis-dist')
+
+
+fpi_dis_dist.__doc__ = _fpi_docstring('ion distribution function')
+
+
+def fpi_des_dist(probe, mode, starttime, endtime):
+    return download_files(probe, 'fpi', mode, starttime, endtime,
+                          product_string='des-dist')
+
+
+fpi_des_dist.__doc__ = _fpi_docstring('electron distribution function')
+
+
 def fgm(probe, mode, starttime, endtime):
     """
     Import fgm survey mode magnetic field data.
