@@ -30,7 +30,6 @@ Module documentation
    data/index
    coords
    spice
-   cdflib
 
 Development
 ===========
