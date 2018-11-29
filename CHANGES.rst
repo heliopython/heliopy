@@ -6,11 +6,21 @@ New features
 ^^^^^^^^^^^^
 
 - Added Parker Solar Probe spice kernels to :mod:`heliopy.data.spice`.
+- Added a generic functions to download MMS data. Available files can be
+  queried using :meth:`heliopy.data.mms.available_files`, and files can be
+  downloaded using :meth:`heliopy.data.mms.download_files`
 
 Bug fixes
 ^^^^^^^^^
 
 - Updated links to the STEREO-A spice kernels.
+
+Backwards incompatible changes
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+- :meth:`heliopy.data.mms.fgm_survey` has been removed in favour of the more
+  general :meth:`heliopy.data.mms.fgm`. To download survey mode FGM data use
+  the new method and set the ``mode`` keyword argument to ``srvy``.
 
 Version 0.6.2
 -------------

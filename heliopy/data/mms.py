@@ -67,9 +67,9 @@ def available_files(probe, instrument, starttime, endtime, data_rate=''):
     instrument : str
         MMS instrument. Must be in ``['afg', 'aspoc', 'dfg', 'dsp', 'edi',
         'edp', 'fields', 'scm', 'sdp']``
-    starttime : datetime
+    starttime : ~datetime.datetime
         Start time.
-    endtime : datetime
+    endtime : ~datetime.datetime
         End time.
     data_rate : str, optional
         Data rate. Must be in ``['slow', 'fast', 'brst', 'srvy']``
@@ -101,11 +101,7 @@ def available_files(probe, instrument, starttime, endtime, data_rate=''):
 def download_files(probe, instrument, data_rate, starttime, endtime,
                    verbose=True, product_string=''):
     """
-    Get available MMS files as a list.
-
-    See the "Query paramters" section of
-    https://lasp.colorado.edu/mms/sdc/public/about/how-to/ for more information
-    on the query paramters.
+    Download MMS files.
 
     Parameters
     ----------
@@ -116,19 +112,19 @@ def download_files(probe, instrument, data_rate, starttime, endtime,
         'edp', 'fields', 'scm', 'sdp']``
     data_rate : str
         Data rate. Must be in ``['slow', 'fast', 'brst', 'srvy']``
-    starttime : datetime
+    starttime : ~datetime.datetime
         Start time.
-    endtime : datetime
+    endtime : ~datetime.datetime
         End time.
     verbose : bool, optional
         If ``True``, show a progress bar while downloading.
     product_string : str, optional
-        If not empty, this string has to be in the filename for it to be
+        If not empty, this string must be in the filename for it to be
         downloaded.
 
     Returns
     -------
-    df : TimeSeries
+    df : :class:`~sunpy.timeseries.GenericTimeSeries`
         Requested data.
     """
     _validate_instrument(instrument)
@@ -164,52 +160,58 @@ def download_files(probe, instrument, data_rate, starttime, endtime,
                         starttime, endtime)
 
 
+def _fpi_docstring(product):
+    return """
+Import fpi {} data.
+
+Parameters
+----------
+probe : string
+    Probe number, must be 1, 2, 3, or 4
+mode : string
+    Data mode, must be 'fast' or 'brst'
+starttime : datetime
+    Interval start time.
+endtime : datetime
+    Interval end time.
+
+Returns
+-------
+data : :class:`~sunpy.timeseries.TimeSeries`
+    Imported data.
+""".format(product)
+
+
 def fpi_dis_moms(probe, mode, starttime, endtime):
-    """
-    Import fpi ion distribution moment data.
-
-    Parameters
-    ----------
-    probe : string
-        Probe number, must be 1, 2, 3, or 4
-    mode : string
-        Data mode, must be 'fast' or 'brst'
-    starttime : datetime
-        Interval start time.
-    endtime : datetime
-        Interval end time.
-
-    Returns
-    -------
-    data : :class:`~sunpy.timeseries.TimeSeries`
-        Imported data.
-    """
     return download_files(probe, 'fpi', mode, starttime, endtime,
                           product_string='dis-moms')
 
 
+fpi_dis_moms.__doc__ = _fpi_docstring('ion distribution moment')
+
+
 def fpi_des_moms(probe, mode, starttime, endtime):
-    """
-    Import fpi electron distribution moment data.
-
-    Parameters
-    ----------
-    probe : string
-        Probe number, must be 1, 2, 3, or 4
-    mode : string
-        Data mode, must be 'fast' or 'brst'
-    starttime : datetime
-        Interval start time.
-    endtime : datetime
-        Interval end time.
-
-    Returns
-    -------
-    data : :class:`~sunpy.timeseries.TimeSeries`
-        Imported data.
-    """
     return download_files(probe, 'fpi', mode, starttime, endtime,
                           product_string='des-moms')
+
+
+fpi_des_moms.__doc__ = _fpi_docstring('electron distribution moment')
+
+
+def fpi_dis_dist(probe, mode, starttime, endtime):
+    return download_files(probe, 'fpi', mode, starttime, endtime,
+                          product_string='dis-dist')
+
+
+fpi_dis_dist.__doc__ = _fpi_docstring('ion distribution function')
+
+
+def fpi_des_dist(probe, mode, starttime, endtime):
+    return download_files(probe, 'fpi', mode, starttime, endtime,
+                          product_string='des-dist')
+
+
+fpi_des_dist.__doc__ = _fpi_docstring('electron distribution function')
 
 
 def fgm(probe, mode, starttime, endtime):
