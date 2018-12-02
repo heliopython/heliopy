@@ -1,4 +1,19 @@
 
+Version 0.6.4
+-------------
+
+New features
+^^^^^^^^^^^^
+
+- Added the ability for :class:`heliopy.spice.Trajectory` objects to compute
+  and return the body velocity.
+
+Bug fixes
+^^^^^^^^^
+
+Backwards incompatible changes
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 Version 0.6.3
 -------------
 
