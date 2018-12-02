@@ -80,29 +80,34 @@ class Trajectory:
         times : iterable of `datetime`
             An iterable (e.g. a `list`) of `datetime` objects at which the
             positions are calculated.
-        observing_body : str
+        observing_body : str or int
             The observing body. Output position vectors are given relative to
-            the position of this body.
-            See https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/naif_ids.html
+            the position of this body. See
+            https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/naif_ids.html
             for a list of bodies.
         frame : str
-            The coordinate system to return the positions in.
-            See https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/frames.html
+            The coordinate system to return the positions in. See
+            https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/frames.html
             for a list of frames.
         """
         # Spice needs a funny set of times
         fmt = '%Y %b %d, %H:%M:%S'
         spice_times = [spiceypy.str2et(time.strftime(fmt)) for time in times]
         # 'None' specifies no light-travel time correction
-        positions, lightTimes = spiceypy.spkpos(
+        pos_vel, lightTimes = spiceypy.spkezr(
             self.target, spice_times, frame, 'None', observing_body)
-        positions = np.array(positions) * u.km
+        positions = np.array(pos_vel)[:, :3] * u.km
+        velocities = np.array(pos_vel)[:, 3:] * u.km / u.s
 
         self._times = times
         self._positions = positions
+        self._velocities = velocities
         self._x = positions[:, 0]
         self._y = positions[:, 1]
         self._z = positions[:, 2]
+        self._vx = velocities[:, 0]
+        self._vy = velocities[:, 1]
+        self._vz = velocities[:, 2]
         self._generated = True
         self._observing_body = observing_body
 
@@ -148,6 +153,34 @@ class Trajectory:
         Magnitude of position vectors.
         '''
         return np.sqrt(self.x**2 + self.y**2 + self.z**2)
+
+    @property
+    def vx(self):
+        """
+        x component of velocity.
+        """
+        return self._vx
+
+    @property
+    def vy(self):
+        """
+        y component of velocity.
+        """
+        return self._vy
+
+    @property
+    def vz(self):
+        """
+        z component of velocity.
+        """
+        return self._vz
+
+    @property
+    def speed(self):
+        '''
+        Speed (magnitude of velocity vectors).
+        '''
+        return np.sqrt(self.vx**2 + self.vy**2 + self.vz**2)
 
     @property
     def generated(self):

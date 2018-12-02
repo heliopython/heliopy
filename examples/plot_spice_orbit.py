@@ -57,12 +57,15 @@ ax.set_zlim(-1, 1)
 # Plot radial distance and elevation as a function of time
 elevation = np.rad2deg(np.arcsin(psp.z / psp.r))
 
-fig, axs = plt.subplots(2, 1, sharex=True)
+fig, axs = plt.subplots(3, 1, sharex=True)
 axs[0].plot(psp.times, psp.r)
 axs[0].set_ylim(0, 1.1)
 axs[0].set_ylabel('r (AU)')
 
 axs[1].plot(psp.times, elevation)
 axs[1].set_ylabel('Elevation (deg)')
+
+axs[2].plot(orbiter.times, orbiter.speed)
+axs[2].set_ylabel('Speed (km/s)')
 
 plt.show()
