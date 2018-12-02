@@ -65,7 +65,7 @@ axs[0].set_ylabel('r (AU)')
 axs[1].plot(psp.times, elevation)
 axs[1].set_ylabel('Elevation (deg)')
 
-axs[2].plot(orbiter.times, orbiter.speed)
+axs[2].plot(psp.times, psp.speed)
 axs[2].set_ylabel('Speed (km/s)')
 
 plt.show()
