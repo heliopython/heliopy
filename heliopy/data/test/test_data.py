@@ -162,6 +162,14 @@ class TestAce:
     def test_mfi_h0(self):
         df = ace.mfi_h0(self.starttime, self.endtime)
         check_data_output(df)
+        
+    def test_epm_h1(self):
+        df = ace.mfi_h0(self.starttime, self.endtime)
+        check_data_output(df)
+        
+    def test_sis_h1(self):
+        df = ace.mfi_h0(self.starttime, self.endtime)
+        check_data_output(df)
 
     '''
     def test_swi_h4(self):
@@ -204,6 +212,27 @@ class TestAce:
     def test_swi_h6(self):
         df = ace.swi_h6(self.starttime, self.endtime)
         check_data_output(df)
+
+    def test_epm_h1(self):
+        df = ace.mfi_h0(self.starttime, self.endtime)
+        check_data_output(df)
+
+    def test_epm_h2(self):
+        df = ace.mfi_h0(self.starttime, self.endtime)
+        check_data_output(df)
+
+    def test_epm_h3(self):
+        df = ace.mfi_h0(self.starttime, self.endtime)
+        check_data_output(df)
+
+    def test_sis_h1(self):
+        df = ace.mfi_h0(self.starttime, self.endtime)
+        check_data_output(df)
+
+    def test_sis_h2(self):
+        df = ace.mfi_h0(self.starttime, self.endtime)
+        check_data_output(df)
+
     '''
 
 
