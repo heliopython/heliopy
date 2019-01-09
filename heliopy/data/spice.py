@@ -91,8 +91,7 @@ predicted_kernels = [
             'https://issues.cosmos.esa.int/solarorbiterwiki/download/attachments/7274724/solo_ANC_soc-orbit_20200207-20300902_V01.bsp'
             ),
     _Kernel('Parker Solar Probe', 'psp_pred',
-            ['https://sppgway.jhuapl.edu/MOC/ephemeris_predict/2018/spp_pred_20181003_20190401_od035_v001.bsp',
-             'https://sppgway.jhuapl.edu/MOC/ephemeris//spp_nom_20180812_20250831_v034_RO1_TCM1.bsp']
+            ['https://sppgway.jhuapl.edu/MOC/ephemeris//spp_nom_20180812_20250831_v035_RO2.bsp']
             ),
     _Kernel('STEREO-A', 'stereo_a_pred',
             ['https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/epm/ahead/ahead_2017_061_5295day_predict.epm.bsp']
