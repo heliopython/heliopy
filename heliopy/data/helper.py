@@ -210,7 +210,6 @@ def cdf_dict(unit_string):
                         ('ionic charge', ionic_charge),
                         ('#/cm2-ster-eV-sec',
                          1 / (u.cm**2 * u.sr * u.eV * u.s))])
-                        ('ionic charge', ionic_charge),
                          # Note: the MeV/nuc is not consistent unit for astropy
                          ('MeV/nuc', u.MeV), 
                         ('1/(cm**2-s-sr-MeV)', (u.cm**2*u.s*u.sr*u.MeV)**-1),
