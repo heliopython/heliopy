@@ -101,6 +101,14 @@ def swi_h3(starttime, endtime):
 swi_h3.__doc__ = _docstring('AC_H3_SWI', '2-hour composition')
 
 
+def swi_h3b(starttime, endtime):
+    identifier = 'AC_H3_SW2'
+    return _ace(starttime, endtime, identifier)
+    # All variables with missing CDF units are dimensionless
+
+swi_h3b.__doc__ = _docstring('AC_H3_SW2', '2-hour composition (Post 2011-08-23)')
+
+
 def swi_h4(starttime, endtime):
     identifier = 'AC_H4_SWI'
     # All variables with missing CDF units are dimensionless
