@@ -72,10 +72,11 @@ spacecraft_kernels = [_Kernel('Helios 1', 'helios1',
                                'https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/depm/ahead/ahead_2015_076_01.depm.bsp',
                                'https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/depm/ahead/ahead_2015_219_01.depm.bsp',
                                'https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/depm/ahead/ahead_2018_019_01.depm.bsp',
-                               'https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/depm/ahead/ahead_2018_292_01.depm.bsp',
-                               'https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/depm/ahead/ahead_2018_305_01.depm.bsp',
                                'https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/depm/ahead/ahead_2018_316_01.depm.bsp',
-                               'https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/depm/ahead/ahead_2018_333_01.depm.bsp'],
+                               'https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/depm/ahead/ahead_2018_333_01.depm.bsp',
+                               'https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/depm/ahead/ahead_2018_347_01.depm.bsp',
+                               'https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/depm/ahead/ahead_2018_353_01.depm.bsp',
+                               'https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/depm/ahead/ahead_2019_003_01.depm.bsp'],
                               ''),
                       _Kernel('Ulysses', 'ulysses',
                               ['https://naif.jpl.nasa.gov/pub/naif/ULYSSES/kernels/spk/ulysses_1990_2009_2050.bsp',
@@ -90,8 +91,7 @@ predicted_kernels = [
             'https://issues.cosmos.esa.int/solarorbiterwiki/download/attachments/7274724/solo_ANC_soc-orbit_20200207-20300902_V01.bsp'
             ),
     _Kernel('Parker Solar Probe', 'psp_pred',
-            ['https://sppgway.jhuapl.edu/MOC/ephemeris_predict/2018/spp_pred_20181003_20190401_od035_v001.bsp',
-             'https://sppgway.jhuapl.edu/MOC/ephemeris//spp_nom_20180812_20250831_v034_RO1_TCM1.bsp']
+            ['https://sppgway.jhuapl.edu/MOC/ephemeris//spp_nom_20180812_20250831_v035_RO2.bsp']
             ),
     _Kernel('STEREO-A', 'stereo_a_pred',
             ['https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/epm/ahead/ahead_2017_061_5295day_predict.epm.bsp']
