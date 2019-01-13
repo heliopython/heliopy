@@ -285,6 +285,10 @@ def _imp8(starttime, endtime, identifier, units=None, badvalues=None,
                                   warn_missing_units=warn_missing_units)
 
 
+def _docstring(identifier, extra):
+    return cdasrest._docstring(identifier, 'I', extra)
+
+
 def i8_mag15s(starttime, endtime):
     identifier = 'I8_15SEC_MAG'
     units = OrderedDict([('N_of_points', u.dimensionless_unscaled),
@@ -301,3 +305,6 @@ def i8_mag15s(starttime, endtime):
         for i in range(3):
             units[f'SC_Pos_{coord}_{i}'] = u.earthRad
     return _imp8(starttime, endtime, identifier, units=units)
+
+
+i8_mag15s.__doc__ = _docstring('I8_15SEC_MAG', '15 second magnetic field')
