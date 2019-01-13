@@ -13,13 +13,7 @@ Getting started
 
    auto_examples/index
    guide/index
-
-Requesting new features
-=======================
-
-If you would like a new feature to be built into HelioPy, you can either open a bug report
-in the `github issue tracker <https://github.com/heliopython/heliopy>`_, or send an email to
-heliopy@googlegroups.com.
+   development/index
 
 Module documentation
 ====================
@@ -31,10 +25,9 @@ Module documentation
    coords
    spice
 
-Development
-===========
+Requesting new features
+=======================
 
-.. toctree::
-   :maxdepth: 1
-
-   development/index
+If you would like a new feature to be built into HelioPy, you can either open a bug report
+in the `github issue tracker <https://github.com/heliopython/heliopy>`_, or send an email to
+heliopy@googlegroups.com.
