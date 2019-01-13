@@ -2,17 +2,15 @@ sudo: false
 language: python
 cache: pip
 
-
 matrix:
   include:
-    - env: PYTHON_VERSION=3.6
-    - env: PYTHON_VERSION=3.7
-    - env: PYTHON_VERSION=3.7 PIPPRE=--pre
+  - env: PYTHON_VERSION=3.6
+  - env: PYTHON_VERSION=3.7s
+  - env: PYTHON_VERSION=3.7 PIPPRE=--pre
   allow_failures:
-    - env: PYTHON_VERSION=3.7 PIPPRE=--pre
+  - env: PYTHON_VERSION=3.7 PIPPRE=--pre
 
 before_install:
-# Install conda
 - wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
 - chmod +x miniconda.sh
 - "./miniconda.sh -b -p $HOME/miniconda"
@@ -20,17 +18,23 @@ before_install:
 - conda update --yes conda
 - conda create --yes -n testenv python=$PYTHON_VERSION
 - source activate testenv
-
 - conda install --yes hdf5
 - pip install -r requirements/test.txt $PIPPRE
-
 - export CLUSTERCOOKIE=2F1B4760251B51783700055F1A037271685A64680A1450722A465D302F0947606504526F370C40752A0640633228546C2A015F2F28075E
 
 script:
-# Check that unit tests work
 - pytest heliopy/ --cov=heliopy/ -v --durations=5 --pep8
-# Check building a source distribution works
 - python setup.py sdist
+
 after_success:
 - pip install codecov
 - codecov
+
+deploy:
+  provider: pypi
+  user: dstansby
+  password:
+    secure: o8USvvdaYAtgC5+XClRMAgFatDAk9wbDrL3hDEknYf9zUHnAkbo8lqBOn/2+j586SI03bQD6otTG1Zp06hDfV59R0QcTJG6P7RERznBacoGY6HcXSQDKr3Y2WeA28jFumvyFPAgbObuKcli86acn9Hj/f9NVaBzJhCJb4iXIX7wYTOvy6REWbf6BD5g3W84mcWOtCr1c4o6VF5W90Dn7lqD16mi8u8anUJbJM0X1cCtXFUZgYUfqFtZ00r4sh0JygST5Q8xqeOhD4t4UO/vQo57Dcf7D49mkZ12v4RalCcvPfcGfVbgtTd+ypJnUTrJYL89UwAzMZyzFEiCMIL/1H0CiLWhjRC0R07amIiR8T+2md/0g+BtEQsxLgHOfxw243M4mIMNSSFd0l62ILnlwCfZZxXj1X7DjyJiylVlzi6txrXOK6NaRxBgk8aNILeQ0GhJxW28aYo6zXGeytpNb0S81Tnk+yB+/3Rg7Jmk3vTd74R7WYQCr+iZnAwGi4a8pUxOILVZeGfeSb/fui6TtaJJ8xO0CO2asVBSITDtvC1/wOGhkjkJjN7BQQfdkXm8Kxo9s+GJEaGfE5QAX0X/9BViLdMwT7bknLKgikQfbG4QF2ORTzfNW9OcwfbCdjQfTkDyVFylDZOD/LThseeHIFxZftvSF+drRh7IqmoFl8yw=
+  on:
+    tags: true
+  distributions: "sdist bdist_wheel"
