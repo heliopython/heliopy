@@ -8,7 +8,7 @@ using
 
   pip install -r requirements/docs.txt
 
-Then simply change to the `doc/` directory and run
+Then change to the `doc/` directory and run
 
 .. code-block:: bash
 

@@ -12,13 +12,6 @@ To run all tests apart from the ones that require data to be downloaded run::
 
    pytest -m "not data"
 
-Doctests
---------
-To test code snippets in the documentaiton, change to the ``doc`` directory
-and run::
-
-  make doctest
-
 Continuous integration tests
 ----------------------------
 To continuously check the codebase is working properly, tests are automatically
