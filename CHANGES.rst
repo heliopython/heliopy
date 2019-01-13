@@ -7,12 +7,22 @@ New features
 
 - Added the ability for :class:`heliopy.spice.Trajectory` objects to compute
   and return the body velocity.
+- Available spice kernels in :mod:`heliopy.data.spice` are now split into
+  kernels that have been reconstructed (ie. actual trajectories) and
+  predicted trajectories.
+- The predicted Bepi Columbo spice kernel has been added to
+  :mod:`heliopy.data.spice`
+- The :func:`heliopy.data.ace.swi_h3b` function has been added.
 
 Bug fixes
 ^^^^^^^^^
 
 Backwards incompatible changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+- Kernels available in :mod:`heliopy.data.spice` have been cleaned up,
+  meaning some are now not available or have been moved to the predicted
+  section.
 
 Version 0.6.3
 -------------
