@@ -1,5 +1,5 @@
-Development guide
------------------
+Contributing to HelioPy
+-----------------------
 
 .. toctree::
    :maxdepth: 1
