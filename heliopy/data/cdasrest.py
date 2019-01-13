@@ -41,7 +41,7 @@ def _docstring(identifier, letter, description):
 def _process_cdas(starttime, endtime, identifier, dataset, base_dir,
                   units=None, badvalues=None, warn_missing_units=True):
     """
-    Generic method for downloading cdas  data.
+    Generic method for downloading cdas data.
     """
     relative_dir = pathlib.Path(identifier)
     # Directory relative to main WIND data directory
@@ -124,6 +124,9 @@ def get_data(dataset, date, vars=None, verbose=True):
     dataview = 'sp_phys'
     if vars is None:
         var_info = get_variables(dataset)
+        if not len(var_info):
+            raise util.NoDataError(
+                'No {} data available for date {}'.format(dataset, date))
         vars = [v['Name'] for v in var_info['VariableDescription']]
     uri = '/'.join(['dataviews', dataview,
                     'datasets', dataset,
