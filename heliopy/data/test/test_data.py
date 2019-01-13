@@ -164,6 +164,11 @@ class TestAce:
         check_data_output(df)
 
     '''
+    def test_swi_h3b(self):
+        df = ace.swi_h3b(datetime(2013, 1, 1), datetime(2013, 1, 1, 12))
+        check_data_output(df)
+
+
     def test_swi_h4(self):
         df = ace.swi_h4(self.starttime, self.endtime + timedelta(days=2))
         check_data_output(df)
