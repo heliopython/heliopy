@@ -100,6 +100,9 @@ predicted_kernels = [
             'https://naif.jpl.nasa.gov/pub/naif/JUNO/kernels/spk/juno_pred_orbit.bsp',
             'https://naif.jpl.nasa.gov/pub/naif/JUNO/kernels/spk/aareadme.txt'
             ),
+    _Kernel('Bepi-Columbo', 'bepi_pred',
+            'https://repos.cosmos.esa.int/socci/rest/git-lfs/storage/SPICE_KERNELS/bepicolombo/241ae0ad1e8a44e0dde8a6dd5fbd91a36b75e2be3f115f45c20becb89e8a000c?response-content-disposition=attachment%3B%20filename%3D%22bc_mpo_fcp_00044_20181020_20251102_v01.bsp%22%3B%20filename*%3Dutf-8%27%27bc_mpo_fcp_00044_20181020_20251102_v01.bsp',
+            'https://repos.cosmos.esa.int/socci/projects/SPICE_KERNELS/repos/bepicolombo/browse/kernels/spk/aareadme.txt'),
 ]
 
 
