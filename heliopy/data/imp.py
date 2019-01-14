@@ -216,62 +216,6 @@ def mitplasma_h0(probe, starttime, endtime, try_download=True):
                         try_download=try_download)
 
 
-def mag320ms(probe, starttime, endtime, try_download=True):
-    """
-    Import 320ms cadence magnetic field data.
-
-    Parameters
-    ----------
-        probe : string
-            Probe number.
-        starttime : datetime
-            Start of interval.
-        endtime : datetime
-            End of interval.
-
-    Returns
-    -------
-        data : :class:`~sunpy.timeseries.TimeSeries`
-            Requested data.
-    """
-    fnames = []
-    dirs = []
-    extension = '.cdf'
-    dtimes = util._daysplitinterval(starttime, endtime)
-    # Loop through years
-    for dtime in dtimes:
-        date = dtime[0]
-        intervalstring = str(date.year) +\
-            str(date.month).zfill(2) +\
-            str(date.day).zfill(2)
-        filename = 'i8_320msec_mag_' + intervalstring + '_v01'
-        fnames.append(filename)
-        # Location of file relative to local directory or remote url
-        relative_loc = 'imp' + probe + '/mag/mag_320msec_cdaweb/' +\
-            str(date.year)
-        dirs.append(relative_loc)
-
-    local_base_dir = imp_dir
-    remote_base_url = imp_url
-
-    def download_func(remote_base_url, local_base_dir,
-                      directory, fname, remote_fname, extension):
-        remote_url = remote_base_url + str(directory)
-        filename = fname + extension
-        local_dir = local_base_dir / directory
-        util._download_remote(remote_url, filename, local_dir)
-
-    def processing_func(f):
-        thisdata = util.cdf2df(f, 'Epoch')
-        thisdata.index.name = 'Time'
-        return thisdata
-
-    return util.process(dirs, fnames, extension, local_base_dir,
-                        remote_base_url, download_func, processing_func,
-                        starttime, endtime,
-                        try_download=try_download)
-
-
 def _imp8(starttime, endtime, identifier, units=None, badvalues=None,
           warn_missing_units=True):
     """
@@ -287,6 +231,15 @@ def _imp8(starttime, endtime, identifier, units=None, badvalues=None,
 
 def _docstring(identifier, extra):
     return cdasrest._docstring(identifier, 'I', extra)
+
+
+def i8_mag320ms(starttime, endtime):
+    identifier = 'I8_320MSEC_MAG'
+    return _imp8(starttime, endtime, identifier)
+
+
+i8_mag320ms.__doc__ = _docstring(
+    'I8_15SEC_MAG', '320 millisecond magnetic field')
 
 
 def i8_mag15s(starttime, endtime):
