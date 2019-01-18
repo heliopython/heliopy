@@ -48,7 +48,9 @@ generic_kernels = [_Kernel('Leap Second Kernel', 'lsk',
                            'https://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/planets/aa_summaries.txt'),
                    _Kernel('Planet orientations', 'planet_orientations',
                            'https://naif.jpl.nasa.gov/pub/naif/generic_kernels/pck/pck00010.tpc',
-                           'https://naif.jpl.nasa.gov/pub/naif/generic_kernels/pck/aareadme.txt')]
+                           'https://naif.jpl.nasa.gov/pub/naif/generic_kernels/pck/aareadme.txt'),
+                   _Kernel('Heliospheric frames', 'helio_frames',
+                           'https://naif.jpl.nasa.gov/pub/naif/pds/data/nh-j_p_ss-spice-6-v1.0/nhsp_1000/data/fk/heliospheric_v004u.tf'),]
 
 spacecraft_kernels = [_Kernel('Helios 1', 'helios1',
                               ['https://naif.jpl.nasa.gov/pub/naif/HELIOS/kernels/spk/100528R_helios1_74345_81272.bsp',

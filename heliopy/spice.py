@@ -17,8 +17,8 @@ def _setup_spice():
     Method to download some common files that spice needs to do orbit
     calculations.
     '''
-    for kernel in ['lsk', 'planet_trajectories']:
-        loc = dataspice.get_kernel(kernel)
+    for kernel in dataspice.generic_kernels:
+        loc = dataspice.get_kernel(kernel.short_name)
         spiceypy.furnsh(loc)
 
 
