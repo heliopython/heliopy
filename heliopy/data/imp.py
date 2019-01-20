@@ -160,62 +160,6 @@ def merged(probe, starttime, endtime, try_download=True):
                         try_download=try_download)
 
 
-def mitplasma_h0(probe, starttime, endtime, try_download=True):
-    """
-    Import mit h0 plasma data.
-
-    Parameters
-    ----------
-    probe : string
-        Probe number.
-    starttime : datetime
-        Start of interval.
-    endtime : datetime
-        End of interval.
-
-    Returns
-    -------
-    data : :class:`~sunpy.timeseries.TimeSeries`
-        Requested data.
-    """
-    dirs = []
-    fnames = []
-    extension = '.cdf'
-    units = OrderedDict([('mode', u.dimensionless_unscaled),
-                         ('Region', u.dimensionless_unscaled),
-                         ('Spacecraft', u.dimensionless_unscaled)])
-    for date, _, _ in util._daysplitinterval(starttime, endtime):
-        intervalstring = str(date.year) +\
-            str(date.month).zfill(2) +\
-            str(date.day).zfill(2)
-        filename = 'i' + probe + '_h0_mitplasma_' + intervalstring + '_v01'
-        fnames.append(filename)
-        # Location of file relative to local directory or remote url
-        relative_loc = 'imp{}/plasma_mit/mitplasma_h0/{}'.format(
-            probe, date.year)
-        dirs.append(relative_loc)
-
-    local_base_dir = imp_dir
-    remote_base_url = imp_url
-
-    def download_func(remote_base_url, local_base_dir,
-                      directory, fname, remote_fname, extension):
-        remote_url = remote_base_url + str(directory)
-        filename = fname + extension
-        local_dir = local_base_dir / directory
-        util._download_remote(remote_url, filename, local_dir)
-
-    def processing_func(f):
-        thisdata = util.cdf2df(f, 'Epoch')
-        thisdata.index.name = 'Time'
-        return thisdata
-
-    return util.process(dirs, fnames, extension, local_base_dir,
-                        remote_base_url, download_func, processing_func,
-                        starttime, endtime, units=units,
-                        try_download=try_download)
-
-
 def _imp8(starttime, endtime, identifier, units=None, badvalues=None,
           warn_missing_units=True):
     """
@@ -231,6 +175,15 @@ def _imp8(starttime, endtime, identifier, units=None, badvalues=None,
 
 def _docstring(identifier, extra):
     return cdasrest._docstring(identifier, 'I', extra)
+
+
+def i8_mitplasma(starttime, endtime):
+    identifier = 'I8_H0_MITPLASMA'
+    return _imp8(starttime, endtime, identifier, warn_missing_units=False)
+
+
+i8_mitplasma.__doc__ = _docstring(
+    'I8_320MSEC_MAG', 'MIT plasma data')
 
 
 def i8_mag320ms(starttime, endtime):
