@@ -222,15 +222,15 @@ class TestImp:
         self.probe = '8'
 
     def test_mag320ms(self):
-        df = imp.mag320ms(self.probe, self.starttime, self.endtime)
+        df = imp.i8_mag320ms(self.starttime, self.endtime)
         check_data_output(df)
 
     def test_mag15s(self):
-        df = imp.mag15s(self.probe, self.starttime, self.endtime)
+        df = imp.i8_mag15s(self.starttime, self.endtime)
         check_data_output(df)
 
     def test_mitplasma_h0(self):
-        df = imp.mitplasma_h0(self.probe, self.starttime, self.endtime)
+        df = imp.i8_mitplasma(self.starttime, self.endtime)
         check_data_output(df)
 
     def test_merged(self):

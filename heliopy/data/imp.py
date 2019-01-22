@@ -13,6 +13,7 @@ import astropy.units as u
 
 from heliopy import config
 from heliopy.data import util
+from heliopy.data import cdasrest
 
 data_dir = path.Path(config['download_dir'])
 use_hdf = config['use_hdf']
@@ -159,211 +160,57 @@ def merged(probe, starttime, endtime, try_download=True):
                         try_download=try_download)
 
 
-def mitplasma_h0(probe, starttime, endtime, try_download=True):
+def _imp8(starttime, endtime, identifier, units=None, badvalues=None,
+          warn_missing_units=True):
     """
-    Import mit h0 plasma data.
-
-    Parameters
-    ----------
-    probe : string
-        Probe number.
-    starttime : datetime
-        Start of interval.
-    endtime : datetime
-        End of interval.
-
-    Returns
-    -------
-    data : :class:`~sunpy.timeseries.TimeSeries`
-        Requested data.
+    Generic method for downloading IMP8 data.
     """
-    dirs = []
-    fnames = []
-    extension = '.cdf'
-    units = OrderedDict([('mode', u.dimensionless_unscaled),
-                         ('Region', u.dimensionless_unscaled),
-                         ('Spacecraft', u.dimensionless_unscaled)])
-    for date, _, _ in util._daysplitinterval(starttime, endtime):
-        intervalstring = str(date.year) +\
-            str(date.month).zfill(2) +\
-            str(date.day).zfill(2)
-        filename = 'i' + probe + '_h0_mitplasma_' + intervalstring + '_v01'
-        fnames.append(filename)
-        # Location of file relative to local directory or remote url
-        relative_loc = 'imp{}/plasma_mit/mitplasma_h0/{}'.format(
-            probe, date.year)
-        dirs.append(relative_loc)
-
-    local_base_dir = imp_dir
-    remote_base_url = imp_url
-
-    def download_func(remote_base_url, local_base_dir,
-                      directory, fname, remote_fname, extension):
-        remote_url = remote_base_url + str(directory)
-        filename = fname + extension
-        local_dir = local_base_dir / directory
-        util._download_remote(remote_url, filename, local_dir)
-
-    def processing_func(f):
-        thisdata = util.cdf2df(f, 'Epoch')
-        thisdata.index.name = 'Time'
-        return thisdata
-
-    return util.process(dirs, fnames, extension, local_base_dir,
-                        remote_base_url, download_func, processing_func,
-                        starttime, endtime, units=units,
-                        try_download=try_download)
+    dataset = 'imp8'
+    return cdasrest._process_cdas(starttime, endtime, identifier, dataset,
+                                  imp_dir,
+                                  units=units,
+                                  badvalues=badvalues,
+                                  warn_missing_units=warn_missing_units)
 
 
-def mag320ms(probe, starttime, endtime, try_download=True):
-    """
-    Import 320ms cadence magnetic field data.
-
-    Parameters
-    ----------
-        probe : string
-            Probe number.
-        starttime : datetime
-            Start of interval.
-        endtime : datetime
-            End of interval.
-
-    Returns
-    -------
-        data : :class:`~sunpy.timeseries.TimeSeries`
-            Requested data.
-    """
-    fnames = []
-    dirs = []
-    extension = '.cdf'
-    dtimes = util._daysplitinterval(starttime, endtime)
-    # Loop through years
-    for dtime in dtimes:
-        date = dtime[0]
-        intervalstring = str(date.year) +\
-            str(date.month).zfill(2) +\
-            str(date.day).zfill(2)
-        filename = 'i8_320msec_mag_' + intervalstring + '_v01'
-        fnames.append(filename)
-        # Location of file relative to local directory or remote url
-        relative_loc = 'imp' + probe + '/mag/mag_320msec_cdaweb/' +\
-            str(date.year)
-        dirs.append(relative_loc)
-
-    local_base_dir = imp_dir
-    remote_base_url = imp_url
-
-    def download_func(remote_base_url, local_base_dir,
-                      directory, fname, remote_fname, extension):
-        remote_url = remote_base_url + str(directory)
-        filename = fname + extension
-        local_dir = local_base_dir / directory
-        util._download_remote(remote_url, filename, local_dir)
-
-    def processing_func(f):
-        thisdata = util.cdf2df(f, 'Epoch')
-        thisdata.index.name = 'Time'
-        return thisdata
-
-    return util.process(dirs, fnames, extension, local_base_dir,
-                        remote_base_url, download_func, processing_func,
-                        starttime, endtime,
-                        try_download=try_download)
+def _docstring(identifier, extra):
+    return cdasrest._docstring(identifier, 'I', extra)
 
 
-def mag15s(probe, starttime, endtime, verbose=False, try_download=True):
-    """
-    Import 15s cadence magnetic field data.
+def i8_mitplasma(starttime, endtime):
+    identifier = 'I8_H0_MITPLASMA'
+    return _imp8(starttime, endtime, identifier, warn_missing_units=False)
 
-    Parameters
-    ----------
-    probe : string
-        Probe number.
-    starttime : datetime
-        Start of interval.
-    endtime : datetime
-        End of interval.
-    verbose : bool, optional
-        If ``True``, print information whilst loading. Default is ``False``.
 
-    Returns
-    -------
-        data : :class:`~sunpy.timeseries.TimeSeries`
-            Requested data.
-    """
-    fnames = []
-    dirs = []
-    extension = '.asc'
-    units = OrderedDict([('n points', u.dimensionless_unscaled),
-                         ('Source flag', u.dimensionless_unscaled),
-                         ('x gse', u.earthRad), ('y gse', u.earthRad),
-                         ('z gse', u.earthRad), ('y gsm', u.earthRad),
-                         ('z gsm', u.earthRad), ('|B|', u.nT),
+i8_mitplasma.__doc__ = _docstring(
+    'I8_320MSEC_MAG', 'MIT plasma data')
+
+
+def i8_mag320ms(starttime, endtime):
+    identifier = 'I8_320MSEC_MAG'
+    return _imp8(starttime, endtime, identifier)
+
+
+i8_mag320ms.__doc__ = _docstring(
+    'I8_15SEC_MAG', '320 millisecond magnetic field')
+
+
+def i8_mag15s(starttime, endtime):
+    identifier = 'I8_15SEC_MAG'
+    units = OrderedDict([('N_of_points', u.dimensionless_unscaled),
+                         ('SourceFlag', u.dimensionless_unscaled),
+                         ('|B|', u.nT),
                          ('Bx gse', u.nT), ('By gse', u.nT),
                          ('Bz gse', u.nT), ('By gsm', u.nT),
                          ('Bz gsm', u.nT), ('Bxx gse', u.nT**2),
                          ('Byy gse', u.nT**2), ('Bzz gse', u.nT**2),
                          ('Byx gse', u.nT**2), ('Bzx gse', u.nT**2),
                          ('Bzy gse', u.nT**2), ('Time shift', u.s),
-                         ('sw flag', u.dimensionless_unscaled)])
-    dtimes = util._daysplitinterval(starttime, endtime)
-    # Loop through years
-    for dtime in dtimes:
-        startdt = dtime[0]
-        year = startdt.year
-        doy = util.dtime2doy(startdt)
-        if verbose:
-            print('Loading IMP 15s mag probe {}, {:03d}/{}'.format(probe,
-                                                                   doy,
-                                                                   year))
-        filename = '{}{:03d}_imp{}_mag_15s_v3'.format(year, doy, probe)
-        fnames.append(filename)
-        # Location of file relative to local directory or remote url
-        relative_loc = os.path.join('imp{}'.format(probe),
-                                    'mag',
-                                    '15s_ascii_v3',
-                                    str(year))
-        dirs.append(relative_loc)
+                         ('SW_flag', u.dimensionless_unscaled)])
+    for coord in ['GSE', 'GSET', 'GSM', 'GSMT']:
+        for i in range(3):
+            units[f'SC_Pos_{coord}_{i}'] = u.earthRad
+    return _imp8(starttime, endtime, identifier, units=units)
 
-    local_base_dir = imp_dir
-    remote_base_url = imp_url
 
-    def download_func(remote_base_url, local_base_dir,
-                      directory, fname, remote_fname, extension):
-        remote_url = remote_base_url + str(directory)
-        filename = fname + extension
-        local_dir = local_base_dir / directory
-        util._download_remote(remote_url, filename, local_dir)
-
-    # Read in data
-    def processing_func(f):
-        readargs = {'names': ['Year', 'doy', 'Second', 'Source flag',
-                              'n points', 'x gse', 'y gse', 'z gse',
-                              'y gsm', 'z gsm',
-                              '|B|', 'Bx gse', 'By gse', 'Bz gse',
-                              'By gsm', 'Bz gsm',
-                              'Bxx gse', 'Byy gse', 'Bzz gse',
-                              'Byx gse', 'Bzx gse', 'Bzy gse',
-                              'Time shift', 'sw flag'],
-                    'na_values': ['9999', '999', '99', '9',
-                                  '999', '99.99', '99.99', '99.99',
-                                  '99.99', '99.99',
-                                  '9999.99', '9999.99', '9999.99', '9999.99',
-                                  '9999.99', '9999.99',
-                                  '9999.99', '9999.99', '9999.99',
-                                  '9999.99', '9999.99', '9999.99',
-                                  '999.9', '9'],
-                    'delim_whitespace': True}
-        thisdata = pd.read_table(f, **readargs)
-        thisdata['Time'] = (pd.to_datetime(thisdata['Year'], format='%Y') +
-                            pd.to_timedelta(thisdata['doy'] - 1,
-                                            unit='d') +
-                            pd.to_timedelta(thisdata['Second'], unit='s'))
-        thisdata = thisdata.set_index('Time', drop=False)
-        thisdata = thisdata.drop(['Year', 'doy', 'Second'], 1)
-        return thisdata
-
-    return util.process(dirs, fnames, extension, local_base_dir,
-                        remote_base_url, download_func, processing_func,
-                        starttime, endtime, units=units,
-                        try_download=try_download)
+i8_mag15s.__doc__ = _docstring('I8_15SEC_MAG', '15 second magnetic field')

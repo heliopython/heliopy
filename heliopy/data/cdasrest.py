@@ -6,6 +6,7 @@ For more information see https://cdaweb.sci.gsfc.nasa.gov/WebServices/REST/
 from datetime import datetime, time
 import pathlib
 import requests
+import requests.exceptions
 import tempfile
 import wget
 
@@ -41,7 +42,7 @@ def _docstring(identifier, letter, description):
 def _process_cdas(starttime, endtime, identifier, dataset, base_dir,
                   units=None, badvalues=None, warn_missing_units=True):
     """
-    Generic method for downloading cdas  data.
+    Generic method for downloading cdas data.
     """
     relative_dir = pathlib.Path(identifier)
     # Directory relative to main WIND data directory
@@ -73,7 +74,7 @@ def _process_cdas(starttime, endtime, identifier, dataset, base_dir,
                         warn_missing_units=warn_missing_units)
 
 
-def get_variables(dataset):
+def get_variables(dataset, timeout=10):
     """
     Queries server for descriptions of variables in a dataset.
 
@@ -81,6 +82,8 @@ def get_variables(dataset):
     ----------
     dataset : string
         Dataset identifier.
+    timeout : float, optional
+        Timeout on the CDAweb remote requests, in seconds. Defaults to 10s.
 
     Returns
     -------
@@ -94,11 +97,11 @@ def get_variables(dataset):
         'datasets', dataset,
         'variables'
     ])
-    response = requests.get(url, headers=CDAS_HEADERS)
+    response = requests.get(url, headers=CDAS_HEADERS, timeout=timeout)
     return response.json()
 
 
-def get_data(dataset, date, vars=None, verbose=True):
+def get_data(dataset, date, vars=None, verbose=True, timeout=10):
     """
     Download CDAS data.
 
@@ -113,6 +116,8 @@ def get_data(dataset, date, vars=None, verbose=True):
         dataset will be downloaded.
     verbose : bool, optional
         If ``True``, show a progress bar whilst downloading.
+    timeout : float, optional
+        Timeout on the CDAweb remote requests, in seconds. Defaults to 10s.
 
     Returns
     -------
@@ -123,8 +128,19 @@ def get_data(dataset, date, vars=None, verbose=True):
     endtime = datetime.combine(date, time.max)
     dataview = 'sp_phys'
     if vars is None:
-        var_info = get_variables(dataset)
+        try:
+            var_info = get_variables(dataset, timeout=timeout)
+        except requests.exceptions.ReadTimeout:
+            raise util.NoDataError(
+                'Connection to CDAweb timed out when downloading '
+                f'{dataset} data for date {date}.')
+
+        if not len(var_info):
+            raise util.NoDataError(
+                f'No {dataset} data available for date {date}')
+
         vars = [v['Name'] for v in var_info['VariableDescription']]
+
     uri = '/'.join(['dataviews', dataview,
                     'datasets', dataset,
                     'data',
@@ -137,7 +153,8 @@ def get_data(dataset, date, vars=None, verbose=True):
     ext = ''
     params = {'format': 'cdf', 'cdfVersion': 3}
     ext = 'cdf'
-    response = requests.get(url, params=params, headers=CDAS_HEADERS)
+    response = requests.get(
+        url, params=params, headers=CDAS_HEADERS, timeout=timeout)
     if 'FileDescription' in response.json():
         print('Downloading {} for date {}'.format(dataset, date))
         data_path = wget.download(
