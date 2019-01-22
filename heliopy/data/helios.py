@@ -905,7 +905,7 @@ def corefit(probe, starttime, endtime, try_download=True):
 
     extension = '.csv'
     local_base_dir = path.Path(helios_dir)
-    remote_base_url = 'ftp://apollo.ssl.berkeley.edu/pub/helios-data/'
+    remote_base_url = 'http://helios-data.ssl.berkeley.edu/data/'
 
     def download_func(remote_base_url, local_base_dir, directory,
                       fname, remote_fname, extension):
