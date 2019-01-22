@@ -1138,7 +1138,7 @@ def mag_ness(probe, starttime, endtime, try_download=True):
         6 second magnetic field data set
     """
     probe = _check_probe(probe)
-    remote_base_url = ('ftp://apollo.ssl.berkeley.edu/pub/helios-data/' +
+    remote_base_url = ('http://helios-data.ssl.berkeley.edu/data/'
                        'E3_experiment/helios{}_6sec_ness/'.format(probe))
     local_base_dir = (path.Path(helios_dir) /
                       'E3_experiment' /
