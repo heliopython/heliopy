@@ -13,6 +13,12 @@ New features
 - The predicted Bepi Columbo spice kernel has been added to
   :mod:`heliopy.data.spice`
 - The :func:`heliopy.data.ace.swi_h3b` function has been added.
+- :func:`heliopy.data.cdasrest.get_variables` and
+  :func:`heliopy.data.cdasrest.get_data` now have a ``timeout`` keyword
+  argument, allowing manual specification of the timeout when fetching data
+  from a server.
+- Importing :mod:`heliopy.spice` now automatically loads common heliospheric
+  coordinate systems.
 
 Bug fixes
 ^^^^^^^^^
@@ -23,6 +29,16 @@ Backwards incompatible changes
 - Kernels available in :mod:`heliopy.data.spice` have been cleaned up,
   meaning some are now not available or have been moved to the predicted
   section.
+- A handful of data download functions have migrated to using the CDAS restful
+  service, and have therefore had their call signatures changed. In particular:
+  - :func:`heliopy.data.messenger.mag_rtn` has lost its ``try_download`` kwarg
+  - :func:`heliopy.data.helios.merged` has lost its ``try_download`` kwarg
+
+The following IMP download functions, which only ever worked for IMP8 have
+been renamed:
+
+- `mitplasma_h0` has been renamed :func:`~heliopy.data.imp.i8_mitplasma`
+- `mag320ms` has been renamed :func:`~heliopy.data.imp.i8_mag320ms`
 
 Version 0.6.3
 -------------
