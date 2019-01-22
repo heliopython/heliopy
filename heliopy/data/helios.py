@@ -31,6 +31,7 @@ import pandas as pd
 
 from heliopy import config
 from heliopy.data import util
+from heliopy.data import cdasrest
 
 data_dir = config['download_dir']
 use_hdf = config['use_hdf']
@@ -922,110 +923,6 @@ def corefit(probe, starttime, endtime, try_download=True):
                         starttime, endtime, try_download, units=units)
 
 
-def _merged_localdir(probe):
-    return os.path.join(helios_dir,
-                        'helios{}'.format(probe),
-                        'merged',
-                        'he{}_40sec'.format(probe))
-
-
-def _merged_fname(probe, year, doy):
-    # Return merged filename WITHOUT extension
-    return 'H{}{}_{:03}'.format(probe, year - 1900, doy)
-
-
-def merged(probe, starttime, endtime, try_download=True):
-    """
-    Read in merged data set.
-
-    Parameters
-    ----------
-    probe : int, string
-        Helios probe to import data from. Must be 1 or 2.
-    starttime : datetime
-        Interval start time
-    endtime : datetime
-        Interval end time
-    try_download : bool, optional
-        If ``False`` don't try to download data if it is missing locally.
-
-    Returns
-    -------
-    data : :class:`~sunpy.timeseries.TimeSeries`
-        Merged data set
-
-    Notes
-    -----
-    This is an old dataset, and it is recommended to use `corefit` instead.
-    """
-    probe = _check_probe(probe)
-    local_base_dir = (path.Path(helios_dir) /
-                      'helios{}'.format(probe) /
-                      'merged' /
-                      'he{}_40sec'.format(probe))
-    extension = '.dat'
-    remote_base_url = ('ftp://cdaweb.gsfc.nasa.gov/pub/data/helios/'
-                       'helios{}/merged/he{}_40sec'.format(probe, probe))
-    fnames = []
-    dirs = []
-    units = OrderedDict([('rh', u.AU), ('esh', u.deg),
-                        ('clong', u.deg), ('clat', u.deg), ('HGIlong', u.deg),
-                        ('br', u.nT), ('bt', u.nT), ('bn', u.nT),
-                        ('vp1r', u.km / u.s),
-                        ('vp1t', u.km / u.s), ('vp1n', u.km / u.s),
-                        ('crot', u.dimensionless_unscaled), ('np1', u.cm**-3),
-                        ('vp1', u.km / u.s), ('Tp1', u.K), ('vaz', u.deg),
-                        ('vel', u.deg), ('Bx', u.nT), ('By', u.nT),
-                        ('Bz', u.nT), ('sBx', u.nT),
-                        ('sBy', u.nT), ('sBz', u.nT),
-                        ('nal', u.cm**-3), ('val', u.km / u.s), ('Tal', u.K),
-                        ('np2', u.cm**-3), ('vp2', u.km / u.s)])
-    daylist = util._daysplitinterval(starttime, endtime)
-    for [day, _, _] in daylist:
-        # Check that data for this day exists
-        if probe == '1':
-            if day < date(1974, 12, 12) or day > date(1985, 9, 4):
-                continue
-        if probe == '2':
-            if day < date(1976, 1, 17) or day > date(1980, 3, 8):
-                continue
-
-        doy = int(day.strftime('%j'))
-        year = day.year
-        fnames.append('H{}{}_{:03}'.format(probe, year - 1900, doy))
-        dirs.append('')
-
-    def download_func(remote_base_url, local_base_dir,
-                      directory, fname, remote_fname, extension):
-        remote_url = remote_base_url + str(directory)
-        local_dir = local_base_dir / directory
-        util._download_remote(remote_url, fname + extension, local_dir)
-
-    def processing_func(f):
-        # Load data
-        data = pd.read_table(f, delim_whitespace=True)
-
-        # Process data
-        data['year'] = data['year'].astype(int)
-        # Convert date info to datetime
-        data['Time'] = pd.to_datetime(data['year'], format='%Y') + \
-            pd.to_timedelta(data['day'] - 1, unit='d') + \
-            pd.to_timedelta(data['hour'], unit='h') + \
-            pd.to_timedelta(data['min'], unit='m') + \
-            pd.to_timedelta(data['sec'], unit='s')
-
-        data = data.drop(['year', 'day', 'hour', 'min', 'sec', 'dechr'],
-                         axis=1)
-        # Set zero values to nans
-        data.replace(0.0, np.nan, inplace=True)
-        return data
-
-    return util.process(dirs, fnames, extension, local_base_dir,
-                        remote_base_url, download_func, processing_func,
-                        starttime, endtime, units=units,
-                        try_download=try_download)
-
-
 def _4hz_filename(probe, year, doy):
     # Returns 4hz filename WITHOUT extension
     return 'he{}1s{}{:03}'.format(probe, year - 1900, doy)
@@ -1196,3 +1093,29 @@ def mag_ness(probe, starttime, endtime, try_download=True):
                         remote_base_url, download_func, processing_func,
                         starttime, endtime, units=units,
                         try_download=try_download)
+
+
+def _docstring(identifier, extra):
+    return cdasrest._docstring(identifier, 'M', extra)
+
+
+def _helios(starttime, endtime, identifier, units=None, badvalues=None,
+            warn_missing_units=True):
+    """
+    Generic method for downloading Helios data from CDAWeb.
+    """
+    dataset = 'helios'
+    return cdasrest._process_cdas(starttime, endtime, identifier, dataset,
+                                  helios_dir,
+                                  units=units,
+                                  badvalues=badvalues,
+                                  warn_missing_units=warn_missing_units)
+
+
+def merged(probe, starttime, endtime):
+    identifier = f'HELIOS{probe}_40SEC_MAG-PLASMA'
+    return _helios(starttime, endtime, identifier)
+
+
+merged.__doc__ = _docstring(
+    'HELIOS1_40SEC_MAG-PLASMA', 'merged magnetic field and plasma data.')
