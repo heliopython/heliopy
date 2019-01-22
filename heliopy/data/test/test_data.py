@@ -360,7 +360,6 @@ class TestHelios:
         self.endtime = datetime(1976, 1, 10, 23, 59, 59)
         self.probe = '1'
 
-
     def test_merged(self):
         df = helios.merged(self.probe, self.starttime, self.endtime)
         check_data_output(df)
