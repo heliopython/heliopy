@@ -61,7 +61,8 @@ def check_units(df):
 class TestSpice:
     @pytest.mark.parametrize('kernel', spice.kernel_dict)
     def test_kernel_download(self, kernel):
-        if kernel[:3] == 'ftp' and os.environ['TRAVIS']:
+        if (spice.kernel_dict[kernel].urls[:3] == 'ftp' and
+                os.environ['TRAVIS']):
             pytest.skip("FTP doesn't work on travis")
         spice.get_kernel(kernel)
 
