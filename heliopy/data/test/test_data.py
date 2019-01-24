@@ -22,6 +22,7 @@ import urllib
 import pytest
 import sunpy
 import warnings
+import os
 
 try:
     import cdflib
@@ -58,9 +59,12 @@ def check_units(df):
 
 @pytest.mark.data
 class TestSpice:
-
     @pytest.mark.parametrize('kernel', spice.kernel_dict)
     def test_kernel_download(self, kernel):
+        if 'TRAVIS' in os.environ:
+            for url in spice.kernel_dict[kernel].urls:
+                if url[:3] == 'ftp':
+                    pytest.skip("FTP doesn't work on travis")
         spice.get_kernel(kernel)
 
 
