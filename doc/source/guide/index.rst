@@ -9,3 +9,4 @@ HelioPy guide
    citing
    whatsnew
    code-of-conduct
+   logo
