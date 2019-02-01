@@ -11,15 +11,18 @@ import astropy.units as u
 data_dir = config['download_dir']
 spice_dir = os.path.join(data_dir, 'spice')
 
+_SPICE_SETUP = False
+
 
 def _setup_spice():
     '''
     Method to download some common files that spice needs to do orbit
     calculations.
     '''
-    for kernel in dataspice.generic_kernels:
-        loc = dataspice.get_kernel(kernel.short_name)
-        spiceypy.furnsh(loc)
+    if not _SPICE_SETUP:
+        for kernel in dataspice.generic_kernels:
+            loc = dataspice.get_kernel(kernel.short_name)
+            spiceypy.furnsh(loc)
 
 
 def furnish(fname):
