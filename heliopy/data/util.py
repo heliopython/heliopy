@@ -767,7 +767,17 @@ def cdf2df(cdf, index_key, dtimeindex=True, badvalues=None,
             include.append(index_key)
 
     # Extract index values
+
+    varinfo = cdf.cdf_info()
+    # Check if index_key is in the variables. If not,
+    # try other alternatives (e.g. for STEREO sept)
+    cdf_vars = (varinfo['rVariables']+varinfo['zVariables'])
+    if index_key not in cdf_vars:
+        if 'Epoch_NS' in cdf_vars:
+            index_key = 'Epoch_NS'
+
     index = cdf.varget(index_key)
+
     try:
         # If there are multiple indexes, take the first one
         # TODO: this is just plain wrong, there should be a way to get all
@@ -817,7 +827,9 @@ def cdf2df(cdf, index_key, dtimeindex=True, badvalues=None,
             else:
                 keys[cdf_key] = cdf_key
     # Remove index key, as we have already used it to create the index
-    keys.pop(index_key)
+    # Keep the index key if it wasn't the standard 'Epoch'
+    if index_key == 'Epoch':
+        keys.pop(index_key)
     # Remove keys for data that doesn't have the right shape to load in CDF
     # Mapping of keys to variable data
     vars = {cdf_key: cdf.varget(cdf_key) for cdf_key in keys.copy()}
