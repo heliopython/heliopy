@@ -350,6 +350,10 @@ def cdf_units(cdf_, manual_units=None, length=None):
                 units.update(coll.OrderedDict.fromkeys(val, temp_unit))
             else:
                 units[val] = temp_unit
+        else:
+            print("Unit {} missing for key {}".format(unit_str, key))
+
+
     units.update(manual_units)
     return units
 
