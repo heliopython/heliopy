@@ -200,16 +200,31 @@ def cdf_dict(unit_string):
                         ('msec', u.ms),
                         ('milliseconds', u.ms),
                         ('ionic charge', ionic_charge),
+<<<<<<< HEAD
                         ('#/cm2-ster-eV-sec',
                          1 / (u.cm**2 * u.sr * u.eV * u.s))])
                         ('1/(cm**2-s-sr-MeV)', (u.cm**2*u.s*u.sr*u.MeV)**-1),
+=======
+>>>>>>> Added unit helpers for STEREO data
                          # Note: the MeV/nuc is not consistent unit for astropy
+                         ('MeV/nuc', u.MeV), 
+                        ('1/(cm**2-s-sr-MeV)', (u.cm**2*u.s*u.sr*u.MeV)**-1),
                         ('1/(cm**2-s-sr-MeV/nuc.)',
                          (u.cm**2*u.s*u.sr*u.MeV)**-1),
-                        ('1/(cm**2-s-sr)', (u.cm**2*u.s*u.sr)**-1),
-                        ('[fraction]', u.dimensionless_unscaled),
-                        ('1/(cm2 Sr sec MeV/nucleon)',
-                        (u.cm**2*u.s*u.sr*u.MeV)**-1),
+                         ('#/(cm^2*s*sr*Mev/nucleon)',
+                         (u.cm**2*u.s*u.sr*u.MeV)**-1),
+                         ('#/(cm^2*s*sr*MeV/nuc)',
+                         (u.cm**2*u.s*u.sr*u.MeV)**-1),
+                         ('#/(cm^2*s*sr*Mev/nuc)',
+                         (u.cm**2*u.s*u.sr*u.MeV)**-1),
+                         ('cnts/sec/sr/cm^2/MeV',
+                         (u.cm**2*u.s*u.sr*u.MeV)**-1),
+                         ('1/(cm**2-s-sr)', (u.cm**2*u.s*u.sr)**-1),
+                         ('[fraction]', u.dimensionless_unscaled),
+                         ('1/(cm2 Sr sec MeV/nucleon)',
+                          (u.cm**2*u.s*u.sr*u.MeV)**-1),
+                         ('cnts', u.dimensionless_unscaled),
+                         ('cnts/sec', u.dimensionless_unscaled),
                         ('Counts/hour', u.dimensionless_unscaled),
                         ('Counts/256sec', u.dimensionless_unscaled)])
     try:
