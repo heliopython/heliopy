@@ -777,7 +777,7 @@ def cdf2df(cdf, index_key, dtimeindex=True, badvalues=None,
             index_key = 'Epoch_NS'
 
     index = cdf.varget(index_key)
-
+    
     try:
         # If there are multiple indexes, take the first one
         # TODO: this is just plain wrong, there should be a way to get all
