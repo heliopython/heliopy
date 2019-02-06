@@ -578,16 +578,25 @@ def cdf_units(cdf_, manual_units=None, length=None):
                                f" key '{key}' are unknown")
                     warnings.warn(message)
                     continue
-
         if isinstance(val, list):
             for v in val:
                 units[v] = temp_unit
         else:
             units[val] = temp_unit
 
+        if temp_unit is not None:
+            if isinstance(val, list):
+                units.update(coll.OrderedDict.fromkeys(val, temp_unit))
+            else:
+                units[val] = temp_unit
+        else:
+            print("Unit {} missing for key {}".format(unit_str, key))
+
+
     if manual_units:
         units.update(manual_units)
     logger.info(f'Extracted following units: {units}')
+
     return units
 
 
