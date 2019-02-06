@@ -130,9 +130,6 @@ def ste_l1(starttime, endtime, spacecraft):
 
 ste_l1.__doc__ = _docstring('STA_L1_STE',
                             'STEREO IMPACT/STE Level 1 Data')
-
-
-
 def het(starttime, endtime, spacecraft, timeres):
     """
     Import data from STEREO HET web Interface.
