@@ -66,6 +66,7 @@ def _docstring_stereo(identifier, letter, description):
     return ds
 
 
+<<<<<<< HEAD
 def _day_intervals(starttime, endtime):
     interval = stime.TimeRange(starttime, endtime)
     daylist = interval.get_dates()
@@ -127,6 +128,60 @@ class CDASDwonloader(util.Downloader):
     def load_local_file(self, interval):
         local_path = self.local_path(interval)
         cdf = util._load_cdf(local_path)
+        return util.cdf2df(cdf, index_key='Epoch',
+                           badvalues=self.badvalues)
+
+def _docstring_stereo(identifier, letter, description):
+    ds = r"""
+    {description} data.
+
+    See https://cdaweb.sci.gsfc.nasa.gov/misc/Notes{letter}.html#{identifier}
+    for more information.
+
+    Parameters
+    ----------
+    starttime : datetime
+        Interval start time.
+    endtime : datetime
+        Interval end time.
+    spacecraft: string
+        Spacecraft identifier, 'sta' or 'stb'
+
+    Returns
+    -------
+    data : :class:`~sunpy.timeseries.TimeSeries`
+    """.format(identifier=identifier,
+               letter=letter,
+               description=description)
+    return ds
+
+
+def _process_cdas(starttime, endtime, identifier, dataset, base_dir,
+                  units=None, badvalues=None, warn_missing_units=True):
+    """
+    Generic method for downloading cdas  data. (This is still used by STEREO)
+    """
+    relative_dir = pathlib.Path(identifier)
+    # Directory relative to main WIND data directory
+    daylist = util._daysplitinterval(starttime, endtime)
+    dirs = []
+    fnames = []
+    dates = []
+    extension = '.cdf'
+    for day in daylist:
+        date = day[0]
+        dates.append(date)
+        filename = '{}_{}_{}{:02}{:02}'.format(
+            dataset, identifier, date.year, date.month, date.day)
+        fnames.append(filename)
+        this_relative_dir = relative_dir / str(date.year)
+        dirs.append(this_relative_dir)
+
+    def download_func(remote_base_url, local_base_dir,
+                      directory, fname, remote_fname, extension, date):
+        return get_data(identifier, date)
+
+    def processing_func(cdf):
         return util.cdf2df(cdf, index_key='Epoch',
                            badvalues=self.badvalues)
 
