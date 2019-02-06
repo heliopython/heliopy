@@ -38,6 +38,31 @@ def _docstring(identifier, letter, description):
     return ds
 
 
+def _docstring_stereo(identifier, letter, description):
+    ds = r"""
+    {description} data.
+
+    See https://cdaweb.sci.gsfc.nasa.gov/misc/Notes{letter}.html#{identifier}
+    for more information.
+
+    Parameters
+    ----------
+    starttime : datetime
+        Interval start time.
+    endtime : datetime
+        Interval end time.
+    spacecraft: string
+        Spacecraft identifier, 'sta' or 'stb'
+
+    Returns
+    -------
+    data : :class:`~sunpy.timeseries.TimeSeries`
+    """.format(identifier=identifier,
+               letter=letter,
+               description=description)
+    return ds
+
+
 def _process_cdas(starttime, endtime, identifier, dataset, base_dir,
                   units=None, badvalues=None, warn_missing_units=True):
     """
