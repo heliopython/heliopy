@@ -595,7 +595,6 @@ def cdf_units(cdf_, manual_units=None, length=None):
     if manual_units:
         units.update(manual_units)
     logger.info(f'Extracted following units: {units}')
-
     return units
 
 
