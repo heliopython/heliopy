@@ -192,6 +192,7 @@ def cdf_dict(unit_string):
                         ('deg (from fits)', u.deg),
                         ('deg (from moments)', u.deg),
                         ('deg (>200)', u.deg),
+                        ('deg_K', u.K),
                         ('Deg K', u.K),
                         ('#/{cc*(cm/s)^3}', (u.cm**3 * (u.cm / u.s)**3)**-1),
                         ('sec', u.s),
