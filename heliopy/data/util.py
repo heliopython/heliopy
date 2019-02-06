@@ -774,7 +774,6 @@ def cdf2df(cdf, index_key, dtimeindex=True, badvalues=None,
     if index_key not in cdf_vars:
         if 'Epoch_NS' in cdf_vars:
             index_key = 'Epoch_NS'
-
     index = cdf.varget(index_key)
     
     try:
