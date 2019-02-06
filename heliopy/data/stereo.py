@@ -88,15 +88,18 @@ def let_l1(starttime, endtime, spacecraft):
 let_l1.__doc__ = _docstring('STA_L1_LET',
                             'STEREO IMPACT/LET Level 1 Data')
 
+
 def sept_l1(starttime, endtime, spacecraft):
     identifier = _identifier_select(spacecraft)+'_L1_SEPT'
 
-    units = OrderedDict([('Q_FLAG', u.dimensionless_unscaled)])
+    units = OrderedDict([('Q_FLAG', u.dimensionless_unscaled),
+                         ('Heater_NS', u.deg_C),
+                         ('Heater_E', u.deg_C)])
     return _stereo(starttime, endtime, spacecraft, identifier, units=units)
 
 
 sept_l1.__doc__ = _docstring('STA_L1_SEPT',
-                            'STEREO IMPACT/SEPT Level 1 Data')
+                             'STEREO IMPACT/SEPT Level 1 Data')
 
 
 def sit_l1(starttime, endtime, spacecraft):
