@@ -12,6 +12,7 @@ import pandas as pd
 
 from heliopy import config
 from heliopy.data import cdasrest
+from heliopy.data import util
 
 data_dir = path.Path(config['download_dir'])
 ace_dir = data_dir / 'stereo'
@@ -95,8 +96,11 @@ def sept_l1(starttime, endtime, spacecraft):
     units = OrderedDict([('Q_FLAG', u.dimensionless_unscaled),
                          ('Heater_NS', u.deg_C),
                          ('Heater_E', u.deg_C)])
-    return _stereo(starttime, endtime, spacecraft, identifier, units=units)
+    sept = _stereo(starttime, endtime, spacecraft, identifier, units=units)
+    sept.data['Epoch_NS'] = util.epoch_to_datetime(sept.data['Epoch_NS'].values)
+    sept.data['Epoch_E'] = util.epoch_to_datetime(sept.data['Epoch_E'].values)
 
+    return sept
 
 sept_l1.__doc__ = _docstring('STA_L1_SEPT',
                              'STEREO IMPACT/SEPT Level 1 Data')
