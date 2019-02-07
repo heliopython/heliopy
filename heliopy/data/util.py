@@ -825,6 +825,38 @@ class RemoteFileNotPresentError(RuntimeError):
     pass
 
 
+def epoch_to_datetime(epoch):
+    """
+    Convert cdf epoch to datetime
+
+    Copied from the cdf2df above to convert non-standard Epoch
+    fields in some cdf files.
+
+    Parameters
+    ----------
+    epoch : array
+        An array of cdfepoch values
+
+    Returns
+    -------
+    dtime : array
+        An array of datetime objects
+    """
+    utc_comp = cdflib.cdfepoch.breakdown(epoch, to_np=True)
+    if utc_comp.shape[1] == 9:
+        millis = utc_comp[:, 6]*(10**3)
+        micros = utc_comp[:, 8]*(10**2)
+        nanos = utc_comp[:, 7]
+        utc_comp[:, 6] = millis + micros + nanos
+        utc_comp = np.delete(utc_comp,  np.s_[-2:], axis=1)
+    try:
+        dtime = np.asarray([dt.datetime(*x) for x in utc_comp])
+    except ValueError:
+        utc_comp[:, 6] -= micros
+        dtime = np.asarray([dt.datetime(*x) for x in utc_comp])
+    return dtime
+
+
 def load(filename, local_dir, remote_url,
          try_download=True, remote_error=False):
     """
