@@ -9,6 +9,8 @@ https://github.com/heliopython/heliopy/issues.
 
 """
 import os
+import warnings
+
 from urllib.request import urlretrieve
 import urllib.error
 
@@ -150,8 +152,7 @@ def get_kernel(name):
             try:
                 urlretrieve(url, local_loc, reporthook=util._reporthook)
             except urllib.error.HTTPError as err:
-                print('Failed to download {}'.format(url))
-                raise err
+                warnings.warn('Failed to download {}'.format(url))
     return locs
 
 

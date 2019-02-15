@@ -1,3 +1,11 @@
+Version 0.6.5
+-------------
+
+Bug fixes
+^^^^^^^^^
+
+- :func:`heliopy.data.spice.get_kernel` now raises a warning instead of an
+  error if a kernel can't be downloaded.
 
 Version 0.6.4
 -------------
