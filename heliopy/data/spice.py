@@ -9,6 +9,8 @@ https://github.com/heliopython/heliopy/issues.
 
 """
 import os
+import warnings
+
 from urllib.request import urlretrieve
 import urllib.error
 
@@ -75,11 +77,11 @@ spacecraft_kernels = [_Kernel('Helios 1', 'helios1',
                                'https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/depm/ahead/ahead_2015_076_01.depm.bsp',
                                'https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/depm/ahead/ahead_2015_219_01.depm.bsp',
                                'https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/depm/ahead/ahead_2018_019_01.depm.bsp',
-                               'https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/depm/ahead/ahead_2018_347_01.depm.bsp',
                                'https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/depm/ahead/ahead_2018_353_01.depm.bsp',
                                'https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/depm/ahead/ahead_2019_003_01.depm.bsp',
                                'https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/depm/ahead/ahead_2019_017_01.depm.bsp',
-                               'https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/depm/ahead/ahead_2019_030_01.depm.bsp', ],
+                               'https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/depm/ahead/ahead_2019_030_01.depm.bsp',
+                               'https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/depm/ahead/ahead_2019_045_01.depm.bsp', ],
                               ''),
                       _Kernel('Ulysses', 'ulysses',
                               ['https://naif.jpl.nasa.gov/pub/naif/ULYSSES/kernels/spk/ulysses_1990_2009_2050.bsp',
@@ -150,8 +152,7 @@ def get_kernel(name):
             try:
                 urlretrieve(url, local_loc, reporthook=util._reporthook)
             except urllib.error.HTTPError as err:
-                print('Failed to download {}'.format(url))
-                raise err
+                warnings.warn('Failed to download {}'.format(url))
     return locs
 
 

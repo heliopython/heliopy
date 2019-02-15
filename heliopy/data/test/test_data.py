@@ -65,7 +65,9 @@ class TestSpice:
             for url in spice.kernel_dict[kernel].urls:
                 if url[:3] == 'ftp':
                     pytest.skip("FTP doesn't work on travis")
-        spice.get_kernel(kernel)
+        with pytest.warns(None) as record:
+            spice.get_kernel(kernel)
+        assert len(record) == 0
 
 
 @pytest.mark.data
