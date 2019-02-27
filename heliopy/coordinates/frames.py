@@ -19,6 +19,8 @@ import astropy.units as u
 
 import sunpy.coordinates.ephemeris as ephem
 
+transform_graph = coords.TransformGraph()
+
 
 class HeliocentricEarthEcliptic(baseframe.BaseCoordinateFrame):
     """
@@ -78,7 +80,7 @@ class GeocentricSolarEcliptic(baseframe.BaseCoordinateFrame):
     obstime = coords.TimeAttribute(default=None)
 
 
-@coords.frame_transform_graph.transform(
+@transform_graph.transform(
     coords.AffineTransform,
     HeliocentricEarthEcliptic,
     GeocentricSolarEcliptic)
@@ -97,5 +99,8 @@ def hee_to_gse(hee_coord, gse_frame):
     return R, offset
 
 
-# TODO: re-enable this when a custom graph can be built
-# __doc__ += astropy_frames._make_transform_graph_docs()
+__doc__ += """
+Transformation graph
+--------------------
+"""
+__doc__ += astropy_frames.make_transform_graph_docs(transform_graph)
