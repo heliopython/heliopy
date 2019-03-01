@@ -80,6 +80,10 @@ class GeocentricSolarEcliptic(baseframe.BaseCoordinateFrame):
     obstime = coords.TimeAttribute(default=None)
 
 
+@coords.frame_transform_graph.transform(
+    coords.AffineTransform,
+    HeliocentricEarthEcliptic,
+    GeocentricSolarEcliptic)
 @transform_graph.transform(
     coords.AffineTransform,
     HeliocentricEarthEcliptic,
