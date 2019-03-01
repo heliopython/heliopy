@@ -19,10 +19,12 @@ def _setup_spice():
     Method to download some common files that spice needs to do orbit
     calculations.
     '''
+    global _SPICE_SETUP
     if not _SPICE_SETUP:
         for kernel in dataspice.generic_kernels:
             loc = dataspice.get_kernel(kernel.short_name)
             spiceypy.furnsh(loc)
+        _SPICE_SETUP = True
 
 
 def furnish(fname):
