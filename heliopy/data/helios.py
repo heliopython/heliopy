@@ -1115,7 +1115,8 @@ def _helios(starttime, endtime, identifier, units=None, badvalues=None,
 def merged(probe, starttime, endtime):
     identifier = f'HELIOS{probe}_40SEC_MAG-PLASMA'
     badvalues = [-1e31]
-    return _helios(starttime, endtime, identifier, badvalues=badvalues)
+    return _helios(starttime, endtime, identifier, badvalues=badvalues,
+                   warn_missing_units=False)
 
 
 merged.__doc__ = _docstring(

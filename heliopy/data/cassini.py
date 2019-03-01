@@ -121,11 +121,11 @@ def mag_1min(starttime, endtime, coords):
             f.close()
             os.remove(f.name)
             raise util.NoDataError()
-        data = pd.read_table(f,
-                             names=['Time', 'Bx', 'By', 'Bz', '|B|',
-                                    'X', 'Y', 'Z', 'Local hour', 'n points'],
-                             delim_whitespace=True,
-                             parse_dates=[0], index_col=0)
+        data = pd.read_csv(f,
+                           names=['Time', 'Bx', 'By', 'Bz', '|B|',
+                                  'X', 'Y', 'Z', 'Local hour', 'n points'],
+                           delim_whitespace=True,
+                           parse_dates=[0], index_col=0)
         f.close()
         return data
 
