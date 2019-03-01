@@ -23,6 +23,7 @@ def _setup_spice():
         for kernel in dataspice.generic_kernels:
             loc = dataspice.get_kernel(kernel.short_name)
             spiceypy.furnsh(loc)
+        _SPICE_SETUP = True
 
 
 def furnish(fname):
