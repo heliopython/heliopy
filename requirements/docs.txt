@@ -1,5 +1,6 @@
 -r extras.txt
 
+graphviz
 matplotlib
 mock
 sphinx
