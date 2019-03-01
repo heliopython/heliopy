@@ -159,7 +159,7 @@ def _swics(starttime, endtime, names, product, units=None, try_download=True):
         readargs = {'names': names,
                     'delim_whitespace': True,
                     'na_values': ['******']}
-        thisdata = pd.read_table(f, **readargs)
+        thisdata = pd.read_csv(f, **readargs)
         thisdata = _convert_ulysses_time(thisdata)
         return thisdata
 
@@ -219,7 +219,7 @@ def fgm_hires(starttime, endtime, try_download=True):
         readargs = {'names': ['year', 'doy', 'hour', 'minute', 'second',
                               'Bx', 'By', 'Bz', '|B|'],
                     'delim_whitespace': True}
-        thisdata = pd.read_table(f, **readargs)
+        thisdata = pd.read_csv(f, **readargs)
         thisdata = _convert_ulysses_time(thisdata)
         return thisdata
 
@@ -290,7 +290,7 @@ def swoops_ions(starttime, endtime, try_download=True):
                               'T_p_large', 'T_p_small',
                               'v_r', 'v_t', 'v_n', 'iqual'],
                     'delim_whitespace': True}
-        thisdata = pd.read_table(f, **readargs)
+        thisdata = pd.read_csv(f, **readargs)
         thisdata = _convert_ulysses_time(thisdata)
         return thisdata
 

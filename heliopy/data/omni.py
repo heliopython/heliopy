@@ -125,7 +125,8 @@ def low(starttime, endtime, try_download=True):
                               local_base_dir / directory)
 
     def processing_func(file):
-        thisdata = pd.read_table(file, names=names, delim_whitespace=True)
+        thisdata = pd.read_csv(file, names=names,
+                               delim_whitespace=True)
         year = thisdata['Year'][0]
         day_list = list(thisdata['Decimal Day'])
         hour_list = list(thisdata['Hour'])
