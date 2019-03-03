@@ -342,7 +342,6 @@ class TestMMS:
         df = mms.fgm(self.probe, 'srvy', self.starttime, self.endtime)
         check_data_output(df)
 
-
     def test_fpi_dis_moms(self):
         df = mms.fpi_dis_moms(self.probe, 'fast', self.starttime, self.endtime)
         check_data_output(df)
@@ -350,13 +349,13 @@ class TestMMS:
     def test_fpi_des_moms(self):
         df = mms.fpi_des_moms(self.probe, 'fast', self.starttime, self.endtime)
         check_data_output(df)
-    '''
 
     def test_fpi_dis_dist(self):
         df = mms.fpi_dis_dist(self.probe, 'fast', self.starttime, self.endtime)
         check_data_output(df)
+    '''
 
-    def test_fpi_des_moms(self):
+    def test_fpi_des_dist(self):
         df = mms.fpi_des_dist(self.probe, 'fast', self.starttime, self.endtime)
         check_data_output(df)
 

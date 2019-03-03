@@ -99,7 +99,7 @@ def available_files(probe, instrument, starttime, endtime, data_rate=''):
 
 
 def download_files(probe, instrument, data_rate, starttime, endtime,
-                   verbose=True, product_string=''):
+                   verbose=True, product_string='', warn_missing_units=True):
     """
     Download MMS files.
 
@@ -121,6 +121,9 @@ def download_files(probe, instrument, data_rate, starttime, endtime,
     product_string : str, optional
         If not empty, this string must be in the filename for it to be
         downloaded.
+    warn_missing_units : bool, optional
+        If ``True``, warnings will be shown for each variable that does not
+        have associated units.
 
     Returns
     -------
@@ -157,7 +160,8 @@ def download_files(probe, instrument, data_rate, starttime, endtime,
 
     return util.process(dirs, fnames, extension, local_base_dir,
                         remote_base_url, download_func, processing_func,
-                        starttime, endtime)
+                        starttime, endtime,
+                        warn_missing_units=warn_missing_units)
 
 
 def _fpi_docstring(product):
@@ -200,7 +204,7 @@ fpi_des_moms.__doc__ = _fpi_docstring('electron distribution moment')
 
 def fpi_dis_dist(probe, mode, starttime, endtime):
     return download_files(probe, 'fpi', mode, starttime, endtime,
-                          product_string='dis-dist')
+                          product_string='dis-dist', warn_missing_units=False)
 
 
 fpi_dis_dist.__doc__ = _fpi_docstring('ion distribution function')
@@ -208,7 +212,7 @@ fpi_dis_dist.__doc__ = _fpi_docstring('ion distribution function')
 
 def fpi_des_dist(probe, mode, starttime, endtime):
     return download_files(probe, 'fpi', mode, starttime, endtime,
-                          product_string='des-dist')
+                          product_string='des-dist', warn_missing_units=False)
 
 
 fpi_des_dist.__doc__ = _fpi_docstring('electron distribution function')
