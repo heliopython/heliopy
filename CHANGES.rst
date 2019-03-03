@@ -1,11 +1,24 @@
 Version 0.6.5
 -------------
 
+New features
+^^^^^^^^^^^^
+
 Bug fixes
 ^^^^^^^^^
 
 - :func:`heliopy.data.spice.get_kernel` now raises a warning instead of an
   error if a kernel can't be downloaded.
+- :func:`heliopy.data.helios.merged` now filters out bad values and converts
+  them to NaNs.
+- :mod:`heliopy.spice` now only loads core SPICE kernels once, instead of every
+  time the module is imported.
+
+Backwards incompatible changes
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+- :func:`heliopy.data.spice.get_kernel` now prints a warning instead of
+  raising an error if a kernel cannot be downloaded.
 
 Version 0.6.4
 -------------
