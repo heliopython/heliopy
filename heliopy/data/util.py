@@ -7,9 +7,9 @@ import datetime as dt
 import ftplib
 import io
 import logging
-import os
 import pathlib as path
 import re
+import shutil
 import sys
 import urllib.error as urlerror
 import urllib.request as urlreq
@@ -163,7 +163,7 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
                 print(str(e))
                 continue
             if new_path is not None:
-                os.rename(new_path, local_file.with_suffix(extension))
+                shutil.copy(new_path, local_file.with_suffix(extension))
 
             raw_fname = _file_match(local_dir, fname + extension)
             # Print a message if file hasn't been downloaded
@@ -518,7 +518,7 @@ def cdf2df(cdf, index_key, dtimeindex=True, badvalues=None, ignore=None):
             micros = utc_comp[:, 8]*(10**2)
             nanos = utc_comp[:, 7]
             utc_comp[:, 6] = millis + micros + nanos
-            utc_comp = np.delete(utc_comp,  np.s_[-2:], axis=1)
+            utc_comp = np.delete(utc_comp, np.s_[-2:], axis=1)
         try:
             index = np.asarray([dt.datetime(*x) for x in utc_comp])
         except ValueError:
