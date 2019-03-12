@@ -1,8 +1,15 @@
-Version 0.6.5
+Version 0.6.6
 -------------
 
-New features
-^^^^^^^^^^^^
+Bug fixes
+^^^^^^^^^
+
+- Data downloaded through CDAS is now moved from a temporary folder using
+  ``shutil``, fixing it when the temp folder and destination folder are on
+  different filesystems.
+
+Version 0.6.5
+-------------
 
 Bug fixes
 ^^^^^^^^^
@@ -40,9 +47,6 @@ New features
   from a server.
 - Importing :mod:`heliopy.spice` now automatically loads common heliospheric
   coordinate systems.
-
-Bug fixes
-^^^^^^^^^
 
 Backwards incompatible changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -97,9 +101,6 @@ Bug fixes
 ^^^^^^^^^
 
 - Fixed :meth:`heliopy.data.mms.fgm_survey` data loading. :issue:`601`
-
-Backwards incompatible changes
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Version 0.6.1
 -------------
