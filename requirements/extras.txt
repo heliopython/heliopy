@@ -6,4 +6,3 @@ requests
 sunpy
 spiceypy
 wget
-deprecated
