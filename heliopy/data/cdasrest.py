@@ -10,10 +10,16 @@ import requests.exceptions
 import tempfile
 import wget
 
+import cdflib
+
+from heliopy import config
 import heliopy.data.util as util
 
 CDAS_BASEURL = 'https://cdaweb.gsfc.nasa.gov/WS/cdasr/1'
 CDAS_HEADERS = {'Accept': 'application/json'}
+CDAS_PARAMS = {'format': 'cdf', 'cdfVersion': 3}
+
+data_dir = pathlib.Path(config['download_dir'])
 
 
 def _docstring(identifier, letter, description):
@@ -37,6 +43,53 @@ def _docstring(identifier, letter, description):
                letter=letter,
                description=description)
     return ds
+
+
+class _CDASDayLoader(util.SingleDayLoader):
+    @property
+    def fname(self):
+        '''
+        Return the filename *without* file extension.
+        '''
+        return '{}_{}{:02}{:02}'.format(
+            self.identifier,
+            self.date.year, self.date.month, self.date.day)
+
+    @property
+    def remote_file(self):
+        if self._remote_file is not None:
+            return self._remote_file
+        query_url = get_cdas_query_url(self.date, None, self.identifier)
+        response = requests.get(
+            query_url, params=CDAS_PARAMS, headers=CDAS_HEADERS)
+        if 'FileDescription' in response.json():
+            self._remote_file = response.json()['FileDescription'][0]['Name']
+        return self._remote_file
+
+    @property
+    def local_directory(self):
+        return data_dir / self.dataset / self.identifier / str(self.date.year)
+
+    @property
+    def raw_extension(self):
+        return '.cdf'
+
+    @property
+    def download_kwargs(self):
+        return dict(params=CDAS_PARAMS, headers=CDAS_HEADERS)
+
+    def load_raw_file(self):
+        cdf = cdflib.CDF(self.local_file)
+        return util.cdf2df(cdf, index_key='Epoch',
+                           badvalues=self.badvalues)
+
+
+def CDASLoader(dataset, identifier, badvalues, units=None):
+    DayLoader = _CDASDayLoader
+    DayLoader.dataset = dataset
+    DayLoader.identifier = identifier
+    DayLoader.badvalues = badvalues
+    return util.DataLoader(DayLoader, units)
 
 
 def _process_cdas(starttime, endtime, identifier, dataset, base_dir,
@@ -74,7 +127,7 @@ def _process_cdas(starttime, endtime, identifier, dataset, base_dir,
                         warn_missing_units=warn_missing_units)
 
 
-def get_variables(dataset, timeout=10):
+def get_variables(dataset):
     """
     Queries server for descriptions of variables in a dataset.
 
@@ -82,8 +135,6 @@ def get_variables(dataset, timeout=10):
     ----------
     dataset : string
         Dataset identifier.
-    timeout : float, optional
-        Timeout on the CDAweb remote requests, in seconds. Defaults to 10s.
 
     Returns
     -------
@@ -97,17 +148,17 @@ def get_variables(dataset, timeout=10):
         'datasets', dataset,
         'variables'
     ])
-    response = requests.get(url, headers=CDAS_HEADERS, timeout=timeout)
+    response = requests.get(url, headers=CDAS_HEADERS)
     return response.json()
 
 
-def get_cdas_url(date, vars, dataset, timeout=10):
+def get_cdas_query_url(date, vars, dataset):
     starttime = datetime.combine(date, time.min)
     endtime = datetime.combine(date, time.max)
     dataview = 'sp_phys'
     if vars is None:
         try:
-            var_info = get_variables(dataset, timeout=timeout)
+            var_info = get_variables(dataset)
         except requests.exceptions.ReadTimeout:
             raise util.NoDataError(
                 'Connection to CDAweb timed out when downloading '
@@ -130,7 +181,7 @@ def get_cdas_url(date, vars, dataset, timeout=10):
     return url
 
 
-def get_data(dataset, date, vars=None, verbose=True, timeout=10):
+def get_data(dataset, date, vars=None, verbose=True):
     """
     Download CDAS data.
 
@@ -145,18 +196,16 @@ def get_data(dataset, date, vars=None, verbose=True, timeout=10):
         dataset will be downloaded.
     verbose : bool, optional
         If ``True``, show a progress bar whilst downloading.
-    timeout : float, optional
-        Timeout on the CDAweb remote requests, in seconds. Defaults to 10s.
 
     Returns
     -------
     data_path : str
         Path to downloaded data (stored in a temporary directroy)
     """
-    url = get_cdas_url(date, vars, dataset, timeout=timeout)
+    url = get_cdas_query_url(date, vars, dataset)
     params = {'format': 'cdf', 'cdfVersion': 3}
     response = requests.get(
-        url, params=params, headers=CDAS_HEADERS, timeout=timeout)
+        url, params=params, headers=CDAS_HEADERS)
     if 'FileDescription' in response.json():
         print('Downloading {} for date {}'.format(dataset, date))
         data_path = wget.download(

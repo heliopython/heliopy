@@ -28,11 +28,8 @@ def _ace(starttime, endtime, identifier, units=None,
     """
     dataset = 'ac'
     badvalues = 1e-31
-    return cdasrest._process_cdas(starttime, endtime, identifier, dataset,
-                                  ace_dir,
-                                  units=units,
-                                  badvalues=badvalues,
-                                  warn_missing_units=warn_missing_units)
+    Loader = cdasrest.CDASLoader(dataset, identifier, badvalues, units)
+    return Loader(starttime, endtime)
 
 
 # Actual download functions start here

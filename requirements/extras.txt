@@ -6,3 +6,4 @@ requests
 sunpy
 spiceypy
 wget
+parfive

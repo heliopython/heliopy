@@ -18,6 +18,7 @@ import sunpy.timeseries as ts
 import warnings
 import collections as coll
 import cdflib
+import parfive
 
 import numpy as np
 import pandas as pd
@@ -26,6 +27,148 @@ import heliopy.data.helper as helper
 from heliopy import config
 use_hdf = config['use_hdf']
 logger = logging.getLogger(__name__)
+
+
+class SingleDayLoader:
+    '''
+    Class for loading data for a single day, that is associated with a single
+    file.
+
+    Parameters
+    ----------
+    date : date
+    '''
+    def __init__(self, date):
+        self.date = date
+        self._remote_file = None
+
+    @property
+    def fname(self):
+        '''
+        Return the filename *without* file extension.
+        '''
+        raise NotImplementedError
+
+    @property
+    def remote_file(self):
+        """
+        Return url of the remote file to download.
+        """
+        raise NotImplementedError
+
+    @property
+    def local_directory(self):
+        """
+        Return the local directory for downloaded file to be stored in.
+        """
+        raise NotImplementedError
+
+    @property
+    def raw_extension(self):
+        """
+        Return extension of raw file including leading dot.
+        """
+        return NotImplementedError
+
+    def load_raw_file(self):
+        """
+        Method to load local raw file.
+
+        Returns
+        -------
+        data : pandas DataFrame
+        """
+        raise NotImplementedError
+
+    @property
+    def local_file(self):
+        """
+        Returns path to local file.
+        """
+        return self.local_directory / (self.fname + self.raw_extension)
+
+    @property
+    def download_kwargs(self):
+        """
+        kwargs to be given to `parfive.Downloader.enque_file`.
+        """
+        return {}
+
+
+class DataLoader:
+    """
+    Parameters
+    ----------
+    day_loader : SingleDayLoader
+    units :
+    warn_missing_units : bool
+    """
+    def __init__(self, day_loader, units=None, warn_missing_units=False):
+        self.DayLoad = day_loader
+        self.units = units
+        self.warn_missing_units = warn_missing_units
+
+    def __call__(self, starttime, endtime):
+        return self.load_data(starttime, endtime)
+
+    def load_data(self, starttime, endtime):
+        data = []
+        # [Date, Startime, Endtime]
+        daylist = _daysplitinterval(starttime, endtime)
+        dl = parfive.Downloader()
+        for date, _, _ in daylist:
+            dload = self.DayLoad(date)
+
+            # Try to load hdf file
+            hdf_file = dload.local_directory / (dload.fname + '.hdf')
+            if hdf_file.exists():
+                logger.info('Loading {}'.format(hdf_file))
+                data.append(pd.read_hdf(hdf_file))
+                continue
+
+            raw_file = dload.local_directory / (dload.fname + dload.raw_extension)
+            if raw_file.exists():
+                continue
+
+            if dload.remote_file is None:
+                # TODO: add a warning or error here
+                continue
+
+            # Queue file to be downloaded
+            logger.info(f'Adding {dload.remote_file} to queue')
+            logger.info(f'Downloading to {dload.local_directory}/{dload.fname}{dload.raw_extension}')
+            dl.enqueue_file(dload.remote_file,
+                            dload.local_directory,
+                            dload.fname + dload.raw_extension,
+                            overwrite=False,
+                            **dload.download_kwargs)
+
+        # Download everything!
+        dl.download()
+
+        # All files downloaded, now loop through again and load them in
+        for date, _, _ in daylist:
+            dload = self.DayLoad(date)
+            # Try to load local raw file
+            raw_file = (dload.local_directory / (dload.fname + dload.raw_extension))
+            if raw_file.exists():
+                logger.info('Loading {}'.format(raw_file))
+                df = dload.load_raw_file()
+                data.append(df)
+                if use_hdf:
+                    # TODO: save to hdf here
+                    pass
+
+        # Loaded all the data, now filter between times
+        data = timefilter(data, starttime, endtime)
+
+        # Attach units
+        if dload.raw_extension == '.cdf':
+            cdf = _load_local(raw_file)
+            units = cdf_units(cdf, manual_units=self.units)
+
+        return units_attach(
+            data, self.units, warn_missing_units=self.warn_missing_units)
 
 
 def process(dirs, fnames, extension, local_base_dir, remote_base_url,
