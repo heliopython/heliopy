@@ -12,6 +12,7 @@ import astropy.units as u
 import cdflib
 import datetime as dt
 from collections import OrderedDict
+import deprecated
 
 from heliopy.data import cdasrest
 from heliopy.data import util
@@ -98,6 +99,11 @@ threedp_e0_emfits.__doc__ = _docstring(
 
 
 # Old (non-CDAS) functions start here
+deprecation_msg = ("WIND pitch angle data products are deprecated and will "
+                   "be removed in version 0.7")
+
+
+@deprecated.deprecated(version="0.6.7", reason=deprecation_msg)
 def swe_h3(starttime, endtime):
     """
     Import 'h3' solar wind electron data product from WIND.
@@ -156,6 +162,7 @@ def swe_h3(starttime, endtime):
                         starttime, endtime, units=units)
 
 
+@deprecated.deprecated(version="0.6.7", reason=deprecation_msg)
 def threedp_sfpd(starttime, endtime):
     """
     Import 'sfpd' wind data.
