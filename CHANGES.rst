@@ -1,3 +1,12 @@
+Version 0.6.7
+-------------
+
+- :func:`heliopy.data.wind.swe_h3` and :func:`heliopy.data.wind.threedp_sfpd`
+  are deprecated and will be removed in version 0.7.0. This is becaue they
+  currently use pandas MultiIndex structures, which are not the recommended
+  way to store 2-or-more dimensional data. In the future they are likely to be
+  re-written to use xarray.
+
 Version 0.6.6
 -------------
 
