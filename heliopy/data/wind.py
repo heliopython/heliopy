@@ -100,7 +100,7 @@ threedp_e0_emfits.__doc__ = _docstring(
 
 # Old (non-CDAS) functions start here
 _deprecation_msg = ("WIND pitch angle data products are deprecated since "
-                   "version 0.6.7 and will be removed in version 0.7")
+                    "version 0.6.7 and will be removed in version 0.7")
 
 
 def swe_h3(starttime, endtime):
