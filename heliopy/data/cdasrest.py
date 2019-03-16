@@ -101,29 +101,7 @@ def get_variables(dataset, timeout=10):
     return response.json()
 
 
-def get_data(dataset, date, vars=None, verbose=True, timeout=10):
-    """
-    Download CDAS data.
-
-    Parameters
-    ----------
-    dataset : string
-        Dataset identifier.
-    date : datetime.date
-        Date to download data for.
-    vars : list of str, optional
-        Variables to download. If ``None``, all variables for the given
-        dataset will be downloaded.
-    verbose : bool, optional
-        If ``True``, show a progress bar whilst downloading.
-    timeout : float, optional
-        Timeout on the CDAweb remote requests, in seconds. Defaults to 10s.
-
-    Returns
-    -------
-    data_path : str
-        Path to downloaded data (stored in a temporary directroy)
-    """
+def get_cdas_url(date, vars, dataset, timeout=10):
     starttime = datetime.combine(date, time.min)
     endtime = datetime.combine(date, time.max)
     dataview = 'sp_phys'
@@ -149,10 +127,34 @@ def get_data(dataset, date, vars=None, verbose=True, timeout=10):
                     ','.join(vars)
                     ])
     url = '/'.join([CDAS_BASEURL, uri])
-    params = {}
-    ext = ''
+    return url
+
+
+def get_data(dataset, date, vars=None, verbose=True, timeout=10):
+    """
+    Download CDAS data.
+
+    Parameters
+    ----------
+    dataset : string
+        Dataset identifier.
+    date : datetime.date
+        Date to download data for.
+    vars : list of str, optional
+        Variables to download. If ``None``, all variables for the given
+        dataset will be downloaded.
+    verbose : bool, optional
+        If ``True``, show a progress bar whilst downloading.
+    timeout : float, optional
+        Timeout on the CDAweb remote requests, in seconds. Defaults to 10s.
+
+    Returns
+    -------
+    data_path : str
+        Path to downloaded data (stored in a temporary directroy)
+    """
+    url = get_cdas_url(date, vars, dataset, timeout=timeout)
     params = {'format': 'cdf', 'cdfVersion': 3}
-    ext = 'cdf'
     response = requests.get(
         url, params=params, headers=CDAS_HEADERS, timeout=timeout)
     if 'FileDescription' in response.json():
