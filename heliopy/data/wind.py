@@ -29,7 +29,7 @@ def _docstring(identifier, description):
 
 
 def _wind(starttime, endtime, identifier, units=None,
-          warn_missing_units=True, badvalues=None):
+          warn_missing_units=False, badvalues=None):
     """
     Generic method for downloading ACE data.
     """
@@ -65,7 +65,7 @@ def mfi_h0(starttime, endtime):
 
 
 mfi_h0.__doc__ = _docstring(
-    'WI_H0_MFI', 'Composite magnetic field data')
+    'WI_H0_MFI', 'Composite magnetic field')
 
 
 def mfi_h2(starttime, endtime):
@@ -77,7 +77,7 @@ def mfi_h2(starttime, endtime):
 
 
 mfi_h2.__doc__ = _docstring(
-    'WI_H2_MFI', 'High resolution magnetic field data')
+    'WI_H2_MFI', 'High resolution magnetic field')
 
 
 def threedp_pm(starttime, endtime):
@@ -86,7 +86,7 @@ def threedp_pm(starttime, endtime):
 
 
 threedp_pm.__doc__ = _docstring(
-    'WI_PM_3DP', '1 spin resolution ion (proton and alpha) moments')
+    'WI_PM_3DP', '1 spin resolution ion (proton and alpha) moment')
 
 
 def threedp_e0_emfits(starttime, endtime):
@@ -95,7 +95,7 @@ def threedp_e0_emfits(starttime, endtime):
 
 
 threedp_e0_emfits.__doc__ = _docstring(
-    'WI_EMFITS_E0_3DP', 'electron moments')
+    'WI_EMFITS_E0_3DP', 'Electron moment')
 
 
 # Old (non-CDAS) functions start here
