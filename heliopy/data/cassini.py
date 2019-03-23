@@ -196,9 +196,9 @@ def mag_hires(starttime, endtime, try_download=True):
             f.close()
             os.remove(f.name)
             raise util.NoDataError()
-        df = pd.read_table(f, names=['Time', 'Bx', 'By', 'Bz'],
-                           delim_whitespace=True,
-                           parse_dates=[0], index_col=0)
+        df = pd.read_csv(f, names=['Time', 'Bx', 'By', 'Bz'],
+                         delim_whitespace=True,
+                         parse_dates=[0], index_col=0)
         return df
 
     return util.process(dirs, fnames, extension, local_base_dir,
