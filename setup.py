@@ -41,5 +41,6 @@ setup(name='HelioPy',
       packages=['heliopy',
                 'heliopy.coordinates',
                 'heliopy.data',
+                'heliopy.spice',
                 'heliopy.util'],
       package_data={'heliopy': ['heliopyrc']})
