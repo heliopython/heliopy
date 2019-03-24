@@ -125,14 +125,16 @@ class DataLoader:
                 logger.info('Loading {}'.format(hdf_file))
                 data.append(pd.read_hdf(hdf_file))
                 continue
+            logger.info(f'Could not locate {hdf_file}')
 
             raw_file = (dload.local_directory /
                         (dload.fname + dload.raw_extension))
             if raw_file.exists():
                 continue
+            logger.info(f'Could not locate {raw_file}')
 
             if dload.remote_file is None:
-                # TODO: add a warning or error here
+                logger.info(f'Could not find remote file for date {date}')
                 continue
 
             # Queue file to be downloaded
