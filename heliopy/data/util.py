@@ -126,7 +126,8 @@ class DataLoader:
                 data.append(pd.read_hdf(hdf_file))
                 continue
 
-            raw_file = dload.local_directory / (dload.fname + dload.raw_extension)
+            raw_file = (dload.local_directory /
+                        (dload.fname + dload.raw_extension))
             if raw_file.exists():
                 continue
 
@@ -136,7 +137,8 @@ class DataLoader:
 
             # Queue file to be downloaded
             logger.info(f'Adding {dload.remote_file} to queue')
-            logger.info(f'Downloading to {dload.local_directory}/{dload.fname}{dload.raw_extension}')
+            logger.info(f'Downloading to {dload.local_directory}/'
+                        f'{dload.fname}{dload.raw_extension}')
             dl.enqueue_file(dload.remote_file,
                             dload.local_directory,
                             dload.fname + dload.raw_extension,
@@ -150,7 +152,8 @@ class DataLoader:
         for date, _, _ in daylist:
             dload = self.DayLoad(date)
             # Try to load local raw file
-            raw_file = (dload.local_directory / (dload.fname + dload.raw_extension))
+            raw_file = (dload.local_directory /
+                        (dload.fname + dload.raw_extension))
             if raw_file.exists():
                 logger.info('Loading {}'.format(raw_file))
                 df = dload.load_raw_file()
@@ -661,8 +664,8 @@ def cdf2df(cdf, index_key, dtimeindex=True, badvalues=None, ignore=None):
     try:
         utc_comp = cdflib.cdfepoch.breakdown(index_, to_np=True)
         if utc_comp.shape[1] == 9:
-            millis = utc_comp[:, 6]*(10**3)
-            micros = utc_comp[:, 8]*(10**2)
+            millis = utc_comp[:, 6] * (10**3)
+            micros = utc_comp[:, 8] * (10**2)
             nanos = utc_comp[:, 7]
             utc_comp[:, 6] = millis + micros + nanos
             utc_comp = np.delete(utc_comp, np.s_[-2:], axis=1)
