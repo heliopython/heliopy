@@ -1,7 +1,9 @@
 
 deps-run: &deps-install
-  name: Install Python dependencies
+  name: Install dependencies
   command: |
+    apt update
+    apt install -y graphviz
     python3 -m venv venv
     . venv/bin/activate
     pip install --user --progress-bar off -r requirements/docs.txt
