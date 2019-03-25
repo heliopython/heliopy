@@ -317,7 +317,7 @@ def electron_dist_single(probe, year, doy, hour, minute, second,
                 'skiprows': startline,
                 'nrows': nlines}
     # Read in data
-    dist = pd.read_table(filename, **readargs)
+    dist = pd.read_csv(filename, **readargs)
     if dist.empty:
         return None
 
@@ -824,7 +824,7 @@ def ion_dist_single(probe, year, doy, hour, minute, second,
                 'skiprows': ionstartline,
                 'nrows': nionlines}
     # Read in data
-    dist = pd.read_table(filename, **readargs)
+    dist = pd.read_csv(filename, **readargs)
 
     # Remove spacecraft abberation
     # Assumes that spacecraft motion is always in the ecliptic (x-y)
@@ -1000,8 +1000,8 @@ def mag_4hz(probe, starttime, endtime, try_download=True):
         # Read in data
         headings = ['Time', 'Bx', 'By', 'Bz', '|B|']
         cols = [0, 4, 5, 6, 7]
-        data = pd.read_table(f, names=headings, header=None,
-                             usecols=cols, delim_whitespace=True)
+        data = pd.read_csv(f, names=headings, header=None,
+                           usecols=cols, delim_whitespace=True)
 
         # Convert date info to datetime
         data['Time'] = pd.to_datetime(data['Time'], format='%Y-%m-%dT%H:%M:%S')
