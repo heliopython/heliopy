@@ -18,8 +18,9 @@ from heliopy import config
 
 import pandas as pd
 from datetime import datetime, timedelta
-import urllib
+import urllib.request
 import pytest
+import pathlib
 import sunpy
 import warnings
 import os
@@ -392,6 +393,30 @@ class TestHelios:
         probe = '2'
         df = helios.mag_ness(probe, starttime, endtime)
         check_data_output(df)
+
+    def test_distribution_funcs(self):
+        local_dir = pathlib.Path(helios.helios_dir)
+        local_dir = local_dir / 'helios1' / 'dist' / '1974' / '346'
+        local_dir.mkdir(parents=True, exist_ok=True)
+        remote_file = ('http://helios-data.ssl.berkeley.edu/data/E1_experiment'
+                       '/helios_original/helios_1/1974/346/'
+                       'h1y74d346h03m27s21_hdm.1')
+        local_fname, _ = urllib.request.urlretrieve(
+            remote_file, './h1y74d346h03m27s21_hdm.1')
+        local_fname = pathlib.Path(local_fname)
+        local_fname.rename(local_dir / local_fname.name)
+
+        helios.integrated_dists(
+            '1', datetime(1974, 12, 12), datetime(1974, 12, 13))
+
+        helios.distparams(
+            '1', datetime(1974, 12, 12), datetime(1974, 12, 13))
+
+        helios.electron_dists(
+            '1', datetime(1974, 12, 12), datetime(1974, 12, 13))
+
+        helios.ion_dists(
+            '1', datetime(1974, 12, 12), datetime(1974, 12, 13))
 
     # Uncomment me when Helios FTP server is fixed
     """
