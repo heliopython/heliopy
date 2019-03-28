@@ -13,6 +13,7 @@ import warnings
 
 from urllib.request import urlretrieve
 import urllib.error
+import requests
 
 from heliopy import config
 import heliopy.data.util as util
@@ -68,32 +69,26 @@ spacecraft_kernels = [_Kernel('Helios 1', 'helios1',
                               'https://naif.jpl.nasa.gov/pub/naif/JUNO/kernels/spk/juno_rec_orbit.bsp',
                               'https://naif.jpl.nasa.gov/pub/naif/JUNO/kernels/spk/aareadme.txt'),
                       _Kernel('STEREO-A', 'stereo_a',
-                              ['https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/depm/ahead/ahead_2006_350_01.depm.bsp',
-                               'https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/depm/ahead/ahead_2008_037_01.depm.bsp',
-                               'https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/depm/ahead/ahead_2008_078_01.depm.bsp',
-                               'https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/depm/ahead/ahead_2010_208_01.depm.bsp',
-                               'https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/depm/ahead/ahead_2012_138_01.depm.bsp',
-                               'https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/depm/ahead/ahead_2013_130_01.depm.bsp',
-                               'https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/depm/ahead/ahead_2015_076_01.depm.bsp',
-                               'https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/depm/ahead/ahead_2015_219_01.depm.bsp',
-                               'https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/depm/ahead/ahead_2018_019_01.depm.bsp',
-                               'https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/depm/ahead/ahead_2019_030_01.depm.bsp',
-                               'https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/depm/ahead/ahead_2019_045_01.depm.bsp',
-                               'https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/depm/ahead/ahead_2019_060_01.depm.bsp',
-                               'https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/depm/ahead/ahead_2019_063_01.depm.bsp',
-                               'https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/depm/ahead/ahead_2019_080_01.depm.bsp', ],
+                              [
+                                  "https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/depm/ahead/{}".format(
+                                      S.split('"')[1]
+                                  )
+                                  for S in requests.get(
+                                      "https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/depm/ahead/"
+                                  ).text.split("href")
+                                  if ".bsp" in S
+                              ],
                               ''),
                       _Kernel('STEREO-B', 'stereo_b',
-                              ['https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/depm/behind/behind_2007_021_01.depm.bsp',
-                               'https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/depm/behind/behind_2007_053_01.depm.bsp',
-                               'https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/depm/behind/behind_2008_037_01.depm.bsp',
-                               'https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/depm/behind/behind_2008_078_01.depm.bsp',
-                               'https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/depm/behind/behind_2010_203_01.depm.bsp',
-                               'https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/depm/behind/behind_2011_193_01.depm.bsp',
-                               'https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/depm/behind/behind_2012_265_01.depm.bsp',
-                               'https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/depm/behind/behind_2014_002_01.depm.bsp',
-                               'https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/depm/behind/behind_2014_271_01.depm.bsp',
-                               'https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/depm/behind/behind_2016_256_01.depm.bsp', ],
+                              [
+                                  "https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/depm/behind/{}".format(
+                                      S.split('"')[1]
+                                  )
+                                  for S in requests.get(
+                                      "https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/depm/behind/"
+                                  ).text.split("href")
+                                  if ".bsp" in S
+                              ],
                               ''),
                       _Kernel('Ulysses', 'ulysses',
                               ['https://naif.jpl.nasa.gov/pub/naif/ULYSSES/kernels/spk/ulysses_1990_2009_2050.bsp',
