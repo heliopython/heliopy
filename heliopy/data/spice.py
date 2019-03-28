@@ -44,6 +44,25 @@ class _Kernel:
             name_doc, self.short_name, url_doc)
 
 
+def _stereo_kernels(probe):
+    if not isinstance(probe, str):
+        raise TypeError('argument not of type \'str\'')
+    if probe == 'ahead' or probe == 'behind':
+        return [
+            'https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/depm/{}/{}'.format(
+                probe, S.split('"')[1]
+            )
+            for S in requests.get(
+                'https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/depm/{}/'.format(
+                    probe
+                )
+            ).text.split('href')
+            if '.bsp' in S
+        ]
+    else:
+        raise ValueError('argument should be either \'ahead\' or \'behind\'')
+
+
 generic_kernels = [_Kernel('Leap Second Kernel', 'lsk',
                            'https://naif.jpl.nasa.gov/pub/naif/generic_kernels/lsk/naif0012.tls'),
                    _Kernel('Planet trajectories', 'planet_trajectories',
@@ -69,26 +88,10 @@ spacecraft_kernels = [_Kernel('Helios 1', 'helios1',
                               'https://naif.jpl.nasa.gov/pub/naif/JUNO/kernels/spk/juno_rec_orbit.bsp',
                               'https://naif.jpl.nasa.gov/pub/naif/JUNO/kernels/spk/aareadme.txt'),
                       _Kernel('STEREO-A', 'stereo_a',
-                              [
-                                  "https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/depm/ahead/{}".format(
-                                      S.split('"')[1]
-                                  )
-                                  for S in requests.get(
-                                      "https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/depm/ahead/"
-                                  ).text.split("href")
-                                  if ".bsp" in S
-                              ],
+                              _stereo_kernels('ahead'),
                               ''),
                       _Kernel('STEREO-B', 'stereo_b',
-                              [
-                                  "https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/depm/behind/{}".format(
-                                      S.split('"')[1]
-                                  )
-                                  for S in requests.get(
-                                      "https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/depm/behind/"
-                                  ).text.split("href")
-                                  if ".bsp" in S
-                              ],
+                              _stereo_kernels('behind'),
                               ''),
                       _Kernel('Ulysses', 'ulysses',
                               ['https://naif.jpl.nasa.gov/pub/naif/ULYSSES/kernels/spk/ulysses_1990_2009_2050.bsp',
