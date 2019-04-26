@@ -98,6 +98,8 @@ spacecraft_kernels = [_Kernel('Helios 1', 'helios1',
                                'https://naif.jpl.nasa.gov/pub/naif/ULYSSES/kernels/spk/ulysses_1990_2009_2050.cmt']),
                       _Kernel('Parker Solar Probe', 'psp',
                               ['https://sppgway.jhuapl.edu/MOC/reconstructed_ephemeris/2018/spp_recon_20180812_20181008_v001.bsp',
+                               'https://sppgway.jhuapl.edu/MOC/reconstructed_ephemeris/2018/spp_recon_20181008_20190120_v001.bsp',
+                               'https://sppgway.jhuapl.edu/MOC/reconstructed_ephemeris/2019/spp_recon_20190120_20190416_v001.bsp',
                                ])]
 
 
