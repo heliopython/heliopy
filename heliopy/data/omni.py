@@ -6,6 +6,7 @@ https://cdaweb.gsfc.nasa.gov/pub/data/omni.
 """
 import pathlib as path
 
+import numpy as np
 import pandas as pd
 import astropy.units as u
 import datetime as dt
@@ -135,6 +136,8 @@ def low(starttime, endtime, try_download=True):
         thisdata['Time'] = pd.to_datetime(time_index)
         thisdata = thisdata.set_index('Time')
         thisdata = thisdata.drop(['Year', 'Decimal Day', 'Hour'], axis=1)
+        thisdata[thisdata == 9999.0] = np.nan
+        thisdata[thisdata == 999.9] = np.nan
         return thisdata
 
     def convert_datetime(year, day_list, hour_list, len_):
