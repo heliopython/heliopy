@@ -105,8 +105,8 @@ def get_cdas_url(startdate, vars, dataset, timeout=10, enddate=None):
     """
     Get URL to download CDAS data.
 
-    Paramters
-    ---------
+    Parameters
+    ----------
     startdate : datetime.date
     vars :
     dataset :
