@@ -101,9 +101,27 @@ def get_variables(dataset, timeout=10):
     return response.json()
 
 
-def get_cdas_url(date, vars, dataset, timeout=10):
-    starttime = datetime.combine(date, time.min)
-    endtime = datetime.combine(date, time.max)
+def get_cdas_url(startdate, vars, dataset, timeout=10, enddate=None):
+    """
+    Get URL to download CDAS data.
+
+    Paramters
+    ---------
+    startdate : datetime.date
+    vars :
+    dataset :
+    timeout : int, optional
+    enddate : datetime.data, optional
+        If ``None``, gets the URL for a single day of data.
+
+    Returns
+    -------
+    url : str
+    """
+    if enddate is None:
+        enddate = startdate
+    starttime = datetime.combine(startdate, time.min)
+    endtime = datetime.combine(enddate, time.max)
     dataview = 'sp_phys'
     if vars is None:
         try:
@@ -130,7 +148,7 @@ def get_cdas_url(date, vars, dataset, timeout=10):
     return url
 
 
-def get_data(dataset, date, vars=None, verbose=True, timeout=10):
+def get_data(dataset, date, vars=None, verbose=True, timeout=10, enddate=None):
     """
     Download CDAS data.
 
@@ -147,13 +165,15 @@ def get_data(dataset, date, vars=None, verbose=True, timeout=10):
         If ``True``, show a progress bar whilst downloading.
     timeout : float, optional
         Timeout on the CDAweb remote requests, in seconds. Defaults to 10s.
+    enddate : datetime.data, optional
+        If ``None``, gets a single day of data.
 
     Returns
     -------
     data_path : str
         Path to downloaded data (stored in a temporary directroy)
     """
-    url = get_cdas_url(date, vars, dataset, timeout=timeout)
+    url = get_cdas_url(date, vars, dataset, timeout=timeout, enddate=enddate)
     params = {'format': 'cdf', 'cdfVersion': 3}
     response = requests.get(
         url, params=params, headers=CDAS_HEADERS, timeout=timeout)
