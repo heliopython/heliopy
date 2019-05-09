@@ -44,17 +44,21 @@ class _Kernel:
             name_doc, self.short_name, url_doc)
 
 
-def _stereo_kernels(probe):
+def _stereo_kernels(probe, type):
+    '''
+    Probe: 'ahead' or 'behind'
+    type: 'epm' or 'depm'
+    '''
     if not isinstance(probe, str):
         raise TypeError('argument not of type \'str\'')
     if probe == 'ahead' or probe == 'behind':
         return [
-            'https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/depm/{}/{}'.format(
-                probe, S.split('"')[1]
+            'https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/{}/{}/{}'.format(
+                type, probe, S.split('"')[1]
             )
             for S in requests.get(
-                'https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/depm/{}/'.format(
-                    probe
+                'https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/{}/{}/'.format(
+                    type, probe
                 )
             ).text.split('href')
             if '.bsp' in S
@@ -88,10 +92,10 @@ spacecraft_kernels = [_Kernel('Helios 1', 'helios1',
                               'https://naif.jpl.nasa.gov/pub/naif/JUNO/kernels/spk/juno_rec_orbit.bsp',
                               'https://naif.jpl.nasa.gov/pub/naif/JUNO/kernels/spk/aareadme.txt'),
                       _Kernel('STEREO-A', 'stereo_a',
-                              _stereo_kernels('ahead'),
+                              _stereo_kernels('ahead', 'depm'),
                               ''),
                       _Kernel('STEREO-B', 'stereo_b',
-                              _stereo_kernels('behind'),
+                              _stereo_kernels('behind', 'depm'),
                               ''),
                       _Kernel('Ulysses', 'ulysses',
                               ['https://naif.jpl.nasa.gov/pub/naif/ULYSSES/kernels/spk/ulysses_1990_2009_2050.bsp',
@@ -111,12 +115,11 @@ predicted_kernels = [
             ['https://sppgway.jhuapl.edu/MOC/ephemeris//spp_nom_20180812_20250831_v035_RO2.bsp']
             ),
     _Kernel('STEREO-A', 'stereo_a_pred',
-            ['https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/epm/ahead/ahead_2017_061_5295day_predict.epm.bsp']
-            ),
+            _stereo_kernels('ahead', 'epm'),
+            ''),
     _Kernel('STEREO-B', 'stereo_b_pred',
-            ['https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/epm/behind/behind_2009_049_definitive_predict.epm.bsp',
-             'https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/epm/behind/behind_2019_060_01.epm.bsp']
-            ),
+            _stereo_kernels('behind', 'epm'),
+            ''),
     _Kernel('Juno Predicted', 'juno_pred',
             'https://naif.jpl.nasa.gov/pub/naif/JUNO/kernels/spk/juno_pred_orbit.bsp',
             'https://naif.jpl.nasa.gov/pub/naif/JUNO/kernels/spk/aareadme.txt'
