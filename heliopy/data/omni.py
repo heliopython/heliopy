@@ -12,12 +12,50 @@ import astropy.units as u
 import datetime as dt
 from collections import OrderedDict
 
-from heliopy.data import util
 from heliopy import config
+from heliopy.data import cdasrest
+from heliopy.data import util
 
 data_dir = path.Path(config['download_dir'])
 omni_dir = data_dir / 'omni'
 omni_url = 'https://cdaweb.gsfc.nasa.gov/pub/data/omni/'
+
+
+def _docstring(identifier, extra):
+    return cdasrest._docstring(identifier, 'C', extra)
+
+
+def _omni(starttime, endtime, identifier, units=None, badvalues=None,
+          warn_missing_units=True, splitfun=None):
+    """
+    Generic method for downloading OMNI data.
+    """
+    dataset = 'omni'
+    return cdasrest._process_cdas(starttime, endtime, identifier, dataset,
+                                  omni_dir,
+                                  units=units,
+                                  badvalues=badvalues,
+                                  warn_missing_units=warn_missing_units,
+                                  splitfun=splitfun)
+
+
+def hourly(starttime, endtime):
+    identifier = 'OMNI2_H0_MRG1HR'
+
+    def splitter(start, end):
+        start = start.date()
+        end = end.date()
+        dates = []
+        while start < end:
+            if start.month < 7:
+                dates.append(dt.date(start.year, 1, 1))
+            else:
+                dates.append(dt.date(start.year, 7, 1))
+            month = start.month + 6
+            start = dt.date(start.year + month // 12, month % 12, 1)
+        return dates
+
+    return _omni(starttime, endtime, identifier, splitfun=splitter)
 
 
 def low(starttime, endtime, try_download=True):

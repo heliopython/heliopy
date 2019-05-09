@@ -65,12 +65,22 @@ def _daysplitinterval(starttime, endtime):
 
 
 def _process_cdas(starttime, endtime, identifier, dataset, base_dir,
-                  units=None, badvalues=None, warn_missing_units=True):
+                  units=None, badvalues=None, warn_missing_units=True,
+                  splitfun=None):
     """
     Generic method for downloading cdas data.
+
+    Paramters
+    ---------
+    splitfun : callable, optional
+        Must take (starttime, endtime) as arguments and return a list of dates.
     """
     relative_dir = pathlib.Path(identifier)
     daylist = _daysplitinterval(starttime, endtime)
+    if splitfun is None:
+        daylist = _daysplitinterval(starttime, endtime)
+    else:
+        daylist = splitfun(starttime, endtime)
     dirs = []
     fnames = []
     dates = []

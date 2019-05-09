@@ -436,8 +436,12 @@ class TestOmni:
         self.starttime = datetime(1970, 1, 1, 0, 0, 0)
         self.endtime = datetime(1970, 1, 2, 0, 0, 0)
 
-    def test_mag(self):
+    def test_low(self):
         df = omni.low(self.starttime, self.endtime)
+        check_data_output(df)
+
+    def test_hourly(self):
+        df = omni.hourly(self.starttime, self.endtime)
         check_data_output(df)
 
 
