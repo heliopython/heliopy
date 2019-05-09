@@ -3,12 +3,13 @@ Helper methods for using the CDAS REST web services.
 
 For more information see https://cdaweb.sci.gsfc.nasa.gov/WebServices/REST/
 """
-from datetime import datetime, time
+from datetime import datetime, time, timedelta
 import pathlib
-import requests
-import requests.exceptions
 import tempfile
 import wget
+
+import requests
+import requests.exceptions
 
 import heliopy.data.util as util
 
@@ -59,7 +60,7 @@ def _daysplitinterval(starttime, endtime):
     starttime_orig = starttime
     while starttime.date() <= endtime.date():
         out.append(starttime.date())
-        starttime += dt.timedelta(days=1)
+        starttime += timedelta(days=1)
     return out
 
 
