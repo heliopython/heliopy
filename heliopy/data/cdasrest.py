@@ -39,20 +39,42 @@ def _docstring(identifier, letter, description):
     return ds
 
 
+def _daysplitinterval(starttime, endtime):
+    """
+    Splits an interval into a list of dates.
+
+    Parameters
+    ----------
+    starttime : datetime
+        Start date/time of interval
+    endtime : datetime
+        End date/time of interval
+
+    Returns
+    -------
+    intervals : list of datetime.date
+    """
+    assert starttime < endtime, 'Start datetime must be before end datetime'
+    out = []
+    starttime_orig = starttime
+    while starttime.date() <= endtime.date():
+        out.append(starttime.date())
+        starttime += dt.timedelta(days=1)
+    return out
+
+
 def _process_cdas(starttime, endtime, identifier, dataset, base_dir,
                   units=None, badvalues=None, warn_missing_units=True):
     """
     Generic method for downloading cdas data.
     """
     relative_dir = pathlib.Path(identifier)
-    # Directory relative to main WIND data directory
-    daylist = util._daysplitinterval(starttime, endtime)
+    daylist = _daysplitinterval(starttime, endtime)
     dirs = []
     fnames = []
     dates = []
     extension = '.cdf'
-    for day in daylist:
-        date = day[0]
+    for date in daylist:
         dates.append(date)
         filename = '{}_{}_{}{:02}{:02}'.format(
             dataset, identifier, date.year, date.month, date.day)
