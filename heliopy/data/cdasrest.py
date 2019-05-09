@@ -4,6 +4,7 @@ Helper methods for using the CDAS REST web services.
 For more information see https://cdaweb.sci.gsfc.nasa.gov/WebServices/REST/
 """
 from datetime import datetime, time, timedelta
+from dateutil.relativedelta import relativedelta
 import pathlib
 import tempfile
 import wget
@@ -95,7 +96,8 @@ def _process_cdas(starttime, endtime, identifier, dataset, base_dir,
 
     def download_func(remote_base_url, local_base_dir,
                       directory, fname, remote_fname, extension, date):
-        return get_data(identifier, date)
+        return get_data(identifier, date,
+                        enddate=date + relativedelta(months=6))
 
     def processing_func(cdf):
         return util.cdf2df(cdf, index_key='Epoch',

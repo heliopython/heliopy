@@ -10,6 +10,7 @@ import numpy as np
 import pandas as pd
 import astropy.units as u
 import datetime as dt
+from dateutil.relativedelta import relativedelta
 from collections import OrderedDict
 
 from heliopy import config
@@ -40,7 +41,7 @@ def _omni(starttime, endtime, identifier, units=None, badvalues=None,
 
 
 def hourly(starttime, endtime):
-    identifier = 'OMNI2_H0_MRG1HR'
+    identifier = 'OMNI_COHO1HR_MERGED_MAG_PLASMA'
 
     def splitter(start, end):
         start = start.date()
@@ -51,8 +52,7 @@ def hourly(starttime, endtime):
                 dates.append(dt.date(start.year, 1, 1))
             else:
                 dates.append(dt.date(start.year, 7, 1))
-            month = start.month + 6
-            start = dt.date(start.year + month // 12, month % 12, 1)
+            start = start + relativedelta(months=6)
         return dates
 
     return _omni(starttime, endtime, identifier, splitfun=splitter)
