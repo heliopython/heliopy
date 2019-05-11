@@ -154,6 +154,8 @@ def cdf_dict(unit_string):
                         ('particles cm^-3', u.cm**-3),
                         ('n/cc (from moments)', u.cm**-3),
                         ('n/cc (from fits)', u.cm**-3),
+                        ('#/cm3', u.cm**-3),
+                        ('km/sec', u.km / u.s)
                         ('km/sec (from fits)', u.km / u.s),
                         ('km/sec (from moments)', u.km / u.s),
                         ('ionic charge', u.electron),
@@ -173,6 +175,7 @@ def cdf_dict(unit_string):
                         ('nT DSL', u.nT),
                         ('nT SSL', u.nT),
                         ('msec', u.ms),
+                        ('milliseconds', u.ms),
                         ('ionic charge', ionic_charge)])
     try:
         return units[unit_string]
