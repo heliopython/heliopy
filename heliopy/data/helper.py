@@ -139,7 +139,7 @@ def cdf_dict(unit_string):
     Method to obtain the unit denoted by the strings inside the CDF files in
     the UNIT attribute.
     """
-    ionic_charge = u.def_unit('Charged State', 1.6021766*(10**-19) * u.C)
+    ionic_charge = u.def_unit('Charged State', 1.6021766 * (10**-19) * u.C)
 
     units = OrderedDict([('ratio', u.dimensionless_unscaled),
                         ('Unitless', u.dimensionless_unscaled),
@@ -161,8 +161,10 @@ def cdf_dict(unit_string):
                         ('Re', u.earthRad),
                         ('Degrees', u.deg),
                         ('degrees', u.deg),
+                        ('Deg', u.deg),
                         ('deg (from fits)', u.deg),
                         ('deg (from moments)', u.deg),
+                        ('Deg K', u.K),
                         ('#/{cc*(cm/s)^3}', (u.cm**3 * (u.cm / u.s)**3)**-1),
                         ('sec', u.s),
                         ('seconds', u.s),

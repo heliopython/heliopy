@@ -344,11 +344,13 @@ def cdf_units(cdf_, manual_units=None, length=None):
                     temp_unit = manual_units[key]
                 elif helper.cdf_dict(unit_str):
                     temp_unit = helper.cdf_dict(unit_str)
-                if unit_str is None:
-                    message = "The CDF provided units ({}) for key '{}' \
-                    are unknown".format(unit_str, key)
-                    warnings.warn(message, Warning)
+
+                if temp_unit is None:
+                    message = (f"The CDF provided units ('{unit_str}') for"
+                               f" key '{key}' are unknown")
+                    warnings.warn(message)
                     continue
+
         if temp_unit is not None:
             if isinstance(val, list):
                 units.update(coll.OrderedDict.fromkeys(val, temp_unit))
