@@ -160,17 +160,13 @@ def merged(probe, starttime, endtime, try_download=True):
                         try_download=try_download)
 
 
-def _imp8(starttime, endtime, identifier, units=None, badvalues=None,
-          warn_missing_units=True):
+def _imp8(starttime, endtime, identifier, units=None):
     """
     Generic method for downloading IMP8 data.
     """
     dataset = 'imp8'
     return cdasrest._process_cdas(starttime, endtime, identifier, dataset,
-                                  imp_dir,
-                                  units=units,
-                                  badvalues=badvalues,
-                                  warn_missing_units=warn_missing_units)
+                                  imp_dir, units=units)
 
 
 def _docstring(identifier, extra):
@@ -179,7 +175,7 @@ def _docstring(identifier, extra):
 
 def i8_mitplasma(starttime, endtime):
     identifier = 'I8_H0_MITPLASMA'
-    return _imp8(starttime, endtime, identifier, warn_missing_units=False)
+    return _imp8(starttime, endtime, identifier)
 
 
 i8_mitplasma.__doc__ = _docstring(
@@ -210,7 +206,7 @@ def i8_mag15s(starttime, endtime):
     for coord in ['GSE', 'GSET', 'GSM', 'GSMT']:
         for i in range(3):
             units[f'SC_Pos_{coord}_{i}'] = u.earthRad
-    return _imp8(starttime, endtime, identifier, units=units)
+    return _imp8(starttime, endtime, identifier)# , units=units)
 
 
 i8_mag15s.__doc__ = _docstring('I8_15SEC_MAG', '15 second magnetic field')
