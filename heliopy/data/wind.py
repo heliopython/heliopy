@@ -28,8 +28,7 @@ def _docstring(identifier, description):
     return cdasrest._docstring(identifier, 'W', description)
 
 
-def _wind(starttime, endtime, identifier, units=None,
-          warn_missing_units=False, badvalues=None):
+def _wind(starttime, endtime, identifier, units=None, badvalues=None):
     """
     Generic method for downloading ACE data.
     """
@@ -37,19 +36,14 @@ def _wind(starttime, endtime, identifier, units=None,
     return cdasrest._process_cdas(starttime, endtime, identifier, dataset,
                                   wind_dir,
                                   units=units,
-                                  badvalues=badvalues,
-                                  warn_missing_units=warn_missing_units)
+                                  badvalues=badvalues)
 
 
 # Actual download functions start here
 def swe_h1(starttime, endtime):
     identifier = 'WI_H1_SWE'
     badvalues = 99999.9
-    units = OrderedDict([('year', u.year),
-                         ('fit_flag', u.dimensionless_unscaled),
-                         ('ChisQ_DOF_nonlin', u.dimensionless_unscaled)])
-    return _wind(starttime, endtime, identifier,
-                 units=units, badvalues=badvalues)
+    return _wind(starttime, endtime, identifier, badvalues=badvalues)
 
 
 swe_h1.__doc__ = _docstring(
@@ -58,10 +52,7 @@ swe_h1.__doc__ = _docstring(
 
 def mfi_h0(starttime, endtime):
     identifier = 'WI_H0_MFI'
-    units = OrderedDict([('Bx_gse', u.nT), ('By_gse', u.nT),
-                        ('Bz_gse', u.nT)])
-    return _wind(starttime, endtime, identifier,
-                 units=units)
+    return _wind(starttime, endtime, identifier)
 
 
 mfi_h0.__doc__ = _docstring(
@@ -70,10 +61,7 @@ mfi_h0.__doc__ = _docstring(
 
 def mfi_h2(starttime, endtime):
     identifier = 'WI_H2_MFI'
-    units = OrderedDict([('Bx_gse', u.nT), ('By_gse', u.nT),
-                        ('Bz_gse', u.nT)])
-    return _wind(starttime, endtime, identifier,
-                 units=units)
+    return _wind(starttime, endtime, identifier)
 
 
 mfi_h2.__doc__ = _docstring(
