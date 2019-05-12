@@ -155,7 +155,7 @@ def cdf_dict(unit_string):
                         ('n/cc (from moments)', u.cm**-3),
                         ('n/cc (from fits)', u.cm**-3),
                         ('#/cm3', u.cm**-3),
-                        ('km/sec', u.km / u.s)
+                        ('km/sec', u.km / u.s),
                         ('km/sec (from fits)', u.km / u.s),
                         ('km/sec (from moments)', u.km / u.s),
                         ('ionic charge', u.electron),
