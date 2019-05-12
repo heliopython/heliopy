@@ -139,7 +139,7 @@ def cdf_dict(unit_string):
     Method to obtain the unit denoted by the strings inside the CDF files in
     the UNIT attribute.
     """
-    ionic_charge = u.def_unit('Charged State', 1.6021766*(10**-19) * u.C)
+    ionic_charge = u.def_unit('Charged State', 1.6021766 * (10**-19) * u.C)
 
     units = OrderedDict([('ratio', u.dimensionless_unscaled),
                         ('Unitless', u.dimensionless_unscaled),
@@ -154,6 +154,8 @@ def cdf_dict(unit_string):
                         ('particles cm^-3', u.cm**-3),
                         ('n/cc (from moments)', u.cm**-3),
                         ('n/cc (from fits)', u.cm**-3),
+                        ('#/cm3', u.cm**-3),
+                        ('km/sec', u.km / u.s),
                         ('km/sec (from fits)', u.km / u.s),
                         ('km/sec (from moments)', u.km / u.s),
                         ('ionic charge', u.electron),
@@ -161,8 +163,10 @@ def cdf_dict(unit_string):
                         ('Re', u.earthRad),
                         ('Degrees', u.deg),
                         ('degrees', u.deg),
+                        ('Deg', u.deg),
                         ('deg (from fits)', u.deg),
                         ('deg (from moments)', u.deg),
+                        ('Deg K', u.K),
                         ('#/{cc*(cm/s)^3}', (u.cm**3 * (u.cm / u.s)**3)**-1),
                         ('sec', u.s),
                         ('seconds', u.s),
@@ -171,6 +175,7 @@ def cdf_dict(unit_string):
                         ('nT DSL', u.nT),
                         ('nT SSL', u.nT),
                         ('msec', u.ms),
+                        ('milliseconds', u.ms),
                         ('ionic charge', ionic_charge)])
     try:
         return units[unit_string]
