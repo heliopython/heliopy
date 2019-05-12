@@ -165,6 +165,7 @@ def cdf_dict(unit_string):
                         ('ionic charge', u.electron),
                         ('earth radii', u.earthRad),
                         ('Re', u.earthRad),
+                        ('Earth Radii', u.earthRad),
                         ('Degrees', u.deg),
                         ('degrees', u.deg),
                         ('Deg', u.deg),
@@ -178,6 +179,8 @@ def cdf_dict(unit_string):
                         ('nT GSM', u.nT),
                         ('nT DSL', u.nT),
                         ('nT SSL', u.nT),
+                        ('nT (1min)', u.nT),
+                        ('nT (3sec)', u.nT),
                         ('msec', u.ms),
                         ('milliseconds', u.ms),
                         ('ionic charge', ionic_charge)])
