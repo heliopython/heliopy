@@ -70,7 +70,7 @@ def merged(probe, starttime, endtime, try_download=True):
                         ('plas_reg', u.dimensionless_unscaled),
                         ('Npp', u.dimensionless_unscaled),
                         ('v_fit', u.km/u.s), ('vx_fit_gse', u.km/u.s),
-                        ('vy_fit_gse', u.km/u.s), ('vz_fit_gse', u.km/u.s),
+                        ('vy_fit_gse', u.km / u.s), ('vz_fit_gse', u.km / u.s),
                         ('vlong_fit', u.deg), ('vlat_fit', u.deg),
                         ('np_fit', u.cm**-3), ('Tp_fit', u.K),
                         ('v_mom', u.km/u.s), ('vx_mom_gse', u.km/u.s),
@@ -160,13 +160,13 @@ def merged(probe, starttime, endtime, try_download=True):
                         try_download=try_download)
 
 
-def _imp8(starttime, endtime, identifier, units=None):
+def _imp8(starttime, endtime, identifier):
     """
     Generic method for downloading IMP8 data.
     """
     dataset = 'imp8'
     return cdasrest._process_cdas(starttime, endtime, identifier, dataset,
-                                  imp_dir, units=units)
+                                  imp_dir)
 
 
 def _docstring(identifier, extra):
@@ -193,20 +193,7 @@ i8_mag320ms.__doc__ = _docstring(
 
 def i8_mag15s(starttime, endtime):
     identifier = 'I8_15SEC_MAG'
-    units = OrderedDict([('N_of_points', u.dimensionless_unscaled),
-                         ('SourceFlag', u.dimensionless_unscaled),
-                         ('|B|', u.nT),
-                         ('Bx gse', u.nT), ('By gse', u.nT),
-                         ('Bz gse', u.nT), ('By gsm', u.nT),
-                         ('Bz gsm', u.nT), ('Bxx gse', u.nT**2),
-                         ('Byy gse', u.nT**2), ('Bzz gse', u.nT**2),
-                         ('Byx gse', u.nT**2), ('Bzx gse', u.nT**2),
-                         ('Bzy gse', u.nT**2), ('Time shift', u.s),
-                         ('SW_flag', u.dimensionless_unscaled)])
-    for coord in ['GSE', 'GSET', 'GSM', 'GSMT']:
-        for i in range(3):
-            units[f'SC_Pos_{coord}_{i}'] = u.earthRad
-    return _imp8(starttime, endtime, identifier)# , units=units)
+    return _imp8(starttime, endtime, identifier)
 
 
 i8_mag15s.__doc__ = _docstring('I8_15SEC_MAG', '15 second magnetic field')
