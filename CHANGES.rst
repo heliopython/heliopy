@@ -1,5 +1,20 @@
+Version 0.7.0
+-------------
+
+New features
+^^^^^^^^^^^^
+
+- Added a graph showing the available coordinate transformations to
+  :mod:`heliopy.coordinates`
+- Added automatic spice kernel detection for the STEREO spacecraft to
+  :mod:`heliopy.data.spice`
+  
+
 Version 0.6.7
 -------------
+
+Deprecations
+^^^^^^^^^^^^
 
 - :func:`heliopy.data.wind.swe_h3` and :func:`heliopy.data.wind.threedp_sfpd`
   are deprecated and will be removed in version 0.7.0. This is becaue they
