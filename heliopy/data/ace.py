@@ -83,7 +83,7 @@ swe_h2.__doc__ = _docstring('AC_H2_SWE', '1-hour particle moments')
 
 def swi_h2(starttime, endtime):
     identifier = 'AC_H2_SWI'
-    return _ace(starttime, endtime, identifier)
+    return _ace(starttime, endtime, identifier, warn_missing_units=False)
 
 
 swi_h2.__doc__ = _docstring('AC_H2_SWI', '1-hour composition')
@@ -91,7 +91,7 @@ swi_h2.__doc__ = _docstring('AC_H2_SWI', '1-hour composition')
 
 def swi_h3(starttime, endtime):
     identifier = 'AC_H3_SWI'
-    return _ace(starttime, endtime, identifier)
+    return _ace(starttime, endtime, identifier, warn_missing_units=False)
 
 
 swi_h3.__doc__ = _docstring('AC_H3_SWI', '2-hour composition')
