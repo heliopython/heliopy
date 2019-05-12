@@ -21,14 +21,15 @@ def _docstring(identifier, extra):
     return cdasrest._docstring(identifier, 'A', extra)
 
 
-def _ace(starttime, endtime, identifier):
+def _ace(starttime, endtime, identifier, warn_missing_units=True):
     """
     Generic method for downloading ACE data.
     """
     dataset = 'ac'
     badvalues = 1e-31
     return cdasrest._process_cdas(starttime, endtime, identifier, dataset,
-                                  ace_dir, badvalues=badvalues)
+                                  ace_dir, badvalues=badvalues,
+                                  warn_missing_units=warn_missing_units)
 
 
 # Actual download functions start here
@@ -99,7 +100,7 @@ swi_h3.__doc__ = _docstring('AC_H3_SWI', '2-hour composition')
 def swi_h3b(starttime, endtime):
     identifier = 'AC_H3_SW2'
     # All variables with missing CDF units are dimensionless
-    return _ace(starttime, endtime, identifier)
+    return _ace(starttime, endtime, identifier, warn_missing_units=False)
 
 
 swi_h3b.__doc__ = _docstring(
@@ -109,7 +110,7 @@ swi_h3b.__doc__ = _docstring(
 def swi_h4(starttime, endtime):
     identifier = 'AC_H4_SWI'
     # All variables with missing CDF units are dimensionless
-    return _ace(starttime, endtime, identifier)
+    return _ace(starttime, endtime, identifier, warn_missing_units=False)
 
 
 swi_h4.__doc__ = _docstring('AC_H4_SWI', '1-day composition')
@@ -118,7 +119,7 @@ swi_h4.__doc__ = _docstring('AC_H4_SWI', '1-day composition')
 def swi_h5(starttime, endtime):
     identifier = 'AC_H5_SWI'
     # All variables with missing CDF units are dimensionless
-    return _ace(starttime, endtime, identifier)
+    return _ace(starttime, endtime, identifier, warn_missing_units=False)
 
 
 swi_h5.__doc__ = _docstring('AC_H5_SWI', '2-hour charge state')
@@ -126,7 +127,7 @@ swi_h5.__doc__ = _docstring('AC_H5_SWI', '2-hour charge state')
 
 def swi_h6(starttime, endtime):
     identifier = 'AC_H6_SWI'
-    return _ace(starttime, endtime, identifier)
+    return _ace(starttime, endtime, identifier, warn_missing_units=False)
 
 
 swi_h6.__doc__ = _docstring('AC_H6_SWI', '12-minute protons')
