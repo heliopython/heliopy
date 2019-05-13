@@ -139,11 +139,11 @@ def download_files(probe, instrument, data_rate, starttime, endtime,
     for date, stime, etime in daylist:
         files = available_files(probe, instrument,
                                 starttime, endtime, data_rate)
-        dirs.append('')
         for file in files:
             fname = pathlib.Path(file).stem
             if product_string in fname and len(fname):
                 fnames.append(fname)
+                dirs.append('')
 
     extension = '.cdf'
     local_base_dir = mms_dir / probe / instrument / data_rate

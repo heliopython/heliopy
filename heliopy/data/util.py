@@ -124,6 +124,13 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
     if remote_fnames is None:
         remote_fnames = fnames.copy()
 
+    if len(dirs) != len(fnames):
+        raise ValueError(
+            'Must have the same number of directories as filenames')
+    if len(fnames) != len(remote_fnames):
+        raise ValueError(
+            'Must have the same number of remote filenames as filenames')
+
     zips = zip(dirs, fnames, remote_fnames, download_info)
     for directory, fname, remote_fname, dl_info in zips:
         local_dir = local_base_dir / directory
@@ -185,6 +192,7 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
 
     # Loaded all the data, now filter between times
     data = timefilter(data, starttime, endtime)
+    data = data.sort_index()
 
     # Attach units
     if extension == '.cdf':
@@ -520,8 +528,8 @@ def cdf2df(cdf, index_key, dtimeindex=True, badvalues=None, ignore=None):
     try:
         utc_comp = cdflib.cdfepoch.breakdown(index_, to_np=True)
         if utc_comp.shape[1] == 9:
-            millis = utc_comp[:, 6]*(10**3)
-            micros = utc_comp[:, 8]*(10**2)
+            millis = utc_comp[:, 6] * (10**3)
+            micros = utc_comp[:, 8] * (10**2)
             nanos = utc_comp[:, 7]
             utc_comp[:, 6] = millis + micros + nanos
             utc_comp = np.delete(utc_comp, np.s_[-2:], axis=1)
