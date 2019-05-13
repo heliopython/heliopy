@@ -170,20 +170,20 @@ class TestAce:
         df = ace.mfi_h0(self.starttime, self.endtime)
         check_data_output(df)
 
-    '''
     def test_swi_h3b(self):
         df = ace.swi_h3b(datetime(2013, 1, 1), datetime(2013, 1, 1, 12))
         check_data_output(df)
 
-
+    # No data currently available?
+    '''
     def test_swi_h4(self):
         df = ace.swi_h4(self.starttime, self.endtime + timedelta(days=2))
         check_data_output(df)
+    '''
 
     def test_swi_h5(self):
         df = ace.swi_h5(self.starttime, self.endtime)
         check_data_output(df)
-
 
     def test_mfi_h1(self):
         df = ace.mfi_h1(self.starttime, self.endtime)
@@ -216,7 +216,6 @@ class TestAce:
     def test_swi_h6(self):
         df = ace.swi_h6(self.starttime, self.endtime)
         check_data_output(df)
-    '''
 
 
 @pytest.mark.skipif(no_cdflib, reason='Importing cdflib failed')
@@ -229,7 +228,6 @@ class TestImp:
         self.probe = '8'
 
     # Don't test all the CDAS routines
-    """
     def test_mag320ms(self):
         df = imp.i8_mag320ms(self.starttime, self.endtime)
         check_data_output(df)
@@ -237,18 +235,16 @@ class TestImp:
     def test_mag15s(self):
         df = imp.i8_mag15s(self.starttime, self.endtime)
         check_data_output(df)
-    """
 
     def test_mitplasma_h0(self):
         df = imp.i8_mitplasma(self.starttime, self.endtime)
         check_data_output(df)
 
-    # This one isn't working on travis...
-    """
+    @pytest.mark.skipif('TRAVIS' in os.environ,
+                        reason='Needs FTP capabilities')
     def test_merged(self):
         df = imp.merged(self.probe, self.starttime, self.endtime)
         check_data_output(df)
-    """
 
 
 @pytest.mark.skipif(no_cdflib, reason='Importing cdflib failed')
@@ -293,7 +289,6 @@ class TestWind:
         self.starttime = datetime(2010, 1, 1, 0, 0, 0)
         self.endtime = datetime(2010, 1, 1, 23, 59, 59)
 
-    '''
     def test_mfi_h0(self):
         df = wind.mfi_h0(self.starttime, self.endtime)
         check_data_output(df)
@@ -305,7 +300,6 @@ class TestWind:
     def test_threedp_pm(self):
         df = wind.threedp_pm(self.starttime, self.endtime)
         check_data_output(df)
-    '''
 
     def test_threedp_e0_emfits(self):
         df = wind.threedp_pm(self.starttime, self.endtime)
@@ -325,7 +319,6 @@ class TestMMS:
         self.endtime = datetime(2016, 1, 2, 1, 0, 0)
         self.probe = '1'
 
-    '''
     def test_fgm(self):
         df = mms.fgm(self.probe, 'srvy', self.starttime, self.endtime)
         check_data_output(df)
@@ -341,7 +334,6 @@ class TestMMS:
     def test_fpi_dis_dist(self):
         df = mms.fpi_dis_dist(self.probe, 'fast', self.starttime, self.endtime)
         check_data_output(df)
-    '''
 
     def test_fpi_des_dist(self):
         df = mms.fpi_des_dist(self.probe, 'fast', self.starttime, self.endtime)
@@ -405,15 +397,15 @@ class TestHelios:
         helios.ion_dists(
             '1', datetime(1974, 12, 12), datetime(1974, 12, 13))
 
-    # Uncomment me when Helios FTP server is fixed
-    """
+    # Site is perpetually down
+    '''
     def test_mag_4hz(self):
         starttime = datetime(1976, 1, 16)
         endtime = datetime(1976, 1, 18)
         probe = '2'
         df = helios.mag_4hz(probe, starttime, endtime)
         check_data_output(df)
-    """
+    '''
 
 
 @pytest.mark.data
