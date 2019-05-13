@@ -4,15 +4,15 @@ All data is publically available at ftp://spdf.gsfc.nasa.gov/pub/data/wind.
 See https://wind.nasa.gov/data_sources.php for more information on different
 data products.
 """
+from collections import OrderedDict
+import datetime as dt
 import pathlib as path
+import warnings
 
-import pandas as pd
-import numpy as np
 import astropy.units as u
 import cdflib
-import datetime as dt
-from collections import OrderedDict
-import warnings
+import numpy as np
+import pandas as pd
 
 from heliopy.data import cdasrest
 from heliopy.data import util
@@ -43,7 +43,9 @@ def _wind(starttime, endtime, identifier, units=None, badvalues=None):
 def swe_h1(starttime, endtime):
     identifier = 'WI_H1_SWE'
     badvalues = 99999.9
-    return _wind(starttime, endtime, identifier, badvalues=badvalues)
+    units = {'ChisQ_DOF_nonlin': u.dimensionless_unscaled}
+    return _wind(starttime, endtime, identifier,
+                 badvalues=badvalues, units=units)
 
 
 swe_h1.__doc__ = _docstring(
