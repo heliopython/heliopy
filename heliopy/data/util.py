@@ -295,16 +295,18 @@ def cdf_units(cdf_, manual_units=None, length=None):
         Returns an OrderedDict with units of the selected keys.
     """
     units = coll.OrderedDict()
-    key_dict = {}
+
+    # Get the list of all variables
     var_list = []
-    if manual_units is None:
-        manual_units = {'NOTEXIST': u.dimensionless_unscaled}
     # To figure out whether rVariable or zVariable needs to be taken
     for attr in list(cdf_.cdf_info().keys()):
         if 'variable' in attr.lower():
             if len(cdf_.cdf_info()[attr]) > 0:
                 var_list += [attr]
 
+    logger.info(f'Found the following variables in CDF: {var_list}')
+    # Get a mapping from each key to any sub-keys
+    key_dict = {}
     # Extract the list of valid keys in the zVar or rVar
     for attr in var_list:
         for key in cdf_.cdf_info()[attr]:
@@ -321,17 +323,20 @@ def cdf_units(cdf_, manual_units=None, length=None):
                         val.append(field)
                     key_dict[key] = val
             except Exception as e:
-                print("{}-Variable{}".format(e, key))
+                print("{} - Variable {}".format(e, key))
                 continue
 
+    logger.info(f'Getting units for {key_dict}')
     # Assigning units to the keys
     for key, val in key_dict.items():
         unit_str = None
         temp_unit = None
+        # Try to get a unit string from the CDF file
         try:
             unit_str = cdf_.varattsget(key)['UNITS']
+        # Fallback on user provided units
         except KeyError:
-            if key in manual_units:
+            if manual_units and key in manual_units:
                 temp_unit = manual_units[key]
             else:
                 continue
@@ -340,7 +345,7 @@ def cdf_units(cdf_, manual_units=None, length=None):
             try:
                 temp_unit = u.Unit(unit_str)
             except (TypeError, ValueError):
-                if key in manual_units:
+                if manual_units and key in manual_units:
                     temp_unit = manual_units[key]
                 elif helper.cdf_dict(unit_str):
                     temp_unit = helper.cdf_dict(unit_str)
@@ -356,7 +361,9 @@ def cdf_units(cdf_, manual_units=None, length=None):
                 units.update(coll.OrderedDict.fromkeys(val, temp_unit))
             else:
                 units[val] = temp_unit
-    units.update(manual_units)
+    if manual_units:
+        units.update(manual_units)
+    logger.info(f'Extracted following units: {units}')
     return units
 
 
