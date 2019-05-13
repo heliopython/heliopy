@@ -5,6 +5,7 @@ All data is publically available at
 https://lasp.colorado.edu/mms/sdc/public/data/, and the MMS science data centre
 is at https://lasp.colorado.edu/mms/sdc/public/.
 """
+import os
 from datetime import datetime
 import numpy as np
 import pandas as pd
@@ -12,7 +13,7 @@ import pathlib
 from collections import OrderedDict
 import astropy.units as u
 import requests
-import wget
+import tqdm
 
 from heliopy.data import util
 from heliopy import config
@@ -152,8 +153,11 @@ def download_files(probe, instrument, data_rate, starttime, endtime,
     def download_func(remote_base_url, local_base_dir,
                       directory, fname, remote_fname, extension):
             url = remote_base_url + '?file=' + fname + extension
-            wget.download(url, str(local_base_dir),
-                          bar=wget.bar_adaptive if verbose else None)
+            local_fname = os.path.join(local_base_dir, fname + extension)
+            with requests.get(url, stream=True) as request:
+                with open(local_fname, 'wb') as fd:
+                    for chunk in tqdm.tqdm(request.iter_content(chunk_size=128)):
+                        fd.write(chunk)
 
     def processing_func(cdf):
         return util.cdf2df(cdf, index_key='Epoch')
