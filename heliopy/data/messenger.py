@@ -3,6 +3,8 @@ Methods for importing data from the Messenger spacecraft.
 """
 import pathlib as path
 
+import astropy.units as u
+
 from heliopy import config
 from heliopy.data import cdasrest
 
