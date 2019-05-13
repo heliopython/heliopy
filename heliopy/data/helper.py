@@ -142,6 +142,7 @@ def cdf_dict(unit_string):
     ionic_charge = u.def_unit('Charged State', 1.6021766 * (10**-19) * u.C)
 
     units = OrderedDict([('ratio', u.dimensionless_unscaled),
+                        ('NOTEXIST', u.dimensionless_unscaled),
                         ('Unitless', u.dimensionless_unscaled),
                         ('unitless', u.dimensionless_unscaled),
                         ('Spacecraft', u.dimensionless_unscaled),
