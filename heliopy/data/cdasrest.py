@@ -161,9 +161,8 @@ def get_data(dataset, date, vars=None, timeout=10):
         url = response.json()['FileDescription'][0]['Name']
         temp_file = tempfile.TemporaryFile()
         with requests.get(url, stream=True) as request:
-            with open(temp_file, 'wb') as fd:
-                for chunk in tqdm.tqdm(request.iter_content(chunk_size=128)):
-                    fd.write(chunk)
+            for chunk in tqdm.tqdm(request.iter_content(chunk_size=128)):
+                temp_file.write(chunk)
 
         return temp_file.name
     else:
