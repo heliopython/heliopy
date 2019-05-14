@@ -10,7 +10,10 @@ import pathlib as path
 import warnings
 
 import astropy.units as u
-import cdflib
+try:
+    import cdflib
+except:
+    warnings.warn("cdflib not found")
 import numpy as np
 import pandas as pd
 

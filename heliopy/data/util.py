@@ -13,12 +13,15 @@ import shutil
 import sys
 import urllib.error as urlerror
 import urllib.request as urlreq
+import warnings
 import astropy.units as u
 import sunpy.timeseries as ts
 import warnings
 import collections as coll
-import cdflib
-
+try:
+    import cdflib
+except:
+    warnings.warn("cdflib not found")
 import numpy as np
 import pandas as pd
 import heliopy.data.helper as helper
