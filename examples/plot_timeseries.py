@@ -43,4 +43,5 @@ for r in ion_ratios:
 
 axs[1].set_yscale('log')
 axs[1].legend()
+fig.autofmt_xdate()
 plt.show()
