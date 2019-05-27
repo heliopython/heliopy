@@ -5,4 +5,4 @@ pandas
 requests
 sunpy
 spiceypy
-wget
+tqdm

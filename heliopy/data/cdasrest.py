@@ -5,10 +5,11 @@ For more information see https://cdaweb.sci.gsfc.nasa.gov/WebServices/REST/
 """
 from datetime import datetime, time
 import pathlib
+import tempfile
+
 import requests
 import requests.exceptions
-import tempfile
-import wget
+import tqdm
 
 import heliopy.data.util as util
 
@@ -130,7 +131,7 @@ def get_cdas_url(date, vars, dataset, timeout=10):
     return url
 
 
-def get_data(dataset, date, vars=None, verbose=True, timeout=10):
+def get_data(dataset, date, vars=None, timeout=10):
     """
     Download CDAS data.
 
@@ -143,8 +144,6 @@ def get_data(dataset, date, vars=None, verbose=True, timeout=10):
     vars : list of str, optional
         Variables to download. If ``None``, all variables for the given
         dataset will be downloaded.
-    verbose : bool, optional
-        If ``True``, show a progress bar whilst downloading.
     timeout : float, optional
         Timeout on the CDAweb remote requests, in seconds. Defaults to 10s.
 
@@ -159,14 +158,13 @@ def get_data(dataset, date, vars=None, verbose=True, timeout=10):
         url, params=params, headers=CDAS_HEADERS, timeout=timeout)
     if 'FileDescription' in response.json():
         print('Downloading {} for date {}'.format(dataset, date))
-        data_path = wget.download(
-            response.json()['FileDescription'][0]['Name'],
-            tempfile.gettempdir(),
-            bar=wget.bar_adaptive if verbose else None
-        )
-        if verbose:
-            print('')
+        url = response.json()['FileDescription'][0]['Name']
+        with tempfile.NamedTemporaryFile(delete=False) as temp_file:
+            with requests.get(url, stream=True) as request:
+                for chunk in tqdm.tqdm(request.iter_content(chunk_size=128)):
+                    temp_file.write(chunk)
+
+            return temp_file.name
     else:
         raise util.NoDataError(
             'No {} data available for date {}'.format(dataset, date))
-    return data_path
