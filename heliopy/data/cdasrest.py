@@ -159,12 +159,12 @@ def get_data(dataset, date, vars=None, timeout=10):
     if 'FileDescription' in response.json():
         print('Downloading {} for date {}'.format(dataset, date))
         url = response.json()['FileDescription'][0]['Name']
-        temp_file = tempfile.TemporaryFile()
-        with requests.get(url, stream=True) as request:
-            for chunk in tqdm.tqdm(request.iter_content(chunk_size=128)):
-                temp_file.write(chunk)
+        with tempfile.NamedTemporaryFile(delete=False) as temp_file:
+            with requests.get(url, stream=True) as request:
+                for chunk in tqdm.tqdm(request.iter_content(chunk_size=128)):
+                    temp_file.write(chunk)
 
-        return temp_file.name
+            return temp_file.name
     else:
         raise util.NoDataError(
             'No {} data available for date {}'.format(dataset, date))

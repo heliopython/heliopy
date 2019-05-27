@@ -156,7 +156,8 @@ def download_files(probe, instrument, data_rate, starttime, endtime,
             local_fname = os.path.join(local_base_dir, fname + extension)
             with requests.get(url, stream=True) as request:
                 with open(local_fname, 'wb') as fd:
-                    for chunk in tqdm.tqdm(request.iter_content(chunk_size=128)):
+                    for chunk in tqdm.tqdm(
+                            request.iter_content(chunk_size=128)):
                         fd.write(chunk)
 
     def processing_func(cdf):
