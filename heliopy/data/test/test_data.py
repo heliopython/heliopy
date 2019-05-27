@@ -1,18 +1,3 @@
-import heliopy.data.wind as wind
-import heliopy.data.mms as mms
-import heliopy.data.helios as helios
-import heliopy.data.cluster as cluster
-import heliopy.data.ace as ace
-import heliopy.data.artemis as artemis
-import heliopy.data.imp as imp
-import heliopy.data.ulysses as ulysses
-import heliopy.data.messenger as messenger
-import heliopy.data.cassini as cassini
-import heliopy.data.helper as helper
-import heliopy.data.spice as spice
-import heliopy.data.sunspot as sunspot
-import heliopy.data.omni as omni
-import heliopy.data.dscovr as dscovr
 import astropy.units as u
 from heliopy import config
 
@@ -60,6 +45,8 @@ def check_units(df):
 
 @pytest.mark.data
 class TestSpice:
+    import heliopy.data.spice as spice
+
     @pytest.mark.parametrize('kernel', spice.kernel_dict)
     def test_kernel_download(self, kernel):
         if 'TRAVIS' in os.environ:
@@ -73,6 +60,8 @@ class TestSpice:
 
 @pytest.mark.data
 class TestCassini:
+    import heliopy.data.cassini as cassini
+
     @classmethod
     def setup_class(self):
         self.starttime = datetime(2008, 6, 1, 0, 0, 0)
@@ -101,6 +90,8 @@ class TestCassini:
 @pytest.mark.skipif(no_cdflib, reason='Importing cdflib failed')
 @pytest.mark.data
 class TestMessenger:
+    import heliopy.data.messenger as messenger
+
     @classmethod
     def setup_class(self):
         self.starttime = datetime(2010, 1, 1, 0, 0, 0)
@@ -113,6 +104,8 @@ class TestMessenger:
 
 @pytest.mark.data
 class TestUlysses:
+    import heliopy.data.ulysses as ulysses
+
     @classmethod
     def setup_class(self):
         self.starttime = datetime(1993, 1, 1, 0, 0, 0)
@@ -138,6 +131,8 @@ class TestUlysses:
 @pytest.mark.skipif(no_cdflib, reason='Importing cdflib failed')
 @pytest.mark.data
 class TestArtemis:
+    import heliopy.data.artemis as artemis
+
     @classmethod
     def setup_class(self):
         self.starttime = datetime(2008, 1, 1)
@@ -161,6 +156,8 @@ class TestArtemis:
 @pytest.mark.skipif(no_cdflib, reason='Importing cdflib failed')
 @pytest.mark.data
 class TestAce:
+    import heliopy.data.ace as ace
+
     @classmethod
     def setup_class(self):
         self.starttime = datetime(2010, 1, 1, 0, 0, 0)
@@ -221,6 +218,8 @@ class TestAce:
 @pytest.mark.skipif(no_cdflib, reason='Importing cdflib failed')
 @pytest.mark.data
 class TestImp:
+    import heliopy.data.imp as imp
+
     @classmethod
     def setup_class(self):
         self.starttime = datetime(1976, 1, 1, 0, 0, 0)
@@ -252,6 +251,8 @@ class TestImp:
 @pytest.mark.skipif(config['cluster_cookie'] == 'none',
                     reason='Cluster download cookie not set')
 class TestCluster:
+    import heliopy.data.cluster as cluster
+
     @classmethod
     def setup_class(self):
         self.probe = '3'
@@ -284,6 +285,8 @@ class TestCluster:
 @pytest.mark.skipif(no_cdflib, reason='Importing cdflib failed')
 @pytest.mark.data
 class TestWind:
+    import heliopy.data.wind as wind
+
     @classmethod
     def setup_class(self):
         self.starttime = datetime(2010, 1, 1, 0, 0, 0)
@@ -313,6 +316,8 @@ class TestWind:
 @pytest.mark.skipif(no_cdflib, reason='Importing cdflib failed')
 @pytest.mark.data
 class TestMMS:
+    import heliopy.data.mms as mms
+
     @classmethod
     def setup_class(self):
         self.starttime = datetime(2016, 1, 2, 0, 0, 0)
@@ -342,6 +347,8 @@ class TestMMS:
 
 @pytest.mark.data
 class TestHelios:
+    import heliopy.data.helios as helios
+
     @classmethod
     def setup_class(self):
         self.starttime = datetime(1976, 1, 10, 0, 0, 0)
@@ -410,6 +417,8 @@ class TestHelios:
 
 @pytest.mark.data
 class TestOmni:
+    import heliopy.data.omni as omni
+
     @classmethod
     def setup_class(self):
         self.starttime = datetime(1970, 1, 1, 0, 0, 0)
@@ -423,6 +432,8 @@ class TestOmni:
 @pytest.mark.skipif(no_cdflib, reason='Importing cdflib failed')
 @pytest.mark.data
 class TestDSCOVR:
+    import heliopy.data.dscovr as dscovr
+
     @classmethod
     def setup_class(self):
         self.starttime = datetime(2015, 6, 8, 0, 0, 0)
@@ -435,12 +446,16 @@ class TestDSCOVR:
 
 
 class TestHelper:
+    import heliopy.data.helper as helper
+
     def test_listdata(self):
         helper.listdata()
 
 
 @pytest.mark.data
 class TestSunspot:
+    import heliopy.data.sunspot as sunspot
+
     def test_daily(self):
         assert len(sunspot.daily().columns) == 8
 
