@@ -13,7 +13,7 @@ import pathlib
 from collections import OrderedDict
 import astropy.units as u
 import requests
-import tqdm
+from tqdm.auto import tqdm
 
 from heliopy.data import util
 from heliopy import config
@@ -156,7 +156,7 @@ def download_files(probe, instrument, data_rate, starttime, endtime,
             local_fname = os.path.join(local_base_dir, fname + extension)
             with requests.get(url, stream=True) as request:
                 with open(local_fname, 'wb') as fd:
-                    for chunk in tqdm.tqdm(
+                    for chunk in tqdm(
                             request.iter_content(chunk_size=128)):
                         fd.write(chunk)
 
