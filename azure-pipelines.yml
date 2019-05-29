@@ -24,9 +24,9 @@ steps:
 - script: |
     python -m pip install --upgrade pip
     pip install -r requirements/test.txt
+    pip install pytest-azurepipelines
   displayName: 'Install dependencies'
 
 - script: |
-    pip install pytest pytest-azurepipelines
-    pytest
+    pytest heliopy/ --cov=heliopy/ -v --durations=5
   displayName: 'pytest'
