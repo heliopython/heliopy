@@ -19,6 +19,7 @@ def test_swi_h3b():
     df = ace.swi_h3b(datetime(2013, 1, 1), datetime(2013, 1, 1, 12))
     check_data_output(df)
 
+
 # No data currently available?
 '''
 def test_swi_h4():
