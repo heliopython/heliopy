@@ -1,5 +1,6 @@
 from datetime import datetime
 import pathlib
+import shutil
 import urllib
 
 import pytest
@@ -54,7 +55,8 @@ def test_distribution_funcs():
     local_fname, _ = urllib.request.urlretrieve(
         remote_file, './h1y74d346h03m27s21_hdm.1')
     local_fname = pathlib.Path(local_fname)
-    local_fname.rename(local_dir / local_fname.name)
+    new_path = local_dir / local_fname.name
+    shutil.copyfile(local_fname, new_path)
 
     helios.integrated_dists(
         '1', datetime(1974, 12, 12), datetime(1974, 12, 13))
