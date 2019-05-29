@@ -16,6 +16,7 @@ Bug fixes
 ^^^^^^^^^
 
 - Fixed a bug where not all MMS files were downloaded for a large query.
+- Correctly removed bad values in :mod:`heliopy.data.omni`.
 
 Removed features
 ^^^^^^^^^^^^^^^^
