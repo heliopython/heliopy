@@ -7,7 +7,7 @@ from .util import check_data_output
 cluster = pytest.importorskip('heliopy.data.cluster')
 pytest.mark.data()
 if config['cluster_cookie'] == 'none':
-    pytesk.skip('Cluster download cookie not set', allow_module_level=True)
+    pytest.skip('Cluster download cookie not set', allow_module_level=True)
 
 probe = '3'
 
