@@ -60,6 +60,13 @@ def low(starttime, endtime, try_download=True):
              'Proton Flux > 60MeV', 'flag', 'ap index',
              'f10.7 index', 'PC(N) index', 'AL index (Kyoto)',
              'AU index (Kyoto)', 'Magnetosonic Mach No.']
+    badvalues = [np.nan, np.nan, np.nan, 9999, 99, 99, 999, 999, 999.9, 999.9,
+                 999.9, 999.9, 999.9, 999.9, 999.9, 999.9, 999.9, 999.9, 999.9,
+                 999.9, 999.9, 999.9, 9999999., 999.9, 9999., 999.9, 999.9,
+                 9.999, 99.99, 9999999., 999.9, 9999., 999.9, 999.9, 9.999,
+                 999.99, 999.99, 999.9, 99, 999, 99999, 9999, 999999.99,
+                 99999.99, 99999.99, 99999.99, 99999.99, 99999.99, np.nan,
+                 999, 999.9, 999.9, 99999, 99999, 99.9]
     sfu = u.def_unit('sfu', 10**-22 * u.m**-2 * u.Hz**-1)
     units = OrderedDict([('Bartels Rotation Number', u.dimensionless_unscaled),
                          ('ID IMF Spacecraft', u.dimensionless_unscaled),
@@ -128,6 +135,10 @@ def low(starttime, endtime, try_download=True):
     def processing_func(file):
         thisdata = pd.read_csv(file, names=names,
                                delim_whitespace=True)
+        for name, bad_value in zip(names, badvalues):
+            if name in ['Year', 'Decimal Day', 'Hour']:
+                continue
+            thisdata[name] = thisdata[name].replace(bad_value, np.nan)
         year = thisdata['Year'][0]
         day_list = list(thisdata['Decimal Day'])
         hour_list = list(thisdata['Hour'])
@@ -136,8 +147,6 @@ def low(starttime, endtime, try_download=True):
         thisdata['Time'] = pd.to_datetime(time_index)
         thisdata = thisdata.set_index('Time')
         thisdata = thisdata.drop(['Year', 'Decimal Day', 'Hour'], axis=1)
-        thisdata[thisdata == 9999.0] = np.nan
-        thisdata[thisdata == 999.9] = np.nan
         return thisdata
 
     def convert_datetime(year, day_list, hour_list, len_):
