@@ -6,9 +6,23 @@ New features
 
 - Added a graph showing the available coordinate transformations to
   :mod:`heliopy.coordinates`
+- Added STEREO-B kernels to :mod:`heliopy.data.spice`
 - Added automatic spice kernel detection for the STEREO spacecraft to
   :mod:`heliopy.data.spice`
-  
+- Switched the download progress bar from ``wget`` based to ``tqdm`` based,
+  which should work better in notebooks.
+
+Bug fixes
+^^^^^^^^^
+
+- Fixed a bug where not all MMS files were downloaded for a large query.
+
+Removed features
+^^^^^^^^^^^^^^^^
+
+- The deprecated :func:`heliopy.data.wind.swe_h3` and
+  :func:`heliopy.data.wind.threedp_sfpd` have been removed.
+
 
 Version 0.6.7
 -------------
