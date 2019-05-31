@@ -3,7 +3,7 @@ Helper methods for using the CDAS REST web services.
 
 For more information see https://cdaweb.sci.gsfc.nasa.gov/WebServices/REST/
 """
-from datetime import datetime, time, timedelta
+import datetime as dt
 import pathlib
 import tempfile
 
@@ -54,7 +54,7 @@ class CDASDwonloader(util.Downloader):
     def intervals(self, starttime, endtime):
         interval = stime.TimeRange(starttime, endtime)
         daylist = interval.get_dates()
-        intervallist = [stime.TimeRange(t, t + timedelta(days=1)) for
+        intervallist = [stime.TimeRange(t, t + dt.timedelta(days=1)) for
                         t in daylist]
         return intervallist
 
@@ -139,8 +139,8 @@ def get_variables(dataset, timeout=10):
 
 
 def get_cdas_url(date, vars, dataset, timeout=10):
-    starttime = datetime.combine(date, time.min)
-    endtime = datetime.combine(date, time.max)
+    starttime = dt.datetime.combine(date, time.min)
+    endtime = dt.datetime.combine(date, time.max)
     dataview = 'sp_phys'
     if vars is None:
         try:
