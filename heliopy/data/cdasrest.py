@@ -59,7 +59,9 @@ class CDASDwonloader(util.Downloader):
         return intervallist
 
     def fname(self, interval):
-        stime = interval.start.to_datetime()
+        stime = interval.start
+        if not isinstance(stime, dt.datetime):
+            stime = interval.start.to_datetime()
         return '{}_{}_{}{:02}{:02}.cdf'.format(
             self.dataset, self.identifier, stime.year, stime.month, stime.day)
 
