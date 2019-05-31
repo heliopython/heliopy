@@ -3,13 +3,14 @@ Helper methods for using the CDAS REST web services.
 
 For more information see https://cdaweb.sci.gsfc.nasa.gov/WebServices/REST/
 """
-from datetime import datetime, time
+import datetime as dt
 import pathlib
 import tempfile
 
 import requests
 import requests.exceptions
-from tqdm.auto import tqdm
+import sunpy.time as stime
+import tqdm.auto as tqdm
 
 import heliopy.data.util as util
 
@@ -40,13 +41,56 @@ def _docstring(identifier, letter, description):
     return ds
 
 
+class CDASDwonloader(util.Downloader):
+    def __init__(self, dataset, identifier, dir, badvalues=None,
+                 warn_missing_units=True):
+        self.dataset = dataset
+        self.identifier = identifier
+        self.dir = dir
+        self.badvalues = badvalues
+        self.units = None
+        self.warn_missing_units = warn_missing_units
+
+    @staticmethod
+    def _interval_start(interval):
+        stime = interval.start
+        if not isinstance(stime, dt.datetime):
+            stime = stime.to_datetime()
+        return stime
+
+    def intervals(self, starttime, endtime):
+        interval = stime.TimeRange(starttime, endtime)
+        daylist = interval.get_dates()
+        intervallist = [stime.TimeRange(t, t + dt.timedelta(days=1)) for
+                        t in daylist]
+        return intervallist
+
+    def fname(self, interval):
+        stime = self._interval_start(interval)
+        return '{}_{}_{}{:02}{:02}.cdf'.format(
+            self.dataset, self.identifier, stime.year, stime.month, stime.day)
+
+    def local_dir(self, interval):
+        stime = self._interval_start(interval)
+        return pathlib.Path(self.dir) / self.identifier / str(stime.year)
+
+    def download(self, interval):
+        stime = self._interval_start(interval)
+        return get_data(self.identifier, stime)
+
+    def load_local_file(self, interval):
+        local_path = self.local_path(interval)
+        cdf = util._load_cdf(local_path)
+        return util.cdf2df(cdf, index_key='Epoch',
+                           badvalues=self.badvalues)
+
+
 def _process_cdas(starttime, endtime, identifier, dataset, base_dir,
                   units=None, badvalues=None, warn_missing_units=True):
     """
     Generic method for downloading cdas data.
     """
     relative_dir = pathlib.Path(identifier)
-    # Directory relative to main WIND data directory
     daylist = util._daysplitinterval(starttime, endtime)
     dirs = []
     fnames = []
@@ -103,8 +147,8 @@ def get_variables(dataset, timeout=10):
 
 
 def get_cdas_url(date, vars, dataset, timeout=10):
-    starttime = datetime.combine(date, time.min)
-    endtime = datetime.combine(date, time.max)
+    starttime = dt.datetime.combine(date, dt.time.min)
+    endtime = dt.datetime.combine(date, dt.time.max)
     dataview = 'sp_phys'
     if vars is None:
         try:
@@ -161,7 +205,7 @@ def get_data(dataset, date, vars=None, timeout=10):
         url = response.json()['FileDescription'][0]['Name']
         with tempfile.NamedTemporaryFile(delete=False) as temp_file:
             with requests.get(url, stream=True) as request:
-                for chunk in tqdm(request.iter_content(chunk_size=128)):
+                for chunk in tqdm.tqdm(request.iter_content(chunk_size=128)):
                     temp_file.write(chunk)
 
             return temp_file.name

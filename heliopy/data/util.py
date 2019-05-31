@@ -6,6 +6,7 @@ Utility functions for data downloading.
 import datetime as dt
 import ftplib
 import io
+import os
 import logging
 import pathlib as path
 import re
@@ -25,7 +26,134 @@ import heliopy.data.helper as helper
 
 from heliopy import config
 use_hdf = config['use_hdf']
+data_dir = path.Path(config['download_dir'])
 logger = logging.getLogger(__name__)
+
+
+class Downloader:
+    def load(self, starttime, endtime):
+        data = []
+        for interval in self.intervals(starttime, endtime):
+            hdf_path = self.local_hdf_path(interval)
+            local_path = self.local_path(interval)
+
+            # Try to load HDF file
+            if hdf_path.exists():
+                data.append(pd.read_hdf(hdf_path))
+                continue
+
+            # Try to load original file
+            if not local_path.exists():
+                # Try to download file
+                try:
+                    dl_path = self.download(interval)
+                    local_path.parent.mkdir(parents=True, exist_ok=True)
+                    shutil.copy(dl_path, local_path)
+                    os.remove(dl_path)
+                except NoDataError:
+                    continue
+
+            data.append(self.load_local_file(interval))
+            if use_hdf:
+                data[-1].to_hdf(hdf_path, 'data', mode='w', format='f')
+
+        # Loaded all the data, now filter between times
+        data = timefilter(data, starttime, endtime)
+        data = data.sort_index()
+
+        # Attach units
+        if local_path.suffix == '.cdf':
+            cdf = _load_local(local_path)
+            units = cdf_units(cdf, manual_units=self.units)
+        return units_attach(
+            data, units, warn_missing_units=self.warn_missing_units)
+
+    def local_path(self, interval):
+        local_path = self.local_dir(interval) / self.fname(interval)
+        return data_dir / local_path
+
+    def local_hdf_path(self, interval):
+        local_path = self.local_path(interval)
+        return local_path.with_suffix('.hdf')
+
+    def local_file_exists(self, interval):
+        return self.local_path(interval).exists()
+
+    def intervals(self, starttime, endtime):
+        """
+        Given a start time and end time, return the complete list of intervals
+        that cover the time range. Each interval is associated with a single
+        file to be downloaded and read in.
+
+        Parameters
+        ----------
+        starttime, endtime : datetime.datetime
+
+        Returns
+        -------
+        fnames : list of sunpy.time.TimeRange
+            List of intervals
+        """
+        raise NotImplementedError
+
+    def fname(self, interval):
+        """
+        Return the filename for a given interval.
+
+        Parameters
+        ----------
+        interval : sunpy.time.TimeRange
+
+        Returns
+        -------
+        fname : str
+            Filename
+        """
+        raise NotImplementedError
+
+    def local_dir(self, interval):
+        """
+        Local directory for a given interval.
+
+        Parameters
+        ----------
+        interval : sunpy.time.TimeRange
+
+        Returns
+        -------
+        dir : pathlib.Path
+            Local directory
+        """
+        raise NotImplementedError
+
+    def download(self, interval):
+        """
+        Download data for a given interval.
+
+        Parameters
+        ----------
+        interval : sunpy.time.TimeRange
+
+        Returns
+        -------
+        dl_path : pathlib.Path
+            Path to the downloaded file.
+        """
+        raise NotImplementedError
+
+    def load_local_file(self, interval):
+        """
+        Load local file for a given interval.
+
+        Parameters
+        ----------
+        interval : sunpy.time.TimeRange
+
+        Returns
+        -------
+        data
+        """
+        raise NotImplementedError
 
 
 def process(dirs, fnames, extension, local_base_dir, remote_base_url,
