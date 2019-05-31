@@ -53,9 +53,9 @@ class CDASDwonloader(util.Downloader):
 
     @staticmethod
     def _interval_start(interval):
-        stime = inerval.start
+        stime = interval.start
         if not isinstance(stime, dt.datetime):
-            stime = interval.start.to_datetime()
+            stime = stime.to_datetime()
         return stime
 
     def intervals(self, starttime, endtime):
