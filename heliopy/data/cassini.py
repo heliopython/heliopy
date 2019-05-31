@@ -117,7 +117,6 @@ def mag_1min(starttime, endtime, coords):
 
     def processing_func(f):
         if 'error_message' in f.readline():
-            location = f.name
             f.close()
             os.remove(f.name)
             raise util.NoDataError()
@@ -192,7 +191,6 @@ def mag_hires(starttime, endtime, try_download=True):
 
     def processing_func(f):
         if 'error_message' in f.readline():
-            location = f.name
             f.close()
             os.remove(f.name)
             raise util.NoDataError()

@@ -16,8 +16,6 @@ import pathlib as path
 import tarfile
 import urllib.request as urlreq
 
-import numpy as np
-
 from heliopy import config
 from heliopy.data import util
 
