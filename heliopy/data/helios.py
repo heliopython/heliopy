@@ -968,7 +968,6 @@ def mag_4hz(probe, starttime, endtime, try_download=True):
 
     def download_func(remote_base_url, local_base_dir,
                       directory, fname, remote_fname, extension):
-        local_dir = local_base_dir / directory
         remote_dir = ('pub/helios-data/E2_experiment/'
                       'Data_Cologne_Nov2016_bestdata/'
                       'HR/helios{}'.format(probe))

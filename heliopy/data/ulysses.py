@@ -5,8 +5,7 @@ All data is publically available at http://ufa.esac.esa.int/ufa/
 """
 import pandas as pd
 import pathlib as path
-from datetime import datetime, date
-from urllib.error import HTTPError
+from datetime import datetime
 
 from heliopy.data import util
 from collections import OrderedDict
@@ -133,8 +132,6 @@ def swics_abundances(starttime, endtime, try_download=True):
 
 
 def _swics(starttime, endtime, names, product, units=None, try_download=True):
-    data = []
-    dtimes = util._daysplitinterval(starttime, endtime)
     dirs = []
     fnames = []
     extension = '.dat'

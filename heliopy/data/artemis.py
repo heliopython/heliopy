@@ -7,7 +7,6 @@ http://themis.ssl.berkeley.edu/data/themis/.
 import pathlib as path
 
 import pandas as pd
-import numpy as np
 import astropy.units as u
 from collections import OrderedDict
 
@@ -89,7 +88,7 @@ def fgm(probe, rate, coords, starttime, endtime):
     def processing_func(cdf, **kwargs):
         probe = kwargs.pop('probe')
         rate = kwargs.pop('rate')
-        coords = kwargs.pop('coords')
+        kwargs.pop('coords')
 
         probestr = 'th' + probe
         ratestr = '_fg' + rate + '_'

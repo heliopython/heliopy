@@ -781,7 +781,6 @@ def load(filename, local_dir, remote_url,
         local_dir = path.Path(local_dir)
         for f in local_dir.iterdir():
             if str(f) == filename or ((str(f)[:-6] == filename[:-6])):
-                filename = str(f)
                 return _load_local(local_dir / f, filetype)
 
     if try_download:
