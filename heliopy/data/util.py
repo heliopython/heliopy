@@ -47,6 +47,7 @@ class Downloader:
                 # Try to download file
                 try:
                     dl_path = self.download(interval)
+                    local_path.parent.mkdir(parents=True, exist_ok=True)
                     shutil.copy(dl_path, local_path)
                     os.remove(dl_path)
                 except NoDataError:
