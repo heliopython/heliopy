@@ -51,6 +51,13 @@ class CDASDwonloader(util.Downloader):
         self.units = None
         self.warn_missing_units = warn_missing_units
 
+    @staticmethod
+    def _interval_start(interval):
+        stime = inerval.start
+        if not isinstance(stime, dt.datetime):
+            stime = interval.start.to_datetime()
+        return stime
+
     def intervals(self, starttime, endtime):
         interval = stime.TimeRange(starttime, endtime)
         daylist = interval.get_dates()
@@ -59,20 +66,17 @@ class CDASDwonloader(util.Downloader):
         return intervallist
 
     def fname(self, interval):
-        stime = interval.start
-        if not isinstance(stime, dt.datetime):
-            stime = interval.start.to_datetime()
+        stime = self._interval_start(interval)
         return '{}_{}_{}{:02}{:02}.cdf'.format(
             self.dataset, self.identifier, stime.year, stime.month, stime.day)
 
     def local_dir(self, interval):
-        stime = interval.start
-        if not isinstance(stime, dt.datetime):
-            stime = interval.start.to_datetime()
+        stime = self._interval_start(interval)
         return pathlib.Path(self.dir) / self.identifier / str(stime.year)
 
     def download(self, interval):
-        return get_data(self.identifier, interval.start.to_datetime())
+        stime = self._interval_start(interval)
+        return get_data(self.identifier, stime)
 
     def load_local_file(self, interval):
         local_path = self.local_path(interval)
