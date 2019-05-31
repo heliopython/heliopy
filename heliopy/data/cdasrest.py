@@ -139,8 +139,8 @@ def get_variables(dataset, timeout=10):
 
 
 def get_cdas_url(date, vars, dataset, timeout=10):
-    starttime = dt.datetime.combine(date, time.min)
-    endtime = dt.datetime.combine(date, time.max)
+    starttime = dt.datetime.combine(date, dt.time.min)
+    endtime = dt.datetime.combine(date, dt.time.max)
     dataview = 'sp_phys'
     if vars is None:
         try:
