@@ -66,7 +66,9 @@ class CDASDwonloader(util.Downloader):
             self.dataset, self.identifier, stime.year, stime.month, stime.day)
 
     def local_dir(self, interval):
-        stime = interval.start.to_datetime()
+        stime = interval.start
+        if not isinstance(stime, dt.datetime):
+            stime = interval.start.to_datetime()
         return pathlib.Path(self.dir) / self.identifier / str(stime.year)
 
     def download(self, interval):
