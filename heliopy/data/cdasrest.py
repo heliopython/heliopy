@@ -10,7 +10,7 @@ import tempfile
 import requests
 import requests.exceptions
 import sunpy.time as stime
-from tqdm.auto import tqdm
+import tqdm.auto as tqdm
 
 import heliopy.data.util as util
 
@@ -197,7 +197,7 @@ def get_data(dataset, date, vars=None, timeout=10):
         url = response.json()['FileDescription'][0]['Name']
         with tempfile.NamedTemporaryFile(delete=False) as temp_file:
             with requests.get(url, stream=True) as request:
-                for chunk in tqdm(request.iter_content(chunk_size=128)):
+                for chunk in tqdm.tqdm(request.iter_content(chunk_size=128)):
                     temp_file.write(chunk)
 
             return temp_file.name
