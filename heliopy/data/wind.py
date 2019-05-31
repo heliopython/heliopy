@@ -4,48 +4,27 @@ All data is publically available at ftp://spdf.gsfc.nasa.gov/pub/data/wind.
 See https://wind.nasa.gov/data_sources.php for more information on different
 data products.
 """
-from collections import OrderedDict
-import datetime as dt
-import pathlib as path
-import warnings
-
-import astropy.units as u
-import cdflib
-import numpy as np
-import pandas as pd
-
 from heliopy.data import cdasrest
-from heliopy.data import util
-from heliopy import config
-
-data_dir = path.Path(config['download_dir'])
-wind_dir = data_dir / 'wind'
-use_hdf = config['use_hdf']
-remote_wind_dir = 'ftp://spdf.gsfc.nasa.gov/pub/data/wind/'
 
 
 def _docstring(identifier, description):
     return cdasrest._docstring(identifier, 'W', description)
 
 
-def _wind(starttime, endtime, identifier, units=None, badvalues=None):
+def _wind(starttime, endtime, identifier, badvalues=None):
     """
     Generic method for downloading ACE data.
     """
-    dataset = 'wi'
-    return cdasrest._process_cdas(starttime, endtime, identifier, dataset,
-                                  wind_dir,
-                                  units=units,
-                                  badvalues=badvalues)
+    dl = cdasrest.CDASDwonloader('wi', identifier, 'wind', badvalues=badvalues)
+    return dl.load(starttime, endtime)
 
 
 # Actual download functions start here
 def swe_h1(starttime, endtime):
     identifier = 'WI_H1_SWE'
     badvalues = 99999.9
-    units = {'ChisQ_DOF_nonlin': u.dimensionless_unscaled}
     return _wind(starttime, endtime, identifier,
-                 badvalues=badvalues, units=units)
+                 badvalues=badvalues)
 
 
 swe_h1.__doc__ = _docstring(

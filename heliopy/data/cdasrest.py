@@ -3,12 +3,13 @@ Helper methods for using the CDAS REST web services.
 
 For more information see https://cdaweb.sci.gsfc.nasa.gov/WebServices/REST/
 """
-from datetime import datetime, time
+from datetime import datetime, time, timedelta
 import pathlib
 import tempfile
 
 import requests
 import requests.exceptions
+import sunpy.time as stime
 from tqdm.auto import tqdm
 
 import heliopy.data.util as util
@@ -40,13 +41,48 @@ def _docstring(identifier, letter, description):
     return ds
 
 
+class CDASDwonloader(util.Downloader):
+    def __init__(self, dataset, identifier, dir, badvalues=None,
+                 warn_missing_units=True):
+        self.dataset = dataset
+        self.identifier = identifier
+        self.dir = dir
+        self.badvalues = badvalues
+        self.units = None
+        self.warn_missing_units = warn_missing_units
+
+    def intervals(self, starttime, endtime):
+        interval = stime.TimeRange(starttime, endtime)
+        daylist = interval.get_dates()
+        intervallist = [stime.TimeRange(t, t + timedelta(days=1)) for
+                        t in daylist]
+        return intervallist
+
+    def fname(self, interval):
+        stime = interval.start.to_datetime()
+        return '{}_{}_{}{:02}{:02}.cdf'.format(
+            self.dataset, self.identifier, stime.year, stime.month, stime.day)
+
+    def local_dir(self, interval):
+        stime = interval.start.to_datetime()
+        return pathlib.Path(self.dir) / self.identifier / str(stime.year)
+
+    def download(self, interval):
+        return get_data(self.identifier, interval.start.to_datetime())
+
+    def load_local_file(self, interval):
+        local_path = self.local_path(interval)
+        cdf = util._load_cdf(local_path)
+        return util.cdf2df(cdf, index_key='Epoch',
+                           badvalues=self.badvalues)
+
+
 def _process_cdas(starttime, endtime, identifier, dataset, base_dir,
                   units=None, badvalues=None, warn_missing_units=True):
     """
     Generic method for downloading cdas data.
     """
     relative_dir = pathlib.Path(identifier)
-    # Directory relative to main WIND data directory
     daylist = util._daysplitinterval(starttime, endtime)
     dirs = []
     fnames = []
