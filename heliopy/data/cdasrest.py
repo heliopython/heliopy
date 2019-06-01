@@ -58,6 +58,13 @@ class CDASDwonloader(util.Downloader):
             stime = stime.to_datetime()
         return stime
 
+    @staticmethod
+    def _interval_end(interval):
+        etime = interval.end
+        if not isinstance(etime, dt.datetime):
+            etime = etime.to_datetime()
+        return etime
+
     def intervals(self, starttime, endtime):
         interval = stime.TimeRange(starttime, endtime)
         daylist = interval.get_dates()
@@ -76,7 +83,8 @@ class CDASDwonloader(util.Downloader):
 
     def download(self, interval):
         stime = self._interval_start(interval)
-        return get_data(self.identifier, stime)
+        etime = self._interval_end(interval)
+        return get_data(self.identifier, stime, etime)
 
     def load_local_file(self, interval):
         local_path = self.local_path(interval)
@@ -107,7 +115,9 @@ def _process_cdas(starttime, endtime, identifier, dataset, base_dir,
 
     def download_func(remote_base_url, local_base_dir,
                       directory, fname, remote_fname, extension, date):
-        return get_data(identifier, date)
+        starttime = dt.datetime.combine(date, dt.time.min)
+        endtime = dt.datetime.combine(date, dt.time.max)
+        return get_data(identifier, starttime, endtime)
 
     def processing_func(cdf):
         return util.cdf2df(cdf, index_key='Epoch',
@@ -146,9 +156,7 @@ def get_variables(dataset, timeout=10):
     return response.json()
 
 
-def get_cdas_url(date, vars, dataset, timeout=10):
-    starttime = dt.datetime.combine(date, dt.time.min)
-    endtime = dt.datetime.combine(date, dt.time.max)
+def get_cdas_url(starttime, endtime, vars, dataset, timeout=10):
     dataview = 'sp_phys'
     if vars is None:
         try:
@@ -175,7 +183,7 @@ def get_cdas_url(date, vars, dataset, timeout=10):
     return url
 
 
-def get_data(dataset, date, vars=None, timeout=10):
+def get_data(dataset, starttime, endtime, vars=None, timeout=10):
     """
     Download CDAS data.
 
@@ -183,8 +191,10 @@ def get_data(dataset, date, vars=None, timeout=10):
     ----------
     dataset : string
         Dataset identifier.
-    date : datetime.date
-        Date to download data for.
+    starttime : datetime.datetime
+        Beginning of interval.
+    endtime : datetime.datetime
+        End of interval.
     vars : list of str, optional
         Variables to download. If ``None``, all variables for the given
         dataset will be downloaded.
@@ -196,12 +206,12 @@ def get_data(dataset, date, vars=None, timeout=10):
     data_path : str
         Path to downloaded data (stored in a temporary directroy)
     """
-    url = get_cdas_url(date, vars, dataset, timeout=timeout)
+    url = get_cdas_url(starttime, endtime, vars, dataset, timeout=timeout)
     params = {'format': 'cdf', 'cdfVersion': 3}
     response = requests.get(
         url, params=params, headers=CDAS_HEADERS, timeout=timeout)
     if 'FileDescription' in response.json():
-        print('Downloading {} for date {}'.format(dataset, date))
+        print(f'Downloading {dataset} for interval {starttime} - {endtime}')
         url = response.json()['FileDescription'][0]['Name']
         with tempfile.NamedTemporaryFile(delete=False) as temp_file:
             with requests.get(url, stream=True) as request:
@@ -210,5 +220,5 @@ def get_data(dataset, date, vars=None, timeout=10):
 
             return temp_file.name
     else:
-        raise util.NoDataError(
-            'No {} data available for date {}'.format(dataset, date))
+        raise util.NoDataError(f'No {dataset} data available for interval '
+                               f'{starttime} - {endtime}')
