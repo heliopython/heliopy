@@ -220,5 +220,5 @@ def get_data(dataset, starttime, endtime, vars=None, timeout=10):
 
             return temp_file.name
     else:
-        raise util.NoDataError(
-            'No {} data available for date {}'.format(dataset, date))
+        raise util.NoDataError(f'No {dataset} data available for interval '
+                               f'{starttime} - {endtime}')
