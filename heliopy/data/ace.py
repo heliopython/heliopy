@@ -63,9 +63,9 @@ swe_h0.__doc__ = _docstring('AC_H0_SWE', '64-second particle moments')
 
 def swe_h2(starttime, endtime):
     identifier = 'AC_H2_SWE'
-    dl = _ace(starttime, endtime, identifier)
+    dl = _ace(starttime, endtime, identifier, warn_missing_units=False)
     dl.intervals = cdasrest._year_intervals
-    return dl.load(starttime, endtime, warn_missing_units=False)
+    return dl.load(starttime, endtime)
 
 
 swe_h2.__doc__ = _docstring('AC_H2_SWE', '1-hour particle moments')
@@ -73,9 +73,9 @@ swe_h2.__doc__ = _docstring('AC_H2_SWE', '1-hour particle moments')
 
 def swi_h2(starttime, endtime):
     identifier = 'AC_H2_SWI'
-    dl = _ace(starttime, endtime, identifier)
+    dl = _ace(starttime, endtime, identifier, warn_missing_units=False)
     dl.intervals = cdasrest._year_intervals
-    return dl.load(starttime, endtime, warn_missing_units=False)
+    return dl.load(starttime, endtime)
 
 
 swi_h2.__doc__ = _docstring('AC_H2_SWI', '1-hour composition')
@@ -83,9 +83,9 @@ swi_h2.__doc__ = _docstring('AC_H2_SWI', '1-hour composition')
 
 def swi_h3(starttime, endtime):
     identifier = 'AC_H3_SWI'
-    dl = _ace(starttime, endtime, identifier)
+    dl = _ace(starttime, endtime, identifier, warn_missing_units=False)
     dl.intervals = cdasrest._year_intervals
-    return dl.load(starttime, endtime, warn_missing_units=False)
+    return dl.load(starttime, endtime)
 
 
 swi_h3.__doc__ = _docstring('AC_H3_SWI', '2-hour composition')
@@ -104,9 +104,9 @@ swi_h3b.__doc__ = _docstring(
 
 def swi_h4(starttime, endtime):
     identifier = 'AC_H4_SWI'
-    dl = _ace(starttime, endtime, identifier)
+    dl = _ace(starttime, endtime, identifier, warn_missing_units=False)
     dl.intervals = cdasrest._year_intervals
-    return dl.load(starttime, endtime, warn_missing_units=False)
+    return dl.load(starttime, endtime)
 
 
 swi_h4.__doc__ = _docstring('AC_H4_SWI', '1-day composition')
@@ -114,9 +114,9 @@ swi_h4.__doc__ = _docstring('AC_H4_SWI', '1-day composition')
 
 def swi_h5(starttime, endtime):
     identifier = 'AC_H5_SWI'
-    dl = _ace(starttime, endtime, identifier)
+    dl = _ace(starttime, endtime, identifier, warn_missing_units=False)
     dl.intervals = cdasrest._year_intervals
-    return dl.load(starttime, endtime, warn_missing_units=False)
+    return dl.load(starttime, endtime)
 
 
 swi_h5.__doc__ = _docstring('AC_H5_SWI', '2-hour charge state')
