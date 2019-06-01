@@ -41,6 +41,22 @@ def _docstring(identifier, letter, description):
     return ds
 
 
+def _day_intervals(starttime, endtime):
+    interval = stime.TimeRange(starttime, endtime)
+    daylist = interval.get_dates()
+    intervallist = [stime.TimeRange(t, t + dt.timedelta(days=1)) for
+                    t in daylist]
+    return intervallist
+
+
+def _year_intervals(starttime, endtime):
+    intervallist = []
+    for year in range(starttime.year, endtime.year + 1):
+        intervallist.append(stime.TimeRange(dt.datetime(year, 1, 1),
+                                            dt.datetime(year + 1, 1, 1)))
+    return intervallist
+
+
 class CDASDwonloader(util.Downloader):
     def __init__(self, dataset, identifier, dir, badvalues=None,
                  warn_missing_units=True):
@@ -65,12 +81,9 @@ class CDASDwonloader(util.Downloader):
             etime = etime.to_datetime()
         return etime
 
-    def intervals(self, starttime, endtime):
-        interval = stime.TimeRange(starttime, endtime)
-        daylist = interval.get_dates()
-        intervallist = [stime.TimeRange(t, t + dt.timedelta(days=1)) for
-                        t in daylist]
-        return intervallist
+    @staticmethod
+    def intervals(starttime, endtime):
+        return _day_intervals(starttime, endtime)
 
     def fname(self, interval):
         stime = self._interval_start(interval)

@@ -33,6 +33,9 @@ logger = logging.getLogger(__name__)
 class Downloader:
     def load(self, starttime, endtime):
         data = []
+        intervals = self.intervals(starttime, endtime)
+        if not len(intervals):
+            raise RuntimeError('No intervals provided')
         for interval in self.intervals(starttime, endtime):
             hdf_path = self.local_hdf_path(interval)
             local_path = self.local_path(interval)
