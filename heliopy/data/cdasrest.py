@@ -41,6 +41,22 @@ def _docstring(identifier, letter, description):
     return ds
 
 
+def _day_intervals(starttime, endtime):
+    interval = stime.TimeRange(starttime, endtime)
+    daylist = interval.get_dates()
+    intervallist = [stime.TimeRange(t, t + dt.timedelta(days=1)) for
+                    t in daylist]
+    return intervallist
+
+
+def _year_intervals(starttime, endtime):
+    intervallist = []
+    for year in range(starttime.year, endtime.year + 1):
+        intervallist.append(stime.TimeRange(dt.datetime(year, 1, 1),
+                                            dt.datetime(year + 1, 1, 1)))
+    return intervallist
+
+
 class CDASDwonloader(util.Downloader):
     def __init__(self, dataset, identifier, dir, badvalues=None,
                  warn_missing_units=True):
@@ -65,12 +81,9 @@ class CDASDwonloader(util.Downloader):
             etime = etime.to_datetime()
         return etime
 
-    def intervals(self, starttime, endtime):
-        interval = stime.TimeRange(starttime, endtime)
-        daylist = interval.get_dates()
-        intervallist = [stime.TimeRange(t, t + dt.timedelta(days=1)) for
-                        t in daylist]
-        return intervallist
+    @staticmethod
+    def intervals(starttime, endtime):
+        return _day_intervals(starttime, endtime)
 
     def fname(self, interval):
         stime = self._interval_start(interval)
@@ -163,8 +176,8 @@ def get_cdas_url(starttime, endtime, vars, dataset, timeout=10):
             var_info = get_variables(dataset, timeout=timeout)
         except requests.exceptions.ReadTimeout:
             raise util.NoDataError(
-                'Connection to CDAweb timed out when downloading '
-                f'{dataset} data for date {date}.')
+                'Connection to CDAweb timed out when getting CDAS URL for '
+                f'{dataset} data for interval {starttime} - {endtime}.')
 
         if not len(var_info):
             raise util.NoDataError(
@@ -183,7 +196,7 @@ def get_cdas_url(starttime, endtime, vars, dataset, timeout=10):
     return url
 
 
-def get_data(dataset, starttime, endtime, vars=None, timeout=10):
+def get_data(dataset, starttime, endtime, vars=None, timeout=100):
     """
     Download CDAS data.
 
@@ -210,6 +223,7 @@ def get_data(dataset, starttime, endtime, vars=None, timeout=10):
     params = {'format': 'cdf', 'cdfVersion': 3}
     response = requests.get(
         url, params=params, headers=CDAS_HEADERS, timeout=timeout)
+
     if 'FileDescription' in response.json():
         print(f'Downloading {dataset} for interval {starttime} - {endtime}')
         url = response.json()['FileDescription'][0]['Name']
