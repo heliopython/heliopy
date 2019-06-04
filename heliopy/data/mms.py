@@ -32,7 +32,7 @@ def _validate_instrument(instrument):
 
 
 def _validate_probe(probe):
-    allowed_probes = [str(i) for i in range(4)]
+    allowed_probes = [str(i+1) for i in range(4)]
     probe = str(probe)
     if probe not in allowed_probes:
         raise ValueError(
