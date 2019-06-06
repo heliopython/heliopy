@@ -411,7 +411,7 @@ def units_attach(data, units, warn_missing_units=True):
     with warnings.catch_warnings():
         warnings.simplefilter(
             'ignore', 'Discarding nonzero nanoseconds in conversion')
-        timeseries_data = ts.TimeSeries(data, units)
+        timeseries_data = ts.GenericTimeSeries(data, units)
     return timeseries_data
 
 
