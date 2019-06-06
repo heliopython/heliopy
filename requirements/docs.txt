@@ -3,7 +3,7 @@
 graphviz
 matplotlib
 mock
-sphinx
+sphinx>=2
 sphinx-automodapi
 sphinx-bootstrap-theme
 sphinx-gallery
