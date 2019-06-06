@@ -449,21 +449,17 @@ def cdf_units(cdf_, manual_units=None, length=None):
     # Extract the list of valid keys in the zVar or rVar
     for attr in var_list:
         for key in cdf_.cdf_info()[attr]:
-            try:
-                y = cdf_.varget(key)
-                ncols = y.shape
-                if len(ncols) == 1:
-                    key_dict[key] = key
-                if len(ncols) > 1:
-                    val = []
-                    val.append(key)
-                    for x in range(0, ncols[1]):
-                        field = key + "{}".format('_' + str(x))
-                        val.append(field)
-                    key_dict[key] = val
-            except Exception as e:
-                print("{} - Variable {}".format(e, key))
-                continue
+            y = np.array(cdf_.varget(key))
+            ncols = y.shape
+            if len(ncols) == 1:
+                key_dict[key] = key
+            if len(ncols) > 1:
+                val = []
+                val.append(key)
+                for x in range(0, ncols[1]):
+                    field = key + "{}".format('_' + str(x))
+                    val.append(field)
+                key_dict[key] = val
 
     logger.info(f'Getting units for {key_dict}')
     # Assigning units to the keys
@@ -495,11 +491,12 @@ def cdf_units(cdf_, manual_units=None, length=None):
                     warnings.warn(message)
                     continue
 
-        if temp_unit is not None:
-            if isinstance(val, list):
-                units.update(coll.OrderedDict.fromkeys(val, temp_unit))
-            else:
-                units[val] = temp_unit
+        if isinstance(val, list):
+            for v in val:
+                units[v] = temp_unit
+        else:
+            units[val] = temp_unit
+
     if manual_units:
         units.update(manual_units)
     logger.info(f'Extracted following units: {units}')
