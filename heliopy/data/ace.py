@@ -4,11 +4,7 @@ Methods for importing data from the ACE spacecraft.
 All data is publically available at ftp://spdf.gsfc.nasa.gov/pub/data/ace/.
 The ACE spacecraft homepage can be found at http://www.srl.caltech.edu/ACE/.
 """
-from collections import OrderedDict
 import pathlib as path
-
-import astropy.units as u
-import pandas as pd
 
 from heliopy import config
 from heliopy.data import cdasrest

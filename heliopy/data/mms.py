@@ -6,12 +6,8 @@ https://lasp.colorado.edu/mms/sdc/public/data/, and the MMS science data centre
 is at https://lasp.colorado.edu/mms/sdc/public/.
 """
 import os
-from datetime import datetime
-import numpy as np
-import pandas as pd
 import pathlib
 from collections import OrderedDict
-import astropy.units as u
 import requests
 from tqdm.auto import tqdm
 

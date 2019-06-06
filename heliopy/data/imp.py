@@ -3,9 +3,7 @@ Methods for importing data from the IMP spacecraft.
 
 All data is publically available at ftp://cdaweb.gsfc.nasa.gov/pub/data/imp/
 """
-from datetime import datetime
 from collections import OrderedDict
-import os
 import pathlib as path
 
 import pandas as pd
@@ -145,8 +143,7 @@ def merged(probe, starttime, endtime, try_download=True):
         # Read in data
         data = pd.read_table(f, **readargs)
         data['Time'] = (pd.to_datetime(data['Year'], format='%Y') +
-                        pd.to_timedelta(data['doy'] - 1,
-                                        unit='d') +
+                        pd.to_timedelta(data['doy'] - 1, unit='d') +
                         pd.to_timedelta(data['Hour'], unit='h') +
                         pd.to_timedelta(data['Minute'], unit='m'))
         data = data.drop(['Year', 'doy', 'Hour', 'Minute', 'FCm', 'DWm'],

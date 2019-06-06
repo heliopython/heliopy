@@ -13,7 +13,6 @@ import numpy as np
 
 import astropy.coordinates.baseframe as baseframe
 import astropy.coordinates.builtin_frames as astropy_frames
-import astropy.coordinates.representation as r
 import astropy.coordinates as coords
 import astropy.units as u
 
