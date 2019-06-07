@@ -16,7 +16,7 @@ import astropy.coordinates.builtin_frames as astropy_frames
 import astropy.coordinates as coords
 import astropy.units as u
 
-import sunpy.coordinates.ephemeris as ephem
+import sunpy.coordinates.sun
 
 transform_graph = coords.TransformGraph()
 
@@ -92,7 +92,7 @@ def hee_to_gse(hee_coord, gse_frame):
     Convert from HEE to GSE coordinates.
     '''
     obstime = hee_coord.obstime
-    r_earth_sun = ephem.get_sunearth_distance(time=obstime)
+    r_earth_sun = sunpy.coordinates.sun.earth_distance(time=obstime)
     # Rotate 180deg around the z-axis
     R = np.array([[-1, 0, 0],
                   [0, -1, 0],
