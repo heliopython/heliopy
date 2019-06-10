@@ -1,6 +1,6 @@
 [tool.towncrier]
     package = "heliopy"
-    filename = "CHANGELOG.rst"
+    filename = "CHANGES.rst"
     directory = "changelog/"
     issue_format = "`#{issue} <https://github.com/heliopython/heliopy/pull/{issue}>`__"
 
