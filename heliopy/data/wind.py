@@ -4,6 +4,7 @@ All data is publically available at ftp://spdf.gsfc.nasa.gov/pub/data/wind.
 See https://wind.nasa.gov/data_sources.php for more information on different
 data products.
 """
+import astropy.units as u
 from heliopy.data import cdasrest
 
 
@@ -11,11 +12,12 @@ def _docstring(identifier, description):
     return cdasrest._docstring(identifier, 'W', description)
 
 
-def _wind(starttime, endtime, identifier, badvalues=None):
+def _wind(starttime, endtime, identifier, badvalues=None, units=None):
     """
     Generic method for downloading ACE data.
     """
-    dl = cdasrest.CDASDwonloader('wi', identifier, 'wind', badvalues=badvalues)
+    dl = cdasrest.CDASDwonloader('wi', identifier, 'wind', badvalues=badvalues,
+                                 units=units)
     return dl.load(starttime, endtime)
 
 
@@ -23,8 +25,9 @@ def _wind(starttime, endtime, identifier, badvalues=None):
 def swe_h1(starttime, endtime):
     identifier = 'WI_H1_SWE'
     badvalues = 99999.9
+    units = {'ChisQ_DOF_nonlin': u.dimensionless_unscaled}
     return _wind(starttime, endtime, identifier,
-                 badvalues=badvalues)
+                 badvalues=badvalues, units=units)
 
 
 swe_h1.__doc__ = _docstring(

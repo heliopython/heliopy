@@ -400,14 +400,15 @@ def units_attach(data, units, warn_missing_units=True):
     missing_msg = ('If you are trying to auomatically download data '
                    'with HelioPy this is a bug, please report it at '
                    'https://github.com/heliopython/heliopy/issues')
-    unit_key = list(units.keys())
+    unit_keys = list(units.keys())
     for column_name in data.columns:
-        if column_name not in unit_key:
+        if column_name not in unit_keys:
             units[column_name] = u.dimensionless_unscaled
             if warn_missing_units:
                 message = (f"{column_name} column has missing units."
                            f"\n{missing_msg}")
                 warnings.warn(message, Warning)
+
     timeseries_data = ts.GenericTimeSeries(data, units=units)
     return timeseries_data
 

@@ -59,12 +59,12 @@ def _year_intervals(starttime, endtime):
 
 class CDASDwonloader(util.Downloader):
     def __init__(self, dataset, identifier, dir, badvalues=None,
-                 warn_missing_units=True):
+                 warn_missing_units=True, units=None):
         self.dataset = dataset
         self.identifier = identifier
         self.dir = dir
         self.badvalues = badvalues
-        self.units = None
+        self.units = units
         self.warn_missing_units = warn_missing_units
 
     @staticmethod
