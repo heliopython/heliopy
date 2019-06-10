@@ -31,7 +31,29 @@ logger = logging.getLogger(__name__)
 
 
 class Downloader:
+    """
+    A template class, that should be sub-classed to provide methods for
+    downloading a single dataset.
+
+    The following methods must be implemented by sub-classes:
+
+    - :meth:`Downloader.intervals()`: given a time interval, this
+      method should split the interval up into sub-intervals. Each of these
+      sub-intervals corresponds directly to a single file to download, store,
+      and read in.
+    - :meth:`Downloader.local_dir()`: given an interval, returns the
+      local directory in which the file is stored.
+    - :meth:`Downloader.fname()`: given an interval, returns the
+      local filename in which the file is stored.
+    - :meth:`Downloader.download()`: given an interval, download the data for
+      that interval.
+    - :meth:`Downloader.load_local_file()`: given an interval, load the local
+      file and return a :class:`pandas.DataFrame` object containing the data.
+    """
     def load(self, starttime, endtime):
+        """
+        Load all data between *starttime* and *endtime*.
+        """
         data = []
         intervals = self.intervals(starttime, endtime)
         if not len(intervals):
@@ -84,13 +106,14 @@ class Downloader:
 
     def intervals(self, starttime, endtime):
         """
-        Given a start time and end time, return the complete list of intervals
-        that cover the time range. Each interval is associated with a single
-        file to be downloaded and read in.
+        The complete list of sub-intervals that cover a time range
+        Each sub-interval is associated with a single file to be downloaded and
+        read in.
 
         Parameters
         ----------
-        starttime, endtime : datetime.datetime
+        starttime : datetime.datetime
+        endtime : datetime.datetime
 
         Returns
         -------
@@ -154,7 +177,7 @@ class Downloader:
 
         Returns
         -------
-        data
+        data : pandas.DataFrame
         """
         raise NotImplementedError
 
