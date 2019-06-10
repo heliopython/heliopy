@@ -162,12 +162,10 @@ def _imp8(starttime, endtime, identifier, units=None, badvalues=None,
     """
     Generic method for downloading IMP8 data.
     """
-    dataset = 'imp8'
-    return cdasrest._process_cdas(starttime, endtime, identifier, dataset,
-                                  imp_dir,
-                                  units=units,
-                                  badvalues=badvalues,
-                                  warn_missing_units=warn_missing_units)
+    dl = cdasrest.CDASDwonloader('imp8', identifier, 'imp', units=units,
+                                 badvalues=badvalues,
+                                 warn_missing_units=warn_missing_units)
+    return dl.load(starttime, endtime)
 
 
 def _docstring(identifier, extra):
