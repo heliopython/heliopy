@@ -1,5 +1,5 @@
 Version 0.8.0
--------------
+=============
 
 New features
 ^^^^^^^^^^^^
@@ -15,9 +15,17 @@ Backwards incompatible changes
   now take ``starttime`` and ``endtime`` arguments instead of just a ``date``
   argument, and their signatures have changed to reflect this.
 
+Heliopy 0.7.1 (2019-06-10)
+==========================
+
+Bug Fixes
+---------
+
+- Fix bug that prevented MMS data from spacecraft 4 being downloaded. (`#719 <https://github.com/heliopython/heliopy/pull/719>`__)
+- Correctly attach units to MMS data. (`#726 <https://github.com/heliopython/heliopy/pull/726>`__)
 
 Version 0.7.0
--------------
+=============
 
 New features
 ^^^^^^^^^^^^
@@ -44,7 +52,7 @@ Removed features
 
 
 Version 0.6.7
--------------
+=============
 
 Deprecations
 ^^^^^^^^^^^^
@@ -56,7 +64,7 @@ Deprecations
   re-written to use xarray.
 
 Version 0.6.6
--------------
+=============
 
 Bug fixes
 ^^^^^^^^^
@@ -66,7 +74,7 @@ Bug fixes
   different filesystems.
 
 Version 0.6.5
--------------
+=============
 
 Bug fixes
 ^^^^^^^^^
@@ -85,7 +93,7 @@ Backwards incompatible changes
   raising an error if a kernel cannot be downloaded.
 
 Version 0.6.4
--------------
+=============
 
 New features
 ^^^^^^^^^^^^
@@ -123,7 +131,7 @@ been renamed:
 - `mag320ms` has been renamed :func:`~heliopy.data.imp.i8_mag320ms`
 
 Version 0.6.3
--------------
+=============
 
 New features
 ^^^^^^^^^^^^
@@ -146,7 +154,7 @@ Backwards incompatible changes
   the new method and set the ``mode`` keyword argument to ``srvy``.
 
 Version 0.6.2
--------------
+=============
 
 New features
 ^^^^^^^^^^^^
@@ -160,7 +168,7 @@ Bug fixes
 - Fixed :meth:`heliopy.data.mms.fgm_survey` data loading. :issue:`601`
 
 Version 0.6.1
--------------
+=============
 
 New features
 ^^^^^^^^^^^^
@@ -176,7 +184,7 @@ Bug fixes
   prints all CDF file information.
 
 Version 0.6.0
--------------
+=============
 
 HelioPy now only supports Python versions 3.6 and higher.
 
@@ -216,7 +224,7 @@ Fixed bugs
 - :func:`.data.imp.merged` no longer imports redundant columns.
 
 Version 0.5.3
--------------
+=============
 
 New features
 ^^^^^^^^^^^^
@@ -227,7 +235,7 @@ New features
   low data mode. :issue:`529`
 
 Version 0.5.2
--------------
+=============
 
 New features
 ^^^^^^^^^^^^
@@ -243,7 +251,7 @@ Fixed bugs
 
 
 Version 0.5.1
--------------
+=============
 
 New features
 ^^^^^^^^^^^^
@@ -263,7 +271,7 @@ Fixed bugs
   :meth:`.data.imp.mag15s` has been corrected. :issue:`396`
 
 Version 0.5.0
--------------
+=============
 
 New features
 ^^^^^^^^^^^^
@@ -297,7 +305,7 @@ Removed features
   modules.
 
 Version 0.4
------------
+===========
 
 New features
 ^^^^^^^^^^^^
@@ -317,7 +325,7 @@ Backwards incompatible changes
   manually generating an evenly spaced list of times.
 
 Version 0.3
------------
+===========
 
 New features
 ^^^^^^^^^^^^
@@ -336,7 +344,7 @@ Removed features
 - :mod:`heliopy.plot` code removed
 
 Version 0.2
------------
+===========
 
 New features
 ^^^^^^^^^^^^
@@ -348,7 +356,7 @@ New features
   WIND 3DP sfpd data.
 
 Version 0.1.3
--------------
+=============
 
 Fixed bugs
 ^^^^^^^^^^
