@@ -54,6 +54,14 @@ cdas and util modules:
    cdas
    util
 
+
+Adding new data sources
+^^^^^^^^^^^^^^^^^^^^^^^
+Adding a new data source to HelioPy involves subclassing
+:class:`heliopy.data.util.Downloader`. For more information, see the docstring
+of :class:`~heliopy.data.util.Downloader`.
+
+
 SunPy and AstroPy Integration
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
