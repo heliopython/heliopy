@@ -408,10 +408,7 @@ def units_attach(data, units, warn_missing_units=True):
                 message = (f"{column_name} column has missing units."
                            f"\n{missing_msg}")
                 warnings.warn(message, Warning)
-    with warnings.catch_warnings():
-        warnings.simplefilter(
-            'ignore', 'Discarding nonzero nanoseconds in conversion')
-        timeseries_data = ts.GenericTimeSeries(data, units=units)
+    timeseries_data = ts.GenericTimeSeries(data, units=units)
     return timeseries_data
 
 
