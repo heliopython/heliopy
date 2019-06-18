@@ -36,7 +36,8 @@ swe_h1.__doc__ = _docstring(
 
 def mfi_h0(starttime, endtime):
     identifier = 'WI_H0_MFI'
-    return _wind(starttime, endtime, identifier)
+    units = {'BGSEa_0': u.nT, 'BGSEa_1': u.nT, 'BGSEa_2': u.nT}
+    return _wind(starttime, endtime, identifier, units=units)
 
 
 mfi_h0.__doc__ = _docstring(
