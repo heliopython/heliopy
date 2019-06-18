@@ -480,7 +480,7 @@ def cdf_units(cdf_, manual_units=None, length=None):
             except (TypeError, ValueError):
                 if manual_units and key in manual_units:
                     temp_unit = manual_units[key]
-                elif helper.cdf_dict(unit_str):
+                elif helper.cdf_dict(unit_str) is not None:
                     temp_unit = helper.cdf_dict(unit_str)
 
                 if temp_unit is None:
