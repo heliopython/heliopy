@@ -141,7 +141,7 @@ def merged(probe, starttime, endtime, try_download=True):
                                   '9999.9', '9999999.'],
                     'delim_whitespace': True}
         # Read in data
-        data = pd.read_table(f, **readargs)
+        data = pd.read_csv(f, **readargs)
         data['Time'] = (pd.to_datetime(data['Year'], format='%Y') +
                         pd.to_timedelta(data['doy'] - 1, unit='d') +
                         pd.to_timedelta(data['Hour'], unit='h') +
