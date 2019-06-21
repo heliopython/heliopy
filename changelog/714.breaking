@@ -1,0 +1,3 @@
+:function:`heliopy.data.cdasrest.get_cdas_url` and :function:`heliopy.data.cdasrest.get_data`
+now take ``starttime`` and ``endtime`` arguments instead of just a ``date``
+argument, and their signatures have changed to reflect this.

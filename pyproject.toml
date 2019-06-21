@@ -5,6 +5,11 @@
     issue_format = "`#{issue} <https://github.com/heliopython/heliopy/pull/{issue}>`__"
 
     [[tool.towncrier.type]]
+      directory = "feature"
+      name = "Features"
+      showcontent = true
+
+    [[tool.towncrier.type]]
         directory = "breaking"
         name = "Backwards Incompatible Changes"
         showcontent = true
@@ -17,11 +22,6 @@
     [[tool.towncrier.type]]
       directory = "removal"
       name = "Deprecations and Removals"
-      showcontent = true
-
-    [[tool.towncrier.type]]
-      directory = "feature"
-      name = "Features"
       showcontent = true
 
     [[tool.towncrier.type]]
