@@ -106,42 +106,6 @@ class CDASDwonloader(util.Downloader):
                            badvalues=self.badvalues)
 
 
-def _process_cdas(starttime, endtime, identifier, dataset, base_dir,
-                  units=None, badvalues=None, warn_missing_units=True):
-    """
-    Generic method for downloading cdas data.
-    """
-    relative_dir = pathlib.Path(identifier)
-    daylist = util._daysplitinterval(starttime, endtime)
-    dirs = []
-    fnames = []
-    dates = []
-    extension = '.cdf'
-    for day in daylist:
-        date = day[0]
-        dates.append(date)
-        filename = '{}_{}_{}{:02}{:02}'.format(
-            dataset, identifier, date.year, date.month, date.day)
-        fnames.append(filename)
-        this_relative_dir = relative_dir / str(date.year)
-        dirs.append(this_relative_dir)
-
-    def download_func(remote_base_url, local_base_dir,
-                      directory, fname, remote_fname, extension, date):
-        starttime = dt.datetime.combine(date, dt.time.min)
-        endtime = dt.datetime.combine(date, dt.time.max)
-        return get_data(identifier, starttime, endtime)
-
-    def processing_func(cdf):
-        return util.cdf2df(cdf, index_key='Epoch',
-                           badvalues=badvalues)
-
-    return util.process(dirs, fnames, extension, base_dir, '',
-                        download_func, processing_func, starttime,
-                        endtime, units=units, download_info=dates,
-                        warn_missing_units=warn_missing_units)
-
-
 def get_variables(dataset, timeout=10):
     """
     Queries server for descriptions of variables in a dataset.
