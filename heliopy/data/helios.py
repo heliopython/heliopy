@@ -1103,12 +1103,10 @@ def _helios(starttime, endtime, identifier, units=None, badvalues=None,
     """
     Generic method for downloading Helios data from CDAWeb.
     """
-    dataset = 'helios'
-    return cdasrest._process_cdas(starttime, endtime, identifier, dataset,
-                                  helios_dir,
-                                  units=units,
-                                  badvalues=badvalues,
-                                  warn_missing_units=warn_missing_units)
+    dl = cdasrest.CDASDwonloader('helios', identifier, 'helios', units=units,
+                                 badvalues=badvalues,
+                                 warn_missing_units=warn_missing_units)
+    return dl.load(starttime, endtime)
 
 
 def merged(probe, starttime, endtime):
