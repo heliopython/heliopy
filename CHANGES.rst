@@ -1,8 +1,29 @@
+Heliopy 0.8.0 (2019-06-24)
+==========================
+
+Features
+--------
+
+- :func:`heliopy.data.cdasrest.get_cdas_url` and :func:`heliopy.data.cdasrest.get_data`
+  have been generalised, and can now be used to download data in an arbitrary
+  interval instead of just a single day. (`#714 <https://github.com/heliopython/heliopy/pull/714>`__)
+- :mod:`heliopy.data.ace` functions that download low cadence data (e.g. composition
+  data) now download yearly instead of daily files, speeding up data download. (`#715 <https://github.com/heliopython/heliopy/pull/715>`__)
+
+
+Backwards Incompatible Changes
+------------------------------
+
+- :func:`heliopy.data.cdasrest.get_cdas_url` and :func:`heliopy.data.cdasrest.get_data`
+  now take ``starttime`` and ``endtime`` arguments instead of just a ``date``
+  argument, and their signatures have changed to reflect this. (`#714 <https://github.com/heliopython/heliopy/pull/714>`__)
+
+
 HelioPy 0.7.1 (2019-06-10)
 ==========================
 
 Bug Fixes
-^^^^^^^^^
+---------
 
 - Fix bug that prevented MMS data from spacecraft 4 being downloaded. (`#719 <https://github.com/heliopython/heliopy/pull/719>`__)
 - Correctly attach units to MMS data. (`#726 <https://github.com/heliopython/heliopy/pull/726>`__)
@@ -11,7 +32,7 @@ Version 0.7.0
 =============
 
 New features
-^^^^^^^^^^^^
+------------
 
 - Added a graph showing the available coordinate transformations to
   :mod:`heliopy.coordinates`
@@ -22,13 +43,13 @@ New features
   which should work better in notebooks.
 
 Bug fixes
-^^^^^^^^^
+---------
 
 - Fixed a bug where not all MMS files were downloaded for a large query.
 - Correctly removed bad values in :mod:`heliopy.data.omni`.
 
 Removed features
-^^^^^^^^^^^^^^^^
+----------------
 
 - The deprecated :func:`heliopy.data.wind.swe_h3` and
   :func:`heliopy.data.wind.threedp_sfpd` have been removed.
@@ -38,7 +59,7 @@ Version 0.6.7
 =============
 
 Deprecations
-^^^^^^^^^^^^
+------------
 
 - :func:`heliopy.data.wind.swe_h3` and :func:`heliopy.data.wind.threedp_sfpd`
   are deprecated and will be removed in version 0.7.0. This is becaue they
@@ -50,7 +71,7 @@ Version 0.6.6
 =============
 
 Bug fixes
-^^^^^^^^^
+---------
 
 - Data downloaded through CDAS is now moved from a temporary folder using
   ``shutil``, fixing it when the temp folder and destination folder are on
@@ -60,7 +81,7 @@ Version 0.6.5
 =============
 
 Bug fixes
-^^^^^^^^^
+---------
 
 - :func:`heliopy.data.spice.get_kernel` now raises a warning instead of an
   error if a kernel can't be downloaded.
@@ -70,7 +91,7 @@ Bug fixes
   time the module is imported.
 
 Backwards incompatible changes
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+------------------------------
 
 - :func:`heliopy.data.spice.get_kernel` now prints a warning instead of
   raising an error if a kernel cannot be downloaded.
@@ -79,7 +100,7 @@ Version 0.6.4
 =============
 
 New features
-^^^^^^^^^^^^
+------------
 
 - Added the ability for :class:`heliopy.spice.Trajectory` objects to compute
   and return the body velocity.
@@ -97,7 +118,7 @@ New features
   coordinate systems.
 
 Backwards incompatible changes
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+------------------------------
 
 - Kernels available in :mod:`heliopy.data.spice` have been cleaned up,
   meaning some are now not available or have been moved to the predicted
@@ -117,7 +138,7 @@ Version 0.6.3
 =============
 
 New features
-^^^^^^^^^^^^
+------------
 
 - Added Parker Solar Probe spice kernels to :mod:`heliopy.data.spice`.
 - Added a generic functions to download MMS data. Available files can be
@@ -125,12 +146,12 @@ New features
   downloaded using :meth:`heliopy.data.mms.download_files`
 
 Bug fixes
-^^^^^^^^^
+---------
 
 - Updated links to the STEREO-A spice kernels.
 
 Backwards incompatible changes
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+------------------------------
 
 - :meth:`heliopy.data.mms.fgm_survey` has been removed in favour of the more
   general :meth:`heliopy.data.mms.fgm`. To download survey mode FGM data use
@@ -140,13 +161,13 @@ Version 0.6.2
 =============
 
 New features
-^^^^^^^^^^^^
+------------
 
 - Added :meth:`heliopy.data.mms.fpi_des_moms` function. :issue:`601`
 - Added :meth:`heliopy.data.wind.threedp_e0_emfits` function. :issue:`606`
 
 Bug fixes
-^^^^^^^^^
+---------
 
 - Fixed :meth:`heliopy.data.mms.fgm_survey` data loading. :issue:`601`
 
@@ -154,14 +175,14 @@ Version 0.6.1
 =============
 
 New features
-^^^^^^^^^^^^
+------------
 - The :mod:`heliopy.data.ace` module now contains all the magnetic field and
   particle data produces produced by ACE. :issue:`577`, :issue:`578`
 - STEREO-A spice kernels have been added. :issue:`585`
 
 
 Bug fixes
-^^^^^^^^^
+---------
 - The accidentally removed Ulysses spice kernel has returned. :issue:`582`
 - :func:`heliopy.data.helper.cdfpeek` has been updated to work with cdflib, and now
   prints all CDF file information.
@@ -172,7 +193,7 @@ Version 0.6.0
 HelioPy now only supports Python versions 3.6 and higher.
 
 New features
-^^^^^^^^^^^^
+------------
 - HelioPy has been integrated with SunPy TimeSeries and AstroPy Units. All of
   the HelioPy modules now return physical units with data.
 - Added a new :func:`.data.util.cdf_units` function that can extract the UNIT
@@ -183,7 +204,7 @@ New features
   can now be imported using the :func:`.data.dscovr.mag_h0` function.
 
 Backwards incompatible changes
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+------------------------------
 - Methods in :mod:`heliopy.data` no longer returns a Pandas DataFrame, but
   now return a SunPy timeseries object. To get the underlying data, you can
   still do::
@@ -203,14 +224,14 @@ Backwards incompatible changes
 
 
 Fixed bugs
-^^^^^^^^^^
+----------
 - :func:`.data.imp.merged` no longer imports redundant columns.
 
 Version 0.5.3
 =============
 
 New features
-^^^^^^^^^^^^
+------------
 
 - Lots of small documentation updates.
 - `.data.helios.distparams` now has an extra ``'data_rate'`` column, which
@@ -221,13 +242,13 @@ Version 0.5.2
 =============
 
 New features
-^^^^^^^^^^^^
+------------
 
 - The new HelioPy logo has been added to the documentation.
   :issue:`448`, :issue:`447`
 
 Fixed bugs
-^^^^^^^^^^
+----------
 
 - The new data version number of :meth:`.data.mms.fpi_dis_moms` has been
   updated.
@@ -237,17 +258,17 @@ Version 0.5.1
 =============
 
 New features
-^^^^^^^^^^^^
+------------
 
 - HelioPy can now be installed using conda.
 
 Backwards incompatible changes
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+------------------------------
 - The list of kernels available for automatic download in :mod:`.data.spice`
   has been updated, and some names changed. :issue:`408`
 
 Fixed bugs
-^^^^^^^^^^
+----------
 - :meth:`.spice.Trajectory.generate_positions` can now generate
   positions at a resolution of one second instead of one day. :issue:`405`
 - A duplicate "z gsm" column header in the data returned by
@@ -257,7 +278,7 @@ Version 0.5.0
 =============
 
 New features
-^^^^^^^^^^^^
+------------
 
 - :meth:`heliopy.data.sunspot` added an additional functionality to import
   sunspot data in three different timeframes - daily, monthly and yearly.
@@ -270,7 +291,7 @@ New features
   :mod:`heliopy.data.ace`.
 
 Backwards incompatible changes
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+------------------------------
 
 - :meth:`heliopy.data.spice.get_kernel` now returns a list of filenames instead
   of a single filename string.
@@ -281,7 +302,7 @@ Backwards incompatible changes
   data import.
 
 Removed features
-^^^^^^^^^^^^^^^^
+----------------
 
 - :meth:`heliopy.data.helios.trajectory` has been removed. To get Helios
   trajectory data use the :mod:`heliopy.spice` and :mod:`heliopy.data.spice`
@@ -291,7 +312,7 @@ Version 0.4
 ===========
 
 New features
-^^^^^^^^^^^^
+------------
 
 - :meth:`~heliopy.data.ulysses.swics_abundances` and
   :meth:`~heliopy.data.ulysses.swics_heavy_ions`
@@ -300,7 +321,7 @@ New features
   CDF files.
 
 Backwards incompatible changes
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+------------------------------
 
 - :meth:`heliopy.spice.Trajectory.generate_positions` now takes a list of
   dates/times at which to generate orbital positions, instead of a start time,
@@ -311,7 +332,7 @@ Version 0.3
 ===========
 
 New features
-^^^^^^^^^^^^
+------------
 
 HelioPy now contiains code for working with SPICE kernels. See the following
 modules for more information:
@@ -320,7 +341,7 @@ modules for more information:
 - :mod:`heliopy.spice` module for automatically processing spice kernels
 
 Removed features
-^^^^^^^^^^^^^^^^
+----------------
 
 - The :mod:`heliopy.plasma` module has been removed
   (see http://www.plasmapy.org/ for the recommended alternative)
@@ -330,7 +351,7 @@ Version 0.2
 ===========
 
 New features
-^^^^^^^^^^^^
+------------
 
 - Convert examples gallery to automatically generate plots
 - Added :meth:`HelioPy.data.helper.listdata` method for easily viewing the
@@ -342,7 +363,7 @@ Version 0.1.3
 =============
 
 Fixed bugs
-^^^^^^^^^^
+----------
 
 - Correctly report download percentage when downloading files.
 - Fix issue where :meth:`heliopy.data.helios.corefit` made duplicate .hdf
