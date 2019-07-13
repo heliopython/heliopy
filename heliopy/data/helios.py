@@ -29,6 +29,10 @@ import astropy.units as u
 import numpy as np
 import pandas as pd
 
+#  / http libraries
+from bs4 import BeautifulSoup
+import requests
+
 from heliopy import config
 from heliopy.data import util
 from heliopy.data import cdasrest
@@ -37,6 +41,8 @@ data_dir = config['download_dir']
 use_hdf = config['use_hdf']
 helios_dir = os.path.join(data_dir, 'helios')
 
+# new http base_url
+remote_base_url = 'http://helios-data.ssl.berkeley.edu/data'
 
 def _check_probe(probe):
     probe = str(probe)
@@ -906,7 +912,7 @@ def corefit(probe, starttime, endtime, try_download=True):
 
     extension = '.csv'
     local_base_dir = path.Path(helios_dir)
-    remote_base_url = 'http://helios-data.ssl.berkeley.edu/data/'
+    # remote_base_url = 'http://helios-data.ssl.berkeley.edu/data/'
 
     def download_func(remote_base_url, local_base_dir, directory,
                       fname, remote_fname, extension):
@@ -952,7 +958,6 @@ def mag_4hz(probe, starttime, endtime, try_download=True):
     local_base_dir = (path.Path(helios_dir) / 'E2_experiment' /
                       'Data_Cologne_Nov2016_bestdata' / 'HR' /
                       'helios{}'.format(probe))
-    remote_base_url = 'apollo.ssl.berkeley.edu'
     extension = '.asc'
     dirs = []
     fnames = []
@@ -971,23 +976,34 @@ def mag_4hz(probe, starttime, endtime, try_download=True):
         remote_dir = ('pub/helios-data/E2_experiment/'
                       'Data_Cologne_Nov2016_bestdata/'
                       'HR/helios{}'.format(probe))
-        remote_url = 'ftp://' + remote_base_url + '/' + remote_dir
+        remote_url = remote_base_url + '/' + remote_dir
 
         original_fname = fname
         fname = None
         # Because the filename contains a number between 0 and 24 at the end,
         # get a list of all the filenames and compare them to the filename
         # we want
-        with FTP(remote_base_url) as ftp:
-            ftp.login()
-            remote_fnames = ftp.nlst(remote_dir)
 
-        for remote_fname in remote_fnames:
-            if original_fname in remote_fname:
-                fname = remote_fname
+        # new http functionality
+
+        def get_file_list(url, ext='', params={}):
+            response = requests.get(url, params=params)
+            if response.ok:
+                response_text = response.text
+            else:
+                return response.raise_for_status()
+            soup = BeautifulSoup(response_text, 'html.parser')
+            complete_file_list = [node.get('href') for node in soup.find_all('a') if node.get('href').endswith(ext)]
+            return complete_file_list
+
+        ext = 'asc'
+        file_list = get_file_list(remote_url, ext)
+        for filename in file_list:
+            if original_fname in filename:
+                fname = filename
                 break
-        if fname is None:
-            raise util.NoDataError
+            if fname is None:
+                raise util.NoDataError
         util._download_remote(remote_url, fname, local_base_dir)
 
         # Rename to a sensible and deterministic file name
@@ -1034,8 +1050,7 @@ def mag_ness(probe, starttime, endtime, try_download=True):
         6 second magnetic field data set
     """
     probe = _check_probe(probe)
-    remote_base_url = ('http://helios-data.ssl.berkeley.edu/data/'
-                       'E3_experiment/helios{}_6sec_ness/'.format(probe))
+    remote_url = (remote_base_url + '/E3_experiment/helios{}_6sec_ness/'.format(probe))
     local_base_dir = (path.Path(helios_dir) /
                       'E3_experiment' /
                       'helios{}_6sec_ness'.format(probe))
@@ -1054,13 +1069,13 @@ def mag_ness(probe, starttime, endtime, try_download=True):
         dirs.append('{}'.format(day.year))
         fnames.append('h{}{}{:03}'.format(probe, year - 1900, doy))
 
-    def download_func(remote_base_url, local_base_dir,
+    def download_func(remote_url, local_base_dir,
                       directory, fname, remote_fname, extension):
-        remote_url = remote_base_url + str(directory)
+        url = remote_base_url + str(directory)
         local_dir = local_base_dir / directory
         filename = fname + extension
         try:
-            util._download_remote(remote_url, filename, local_dir)
+            util._download_remote(url, filename, local_dir)
         except URLError:
             raise util.NoDataError
 
