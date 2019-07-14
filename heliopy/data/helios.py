@@ -1002,8 +1002,8 @@ def mag_4hz(probe, starttime, endtime, try_download=True):
             if original_fname in filename:
                 fname = filename
                 break
-            if fname is None:
-                raise util.NoDataError
+        if fname is None:
+            raise util.NoDataError
         util._download_remote(remote_url, fname, local_base_dir)
 
         # Rename to a sensible and deterministic file name
