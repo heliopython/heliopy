@@ -10,6 +10,7 @@ import pathlib
 from collections import OrderedDict
 import requests
 from tqdm.auto import tqdm
+from datetime import timedelta
 
 from heliopy.data import util
 from heliopy import config
@@ -49,7 +50,8 @@ def _validate_data_rate(data_rate):
                 data_rate, allowed_rates))
 
 
-def available_files(probe, instrument, starttime, endtime, data_rate=''):
+def available_files(probe, instrument, data_rate, starttime, endtime,
+                    product_string=''):
     """
     Get available MMS files as a list.
 
@@ -79,14 +81,20 @@ def available_files(probe, instrument, starttime, endtime, data_rate=''):
     _validate_instrument(instrument)
     probe = _validate_probe(probe)
     _validate_data_rate(data_rate)
+    
     start_date = starttime.strftime('%Y-%m-%d')
-    end_date = endtime.strftime('%Y-%m-%d')
+    if starttime.date() == endtime.date():
+        end_date = (endtime.date() + timedelta(days=1)).strftime('%Y-%m-%d')
+    else:
+        end_date = endtime.strftime('%Y-%m-%d')
 
     query = {}
     query['sc_id'] = 'mms' + probe
     query['instrument_id'] = instrument
     if len(data_rate):
         query['data_rate_mode'] = data_rate
+    if len(product_string):
+        query['descriptor'] = product_string
     query['start_date'] = start_date
     query['end_date'] = end_date
 
@@ -134,8 +142,8 @@ def download_files(probe, instrument, data_rate, starttime, endtime,
     fnames = []
     daylist = util._daysplitinterval(starttime, endtime)
     for date, stime, etime in daylist:
-        files = available_files(probe, instrument,
-                                starttime, endtime, data_rate)
+        files = available_files(probe, instrument, data_rate,
+                                starttime, endtime, product_string)
         for file in files:
             fname = pathlib.Path(file).stem
             if product_string in fname and len(fname):
