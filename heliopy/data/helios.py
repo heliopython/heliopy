@@ -1050,7 +1050,7 @@ def mag_ness(probe, starttime, endtime, try_download=True):
         6 second magnetic field data set
     """
     probe = _check_probe(probe)
-    remote_url = (remote_base_url + '/E3_experiment/helios{}_6sec_ness/'.format(probe))
+    mag_ness_url = (remote_base_url + '/E3_experiment/helios{}_6sec_ness/'.format(probe))
     local_base_dir = (path.Path(helios_dir) /
                       'E3_experiment' /
                       'helios{}_6sec_ness'.format(probe))
@@ -1071,7 +1071,7 @@ def mag_ness(probe, starttime, endtime, try_download=True):
 
     def download_func(remote_url, local_base_dir,
                       directory, fname, remote_fname, extension):
-        url = remote_base_url + str(directory)
+        url =  mag_ness_url + str(directory)
         local_dir = local_base_dir / directory
         filename = fname + extension
         try:
