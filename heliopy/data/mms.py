@@ -5,6 +5,8 @@ All data is publically available at
 https://lasp.colorado.edu/mms/sdc/public/data/, and the MMS science data centre
 is at https://lasp.colorado.edu/mms/sdc/public/.
 """
+import pdb
+
 import os
 import datetime as dt
 import pathlib
@@ -15,12 +17,12 @@ from tqdm.auto import tqdm
 from heliopy.data import util
 from heliopy import config
 
+import sunpy
+import glob
 import glob, os, requests
-import pdb # https://pythonconquerstheuniverse.wordpress.com/2009/09/10/debugging-in-python/
-from tqdm import tqdm
-import datetime as dt
+# from tqdm import tqdm
 from urllib.parse import parse_qs
-from . import mms_utils, sdc_login
+
 
 data_dir = pathlib.Path(config['download_dir'])
 mms_dir = data_dir / 'mms'
@@ -30,7 +32,7 @@ query_url = mms_url + '/files/api/v1/file_names/science'
 dl_url = mms_url + '/files/api/v1/download/science'
 
 
-def MMSDownloader(util.Downloader):
+class MMSDownloader(util.Downloader):
     """
     Download data from the Magnetospheric Multiscale (MMS) Science
     Data Center (SDC). Data can be found at
@@ -135,6 +137,155 @@ def MMSDownloader(util.Downloader):
         super(MMSDownloader, self).__setattr__(name, value)
     
     
+    def intervals(self, starttime=None, endtime=None):
+        """
+        The complete list of sub-intervals that cover a time range
+        Each sub-interval is associated with a single file to be downloaded and
+        read in.
+        
+        Parameters
+        ----------
+        starttime : datetime.datetime
+            Start time of interval within which data sub-intervals are determined.
+        endtime : datetime.datetime
+            End time of interval within which data sub-intervals are determined.
+
+        Returns
+        -------
+        fnames : list of sunpy.time.TimeRange
+            List of intervals
+        """
+        
+        if starttime:
+            self.start_date = starttime
+        if endtime:
+            self.end_date = endtime
+        
+        # Start time from file names
+        fnames = self.file_names()
+        nfiles = len(fnames)
+        parts = parse_file_name(fnames)
+        
+        # MMS files do not have end times in their file names and burst files
+        # do not have a fixed start time or duration (although survey files do).
+        # Assume the end time of one file is a microsecond before the start time
+        # of the next file in sequence (or the end of the time interval, if
+        # sooner). Step through files backwards, since end[i-1] depends on start[i].
+        trange = [sunpy.time.TimeRange()]*nfiles
+        for i in range(nfiles-1, 0, -1):
+            # Start tiem of interval
+            if len(parts[i][5]) == 8:
+                trange[i].start = dt.datetime.strptime(p[5], '%Y%m%d')
+            else:
+                trange[i].start = dt.datetime.strptime(p[5], '%Y%m%d%H%M%S'
+            
+            # End time of interval
+            if i == (nfiles-1):
+                trange[i].end = self._end_date
+            elif i > 0:
+                trange[i-1].end = trange[i].start - dt.timedelta(seconds=1e-6)
+        
+        return trange
+    
+    
+    def local_dir(self, interval=None):
+        """
+        Local directory for a given interval.
+
+        Parameters
+        ----------
+        interval : sunpy.time.TimeRange
+
+        Returns
+        -------
+        dir : pathlib.Path
+            Local directory
+        """
+        if interval:
+            self.start_date = interval.start
+            self.end_date = interval.end
+        
+        # Create a list of sequential dates spanning the time interval
+        ndays = (self._end_date - self._start_date).days
+        dates = ['']*(ndays+1)
+        for i in range(ndays+1):
+            date = self._start_date + dt.timedelta(days=i)
+            dates[i] = date.strftime('%Y%m%d')
+        
+        # Create the local directories
+        dirs = construct_path(self.sc, self.instr, self.mode, self.level, dates,
+                              optdesc=self.optdesc, root=self.data_root)
+        return dirs
+    
+    
+    def fname(self, interval=None, mirror=False):
+        """
+        Return the filename for a given interval.
+
+        Parameters
+        ----------
+        interval : sunpy.time.TimeRange
+
+        Returns
+        -------
+        fname : str or list
+            Filename
+        """
+        if interval:
+            self.start_date = interval.start
+            self.end_date = interval.end
+        
+        # Search the mirror or local directory
+        if mirror:
+            data_root = self.mirror_root
+        else:
+            data_root = self.data_root
+        
+        # If no start or end date have been defined,
+        #   - Start at beginning of mission
+        #   - End at today's date
+        start_date = self._start_date
+        end_date = self._end_date
+        if self._start_date is None:
+            start_date = dt.datetime(2015, 9, 1)
+        if self._end_date is None:
+            end_date = dt.datetime.today()
+        
+        # Create all dates between start_date and end_date
+        deltat = dt.timedelta(days=1)
+        dates  = []
+        while start_date <= end_date:
+            dates.append(start_date.strftime('%Y%m%d'))
+            start_date += deltat
+        
+        # Paths in which to look for files
+        #   - Files of all versions and times within interval
+        paths = construct_path(self.sc, self.instr, self.mode, self.level,
+                               dates, optdesc=self.optdesc,
+                               root=data_root, files=True)
+        
+        # Search
+        result = []
+        pwd = os.getcwd()
+        for path in paths:
+            root = os.path.dirname(path)
+            
+            try:
+                os.chdir(root)
+            except FileNotFoundError:
+                continue
+            except:
+                os.chdir(pwd)
+                raise
+                
+            for file in glob.glob(os.path.basename(path)):
+                result.append(os.path.join(root, file))
+
+        os.chdir(pwd)
+        
+        return result
+    
+    
     def url(self):
         """Build a URL to query the SDC."""
         sep = '/'
@@ -143,7 +294,7 @@ def MMSDownloader(util.Downloader):
         
         # Build query from parts of file names
         query = '?'
-        qdict = self.Query()
+        qdict = self.query()
         for key in qdict:
             query += key + '=' + qdict[key] + '&'
         
@@ -270,6 +421,35 @@ def MMSDownloader(util.Downloader):
         return local_files
     
     
+    def load_local_file(self, starttime=None, endtime=None):
+        if starttime:
+            self.start_date = starttime
+        if endtime:
+            self.end_date = endtime
+        
+        # Download the files
+        #   - If already downloaded, returns local files
+        files = self.download()
+        
+    def download_func(remote_base_url, local_base_dir,
+                      directory, fname, remote_fname, extension):
+            url = remote_base_url + '?file=' + fname + extension
+            local_fname = os.path.join(local_base_dir, fname + extension)
+            with requests.get(url, stream=True) as request:
+                with open(local_fname, 'wb') as fd:
+                    for chunk in tqdm(
+                            request.iter_content(chunk_size=128)):
+                        fd.write(chunk)
+
+    def processing_func(cdf):
+        return util.cdf2df(cdf, index_key='Epoch')
+
+    return util.process(dirs, fnames, extension, local_base_dir,
+                        remote_base_url, download_func, processing_func,
+                        starttime, endtime,
+                        warn_missing_units=warn_missing_units)
+    
+    
     def file_info(self):
         """Obtain file information from the SDC."""
         self._info_type = 'file_info'
@@ -280,7 +460,7 @@ def MMSDownloader(util.Downloader):
     def file_names(self):
         """Obtain file names from the SDC."""
         self._info_type = 'file_names'
-        response = self.Get()
+        response = self.get()
         
         if response.text == '':
             files = []
@@ -295,6 +475,8 @@ def MMSDownloader(util.Downloader):
         """Search for MMS files on the local system.
         
         Files must be located in an MMS-like directory structure.
+        
+        ***REPLACED BY FNAME***
         """
         
         # Search the mirror or local directory
@@ -540,7 +722,7 @@ def MMSDownloader(util.Downloader):
         #   - SDC is definitive source of files
         #   - Returns most recent version
         else:
-            remote_files = self.FileNames()
+            remote_files = self.file_names()
             
             # Search for the equivalent local file names
             local_files = self.remote2localnames(remote_files)
@@ -552,9 +734,9 @@ def MMSDownloader(util.Downloader):
         
         # Filter based on time interval
         if len(local_files) > 0:
-            local_files = mms_utils.filter_time(local_files, self.start_date, self.end_date)
+            local_files = filter_time(local_files, self.start_date, self.end_date)
         if len(remote_files) > 0:
-            remote_files = mms_utils.filter_time(remote_files, self.start_date, self.end_date)
+            remote_files = filter_time(remote_files, self.start_date, self.end_date)
         
         return (local_files, remote_files)
     
@@ -876,7 +1058,7 @@ def filter_time(fnames, start_date, end_date):
     end_date = dt.datetime.strptime(end_date, '%Y-%m-%dT%H:%M:%S')
     
     # Parse the time out of the file name
-    parts = parse_filename(fnames)
+    parts = parse_file_name(fnames)
     fstart = [dt.datetime.strptime(name[-2], '%Y%m%d') if len(name[-2]) == 8 else
               dt.datetime.strptime(name[-2], '%Y%m%d%H%M%S')
               for name in parts]
