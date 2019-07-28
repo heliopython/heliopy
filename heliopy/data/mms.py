@@ -177,7 +177,7 @@ class MMSDownloader(util.Downloader):
             if len(parts[i][5]) == 8:
                 trange[i].start = dt.datetime.strptime(p[5], '%Y%m%d')
             else:
-                trange[i].start = dt.datetime.strptime(p[5], '%Y%m%d%H%M%S'
+                trange[i].start = dt.datetime.strptime(p[5], '%Y%m%d%H%M%S')
             
             # End time of interval
             if i == (nfiles-1):
