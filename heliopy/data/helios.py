@@ -1,23 +1,7 @@
 """
 Methods for importing Helios data.
-
-In general the data are available form a number of sources (replace 'helios1'
-with 'helios2' in url to change probe):
-
-* Distribution functions - Not publically available
-* Merged plasma/mangetic field - |merged_url|
-* 6 second cadence magnetic field - |6s_mag_url|
-
-.. |merged_url| replace::
-    ftp://cdaweb.gsfc.nasa.gov/pub/data/helios/helios1/merged/
-.. |6s_mag_url| replace::
-    ftp://cdaweb.gsfc.nasa.gov/pub/data/helios/helios1/mag/6sec_ness/
-
-If the data is publically available, it will be dowloaded automatically if it
-doesn't exist locally.
 """
 from datetime import date, time, datetime, timedelta
-from ftplib import FTP
 import os
 import pathlib as path
 from urllib.error import URLError
@@ -29,7 +13,6 @@ import astropy.units as u
 import numpy as np
 import pandas as pd
 
-#  / http libraries
 from bs4 import BeautifulSoup
 import requests
 
@@ -43,6 +26,7 @@ helios_dir = os.path.join(data_dir, 'helios')
 
 # new http base_url
 remote_base_url = 'http://helios-data.ssl.berkeley.edu/data'
+
 
 def _check_probe(probe):
     probe = str(probe)
@@ -912,7 +896,6 @@ def corefit(probe, starttime, endtime, try_download=True):
 
     extension = '.csv'
     local_base_dir = path.Path(helios_dir)
-    # remote_base_url = 'http://helios-data.ssl.berkeley.edu/data/'
 
     def download_func(remote_base_url, local_base_dir, directory,
                       fname, remote_fname, extension):
