@@ -89,9 +89,11 @@ class Downloader:
         # Attach units
         if local_path.suffix == '.cdf':
             cdf = _load_local(local_path)
-            units = cdf_units(cdf, manual_units=self.units)
+            self.units = cdf_units(cdf, manual_units=self.units)
+        if not hasattr(self, 'warn_missing_units'):
+            self.warn_missing_units = True
         return units_attach(
-            data, units, warn_missing_units=self.warn_missing_units)
+            data, self.units, warn_missing_units=self.warn_missing_units)
 
     def local_path(self, interval):
         local_path = self.local_dir(interval) / self.fname(interval)
