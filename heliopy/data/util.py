@@ -159,6 +159,9 @@ class Downloader:
         """
         raise NotImplementedError
 
+    def local_file_path(self, interval):
+        return self.local_dir(interval) / self.fname(interval)
+
     def download(self, interval):
         """
         Download data for a given interval.
