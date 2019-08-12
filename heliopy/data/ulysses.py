@@ -4,7 +4,7 @@ Methods for importing data from the Ulysses spacecraft.
 All data is publically available at http://ufa.esac.esa.int/ufa/
 """
 import pandas as pd
-import pathlib as path
+import pathlib
 from datetime import datetime
 
 from heliopy.data import util
@@ -12,8 +12,10 @@ from collections import OrderedDict
 import astropy.units as u
 from heliopy import config
 
+import sunpy.time
+
 use_hdf = config['use_hdf']
-data_dir = path.Path(config['download_dir'])
+data_dir = pathlib.Path(config['download_dir'])
 
 ulysses_dir = data_dir / 'ulysses'
 ulysses_url = 'http://ufa.esac.esa.int/ufa-sl-server/data-action?'
@@ -21,7 +23,7 @@ url_options = {'PROTOCOL': 'HTTP',
                'PRODUCT_TYPE': 'ALL'}
 
 
-def swics_heavy_ions(starttime, endtime, try_download=True):
+def swics_heavy_ions(starttime, endtime):
     """
     Import swics heavy ion data.
 
@@ -87,10 +89,10 @@ def swics_heavy_ions(starttime, endtime, try_download=True):
                         ('DENS_SI9', u.dimensionless_unscaled),
                         ('DENS_SI10', u.dimensionless_unscaled),
                         ('DENS_FE11', u.dimensionless_unscaled)])
-    return _swics(starttime, endtime, names, product, units, try_download)
+    return _swics(starttime, endtime, names, product, units)
 
 
-def swics_abundances(starttime, endtime, try_download=True):
+def swics_abundances(starttime, endtime):
     """
     Import swics abundance data.
 
@@ -128,49 +130,56 @@ def swics_abundances(starttime, endtime, try_download=True):
                         ('RAT_FE_O', u.dimensionless_unscaled),
                         ('CHARGE_FE', u.dimensionless_unscaled),
                         ('N_CYC', u.dimensionless_unscaled)])
-    return _swics(starttime, endtime, names, product, units, try_download)
+    return _swics(starttime, endtime, names, product, units)
 
 
-def _swics(starttime, endtime, names, product, units=None, try_download=True):
-    dirs = []
-    fnames = []
-    extension = '.dat'
-    local_base_dir = ulysses_dir / 'swics'
-    remote_base_url = ulysses_url
+class _swicsDownloader(util.Downloader):
+    def __init__(self, product, names, units):
+        self.product = product
+        self.names = names
+        self.units = units
 
-    def download_func(remote_base_url, local_base_dir,
-                      directory, fname, remote_fname, extension):
-        local_dir = local_base_dir / directory
+    def intervals(self, starttime, endtime):
+        out = []
+        # Loop through years
+        for year in range(starttime.year, endtime.year + 1):
+            out.append(sunpy.time.TimeRange(datetime(year, 1, 1),
+                                            datetime(year + 1, 1, 1)))
+        return out
+
+    def fname(self, interval):
+        yearstr = str(interval.start.to_datetime().year)[-2:]
+        return f'{self.product}{yearstr}.dat'
+
+    def local_dir(self, interval):
+        return pathlib.Path('ulysses') / 'swics'
+
+    def download(self, interval):
+        local_dir = self.local_path(interval).parent
+        local_dir.mkdir(parents=True, exist_ok=True)
+        fname = self.fname(interval)
+
+        remote_base_url = ulysses_url
         swics_options = url_options
-        swics_options['FILE_NAME'] = fname + extension
+        swics_options['FILE_NAME'] = fname
         swics_options['FILE_PATH'] = '/ufa/HiRes/data/swics'
         for key in swics_options:
             remote_base_url += key + '=' + swics_options[key] + '&'
-        try:
-            util._load_remote(remote_base_url, fname + extension, local_dir, 'ascii')
-            # f = util.load('', local_dir, remote_base_url)
-        except Exception as err:
-            return
+        util._download_remote(remote_base_url, fname, local_dir)
+        return self.local_path(interval)
 
-    def processing_func(f):
-        readargs = {'names': names,
+    def load_local_file(self, interval):
+        readargs = {'names': self.names,
                     'delim_whitespace': True,
                     'na_values': ['******']}
-        thisdata = pd.read_csv(f, **readargs)
+        thisdata = pd.read_csv(self.local_path(interval), **readargs)
         thisdata = _convert_ulysses_time(thisdata)
         return thisdata
 
-    # Loop through years
-    for year in range(starttime.year, endtime.year + 1):
-        fname = '{}{}'.format(product, str(year)[-2:])
-        # Local locaiton to download to
-        dirs.append('')
-        fnames.append(fname)
 
-    return util.process(
-        dirs, fnames, extension, local_base_dir, remote_base_url,
-        download_func, processing_func, starttime, endtime,
-        units=units, try_download=True)
+def _swics(starttime, endtime, names, product, units=None):
+    downloader = _swicsDownloader(product, names, units)
+    return downloader.load(starttime, endtime)
 
 
 def fgm_hires(starttime, endtime, try_download=True):

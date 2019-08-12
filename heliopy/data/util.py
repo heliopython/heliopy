@@ -77,8 +77,9 @@ class Downloader:
                 try:
                     dl_path = self.download(interval)
                     local_path.parent.mkdir(parents=True, exist_ok=True)
-                    shutil.copy(dl_path, local_path)
-                    os.remove(dl_path)
+                    if dl_path != local_path:
+                        shutil.copy(dl_path, local_path)
+                        os.remove(dl_path)
                 except NoDataError:
                     continue
 
@@ -158,9 +159,6 @@ class Downloader:
             Local directory
         """
         raise NotImplementedError
-
-    def local_file_path(self, interval):
-        return self.local_dir(interval) / self.fname(interval)
 
     def download(self, interval):
         """
@@ -920,13 +918,13 @@ def _download_remote_unknown_version(
 
 
 def _download_remote(remote_url, filename, local_dir):
-    local_dir = path.Path(local_dir)
+    dl_path = path.Path(local_dir) / filename
     remote_url = _fix_url(remote_url)
     remote_url = remote_url + '/' + filename
-    print('Downloading', remote_url)
-    urlreq.urlretrieve(remote_url,
-                       filename=str(local_dir / filename),
-                       reporthook=_reporthook)
+    print(f'Downloading {remote_url} to {dl_path}')
+    fname, _ = urlreq.urlretrieve(remote_url,
+                                  filename=str(dl_path),
+                                  reporthook=_reporthook)
     print('\n')
 
 
