@@ -869,9 +869,9 @@ def corefit(probe, starttime, endtime, try_download=True):
                         ('carrot', u.dimensionless_unscaled),
                         ('r_sun', u.AU), ('clat', u.deg),
                         ('clong', u.deg), ('earth_he_angle', u.deg),
-                        ('n_p', u.cm**-3), ('vp_x', u.km/u.s),
-                        ('vp_y', u.km/u.s), ('vp_z', u.km/u.s),
-                        ('vth_p_par', u.km/u.s), ('vth_p_perp', u.km/u.s)])
+                        ('n_p', u.cm**-3), ('vp_x', u.km / u.s),
+                        ('vp_y', u.km / u.s), ('vp_z', u.km / u.s),
+                        ('vth_p_par', u.km / u.s), ('vth_p_perp', u.km / u.s)])
     daylist = util._daysplitinterval(starttime, endtime)
     for day in daylist:
         this_date = day[0]
@@ -976,7 +976,9 @@ def mag_4hz(probe, starttime, endtime, try_download=True):
             else:
                 return response.raise_for_status()
             soup = BeautifulSoup(response_text, 'html.parser')
-            complete_file_list = [node.get('href') for node in soup.find_all('a') if node.get('href').endswith(ext)]
+            complete_file_list = [node.get('href') for node in
+                                  soup.find_all('a') if
+                                  node.get('href').endswith(ext)]
             return complete_file_list
 
         ext = 'asc'
@@ -1033,7 +1035,8 @@ def mag_ness(probe, starttime, endtime, try_download=True):
         6 second magnetic field data set
     """
     probe = _check_probe(probe)
-    mag_ness_url = (remote_base_url + '/E3_experiment/helios{}_6sec_ness/'.format(probe))
+    mag_ness_url = (remote_base_url +
+                    '/E3_experiment/helios{}_6sec_ness/'.format(probe))
     local_base_dir = (path.Path(helios_dir) /
                       'E3_experiment' /
                       'helios{}_6sec_ness'.format(probe))
@@ -1054,7 +1057,7 @@ def mag_ness(probe, starttime, endtime, try_download=True):
 
     def download_func(remote_url, local_base_dir,
                       directory, fname, remote_fname, extension):
-        url =  mag_ness_url + str(directory)
+        url = mag_ness_url + str(directory)
         local_dir = local_base_dir / directory
         filename = fname + extension
         try:
