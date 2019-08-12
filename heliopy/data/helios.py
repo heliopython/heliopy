@@ -25,7 +25,7 @@ use_hdf = config['use_hdf']
 helios_dir = os.path.join(data_dir, 'helios')
 
 # new http base_url
-remote_base_url = 'http://helios-data.ssl.berkeley.edu/data'
+remote_base_url = 'http://helios-data.ssl.berkeley.edu/data/'
 
 
 def _check_probe(probe):
