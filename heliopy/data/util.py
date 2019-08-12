@@ -49,6 +49,10 @@ class Downloader:
       that interval.
     - :meth:`Downloader.load_local_file()`: given an interval, load the local
       file and return a :class:`pandas.DataFrame` object containing the data.
+
+    Attributes
+    ----------
+    units : dict
     """
     def load(self, starttime, endtime):
         """
@@ -141,7 +145,8 @@ class Downloader:
 
     def local_dir(self, interval):
         """
-        Local directory for a given interval.
+        Local directory for a given interval. This is relative to the base
+        HelioPy data directory.
 
         Parameters
         ----------
