@@ -5,7 +5,7 @@ All data is publically available at http://ufa.esac.esa.int/ufa/
 """
 import pandas as pd
 import pathlib
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from heliopy.data import util
 from collections import OrderedDict
@@ -182,7 +182,57 @@ def _swics(starttime, endtime, names, product, units=None):
     return downloader.load(starttime, endtime)
 
 
-def fgm_hires(starttime, endtime, try_download=True):
+class _fgmDownloader(util.Downloader):
+    def __init__(self, units):
+        self.units = units
+
+    def intervals(self, starttime, endtime):
+        out = []
+        # Loop through days
+        for date, _, _ in util._daysplitinterval(starttime, endtime):
+            stime = datetime(date.year, date.month, date.day)
+            etime = stime + timedelta(days=1)
+            out.append(sunpy.time.TimeRange(stime, etime))
+        return out
+
+    def fname(self, interval):
+        dtime = interval.start.to_datetime()
+        yearstr = self.yearstr(interval)
+        filename = ('U' + yearstr[-2:] + dtime.strftime('%j') + 'SH')
+        return f'{filename}.ASC'
+
+    @staticmethod
+    def yearstr(interval):
+        return interval.start.to_datetime().strftime('%Y')
+
+    def local_dir(self, interval):
+        return pathlib.Path('ulysses') / 'fgm' / 'hires'
+
+    def download(self, interval):
+        local_dir = self.local_path(interval).parent
+        local_dir.mkdir(parents=True, exist_ok=True)
+        fname = self.fname(interval)
+        yearstr = self.yearstr(interval)
+
+        remote_base_url = ulysses_url
+        fgm_options = url_options
+        fgm_options['FILE_NAME'] = fname
+        fgm_options['FILE_PATH'] = '/ufa/HiRes/VHM-FGM/' + yearstr
+        for key in fgm_options:
+            remote_base_url += key + '=' + fgm_options[key] + '&'
+        util._download_remote(remote_base_url, fname, local_dir)
+        return self.local_path(interval)
+
+    def load_local_file(self, interval):
+        readargs = {'names': ['year', 'doy', 'hour', 'minute', 'second',
+                              'Bx', 'By', 'Bz', '|B|'],
+                    'delim_whitespace': True}
+        thisdata = pd.read_csv(self.local_path(interval), **readargs)
+        thisdata = _convert_ulysses_time(thisdata)
+        return thisdata
+
+
+def fgm_hires(starttime, endtime):
     """
     Import high resolution fluxgate magnetometer data.
 
@@ -198,49 +248,10 @@ def fgm_hires(starttime, endtime, try_download=True):
     data : :class:`~sunpy.timeseries.TimeSeries`
         Requested data
     """
-    dtimes = util._daysplitinterval(starttime, endtime)
-    dirs = []
-    fnames = []
-    extension = '.ASC'
-    local_base_dir = ulysses_dir / 'fgm' / 'hires'
-    remote_base_url = ulysses_url
     units = OrderedDict([('Bx', u.nT), ('By', u.nT),
                          ('Bz', u.nT), ('|B|', u.nT)])
-
-    def download_func(remote_base_url, local_base_dir,
-                      directory, fname, remote_fname, extension):
-        local_dir = local_base_dir / directory
-        fgm_options = url_options
-        fgm_options['FILE_NAME'] = fname + extension
-        fgm_options['FILE_PATH'] = '/ufa/HiRes/VHM-FGM/' + yearstr
-        remote_url = ulysses_url
-        for key in fgm_options:
-            remote_url += key + '=' + fgm_options[key] + '&'
-        try:
-            util._load_remote(remote_url, fname + extension, local_dir, 'ascii')
-        except Exception as err:
-            return
-
-    def processing_func(f):
-        readargs = {'names': ['year', 'doy', 'hour', 'minute', 'second',
-                              'Bx', 'By', 'Bz', '|B|'],
-                    'delim_whitespace': True}
-        thisdata = pd.read_csv(f, **readargs)
-        thisdata = _convert_ulysses_time(thisdata)
-        return thisdata
-
-    for dtime in dtimes:
-        date = dtime[0]
-        yearstr = date.strftime('%Y')
-        filename = ('U' + yearstr[-2:] + date.strftime('%j') + 'SH')
-        fnames.append(filename)
-        this_relative_dir = local_base_dir / yearstr
-        dirs.append(this_relative_dir)
-
-    return util.process(
-        dirs, fnames, extension, local_base_dir, remote_base_url,
-        download_func, processing_func, starttime, endtime, units=units,
-        try_download=True)
+    downloader = _fgmDownloader(units)
+    return downloader.load(starttime, endtime)
 
 
 def swoops_ions(starttime, endtime, try_download=True):
