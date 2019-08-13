@@ -232,7 +232,7 @@ class _fgmDownloader(util.Downloader):
         return thisdata
 
 
-def fgm_hires(starttime, endtime, try_download=True):
+def fgm_hires(starttime, endtime):
     """
     Import high resolution fluxgate magnetometer data.
 
