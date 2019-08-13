@@ -1,0 +1,1 @@
+Fix :func:`heliopy.data.helios.mag_4hz` data downloading
