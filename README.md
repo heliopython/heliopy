@@ -10,5 +10,6 @@ Full documentation can be found [here](http://docs.heliopy.org/).
 please submit a request at https://github.com/heliopython/heliopy/issues.**
 
 
+[![Build Status](https://dev.azure.com/HelioPy/HelioPy/_apis/build/status/heliopython.heliopy?branchName=master)](https://dev.azure.com/HelioPy/HelioPy/_build/latest?definitionId=1&branchName=master)
 [![Build Status](https://travis-ci.com/heliopython/heliopy.svg?branch=master)](https://travis-ci.com/heliopython/heliopy)
 [![Coverage](https://codecov.io/gh/heliopython/heliopy/branch/master/graph/badge.svg)](https://codecov.io/gh/heliopython/heliopy)
