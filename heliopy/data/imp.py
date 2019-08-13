@@ -1,7 +1,7 @@
 """
 Methods for importing data from the IMP spacecraft.
 
-All data is publically available at ftp://cdaweb.gsfc.nasa.gov/pub/data/imp/
+All data is publically available at https://cdaweb.gsfc.nasa.gov/pub/data/imp/
 """
 from collections import OrderedDict
 import pathlib as path
@@ -15,7 +15,7 @@ from heliopy.data import cdasrest
 
 data_dir = path.Path(config['download_dir'])
 use_hdf = config['use_hdf']
-imp_url = 'ftp://cdaweb.gsfc.nasa.gov/pub/data/imp/'
+imp_url = 'https://cdaweb.gsfc.nasa.gov/pub/data/imp/'
 imp_dir = data_dir / 'imp'
 valid_probes = ['1', '2', '3', '4', '5', '6', '7', '8']
 
@@ -31,7 +31,7 @@ def _check_probe(probe, valid_probes):
 def merged(probe, starttime, endtime, try_download=True):
     """
     Import merged plasma data. See
-    ftp://cdaweb.gsfc.nasa.gov/pub/data/imp/imp8/merged/00readme.txt
+    https://cdaweb.gsfc.nasa.gov/pub/data/imp/imp8/merged/00readme.txt
     for information on variables.
 
     Parameters

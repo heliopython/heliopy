@@ -27,8 +27,6 @@ def test_mitplasma_h0():
     check_data_output(df)
 
 
-@pytest.mark.skipif('TRAVIS' in os.environ,
-                    reason='Needs FTP capabilities')
 def test_merged():
     df = imp.merged(probe, starttime, endtime)
     check_data_output(df)
