@@ -360,7 +360,7 @@ man_pages = [
 # Grouping the document tree into Texinfo files. List of tuples
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
-texinfo_documents = [
+'''texinfo_documents = [
     (master_doc, 'HelioPy', 'HelioPy Documentation',
      author, 'HelioPy team', 'Python for space physics.',
      'Miscellaneous'),
@@ -380,4 +380,4 @@ html_theme_options = {
         ("Documentation", "http://docs.heliopy.org/en/stable/index.html", 1),
         ("Get Help", "http://docs.heliopy.org/en/stable/index.html", 1),
     ],
-}
+}'''
