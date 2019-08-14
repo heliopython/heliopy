@@ -11,9 +11,8 @@
       </button>
       <a class="navbar-brand" href="{{ theme_logo_url }}">
         {%- block sidebarlogo %}
-        {%- if logo %}<span><img src="{{ pathto('_static/' + logo, 1) }}"></span>{%- endif %}
+        <img src="{{ pathto('_static/navbar.svg', 1) }}">
         {%- endblock %}
-        {% if theme_navbar_title -%}{{ theme_navbar_title|e }}{%- else -%}{{ project|e }}{%- endif -%}
       </a>
     </div>
 
