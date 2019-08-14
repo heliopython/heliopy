@@ -1,4 +1,15 @@
-Heliopy 0.8.0 (2019-06-24)
+HelioPy 0.8.1 (2019-08-14)
+==========================
+
+Bug Fixes
+---------
+
+- Fix :func:`heliopy.data.helios.mag_4hz` data downloading (`#741 <https://github.com/heliopython/heliopy/pull/741>`__)
+- Switch IMP downloading from FTP site to HTTPS site, since anonymous FTP access
+  to NASA servers no longer works. (`#749 <https://github.com/heliopython/heliopy/pull/749>`__)
+
+
+HelioPy 0.8.0 (2019-06-24)
 ==========================
 
 Features
