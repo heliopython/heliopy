@@ -1,4 +1,4 @@
-{# Import the theme's layout. #}
+{# Import the theme's layout #}
 {% extends "bootstrap/layout.html" %}
 {# Custom CSS overrides #}
 {% set css_files = css_files + ['_static/style.css'] %}
@@ -10,15 +10,15 @@
 {%- set bs_content_width2 = render_sidebar and "8" or "12"%}
 
 {% macro seo_title() -%}
-  {% if ishome -%}
-    {{ docstitle|striptags|e }}
-  {%- else -%}
-    {{ title|striptags|e }} | {{ docstitle|striptags|e }}
-  {%- endif %}
+{% if ishome -%}
+{{ docstitle|striptags|e }}
+{%- else -%}
+{{ title|striptags|e }} | {{ docstitle|striptags|e }}
+{%- endif %}
 {%- endmacro %}
 
 {%- macro description() -%}
-  {{ (seo_description or theme_seo_description )|striptags|e }}
+{{ (seo_description or theme_seo_description )|striptags|e }}
 {%- endmacro -%}
 
 {%- block extrahead -%}
