@@ -3,21 +3,16 @@ Methods for importing data from the Ulysses spacecraft.
 
 All data is publically available at http://ufa.esac.esa.int/ufa/
 """
-import pandas as pd
-import pathlib
+from collections import OrderedDict
 from datetime import datetime, timedelta
+import pathlib
+
+import astropy.units as u
+import sunpy.time
+import pandas as pd
 
 from heliopy.data import util
-from collections import OrderedDict
-import astropy.units as u
-from heliopy import config
 
-import sunpy.time
-
-use_hdf = config['use_hdf']
-data_dir = pathlib.Path(config['download_dir'])
-
-ulysses_dir = data_dir / 'ulysses'
 ulysses_url = 'http://ufa.esac.esa.int/ufa-sl-server/data-action?'
 url_options = {'PROTOCOL': 'HTTP',
                'PRODUCT_TYPE': 'ALL'}
@@ -254,7 +249,71 @@ def fgm_hires(starttime, endtime):
     return downloader.load(starttime, endtime)
 
 
-def swoops_ions(starttime, endtime, try_download=True):
+class _swoopsionDownloader(util.Downloader):
+    def __init__(self, units):
+        self.units = units
+
+    def intervals(self, starttime, endtime):
+        out = []
+        for year in range(starttime.year, endtime.year + 1):
+            if year == starttime.year:
+                start_month = starttime.month
+            else:
+                start_month = 1
+
+            if year == endtime.year:
+                end_month = endtime.month
+            else:
+                end_month = 12
+            for month in range(start_month, end_month + 1):
+                out.append(sunpy.time.TimeRange(datetime(year, month, 1),
+                                                datetime(year, month + 1, 1)))
+
+        return out
+
+    def fname(self, interval):
+        dtime = interval.start.to_datetime()
+        year = dtime.strftime('%Y')
+        doy = dtime.strftime('%j')
+        return 'u{}{}bam.dat'.format(str(year)[2:], doy)
+
+    @staticmethod
+    def yearstr(interval):
+        return interval.start.to_datetime().strftime('%Y')
+
+    def local_dir(self, interval):
+        return pathlib.Path('ulysses') / 'swoops' / 'ions'
+
+    def download(self, interval):
+        local_dir = self.local_path(interval).parent
+        local_dir.mkdir(parents=True, exist_ok=True)
+        fname = self.fname(interval)
+        yearstr = self.yearstr(interval)
+
+        remote_base_url = ulysses_url
+        swoops_options = url_options
+        year = fname[1:3]
+        # doy = fname[5:8]
+        swoops_options['FILE_NAME'] = fname
+        swoops_options['FILE_PATH'] =\
+            ('/ufa/stageIngestArea/swoops/ions/bamion{}.zip_files'.format(year))
+        for key in swoops_options:
+            remote_base_url += key + '=' + swoops_options[key] + '&'
+        util._download_remote(remote_base_url, fname, local_dir)
+        return self.local_path(interval)
+
+    def load_local_file(self, interval):
+        readargs = {'names': ['year', 'doy', 'hour', 'minute', 'second',
+                              'r', 'hlat', 'hlon', 'n_p', 'n_a',
+                              'T_p_large', 'T_p_small',
+                              'v_r', 'v_t', 'v_n', 'iqual'],
+                    'delim_whitespace': True}
+        thisdata = pd.read_csv(self.local_path(interval), **readargs)
+        thisdata = _convert_ulysses_time(thisdata)
+        return thisdata
+
+
+def swoops_ions(starttime, endtime):
     """
     Import SWOOPS ion data.
 
@@ -271,11 +330,6 @@ def swoops_ions(starttime, endtime, try_download=True):
         Requested data
     """
 
-    dirs = []
-    fnames = []
-    extension = '.dat'
-    local_base_dir = ulysses_dir / 'swoops' / 'ions'
-    remote_base_url = ulysses_url
     units = OrderedDict([('T_p_large', u.K), ('T_p_small', u.K),
                         ('v_t', u.km / u.s), ('v_r', u.km / u.s),
                         ('v_n', u.km / u.s), ('r', u.au),
@@ -283,56 +337,8 @@ def swoops_ions(starttime, endtime, try_download=True):
                         ('hlat', u.deg),
                         ('hlon', u.deg),
                         ('iqual', u.dimensionless_unscaled)])
-
-    def download_func(remote_base_url, local_base_dir,
-                      directory, fname, remote_fname, extension):
-        local_dir = local_base_dir / directory
-        swoops_options = url_options
-        year = fname[1:3]
-        # doy = fname[5:8]
-        swoops_options['FILE_NAME'] = fname + extension
-        swoops_options['FILE_PATH'] =\
-            ('/ufa/stageIngestArea/swoops/ions/bamion{}.zip_files'.format(year))
-        for key in swoops_options:
-            remote_base_url += key + '=' + swoops_options[key] + '&'
-        try:
-            util._load_remote(remote_base_url, fname + extension, local_dir, 'ascii')
-            # f = util.load('', local_dir, remote_base_url)
-        except Exception as err:
-            return
-
-    def processing_func(f):
-        readargs = {'names': ['year', 'doy', 'hour', 'minute', 'second',
-                              'r', 'hlat', 'hlon', 'n_p', 'n_a',
-                              'T_p_large', 'T_p_small',
-                              'v_r', 'v_t', 'v_n', 'iqual'],
-                    'delim_whitespace': True}
-        thisdata = pd.read_csv(f, **readargs)
-        thisdata = _convert_ulysses_time(thisdata)
-        return thisdata
-
-    # Loop through years
-    for year in range(starttime.year, endtime.year + 1):
-        if year == starttime.year:
-            start_month = starttime.month
-        else:
-            start_month = 1
-
-        if year == endtime.year:
-            end_month = endtime.month
-        else:
-            end_month = 12
-        for month in range(start_month, end_month + 1):
-            doy = datetime(year, month, 1).strftime('%j')
-            fanme = ('u{}{}bam'.format(str(year)[2:], doy))
-            # Local locaiton to download to
-            dirs.append('{}'.format(year))
-            fnames.append(fanme)
-
-    return util.process(
-        dirs, fnames, extension, local_base_dir, remote_base_url,
-        download_func, processing_func, starttime, endtime,
-        units=units, try_download=try_download)
+    downloader = _swoopsionDownloader(units)
+    return downloader.load(starttime, endtime)
 
 
 def _convert_ulysses_time(data):
