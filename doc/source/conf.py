@@ -362,7 +362,7 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
     (master_doc, 'HelioPy', 'HelioPy Documentation',
-     author, 'David Stansby', 'Python for space physics.',
+     author, 'HelioPy team', 'Python for space physics.',
      'Miscellaneous'),
 ]
 
