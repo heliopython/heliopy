@@ -9,12 +9,44 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
+      <a class="navbar-brand" href="{{ theme_logo_url }}">
+        {%- block sidebarlogo %}
+        {%- if logo %}<span><img src="{{ pathto('_static/' + logo, 1) }}"></span>{%- endif %}
+        {%- endblock %}
+        {% if theme_navbar_title -%}{{ theme_navbar_title|e }}{%- else -%}{{ project|e }}{%- endif -%}
+      </a>
     </div>
 
     <div class="collapse navbar-collapse nav-collapse">
-      <img src="{{ pathto('_static/navbar.svg', 1) }}" alt="HelioPy logo" height=70px/>
-	    </div>
+      <ul class="nav navbar-nav navbar-left">
+        {% if theme_about_links %}
+        <li class="dropdown">
+          <a role="button" data-toggle="dropdown" data-target="#" href="#" }}>About<b class="caret"></b></a>
+          <ul class="dropdown-menu">
+            {%- for link in theme_about_links %}
+            <li class="dropdown-submenu">
+              <a href="{{ pathto(*link[1:]) }}">{{ link[0] }}</a></li>
+            {%- endfor %}
+          </ul>
+        </li>
+        {% endif %}
+        {% if theme_navbar_docs %}
+        <li class="dropdown">
+          <a role="button" data-toggle="dropdown" data-target="" href="">Documentation<b class="caret"></b></a>
+          <ul class="dropdown-menu">
+            {%- for link in theme_navbar_docs %}
+            <li class="dropdown-submenu">
+              <a href="{{ pathto(*link[1:]) }}">{{ link[0] }}</a></li>
+            {%- endfor %}
+          </ul>
+        </li>
+        {% endif %}
+        {% if theme_navbar_links %}
+        {%- for link in theme_navbar_links %}
+        <li><a href="{{ pathto(*link[1:]) }}">{{ link[0] }}</a></li>
+        {%- endfor %}
+        {% endif %}
       </ul>
-	  </div>
+    </div>
   </div>
 </div>

@@ -366,3 +366,18 @@ texinfo_documents = [
      'Miscellaneous'),
 ]
 
+html_theme_options = {
+    "about_links": [
+        ("About", "http://docs.heliopy.org/en/stable/guide/about.html", 1),
+        (
+            "Acknowledge HelioPy",
+            "http://docs.heliopy.org/en/stable/guide/citing.html",
+            1,
+        ),
+        ("Code of Conduct", "http://docs.heliopy.org/en/stable/guide/code-of-conduct.html", 1),
+    ],
+    "navbar_links": [
+        ("Documentation", "http://docs.heliopy.org/en/stable/index.html", 1),
+        ("Get Help", "http://docs.heliopy.org/en/stable/index.html", 1),
+    ],
+}
