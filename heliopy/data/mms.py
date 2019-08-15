@@ -50,7 +50,7 @@ def _validate_data_rate(data_rate):
                 data_rate, allowed_rates))
 
 
-def available_files(probe, instrument, data_rate, starttime, endtime,
+def available_files(probe, instrument, starttime, endtime, data_rate='',
                     product_string=''):
     """
     Get available MMS files as a list.
@@ -108,13 +108,19 @@ def filter_time(fnames, starttime, endtime):
     """
     Filter files by their start times.
     
-    Arguments:
-        fnames (str,list):    File names to be filtered.
-        start_date (str):     Start date of time interval, formatted as '%Y-%m-%dT%H:%M:%S'
-        end_date (str):       End date of time interval, formatted as '%Y-%m-%dT%H:%M:%S'
+    Parameters
+    ----------
+    fnames : str or list
+        File names to be filtered.
+    starttime : ~datetime.datetime
+        Start date of time interval
+    endtime : ~datetime.datetime
+        End date of time interval
     
-    Returns:
-        paths (list):     Path to the data file.
+    Returns
+    -------
+        paths : list
+            Path to the data file.
     """
     
     # Output
@@ -122,17 +128,13 @@ def filter_time(fnames, starttime, endtime):
     if isinstance(files, str):
         files = [files]
     
-    # Convert date range to datetime objects
-#    start_date = datetime.strptime(starttime, '%Y-%m-%dT%H:%M:%S')
-#    end_date = datetime.strptime(endtime, '%Y-%m-%dT%H:%M:%S')
-    
     # Parse the time out of the file name
     parts = parse_filename(fnames)
     fstart = [datetime.strptime(name[-2], '%Y%m%d') if len(name[-2]) == 8 else
               datetime.strptime(name[-2], '%Y%m%d%H%M%S')
               for name in parts]
     
-    # Sor the files by start time
+    # Sort the files by start time
     isort = sorted(range(len(fstart)), key=lambda k: fstart[k])
     fstart = [fstart[i] for i in isort]
     files = [files[i] for i in isort]
@@ -174,18 +176,22 @@ def parse_filename(fnames):
     """
     Construct a file name compliant with MMS file name format guidelines.
     
-    Arguments:
-        fname (str,list): File names to be parsed.
+    Parameters
+    ----------
+    fname : str or list
+        File names to be parsed.
     
-    Returns:
-        parts (list):     A list of tuples. The tuple elements are:
-                          [0]: Spacecraft IDs
-                          [1]: Instrument IDs
-                          [2]: Data rate modes
-                          [3]: Data levels
-                          [4]: Optional descriptor (empty string if not present)
-                          [5]: Start times
-                          [6]: File version number
+    Returns
+    -------
+    parts : list
+        A list of tuples. The tuple elements are:
+            [0]: Spacecraft IDs
+            [1]: Instrument IDs
+            [2]: Data rate modes
+            [3]: Data levels
+            [4]: Optional descriptor (empty string if not present)
+            [5]: Start times
+            [6]: File version number
     """
     
     # Allocate space
