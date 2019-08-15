@@ -256,8 +256,8 @@ def download_files(probe, instrument, data_rate, starttime, endtime,
     fnames = []
     daylist = util._daysplitinterval(starttime, endtime)
     for date, stime, etime in daylist:
-        files = available_files(probe, instrument, data_rate,
-                                starttime, endtime, product_string)
+        files = available_files(probe, instrument, starttime, endtime, 
+                                data_rate, product_string)
         for file in files:
             fname = pathlib.Path(file).stem
             if product_string in fname and len(fname):
