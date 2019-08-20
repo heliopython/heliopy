@@ -14,22 +14,14 @@ from collections import OrderedDict
 import requests
 from tqdm.auto import tqdm
 
+import heliopy
 from heliopy.data import util
-from heliopy import config
 
 import sunpy
 import glob
 import glob, os, requests
 # from tqdm import tqdm
 from urllib.parse import parse_qs
-
-
-data_dir = pathlib.Path(config['download_dir'])
-mms_dir = data_dir / 'mms'
-mms_url = 'https://lasp.colorado.edu/mms/sdc/public'
-remote_mms_dir = mms_url + '/data/'
-query_url = mms_url + '/files/api/v1/file_names/science'
-dl_url = mms_url + '/files/api/v1/download/science'
 
 
 class MMSDownloader(util.Downloader):
@@ -67,6 +59,72 @@ class MMSDownloader(util.Downloader):
                  site='public',
                  start_date=None,
                  version=None):
+        """
+        Initialization method
+        
+        Parameters
+        ----------
+        sc : str, list
+            Spacecraft ID.
+        instr : str, list
+            Instrument ID.
+        mode : str, list
+            Data rate mode.
+        level : str, list
+            Data product quality level. Setting level to None, "l2", or "l3"
+            automatically sets site to "public".
+        anc_product : bool
+            Set to True if you want ancillary data. Automatically sets
+            "data_type" to "ancillary".
+        data_type : str
+            Type of information requested from the SDC:
+                "science" - Science data
+                "hk" - Housekeeping data
+                "ancillary" - attitude and emphemeris data
+        data_root : str
+            Root directory in which to download MMS data. Additional directories
+            beyond data_root are created to mimic the MMS file system structure.
+            Defaults to heliopy.config['download_dir'].
+        dropbox_root : str
+            Directory in which newly created data files are temporarily saved. In
+            the MMS data processing flow, newly created data files are stored in
+            dropbox_dir. After data file validation, they are removed from dropbox_dir
+            and placed in data_root.
+        end_date : str, `datetime.datetime`
+            End time of data interval of interest. If a string, it must be in
+            ISO-8601 format: YYYY-MM-DDThh:mm:ss, and is subsequently converted
+            to a datetime object.
+        files : str
+            Name of the specific file or files to download. Automatically sets
+            sd, instr, mode, level, optdesc, and version attributes to None.
+        mirror_root : str
+            Root directory of an MMS mirror site, in case certain data products
+            are automatically rsynced to a local server.
+        offline : bool
+            If True, file information will be gathered from the local file system
+            only (i.e. no requests will be posted to the SDC).
+        optdesc : str, list
+            Optional descriptor of the data products.
+        site : str
+            Indicate that requests should be posted to the public or private side
+            of the SDC. The private side needs team log-in credentials.
+                "public" - access the public side.
+                "private" - access the private side.
+        start_date : str, `datetime.datetime`
+            Start time of data interval of interest. If a string, it must be in
+            ISO-8601 format: YYYY-MM-DDThh:mm:ss, and is subsequently converted
+            to a datetime object.
+        version : str, list
+            File version number. The format is X.Y.Z, where X, Y, and Z, are the
+            major, minor, and incremental version numbers.
+        
+        Returns
+        -------
+        obj : `heliopy.data.mms.MMSDownloader`
+            An object instance to interface with the MMS Science Data Center.
+        """
+        
+        
         
         # Set attributes
         #   - Put site before level because level will auto-set site
@@ -90,11 +148,8 @@ class MMSDownloader(util.Downloader):
         self.files = files
         
         # Setup download directory
-        #   - $HOME/data/mms/
         if data_root is None:
-            data_root = os.path.join(os.path.expanduser('~'), 'data', 'mms')
-            if not os.path.isdir(data_root):
-                os.makedirs(data_root, exist_ok=True)
+            data_root = pathlib.Path(heliopy.config['download_dir']) / 'mms'
         
         self.data_root  = data_root
         self._sdc_home  = 'https://lasp.colorado.edu/mms/sdc'
@@ -102,6 +157,7 @@ class MMSDownloader(util.Downloader):
         
         # Create a persistent session
         self._session = requests.Session()
+    
     
     def __str__(self):
         return self.url()
@@ -137,7 +193,7 @@ class MMSDownloader(util.Downloader):
         super(MMSDownloader, self).__setattr__(name, value)
     
     
-    def intervals(self, starttime=None, endtime=None):
+    def intervals(self):
         """
         The complete list of sub-intervals that cover a time range
         Each sub-interval is associated with a single file to be downloaded and
@@ -152,45 +208,44 @@ class MMSDownloader(util.Downloader):
 
         Returns
         -------
-        fnames : list of sunpy.time.TimeRange
+        intervals : list of sunpy.time.TimeRange
             List of intervals
         """
-        
-        if starttime:
-            self.start_date = starttime
-        if endtime:
-            self.end_date = endtime
         
         # Start time from file names
         fnames = self.file_names()
         nfiles = len(fnames)
-        parts = parse_file_name(fnames)
+        parts = parse_file_names(fnames)
         
         # MMS files do not have end times in their file names and burst files
         # do not have a fixed start time or duration (although survey files do).
         # Assume the end time of one file is a microsecond before the start time
         # of the next file in sequence (or the end of the time interval, if
         # sooner). Step through files backwards, since end[i-1] depends on start[i].
-        trange = [sunpy.time.TimeRange()]*nfiles
-        for i in range(nfiles-1, 0, -1):
+        trange = [None]*nfiles
+        for i in range(nfiles-1, -1, -1):
             # Start tiem of interval
             if len(parts[i][5]) == 8:
-                trange[i].start = dt.datetime.strptime(p[5], '%Y%m%d')
+                start = dt.datetime.strptime(parts[i][5], '%Y%m%d')
             else:
-                trange[i].start = dt.datetime.strptime(p[5], '%Y%m%d%H%M%S')
+                start = dt.datetime.strptime(parts[i][5], '%Y%m%d%H%M%S')
             
-            # End time of interval
+            # End time of interval. Subtract one second to prevent the file
+            # that begins at trange[i+1] is not included in any results.
             if i == (nfiles-1):
-                trange[i].end = self._end_date
-            elif i > 0:
-                trange[i-1].end = trange[i].start - dt.timedelta(seconds=1e-6)
+                end = self._end_date
+            elif i >= 0:
+                end = trange[i+1].start - dt.timedelta(seconds=1)
+            
+            trange[i] = sunpy.time.TimeRange(start, end)
         
         return trange
     
     
     def local_dir(self, interval=None):
         """
-        Local directory for a given interval.
+        Local directory for a given interval. The interval should correspond to a
+        single data file (i.e. a single interval returned by self.intervals).
 
         Parameters
         ----------
@@ -201,26 +256,19 @@ class MMSDownloader(util.Downloader):
         dir : pathlib.Path
             Local directory
         """
-        if interval:
-            self.start_date = interval.start
-            self.end_date = interval.end
         
         # Create a list of sequential dates spanning the time interval
-        ndays = (self._end_date - self._start_date).days
-        dates = ['']*(ndays+1)
-        for i in range(ndays+1):
-            date = self._start_date + dt.timedelta(days=i)
-            dates[i] = date.strftime('%Y%m%d')
+        date = interval.start.to_datetime().strftime('%Y%m%d')
         
         # Create the local directories
-        dirs = construct_path(self.sc, self.instr, self.mode, self.level, dates,
-                              optdesc=self.optdesc, root=self.data_root)
-        return dirs
+        dir = construct_path(self.sc, self.instr, self.mode, self.level, date,
+                             optdesc=self.optdesc, root=self.data_root)
+        return dir[0]
     
     
-    def fname(self, interval=None, mirror=False):
+    def fname(self, interval, mirror=False):
         """
-        Return the filename for a given interval.
+        Return the filename for a given interval from the SDC.
 
         Parameters
         ----------
@@ -228,88 +276,134 @@ class MMSDownloader(util.Downloader):
 
         Returns
         -------
-        fname : str or list
+        fname : str
             Filename
         """
-        if interval:
-            self.start_date = interval.start
-            self.end_date = interval.end
         
-        # Search the mirror or local directory
-        if mirror:
-            data_root = self.mirror_root
-        else:
-            data_root = self.data_root
+        # File names have version numbers in them. To get the most recent version,
+        # we must go through the SDC. Most functions key off the larger time interval
+        # of interest, so we must temporarily set it to the interval of a single
+        # data file.
+        interval_in = self.get_interval()
+        self.set_interval(interval)
         
-        # If no start or end date have been defined,
-        #   - Start at beginning of mission
-        #   - End at today's date
-        start_date = self._start_date
-        end_date = self._end_date
-        if self._start_date is None:
-            start_date = dt.datetime(2015, 9, 1)
-        if self._end_date is None:
-            end_date = dt.datetime.today()
+        # Get the file name
+        try:
+            file = self.fnames()[0]
+        except:
+            file = ''
         
-        # Create all dates between start_date and end_date
-        deltat = dt.timedelta(days=1)
-        dates  = []
-        while start_date <= end_date:
-            dates.append(start_date.strftime('%Y%m%d'))
-            start_date += deltat
+        # Reset the time interval
+        self.set_interval(interval_in)
         
-        # Paths in which to look for files
-        #   - Files of all versions and times within interval
-        paths = construct_path(self.sc, self.instr, self.mode, self.level,
-                               dates, optdesc=self.optdesc,
-                               root=data_root, files=True)
+        return file
+    
+    
+    def get_interval(self):
+        """
+        Get the time interval of interest.
         
-        # Search
-        result = []
-        pwd = os.getcwd()
-        for path in paths:
-            root = os.path.dirname(path)
-            
-            try:
-                os.chdir(root)
-            except FileNotFoundError:
-                continue
-            except:
-                os.chdir(pwd)
-                raise
-                
-            for file in glob.glob(os.path.basename(path)):
-                result.append(os.path.join(root, file))
+        Returns
+        ----------
+        interval : sunpy.time.TimeRange
+            Start and end time of the data interval
+        """
+        return sunpy.time.TimeRange(self._start_date, self._end_date)
+    
+    
+    def set_interval(self, interval):
+        """
+        Set the time interval of interest.
+        
+        Parameters
+        ----------
+        interval : sunpy.time.TimeRange
+            Start and end time of the data interval
+        """
+        self.start_date = interval.start.to_datetime()
+        self.end_date = interval.end.to_datetime()
+    
+    
+    def download(self, interval):
+        """
+        Download a file corresponding to a given interval.
 
-        os.chdir(pwd)
+        Parameters
+        ----------
+        interval : sunpy.time.TimeRange
+
+        Returns
+        -------
+        file : str
+            Full path of the downloaded data file.
+        """
         
-        return result
+        # File names have version numbers in them. To get the most recent version,
+        # we must go through the SDC. Most functions key off the larger time interval
+        # of interest, so we must temporarily set it to the interval of a single
+        # data file.
+        interval_in = self.get_interval()
+        self.set_interval(interval)
+        
+        try:
+            file = self.downloads()[0]
+        except:
+            file = ''
+        
+        self.set_interval(interval_in)
+        return file
+        
+    
+    def fnames(self):
+        """Obtain file names from the SDC."""
+        
+        # File names have version numbers in them. To get the most recent version,
+        # call out to the SDC.
+        files = self.file_names()
+        files = [file.split('/')[-1] for file in files]
+        return files
     
     
-    def url(self):
-        """Build a URL to query the SDC."""
+    def url(self, query=True):
+        """
+        Build a URL to query the SDC.
+        
+        Parameters
+        ----------
+        query : bool
+            If True (default), add the query string to the url.
+        
+        Returns:
+        url : str
+            URL used to retrieve information from the SDC.
+        """
+        
         sep = '/'
         url = sep.join( (self._sdc_home, self.site, 'files', 'api', 'v1', 
                          self._info_type, self.data_type) )
         
         # Build query from parts of file names
-        query = '?'
-        qdict = self.query()
-        for key in qdict:
-            query += key + '=' + qdict[key] + '&'
+        if query:
+            query_string = '?'
+            qdict = self.query()
+            for key in qdict:
+                query_string += key + '=' + qdict[key] + '&'
         
-        # Combine URL with query string
-        url += query
+            # Combine URL with query string
+            url += query_string
+        
         return url
     
     
     def check_response(self, response):
-        '''Check the status code for a requests response and perform
-           and appropriate action (e.g. log-in, raise error, etc.)
+        '''
+        Check the status code for a requests response and perform
+        and appropriate action (e.g. log-in, raise error, etc.)
         
         Parameters:
         -----------
-        response (object):      A requests response object
+        response : `requests.response`
+            Response from the SDC
         '''
         
         # OK
@@ -353,11 +447,10 @@ class MMSDownloader(util.Downloader):
         return r
     
     
-    def download(self):
+    def downloads(self):
         self._info_type = 'download'
         # Build the URL sans query
-        url = '/'.join((self._sdc_home, self.site, 'files', 'api', 'v1',
-                        self._info_type, self.data_type))
+        url = self.url(query=False)
         
         # Get available files
         local_files, remote_files = self.search()
@@ -430,24 +523,6 @@ class MMSDownloader(util.Downloader):
         # Download the files
         #   - If already downloaded, returns local files
         files = self.download()
-        
-    def download_func(remote_base_url, local_base_dir,
-                      directory, fname, remote_fname, extension):
-            url = remote_base_url + '?file=' + fname + extension
-            local_fname = os.path.join(local_base_dir, fname + extension)
-            with requests.get(url, stream=True) as request:
-                with open(local_fname, 'wb') as fd:
-                    for chunk in tqdm(
-                            request.iter_content(chunk_size=128)):
-                        fd.write(chunk)
-
-    def processing_func(cdf):
-        return util.cdf2df(cdf, index_key='Epoch')
-
-    return util.process(dirs, fnames, extension, local_base_dir,
-                        remote_base_url, download_func, processing_func,
-                        starttime, endtime,
-                        warn_missing_units=warn_missing_units)
     
     
     def file_info(self):
@@ -475,8 +550,6 @@ class MMSDownloader(util.Downloader):
         """Search for MMS files on the local system.
         
         Files must be located in an MMS-like directory structure.
-        
-        ***REPLACED BY FNAME***
         """
         
         # Search the mirror or local directory
@@ -550,11 +623,16 @@ class MMSDownloader(util.Downloader):
     
     
     def get(self):
-        """Retrieve data from the SDC.
+        """
+        Retrieve data from the SDC.
+        
+        Returns
+        -------
+        r : `session.response`
+            Response to the request posted to the SDC.
         """
         # Build the URL sans query
-        url = '/'.join((self._sdc_home, self.site, 'files', 'api', 'v1',
-                        self._info_type, self.data_type))
+        url = self.url(query=False)
         
         # Check on query
         r = self._session.post(url, data=self.query())
@@ -568,20 +646,22 @@ class MMSDownloader(util.Downloader):
     
     
     def name2path(self, filename):
-        """Convert remote file names to local file name.
+        """
+        Convert remote file names to local file name.
         
         Directories of a remote file name are separated by the '/' character,
         as in a web address.
         
         Parameters
         ----------
-        filename:  str
-                   File name for which the local path is desired.
+        filename : str
+            File name for which the local path is desired.
         
         Returns
         -------
-        local_name:  Equivalent local file name. This is the location to
-                     which local files are downloaded.
+        local_name : str
+            Equivalent local file name. This is the location to
+            which local files are downloaded.
         """
         parts = filename.split('_')
         
@@ -604,10 +684,10 @@ class MMSDownloader(util.Downloader):
         
         return path
     
+    
     def parse_file_name(self, filename):
-        """Parse file names.
-        
-        Parse official MMS file names. MMS file names are formatted as
+        """
+        Parse an official MMS file name. MMS file names are formatted as
             sc_instr_mode_level[_optdesc]_tstart_vX.Y.Z.cdf
         where
             sc:       spacecraft id
@@ -618,14 +698,18 @@ class MMSDownloader(util.Downloader):
             tstart:   start time of file
             vX.Y.Z    file version, with X, Y, and Z version numbers
         
-        Params:
-        filename (str):  An MMS file name
+        Parameters
+        ----------
+        filename : str
+            An MMS file name
         
-        Returns:
-        parts (tuple):  A tuples ordered as
-                        (sc, instr, mode, level, optdesc, tstart, version)
-                        If opdesc is not present in the file name, the output will
-                        contain the empty string ('').
+        Returns
+        -------
+        parts : tuple
+            A tuples ordered as
+                (sc, instr, mode, level, optdesc, tstart, version)
+            If opdesc is not present in the file name, the output will
+            contain the empty string ('').
         """
         parts = os.path.basename(filename).split('_')
         
@@ -640,6 +724,14 @@ class MMSDownloader(util.Downloader):
     
     
     def query(self):
+        """
+        build a dictionary of key-value pairs that serve as the URL query string.
+        
+        Returns
+        -------
+        query : dict
+            URL query
+        """
         
         # Adjust end date
         #   - The query takes '%Y-%m-%d' but the object allows '%Y-%m-%dT%H:%M:%S'
@@ -682,12 +774,16 @@ class MMSDownloader(util.Downloader):
         Directories of a remote file name are separated by the '/' character,
         as in a web address.
         
-        Parameters:
-        remote_names (list): Remote file names returned by FileNames.
+        Parameters
+        ----------
+        remote_names : list
+            Remote file names returned by FileNames.
         
-        Returns:
-        local_names (list):  Equivalent local file name. This is the location to
-                             which local files are downloaded.
+        Returns
+        -------
+        local_names :list
+            Equivalent local file name. This is the location to
+            which local files are downloaded.
         """
         # os.path.join() requires string arguments, but str.split() return list.
         #   - Unpack with *: https://docs.python.org/2/tutorial/controlflow.html#unpacking-argument-lists
@@ -708,9 +804,11 @@ class MMSDownloader(util.Downloader):
             Filter results in self.Local_FileNames() by time and remove the time
             filters here. self.FileNames() already filters by time.
         
-        Returns:
-        files (tuple):  Local and remote files within the interval, returned as
-                        (local, remote), where `local` and `remote` are lists.
+        Returns
+        -------
+        files : tuple
+            Local and remote files within the interval, returned as
+            (local, remote), where `local` and `remote` are lists.
         """
         
         # Search locally if offline
@@ -750,13 +848,34 @@ class MMSDownloader(util.Downloader):
     
     @property
     def site(self):
+        """
+        Return self.site
+    
+        Returns
+        -------
+        site : str
+            Indicates whether the API is posting to the public or private side of the SDC.
+        """
         return self._site
     
     @site.setter
     def site(self, value):
-        if (value == 'team') | (value == 'team_site') | (value == 'sitl') | (value == 'private'):
+        """
+        Set the site attribute. Team site is most commonly referred to as the "team",
+        or "private" site, but in the URL is referred to as the "sitl" site. Accept
+        any of these values.
+    
+        Parameters
+        ----------
+        value : str
+            Request that the API interface with either the public or private side
+            of the SDC. Accepted values are:
+                public: "public"
+                private: "team", "sitl", "private"
+        """
+        if value in ['private', 'team', 'sitl']:
             self._site = 'sitl'
-        elif (value == 'public') | (value == 'public_site'):
+        elif value == 'public':
             self._site = 'public'
         else:
             raise ValueError('Invalid value for the "site" attribute')
@@ -769,6 +888,7 @@ class MMSDownloader(util.Downloader):
             theDate = self._start_date
         
         return theDate
+    
     
     @start_date.setter
     def start_date(self, value):
@@ -820,23 +940,33 @@ def construct_filename(sc, instr=None, mode=None, level=None, tstart='*', versio
     MMS file names follow the convention
         sc_instr_mode_level[_optdesc]_tstart_vX.Y.Z.cdf
     
-    Arguments:
-        sc (str,list,tuple):   Spacecraft ID(s)
-        instr   (str,list):    Instrument ID(s)
-        mode    (str,list):    Data rate mode(s). Options include slow, fast, srvy, brst
-        level   (str,list):    Data level(s). Options include l1a, l1b, l2pre, l2, l3
-        tstart  (str,list):    Start time of data file. In general, the format is
-                               YYYYMMDDhhmmss for "brst" mode and YYYYMMDD for "srvy"
-                               mode (though there are exceptions). If not given, the
-                               default is "*".
-        version (str,list):    File version, formatted as "X.Y.Z", where X, Y, and Z
-                               are integer version numbers.
-        optdesc (str,list):    Optional file name descriptor. If multiple parts,
-                               they should be separated by hyphens ("-"), not under-
-                               scores ("_").
+    Parameters
+    ----------
+        sc : str, list, tuple
+            Spacecraft ID(s)
+        instr : str, list
+            Instrument ID(s)
+        mode : str, list
+            Data rate mode(s). Options include slow, fast, srvy, brst
+        level : str, list
+            Data level(s). Options include l1a, l1b, l2pre, l2, l3
+        tstart : str, list
+            Start time of data file. In general, the format is
+            YYYYMMDDhhmmss for "brst" mode and YYYYMMDD for "srvy"
+            mode (though there are exceptions). If not given, the
+            default is "*".
+        version : str, list
+            File version, formatted as "X.Y.Z", where X, Y, and Z
+            are integer version numbers.
+        optdesc : str, list
+            Optional file name descriptor. If multiple parts,
+            they should be separated by hyphens ("-"), not under-
+            scores ("_").
     
-    Returns:
-        fnames  (str,list);    File names constructed from inputs.
+    Returns
+    -------
+        fnames : str, list
+            File names constructed from inputs.
     """
     
     # Convert all to lists
@@ -901,23 +1031,33 @@ def construct_path(sc, instr=None, mode=None, level=None, tstart='*',
         srvy: sc/instr/mode/level[/optdesc]/<year>/<month>
     
     Arguments:
-        sc (str,list,tuple):   Spacecraft ID(s)
-        instr   (str,list):    Instrument ID(s)
-        mode    (str,list):    Data rate mode(s). Options include slow, fast, srvy, brst
-        level   (str,list):    Data level(s). Options include l1a, l1b, l2pre, l2, l3
-        tstart  (str,list):    Start time of data file, formatted as a date: '%Y%m%d'.
-                               If not given, all dates from 20150901 to today's date are
-                               used.
-        optdesc (str,list):    Optional file name descriptor. If multiple parts,
-                               they should be separated by hyphens ("-"), not under-
-                               scores ("_").
-        root    (str):         Root directory at which the directory structure begins.
-        files   (bool):        If True, file names will be generated and appended to the
-                               paths. The file tstart will be "YYYYMMDD*" (i.e. the date
-                               with an asterisk) and the version number will be "*".
+        sc : str, list, tuple
+            Spacecraft ID(s)
+        instr : str, list
+            Instrument ID(s)
+        mode : str, list
+            Data rate mode(s). Options include slow, fast, srvy, brst
+        level : str, list
+            Data level(s). Options include l1a, l1b, l2pre, l2, l3
+        tstart : str, list
+            Start time of data file, formatted as a date: '%Y%m%d'.
+            If not given, all dates from 20150901 to today's date are
+            used.
+        optdesc : str, list
+            Optional file name descriptor. If multiple parts,
+            they should be separated by hyphens ("-"), not under-
+            scores ("_").
+        root : str
+            Root directory at which the directory structure begins.
+        files : bool
+            If True, file names will be generated and appended to the
+            paths. The file tstart will be "YYYYMMDD*" (i.e. the date
+            with an asterisk) and the version number will be "*".
     
-    Returns:
-        fnames  (str,list);    File names constructed from inputs.
+    Returns
+    -------
+    fnames : str, list
+        File names constructed from inputs.
     """
     
     # Convert all to lists
@@ -1002,12 +1142,16 @@ def filename2path(fnames, root=''):
     where the optional descriptor [/optdesc] is included if it is also in the
     file name and day directory [/DD] is included if mode='brst'.
     
-    Arguments:
-        fnames (str,list):    File names to be turned into paths.
-        root   (str):     Absolute directory
+    Parameters:
+    fnames : str, list
+        File names to be turned into paths.
+    root : str
+        Absolute directory
     
-    Returns:
-        paths (list):     Path to the data file.
+    Returns
+    -------
+    paths : list
+        Path to the data file.
     """
     
     paths = []
@@ -1039,13 +1183,19 @@ def filter_time(fnames, start_date, end_date):
     """
     Filter files by their start times.
     
-    Arguments:
-        fnames (str,list):    File names to be filtered.
-        start_date (str):     Start date of time interval, formatted as '%Y-%m-%dT%H:%M:%S'
-        end_date (str):       End date of time interval, formatted as '%Y-%m-%dT%H:%M:%S'
+    Parameters
+    ----------
+    fnames : str, list
+        File names to be filtered.
+    start_date : str
+        Start date of time interval, formatted as '%Y-%m-%dT%H:%M:%S'
+    end_date : str
+        End date of time interval, formatted as '%Y-%m-%dT%H:%M:%S'
     
-    Returns:
-        paths (list):     Path to the data file.
+    Returns
+    -------
+    paths : list
+        Path to the data file.
     """
     
     # Output
@@ -1058,7 +1208,7 @@ def filter_time(fnames, start_date, end_date):
     end_date = dt.datetime.strptime(end_date, '%Y-%m-%dT%H:%M:%S')
     
     # Parse the time out of the file name
-    parts = parse_file_name(fnames)
+    parts = parse_file_names(fnames)
     fstart = [dt.datetime.strptime(name[-2], '%Y%m%d') if len(name[-2]) == 8 else
               dt.datetime.strptime(name[-2], '%Y%m%d%H%M%S')
               for name in parts]
@@ -1175,22 +1325,26 @@ def filter_version(files, latest=None, version=None, min_version=None):
     return filtered_files
 
 
-def parse_file_name(fnames):
+def parse_file_names(fnames):
     """
-    Construct a file name compliant with MMS file name format guidelines.
+    Parse file name(s) compliant with MMS file name format guidelines.
     
-    Arguments:
-        fname (str,list): File names to be parsed.
+    Parameters
+    ----------
+    fname : str, list
+        File names to be parsed.
     
-    Returns:
-        parts (list):     A list of tuples. The tuple elements are:
-                          [0]: Spacecraft IDs
-                          [1]: Instrument IDs
-                          [2]: Data rate modes
-                          [3]: Data levels
-                          [4]: Optional descriptor (empty string if not present)
-                          [5]: Start times
-                          [6]: File version number
+    Returns
+    -------
+    parts : list
+        A list of tuples. The tuple elements are:
+            [0]: Spacecraft IDs
+            [1]: Instrument IDs
+            [2]: Data rate modes
+            [3]: Data levels
+            [4]: Optional descriptor (empty string if not present)
+            [5]: Start times
+            [6]: File version number
     """
     
     # Allocate space
@@ -1206,12 +1360,14 @@ def parse_file_name(fnames):
         # Parse the file names
         parts = os.path.basename(file).split('_')
         
+        # Include the optional descriptor
         if len(parts) == 6:
-            optdesc = ''
-        else:
-            optdesc = parts[4]
+            parts.insert(-2, '')
+        
+        # Trim the "v" from the version number, remove ".cdf" extension
+        parts[-1] = parts[-1][1:-4]
             
-        out.append((*parts[0:4], optdesc, parts[-2], parts[-1][1:-4]))
+        out.append(tuple(parts))
     
     return out
 
@@ -1220,17 +1376,21 @@ def parse_time(times):
     """
     Parse the start time of MMS file names.
     
-    Arguments:
-        times (str,list): Start times of file names.
+    Parameters
+    ----------
+    times : str, list
+        Start times of file names.
     
-    Returns:
-        parts (list):     A list of tuples. The tuple elements are:
-                          [0]: Year
-                          [1]: Month
-                          [2]: Day
-                          [3]: Hour
-                          [4]: Minute
-                          [5]: Second
+    Returns
+    -------
+    parts : list
+        A list of tuples. The tuple elements are:
+            [0]: Year
+            [1]: Month
+            [2]: Day
+            [3]: Hour
+            [4]: Minute
+            [5]: Second
     """
     
     if isinstance(times, str):
@@ -1247,12 +1407,15 @@ def sort_files(files):
     """
     Sort MMS file names by data product and time.
     
-    Arguments:
-        files (str,list):   Files to be sorted
+    Parameters:
+    files : str, list
+        Files to be sorted
     
-    Returns:
-        sorted (tuple):     Sorted file names. Each tuple element corresponds to
-                            a unique data product.
+    Returns
+    -------
+    sorted : tuple
+        Sorted file names. Each tuple element corresponds to
+        a unique data product.
     """
     
     # File types and start times
@@ -1272,11 +1435,6 @@ def sort_files(files):
         fsort.append([files[i] for i, b in enumerate(bases) if b == ub])
         
     return tuple(fsort)
-
-
-
-
-
 
 
 def _validate_instrument(instrument):
