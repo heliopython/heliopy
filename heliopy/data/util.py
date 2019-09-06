@@ -15,6 +15,7 @@ import sys
 import urllib.error as urlerror
 import urllib.request as urlreq
 import astropy.units as u
+import sunpy.time
 import sunpy.timeseries as ts
 import warnings
 import collections as coll
@@ -128,6 +129,18 @@ class Downloader:
             List of intervals
         """
         raise NotImplementedError
+
+    @staticmethod
+    def intervals_yearly(starttime, endtime):
+        """
+        Returns all annual intervals between *starttime* and *endtime*.
+        """
+        out = []
+        # Loop through years
+        for year in range(starttime.year, endtime.year + 1):
+            out.append(sunpy.time.TimeRange(dt.datetime(year, 1, 1),
+                                            dt.datetime(year + 1, 1, 1)))
+        return out
 
     def fname(self, interval):
         """

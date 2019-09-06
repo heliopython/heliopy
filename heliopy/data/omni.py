@@ -24,12 +24,7 @@ class _omniDownloader(util.Downloader):
         self.units = units
 
     def intervals(self, starttime, endtime):
-        out = []
-        # Loop through years
-        for year in range(starttime.year, endtime.year + 1):
-            out.append(sunpy.time.TimeRange(datetime(year, 1, 1),
-                                            datetime(year + 1, 1, 1)))
-        return out
+        return self.intervals_yearly(starttime, endtime)
 
     def fname(self, interval):
         year = interval.start.to_datetime().year
