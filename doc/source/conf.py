@@ -69,8 +69,10 @@ sphinx_gallery_conf = {
     'examples_dirs': '../../examples',
     'gallery_dirs': 'auto_examples',
     'backreferences_dir': 'gen_modules/backreferences',
-    'doc_module' : ('sphinx_gallery', 'sunpy'),
-    'min_reported_time': 0}
+    'doc_module': ('sphinx_gallery', 'heliopy'),
+    'min_reported_time': 0,
+    'abort_on_example_error': False,
+}
 
 issues_github_path = 'heliopython/heliopy'
 
