@@ -4,69 +4,115 @@ Methods for importing data from the OMNI.
 All data is publically available at
 https://cdaweb.gsfc.nasa.gov/pub/data/omni.
 """
-import pathlib as path
+from collections import OrderedDict
+from datetime import datetime, timedelta
+import pathlib
 
+import astropy.units as u
 import numpy as np
 import pandas as pd
-import astropy.units as u
-import datetime as dt
-from collections import OrderedDict
+import sunpy.time
 
 from heliopy.data import util
 from heliopy import config
 
-data_dir = path.Path(config['download_dir'])
-omni_dir = data_dir / 'omni'
 omni_url = 'https://cdaweb.gsfc.nasa.gov/pub/data/omni/'
 
 
-def low(starttime, endtime, try_download=True):
+class _omniDownloader(util.Downloader):
+    def __init__(self, units):
+        self.units = units
+
+    def intervals(self, starttime, endtime):
+        out = []
+        # Loop through years
+        for year in range(starttime.year, endtime.year + 1):
+            out.append(sunpy.time.TimeRange(datetime(year, 1, 1),
+                                            datetime(year + 1, 1, 1)))
+        return out
+
+    def fname(self, interval):
+        year = interval.start.to_datetime().year
+        return f'omni2_{year}.dat'
+
+    def local_dir(self, interval):
+        return pathlib.Path('omni')
+
+    def download(self, interval):
+        url = omni_url + '/low_res_omni'
+
+        local_dir = self.local_path(interval).parent
+        local_dir.mkdir(parents=True, exist_ok=True)
+        fname = self.fname(interval)
+        util._download_remote(url, fname, local_dir)
+
+    def load_local_file(self, interval):
+        names = ['Year', 'Decimal Day', 'Hour', 'Bartels Rotation Number',
+                 'ID IMF Spacecraft', 'ID SW Plasma Spacecraft',
+                 'points(IMF Average)', 'points(Plasma Average)',
+                 '|B|', 'Magnitude of Avg Field Vector',
+                 'Lat. Angle of Aver. Field Vector',
+                 'Long. Angle of Aver. Field Vector', 'Bx GSE, GSM', 'By GSE',
+                 'Bz GSE', 'By GSM', 'Bz GSM', 'sigma |B|', 'sigma B', 'sigma Bx',
+                 'sigma By', 'sigma Bz', 'Proton Temperature',
+                 'Proton Density', 'Plasma Flow Speed', 'Plasma Flow Long. Angle',
+                 'Plasma Flow Lat. Angle', 'Na/Np', 'Flow Pressure', 'sigma T',
+                 'sigma N', 'sigma V', 'sigma phi V', 'sigma theta V',
+                 'sigma Na/Np', 'Electric Field', 'Plasma Beta',
+                 'Alfven Mach Number', 'Kp', 'R', 'DST Index', 'AE Index',
+                 'Proton Flux > 1MeV', 'Proton Flux > 2MeV',
+                 'Proton Flux > 4MeV', 'Proton Flux > 10MeV',
+                 'Proton Flux > 30MeV',
+                 'Proton Flux > 60MeV', 'flag', 'ap index',
+                 'f10.7 index', 'PC(N) index', 'AL index (Kyoto)',
+                 'AU index (Kyoto)', 'Magnetosonic Mach No.']
+        badvalues = [np.nan, np.nan, np.nan, 9999, 99, 99, 999, 999, 999.9, 999.9,
+                     999.9, 999.9, 999.9, 999.9, 999.9, 999.9, 999.9, 999.9, 999.9,
+                     999.9, 999.9, 999.9, 9999999., 999.9, 9999., 999.9, 999.9,
+                     9.999, 99.99, 9999999., 999.9, 9999., 999.9, 999.9, 9.999,
+                     999.99, 999.99, 999.9, 99, 999, 99999, 9999, 999999.99,
+                     99999.99, 99999.99, 99999.99, 99999.99, 99999.99, np.nan,
+                     999, 999.9, 999.9, 99999, 99999, 99.9]
+        thisdata = pd.read_csv(self.local_path(interval), names=names,
+                               delim_whitespace=True)
+        for name, bad_value in zip(names, badvalues):
+            if name in ['Year', 'Decimal Day', 'Hour']:
+                continue
+            thisdata[name] = thisdata[name].replace(bad_value, np.nan)
+        year = thisdata['Year'][0]
+        day_list = list(thisdata['Decimal Day'])
+        hour_list = list(thisdata['Hour'])
+        len_ = len(thisdata)
+        time_index = self._convert_datetime(year, day_list, hour_list, len_)
+        thisdata['Time'] = pd.to_datetime(time_index)
+        thisdata = thisdata.set_index('Time')
+        thisdata = thisdata.drop(['Year', 'Decimal Day', 'Hour'], axis=1)
+        return thisdata
+
+    def _convert_datetime(self, year, day_list, hour_list, len_):
+        datetime_index = []
+        base_date = datetime(year, 1, 1, 0, 0, 0)
+        for x in range(0, len_):
+            time_delta = timedelta(days=day_list[x] - 1, hours=hour_list[x])
+            datetime_index.append(base_date + time_delta)
+        return datetime_index
+
+
+def low(starttime, endtime):
     """
     Import data from OMNI Web Interface.
 
     Parameters
     ----------
-        starttime : datetime
-            Interval start time.
-        endtime : datetime
-            Interval end time.
+    starttime : datetime
+        Interval start time.
+    endtime : datetime
+        Interval end time.
 
     Returns
     -------
         data : :class:`~sunpy.timeseries.TimeSeries`
     """
-
-    # Directory relative to main OMNI data directory
-    local_base_dir = omni_dir / 'low'
-    remote_base_url = omni_url + '/low_res_omni'
-    dirs = []
-    fnames = []
-    names = ['Year', 'Decimal Day', 'Hour', 'Bartels Rotation Number',
-             'ID IMF Spacecraft', 'ID SW Plasma Spacecraft',
-             'points(IMF Average)', 'points(Plasma Average)',
-             '|B|', 'Magnitude of Avg Field Vector',
-             'Lat. Angle of Aver. Field Vector',
-             'Long. Angle of Aver. Field Vector', 'Bx GSE, GSM', 'By GSE',
-             'Bz GSE', 'By GSM', 'Bz GSM', 'sigma |B|', 'sigma B', 'sigma Bx',
-             'sigma By', 'sigma Bz', 'Proton Temperature',
-             'Proton Density', 'Plasma Flow Speed', 'Plasma Flow Long. Angle',
-             'Plasma Flow Lat. Angle', 'Na/Np', 'Flow Pressure', 'sigma T',
-             'sigma N', 'sigma V', 'sigma phi V', 'sigma theta V',
-             'sigma Na/Np', 'Electric Field', 'Plasma Beta',
-             'Alfven Mach Number', 'Kp', 'R', 'DST Index', 'AE Index',
-             'Proton Flux > 1MeV', 'Proton Flux > 2MeV',
-             'Proton Flux > 4MeV', 'Proton Flux > 10MeV',
-             'Proton Flux > 30MeV',
-             'Proton Flux > 60MeV', 'flag', 'ap index',
-             'f10.7 index', 'PC(N) index', 'AL index (Kyoto)',
-             'AU index (Kyoto)', 'Magnetosonic Mach No.']
-    badvalues = [np.nan, np.nan, np.nan, 9999, 99, 99, 999, 999, 999.9, 999.9,
-                 999.9, 999.9, 999.9, 999.9, 999.9, 999.9, 999.9, 999.9, 999.9,
-                 999.9, 999.9, 999.9, 9999999., 999.9, 9999., 999.9, 999.9,
-                 9.999, 99.99, 9999999., 999.9, 9999., 999.9, 999.9, 9.999,
-                 999.99, 999.99, 999.9, 99, 999, 99999, 9999, 999999.99,
-                 99999.99, 99999.99, 99999.99, 99999.99, 99999.99, np.nan,
-                 999, 999.9, 999.9, 99999, 99999, 99.9]
     sfu = u.def_unit('sfu', 10**-22 * u.m**-2 * u.Hz**-1)
     units = OrderedDict([('Bartels Rotation Number', u.dimensionless_unscaled),
                          ('ID IMF Spacecraft', u.dimensionless_unscaled),
@@ -120,43 +166,5 @@ def low(starttime, endtime, try_download=True):
                          ('AU index (Kyoto)', u.nT),
                          ('Magnetosonic Mach No.', u.dimensionless_unscaled),
                          ('f10.7 index', sfu)])
-    extension = '.dat'
-    for year in range(starttime.year, endtime.year + 1):
-        fnames.append("omni2_{}".format(year))
-        dirs.append(local_base_dir)
-
-    def download_func(remote_base_url, local_base_dir,
-                      directory, fname, remote_fname, extension):
-        url = '{}'.format(remote_base_url)
-        util._download_remote(url,
-                              fname + extension,
-                              local_base_dir / directory)
-
-    def processing_func(file):
-        thisdata = pd.read_csv(file, names=names,
-                               delim_whitespace=True)
-        for name, bad_value in zip(names, badvalues):
-            if name in ['Year', 'Decimal Day', 'Hour']:
-                continue
-            thisdata[name] = thisdata[name].replace(bad_value, np.nan)
-        year = thisdata['Year'][0]
-        day_list = list(thisdata['Decimal Day'])
-        hour_list = list(thisdata['Hour'])
-        len_ = len(thisdata)
-        time_index = convert_datetime(year, day_list, hour_list, len_)
-        thisdata['Time'] = pd.to_datetime(time_index)
-        thisdata = thisdata.set_index('Time')
-        thisdata = thisdata.drop(['Year', 'Decimal Day', 'Hour'], axis=1)
-        return thisdata
-
-    def convert_datetime(year, day_list, hour_list, len_):
-        datetime_index = []
-        base_date = dt.datetime(year, 1, 1, 0, 0, 0)
-        for x in range(0, len_):
-            time_delta = dt.timedelta(days=day_list[x] - 1, hours=hour_list[x])
-            datetime_index.append(base_date + time_delta)
-        return datetime_index
-
-    return util.process(dirs, fnames, extension, local_base_dir,
-                        remote_base_url, download_func, processing_func,
-                        starttime, endtime, units=units)
+    downloader = _omniDownloader(units)
+    return downloader.load(starttime, endtime)

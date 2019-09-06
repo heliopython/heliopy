@@ -77,7 +77,7 @@ class Downloader:
                 try:
                     dl_path = self.download(interval)
                     local_path.parent.mkdir(parents=True, exist_ok=True)
-                    if dl_path != local_path:
+                    if dl_path is not None and dl_path != local_path:
                         shutil.copy(dl_path, local_path)
                         os.remove(dl_path)
                 except NoDataError:
