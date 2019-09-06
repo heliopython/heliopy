@@ -14,7 +14,6 @@ import pandas as pd
 import sunpy.time
 
 from heliopy.data import util
-from heliopy import config
 
 omni_url = 'https://cdaweb.gsfc.nasa.gov/pub/data/omni/'
 
