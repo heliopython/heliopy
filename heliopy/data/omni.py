@@ -20,7 +20,11 @@ omni_dir = data_dir / 'omni'
 omni_url = 'https://cdaweb.gsfc.nasa.gov/pub/data/omni/'
 
 
+<<<<<<< Updated upstream
 def low(starttime, endtime, try_download=True):
+=======
+def low(starttime, endtime, product_list = None, try_download=True):
+>>>>>>> Stashed changes
     """
     Import data from OMNI Web Interface.
 
@@ -144,10 +148,33 @@ def low(starttime, endtime, try_download=True):
         hour_list = list(thisdata['Hour'])
         len_ = len(thisdata)
         time_index = convert_datetime(year, day_list, hour_list, len_)
+<<<<<<< Updated upstream
         thisdata['Time'] = pd.to_datetime(time_index)
         thisdata = thisdata.set_index('Time')
         thisdata = thisdata.drop(['Year', 'Decimal Day', 'Hour'], axis=1)
         return thisdata
+=======
+        thisdata['time'] = pd.to_datetime(time_index)
+        thisdata = thisdata.set_index('time')
+        thisdata = thisdata.drop(['Year', 'Decimal Day', 'Hour'], axis=1)
+        
+        
+        if product_list:
+            thisdata = pd.DataFrame(thisdata,columns=product_list)
+            data = xr.DataArray(thisdata, coords = [time_index, product_list], dims=['time', 'products'])
+            for product in product_list:
+                data.attrs[product] = units[product]
+        else:
+            thisdata = pd.DataFrame(thisdata)
+            data = xr.Dataset({})
+            for i,product in enumerate(thisdata.columns):
+                data[product] = xr.DataArray(thisdata[product], 
+                                coords = [time_index],
+                                dims=['time'])
+            data.attrs = units
+        
+        return data
+>>>>>>> Stashed changes
 
     def convert_datetime(year, day_list, hour_list, len_):
         datetime_index = []

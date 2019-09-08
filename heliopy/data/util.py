@@ -507,6 +507,7 @@ def cdf_units(cdf_, manual_units=None, length=None):
                     temp_unit = helper.cdf_dict(unit_str)
 
                 if temp_unit is None:
+                    temp_unit = u.UnrecognizedUnit(unit_str)
                     message = (f"The CDF provided units ('{unit_str}') for"
                                f" key '{key}' are unknown")
                     warnings.warn(message)
@@ -1095,3 +1096,351 @@ def dtime2doy(dt):
         Day of year
     """
     return int(dt.strftime('%j'))
+<<<<<<< Updated upstream
+=======
+
+
+def cdf2xr(cdf, starttime, endtime, index_key, list_keys=None, dtimeindex=True,
+           badvalues=None, ignore=None):
+    """
+    Converts cdf file of spacecraft timeseries data to an xarray (DataArray or 
+    Dataset) object. xarray package is used as particle distribution functions
+    are usually multidimensional (3/4D) datasets *f(time, energy, theta, phi). 
+    See http://xarray.pydata.org/en/stable/index.html for more information.
+    Products to be loaded from the file must be passed as their corresponding
+    key in the file. If not key is provided, all data from the file is loaded
+    into a xarray.Dataset (with each key corresponding to a DataArray object). 
+    Keys must be provided as a dictionary. If the dictionary contains only one
+    key, then 1D/2D dataset is assumed and loaded in a xarray.DataArray. If the
+    dictionary contains more than 1 key, a 3D or 4D distribution function is 
+    assumed and an OrderedDict is required to load it with the following keys:
+    {'dist','energy','theta'} or {'dist','energy','theta','phi'}, respectively.
+
+    
+    Parameters
+    ----------
+    cdf : cdf
+        Opened cdf file.
+    starttime : datetime.datetime object
+        Start of desired time interval.
+    endtime : datetime.datetime object
+        End of desired time interval.
+    index_key : string 
+        Time key of the opened cdf file.
+    list_keys : dict, optional
+        Dictionary of one or more keys corresponding to the desired products in 
+        the CDF file. If more than one key, and OrderedDict is required in the
+        form: {'dist', 'energy', 'theta'} or {'dist', 'energy', 'theta', 'phi'}
+        depending on the dimension of the dataset, to construct multidimension
+        distribution function.
+    
+    Returns
+    -------
+    out : :class:`xarray.DataArray` or `xarray.Dataset`
+        xarray object containing data from the open CDF file.
+    """
+
+
+
+    # Extract index (time) values from current CDF file
+    try:
+        index_ = cdf.varget(index_key)[...][:, 0]
+    except IndexError:
+        index_ = cdf.varget(index_key)[...] 
+    try:
+        utc_comp = cdflib.cdfepoch.breakdown(index_, to_np=True)
+        if utc_comp.shape[1] == 9:
+            millis = utc_comp[:, 6] * (10**3)
+            micros = utc_comp[:, 8] * (10**2)
+            nanos = utc_comp[:, 7]
+            utc_comp[:, 6] = millis + micros + nanos
+            utc_comp = np.delete(utc_comp, np.s_[-2:], axis=1)
+        try:
+            index = np.asarray([dt.datetime(*x) for x in utc_comp])
+        except ValueError:
+            utc_comp[:, 6] -= micros
+            index = np.asarray([dt.datetime(*x) for x in utc_comp])
+    except Exception:
+        index = index_
+    if dtimeindex:
+        index = pd.DatetimeIndex(index, name='time')
+    
+    
+    # Check if required time interval is in cdf file
+    # and define required start and end time to extract from current CDF file
+    if starttime < index[0] or starttime > index[-1]: 
+        tstart=[index[0].year, index[0].month, index[0].day, index[0].hour, 
+        index[0].minute, index[0].second, int(str(index[0].microsecond).zfill(6)[:-3]), 
+        int(str(index[0].microsecond).zfill(6)[3:])]
+    else:
+        tstart = [starttime.year, starttime.month, starttime.day, starttime.hour,
+                  starttime.minute, starttime.second]
+        
+    if endtime < index[0] or endtime > index[-1] or starttime > endtime:
+        tend=[index[-1].year, index[-1].month, index[-1].day, index[-1].hour,
+        index[-1].minute, index[-1].second,  int(str(index[-1].microsecond).zfill(6)[:-3]),
+        int(str(index[-1].microsecond).zfill(6)[3:])]
+    else:
+        tend = [endtime.year, endtime.month, endtime.day, endtime.hour,
+        endtime.minute, endtime.second]
+        
+        
+    # Filter time index with appropriate start and end times
+#    index = pd.DatetimeIndex([x for x in index if x >= starttime and x <= endtime],
+#                             name='time')
+    
+    # Reload index with appropriate start and end times
+    try:
+        index_ = cdf.varget(index_key,None,tstart,tend)[...][:, 0]
+    except IndexError:
+        index_ = cdf.varget(index_key,None,tstart,tend)[...] 
+    try:
+        utc_comp = cdflib.cdfepoch.breakdown(index_, to_np=True)
+        if utc_comp.shape[1] == 9:
+            millis = utc_comp[:, 6] * (10**3)
+            micros = utc_comp[:, 8] * (10**2)
+            nanos = utc_comp[:, 7]
+            utc_comp[:, 6] = millis + micros + nanos
+            utc_comp = np.delete(utc_comp, np.s_[-2:], axis=1)
+        try:
+            index = np.asarray([dt.datetime(*x) for x in utc_comp])
+        except ValueError:
+            utc_comp[:, 6] -= micros
+            index = np.asarray([dt.datetime(*x) for x in utc_comp])
+    except Exception:
+        index = index_
+    if dtimeindex:
+        index = pd.DatetimeIndex(index, name='time')
+     
+        
+    # If none of the required data in current CDF file, move on to the next one
+    if len(index) == 0: return
+     
+    # If no product_list (cdf keys) is passed, load all data in xarray.Dataset  
+    if not list_keys:
+        
+        data = xr.Dataset({})
+        
+        # Specify the CDF filename in the Dataset
+#       data['filename'] = cdf.cdf_info()['CDF'].stem
+            
+        npoints = cdf.varget(index_key,None,tstart,tend).shape[0]
+
+        var_list = []
+        for attr in list(cdf.cdf_info().keys()):
+            if 'variable' in attr.lower():
+                if len(cdf.cdf_info()[attr]) > 0:
+                    var_list += [attr]
+
+        keys = {}
+        for attr in var_list:
+            for cdf_key in cdf.cdf_info()[attr]:
+#                if ignore:
+#                    if cdf_key in ignore:
+#                        continue
+#                    if cdf_key == 'Epoch':
+#                        keys[cdf_key] = 'Time'
+#                 else:
+                keys[cdf_key] = cdf_key
+                 
+        # Remove index key, as we have already used it to create the index
+        keys.pop(index_key)
+        
+        # Remove keys for data that doesn't have the right shape to load in CDF
+        # or that cannot be loaded     
+        for cdf_key in keys.copy():
+            try: 
+                cdf.varget(cdf_key,None,tstart,tend)
+            except:
+                keys.pop(cdf_key)
+                continue
+            if type(cdf.varget(cdf_key,None,tstart,tend)) is np.ndarray:
+                key_shape = cdf.varget(cdf_key,None,tstart,tend).shape
+                if len(key_shape) == 0 or key_shape[0] != npoints:
+                    keys.pop(cdf_key)
+            else:
+                keys.pop(cdf_key)
+
+        # Loop through each key and put dataarrays into a dataset
+        for cdf_key in keys:
+            df_key = keys[cdf_key]
+            if isinstance(df_key, list):
+                for i, subkey in enumerate(df_key):
+                    
+                    data_temp = xr.DataArray(cdf.varget(cdf_key,None,tstart,tend)[...][:, i])
+                    data[subkey] = data_temp
+            else:
+                key_shape = cdf.varget(cdf_key,None,tstart,tend).shape
+                data_coords = []
+                for i in np.arange(len(key_shape)): # Define coords in dataarray
+                    data_coords += [np.arange(key_shape[i])]
+                    data_coords[0] = index
+                data_dims = np.arange(len(key_shape)-1).tolist() # Define dims in dataarray
+                data_dims = ['dim_'+str(x) for x in data_dims] # Convert to strings
+                data_dims = ['time'] + data_dims 
+                data_temp = xr.DataArray(cdf.varget(cdf_key,None,tstart,tend)[...],
+                                         coords = data_coords, dims = data_dims)
+                data[df_key] = data_temp
+       
+
+    
+    # If only one cdf key, put associated data in xarray.DataArray (assumes 1D or 2D data)
+    elif list_keys and len(list_keys) == 1:
+        for cdf_key in list_keys.values(): 
+            data = cdf.varget(cdf_key,None,tstart,tend)[...]
+            if len(data.shape) == 2:
+                data_coords = ['x','y','z','tot']
+                data = xr.DataArray(data, coords = [index,data_coords[:data.shape[-1]]],
+                                    dims=['time',cdf_key])
+            else:    
+                data = xr.DataArray(data, coords = [index], dims=['time'])
+            
+            data.name = cdf_key
+
+      
+    # If more than 1 key, assumes distribution function (3D or more data)
+    elif list_keys and len(list_keys) > 1:
+        # Load coordinates and dimensions to match 'dist' shape
+        coords = []
+        dims = []
+        keys = list(list_keys.keys())
+        for i,key in enumerate(keys):
+            coords.append(cdf.varget(list_keys[key],None,tstart,tend)[...])
+            dims.append(list_keys[key])
+            
+            # If energy is 2D, just take first dimension (energies are assumed constant)
+            if key == 'energy' and len(coords[i].shape) == 2:
+                coords[i] = coords[i][0, :]
+             
+            
+        data = coords[0]
+        coords[0]=index
+        dims[0]='time'
+        # Create the xarray.DataArray
+        data = xr.DataArray(data, coords, dims)
+
+        data.name = list_keys['dist']
+        data_units = cdf.varattsget(data.name)['UNITS']
+        data.attrs[data.name] = data_units
+        
+    
+    else: 
+        raise ValueError(
+                'Unknown CDF key input: must be either empty or of dict type')
+    return data
+
+
+def units_xarray(data, units, warn_missing_units=True):
+    """
+    Takes the units defined by the user and attaches them to the xarray object.
+    Units are attached as attributes to the xarray object and are accessible 
+    through the xarray attribute 'attrs'.
+
+    Parameters
+    ----------
+    data : :class:`xarray.DataArray` or `xarray.Dataset`
+        Input data. Object which needs to have units attached.
+    units : :class:`collections.OrderedDict`
+        The units manually defined by the user.
+
+    Returns
+    -------
+    out : :class:`xarray.DataArray` or `xarray.Dataset`
+        xarray object with units attached as attributes.
+    """
+    missing_msg = ('If you are trying to automatically download data '
+                   'with HelioPy this is a bug, please report it at '
+                   'https://github.com/heliopython/heliopy/issues')
+    unit_key = list(units.keys())
+    data_units = {}
+
+    # If data is a xarray.DataArray
+    if isinstance(data, xr.core.dataarray.DataArray) and data.name:
+        if data.name not in unit_key:
+            units[data.name] = u.dimensionless_unscaled
+            if warn_missing_units:
+                message = (f"{data.name} column has missing units."
+                           f"\n{missing_msg}")
+                warnings.warn(message, Warning)
+            
+            data_units[data.name] = units[data.name]
+        
+        else:
+            data_units[data.name] = units[data.name]
+    
+        for dim in data.dims:
+            if dim == 'time':
+                continue
+            elif dim not in unit_key:
+                units[dim] = u.dimensionless_unscaled
+                if warn_missing_units:
+                    message = (f"{dim} column has missing units."
+                           f"\n{missing_msg}")
+                    warnings.warn(message, Warning)
+                data_units[dim] = units[dim].name
+            else:
+                data_units[dim] = units[dim].name
+        
+        data.attrs['Units'] = data_units
+    
+    
+    # If data is a xarray.Dataset
+    if isinstance(data, xr.core.dataset.Dataset):
+        for data_var in data.data_vars:
+            if data_var not in unit_key:
+                units[data_var] = u.dimensionless_unscaled
+                if warn_missing_units:
+                    message = (f"{data[data_var]} column has missing units."
+                           f"\n{missing_msg}")
+                    warnings.warn(message, Warning)
+                data_units[data_var] = units[data_var]
+            else:
+                data_units[data_var] = units[data_var]   
+        
+        data.attrs['Units'] = data_units
+
+    with warnings.catch_warnings():
+        warnings.simplefilter(
+            'ignore', 'Discarding nonzero nanoseconds in conversion')
+        
+    
+    return data
+
+
+def xr_timefilter(data, starttime, endtime):
+    """
+    Concatenates a list of xarray.DataArray or xarray.Dataset along the 'time'
+    dimension, and filters the resulting object between times.
+
+    Parameters
+    ----------
+    data : :class: list
+        Input data from different CDF files.
+    starttime : datetime
+        Start of interval.
+    endtime : datetime
+        End of interval.
+
+    Returns
+    -------
+    out : :class:`xarray.DataArray` or `xarray.Dataset`
+        Filtered data.
+    """
+    if len(data) == 0:
+        raise RuntimeError(
+            'No data available between {} and {}'.format(starttime, endtime))
+    
+    if isinstance(data, list) and 'time' in data[0].dims:
+        # Concatenate the list along time
+        data = xr.concat(data, dim = 'time')
+
+    else:
+        raise KeyError('The label "time" was not found in '
+                       'the xarray coordinates')
+    
+    # Time filter the xarray
+    data = data.sel(time=slice(starttime, endtime))
+
+
+    return data
+>>>>>>> Stashed changes

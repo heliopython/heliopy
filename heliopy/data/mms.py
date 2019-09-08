@@ -95,7 +95,11 @@ def available_files(probe, instrument, starttime, endtime, data_rate=''):
     return files
 
 
+<<<<<<< Updated upstream
 def download_files(probe, instrument, data_rate, starttime, endtime,
+=======
+def download_files(probe, instrument, data_rate, starttime, endtime, product_list = None,
+>>>>>>> Stashed changes
                    verbose=True, product_string='', warn_missing_units=True):
     """
     Download MMS files.

@@ -187,7 +187,7 @@ def cdf_dict(unit_string):
                         ('Deg K', u.K),
                         ('#/{cc*(cm/s)^3}', (u.cm**3 * (u.cm / u.s)**3)**-1),
                         ('sec', u.s),
-                        ('Samples/s', 1 / u.s),
+                        ('Samples/s', u.s**-1),
                         ('seconds', u.s),
                         ('nT GSE', u.nT),
                         ('nT GSM', u.nT),

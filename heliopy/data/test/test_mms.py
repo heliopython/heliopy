@@ -8,9 +8,15 @@ mms = pytest.importorskip('heliopy.data.mms')
 pytest.mark.data()
 
 
-starttime = datetime(2016, 1, 2, 0, 0, 0)
-endtime = datetime(2016, 1, 2, 1, 0, 0)
-probes = ['1', '4']
+#starttime = datetime(2016, 1, 2, 0, 0, 0)
+#endtime = datetime(2016, 1, 2, 1, 0, 0)
+#probes = ['1', '4']
+
+
+
+starttime = datetime(2018, 4, 8, 0, 0, 0)
+endtime = datetime(2018, 4, 8, 1, 0, 0)
+probes = ['1']
 
 
 @pytest.mark.parametrize("probe", probes)
