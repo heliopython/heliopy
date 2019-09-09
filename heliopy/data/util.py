@@ -19,6 +19,7 @@ import sunpy.timeseries as ts
 import warnings
 import collections as coll
 import cdflib
+import xarray as xr
 
 import numpy as np
 import pandas as pd
