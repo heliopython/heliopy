@@ -84,8 +84,8 @@ class Downloader:
                 data[-1].to_hdf(hdf_path, 'data', mode='w', format='f')
 
         # Loaded all the data, now filter between times
-        data = timefilter(data, starttime, endtime)
-        data = data.sort_index()
+        data = xr_timefilter(data, starttime, endtime)
+#        data = data.sort_index()
 
         # Attach units
         if local_path.suffix == '.cdf':
@@ -346,14 +346,14 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
             logger.info(msg.format(a=local_dir, b=fname, c=extension))
 
     # Loaded all the data, now filter between times
-    data = timefilter(data, starttime, endtime)
-    data = data.sort_index()
+    data = xr_timefilter(data, starttime, endtime)
+#    data = data.sort_index()
 
     # Attach units
     if extension == '.cdf':
         cdf = _load_local(raw_file_path)
         units = cdf_units(cdf, manual_units=units)
-    return units_attach(data, units, warn_missing_units=warn_missing_units)
+    return units_xarray(data, units, warn_missing_units=warn_missing_units)
 
 
 def _file_match(directory, fname_regex):

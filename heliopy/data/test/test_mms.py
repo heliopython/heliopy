@@ -10,7 +10,7 @@ pytest.mark.data()
 
 starttime = datetime(2016, 1, 2, 0, 0, 0)
 endtime = datetime(2016, 1, 2, 1, 0, 0)
-probes = ['1', '4']
+probes = ['1','4']
 
 
 @pytest.mark.parametrize("probe", probes)
