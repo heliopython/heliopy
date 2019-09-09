@@ -158,7 +158,7 @@ def download_files(probe, instrument, data_rate, starttime, endtime, product_lis
                         fd.write(chunk)
 
     def processing_func(cdf):
-        return util.cdf2df(cdf, index_key='Epoch')
+        return util.cdf2xr(cdf, starttime, endtime, 'Epoch', product_list)
 
     return util.process(dirs, fnames, extension, local_base_dir,
                         remote_base_url, download_func, processing_func,
