@@ -1,8 +1,9 @@
 -r base.txt
 
-cdflib!=0.3.5
+cdflib!=0.3.5,<0.3.14
 pandas
 requests
+bs4
 sunpy
 spiceypy
 tqdm

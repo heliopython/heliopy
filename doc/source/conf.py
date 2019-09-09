@@ -69,8 +69,10 @@ sphinx_gallery_conf = {
     'examples_dirs': '../../examples',
     'gallery_dirs': 'auto_examples',
     'backreferences_dir': 'gen_modules/backreferences',
-    'doc_module' : ('sphinx_gallery', 'sunpy'),
-    'min_reported_time': 0}
+    'doc_module': ('sphinx_gallery', 'heliopy'),
+    'min_reported_time': 0,
+    'abort_on_example_error': False,
+}
 
 issues_github_path = 'heliopython/heliopy'
 
@@ -360,24 +362,24 @@ man_pages = [
 # Grouping the document tree into Texinfo files. List of tuples
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
-texinfo_documents = [
+'''texinfo_documents = [
     (master_doc, 'HelioPy', 'HelioPy Documentation',
-     author, 'David Stansby', 'Python for space physics.',
+     author, 'HelioPy team', 'Python for space physics.',
      'Miscellaneous'),
 ]
 
-# Documents to append as an appendix to all manuals.
-#
-# texinfo_appendices = []
-
-# If false, no module index is generated.
-#
-# texinfo_domain_indices = True
-
-# How to display URL addresses: 'footnote', 'no', or 'inline'.
-#
-# texinfo_show_urls = 'footnote'
-
-# If true, do not generate a @detailmenu in the "Top" node's menu.
-#
-# texinfo_no_detailmenu = False
+html_theme_options = {
+    "about_links": [
+        ("About", "http://docs.heliopy.org/en/stable/guide/about.html", 1),
+        (
+            "Acknowledge HelioPy",
+            "http://docs.heliopy.org/en/stable/guide/citing.html",
+            1,
+        ),
+        ("Code of Conduct", "http://docs.heliopy.org/en/stable/guide/code-of-conduct.html", 1),
+    ],
+    "navbar_links": [
+        ("Documentation", "http://docs.heliopy.org/en/stable/index.html", 1),
+        ("Get Help", "http://docs.heliopy.org/en/stable/index.html", 1),
+    ],
+}'''

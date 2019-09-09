@@ -3,25 +3,22 @@ Methods for importing data from the Ulysses spacecraft.
 
 All data is publically available at http://ufa.esac.esa.int/ufa/
 """
+from collections import OrderedDict
+from datetime import datetime, timedelta
+import pathlib
+
+import astropy.units as u
+import sunpy.time
 import pandas as pd
-import pathlib as path
-from datetime import datetime
 
 from heliopy.data import util
-from collections import OrderedDict
-import astropy.units as u
-from heliopy import config
 
-use_hdf = config['use_hdf']
-data_dir = path.Path(config['download_dir'])
-
-ulysses_dir = data_dir / 'ulysses'
 ulysses_url = 'http://ufa.esac.esa.int/ufa-sl-server/data-action?'
 url_options = {'PROTOCOL': 'HTTP',
                'PRODUCT_TYPE': 'ALL'}
 
 
-def swics_heavy_ions(starttime, endtime, try_download=True):
+def swics_heavy_ions(starttime, endtime):
     """
     Import swics heavy ion data.
 
@@ -87,10 +84,10 @@ def swics_heavy_ions(starttime, endtime, try_download=True):
                         ('DENS_SI9', u.dimensionless_unscaled),
                         ('DENS_SI10', u.dimensionless_unscaled),
                         ('DENS_FE11', u.dimensionless_unscaled)])
-    return _swics(starttime, endtime, names, product, units, try_download)
+    return _swics(starttime, endtime, names, product, units)
 
 
-def swics_abundances(starttime, endtime, try_download=True):
+def swics_abundances(starttime, endtime):
     """
     Import swics abundance data.
 
@@ -128,52 +125,104 @@ def swics_abundances(starttime, endtime, try_download=True):
                         ('RAT_FE_O', u.dimensionless_unscaled),
                         ('CHARGE_FE', u.dimensionless_unscaled),
                         ('N_CYC', u.dimensionless_unscaled)])
-    return _swics(starttime, endtime, names, product, units, try_download)
+    return _swics(starttime, endtime, names, product, units)
 
 
-def _swics(starttime, endtime, names, product, units=None, try_download=True):
-    dirs = []
-    fnames = []
-    extension = '.dat'
-    local_base_dir = ulysses_dir / 'swics'
-    remote_base_url = ulysses_url
+class _swicsDownloader(util.Downloader):
+    def __init__(self, product, names, units):
+        self.product = product
+        self.names = names
+        self.units = units
 
-    def download_func(remote_base_url, local_base_dir,
-                      directory, fname, remote_fname, extension):
-        local_dir = local_base_dir / directory
+    def intervals(self, starttime, endtime):
+        return self.intervals_yearly(starttime, endtime)
+
+    def fname(self, interval):
+        yearstr = str(interval.start.to_datetime().year)[-2:]
+        return f'{self.product}{yearstr}.dat'
+
+    def local_dir(self, interval):
+        return pathlib.Path('ulysses') / 'swics'
+
+    def download(self, interval):
+        local_dir = self.local_path(interval).parent
+        local_dir.mkdir(parents=True, exist_ok=True)
+        fname = self.fname(interval)
+
+        remote_base_url = ulysses_url
         swics_options = url_options
-        swics_options['FILE_NAME'] = fname + extension
+        swics_options['FILE_NAME'] = fname
         swics_options['FILE_PATH'] = '/ufa/HiRes/data/swics'
         for key in swics_options:
             remote_base_url += key + '=' + swics_options[key] + '&'
-        try:
-            util._load_remote(remote_base_url, fname + extension, local_dir, 'ascii')
-            # f = util.load('', local_dir, remote_base_url)
-        except Exception as err:
-            return
+        util._download_remote(remote_base_url, fname, local_dir)
+        return self.local_path(interval)
 
-    def processing_func(f):
-        readargs = {'names': names,
+    def load_local_file(self, interval):
+        readargs = {'names': self.names,
                     'delim_whitespace': True,
                     'na_values': ['******']}
-        thisdata = pd.read_csv(f, **readargs)
+        thisdata = pd.read_csv(self.local_path(interval), **readargs)
         thisdata = _convert_ulysses_time(thisdata)
         return thisdata
 
-    # Loop through years
-    for year in range(starttime.year, endtime.year + 1):
-        fname = '{}{}'.format(product, str(year)[-2:])
-        # Local locaiton to download to
-        dirs.append('')
-        fnames.append(fname)
 
-    return util.process(
-        dirs, fnames, extension, local_base_dir, remote_base_url,
-        download_func, processing_func, starttime, endtime,
-        units=units, try_download=True)
+def _swics(starttime, endtime, names, product, units=None):
+    downloader = _swicsDownloader(product, names, units)
+    return downloader.load(starttime, endtime)
 
 
-def fgm_hires(starttime, endtime, try_download=True):
+class _fgmDownloader(util.Downloader):
+    def __init__(self, units):
+        self.units = units
+
+    def intervals(self, starttime, endtime):
+        out = []
+        # Loop through days
+        for date, _, _ in util._daysplitinterval(starttime, endtime):
+            stime = datetime(date.year, date.month, date.day)
+            etime = stime + timedelta(days=1)
+            out.append(sunpy.time.TimeRange(stime, etime))
+        return out
+
+    def fname(self, interval):
+        dtime = interval.start.to_datetime()
+        yearstr = self.yearstr(interval)
+        filename = ('U' + yearstr[-2:] + dtime.strftime('%j') + 'SH')
+        return f'{filename}.ASC'
+
+    @staticmethod
+    def yearstr(interval):
+        return interval.start.to_datetime().strftime('%Y')
+
+    def local_dir(self, interval):
+        return pathlib.Path('ulysses') / 'fgm' / 'hires'
+
+    def download(self, interval):
+        local_dir = self.local_path(interval).parent
+        local_dir.mkdir(parents=True, exist_ok=True)
+        fname = self.fname(interval)
+        yearstr = self.yearstr(interval)
+
+        remote_base_url = ulysses_url
+        fgm_options = url_options
+        fgm_options['FILE_NAME'] = fname
+        fgm_options['FILE_PATH'] = '/ufa/HiRes/VHM-FGM/' + yearstr
+        for key in fgm_options:
+            remote_base_url += key + '=' + fgm_options[key] + '&'
+        util._download_remote(remote_base_url, fname, local_dir)
+        return self.local_path(interval)
+
+    def load_local_file(self, interval):
+        readargs = {'names': ['year', 'doy', 'hour', 'minute', 'second',
+                              'Bx', 'By', 'Bz', '|B|'],
+                    'delim_whitespace': True}
+        thisdata = pd.read_csv(self.local_path(interval), **readargs)
+        thisdata = _convert_ulysses_time(thisdata)
+        return thisdata
+
+
+def fgm_hires(starttime, endtime):
     """
     Import high resolution fluxgate magnetometer data.
 
@@ -189,52 +238,77 @@ def fgm_hires(starttime, endtime, try_download=True):
     data : :class:`~sunpy.timeseries.TimeSeries`
         Requested data
     """
-    dtimes = util._daysplitinterval(starttime, endtime)
-    dirs = []
-    fnames = []
-    extension = '.ASC'
-    local_base_dir = ulysses_dir / 'fgm' / 'hires'
-    remote_base_url = ulysses_url
     units = OrderedDict([('Bx', u.nT), ('By', u.nT),
                          ('Bz', u.nT), ('|B|', u.nT)])
+    downloader = _fgmDownloader(units)
+    return downloader.load(starttime, endtime)
 
-    def download_func(remote_base_url, local_base_dir,
-                      directory, fname, remote_fname, extension):
-        local_dir = local_base_dir / directory
-        fgm_options = url_options
-        fgm_options['FILE_NAME'] = fname + extension
-        fgm_options['FILE_PATH'] = '/ufa/HiRes/VHM-FGM/' + yearstr
-        remote_url = ulysses_url
-        for key in fgm_options:
-            remote_url += key + '=' + fgm_options[key] + '&'
-        try:
-            util._load_remote(remote_url, fname + extension, local_dir, 'ascii')
-        except Exception as err:
-            return
 
-    def processing_func(f):
+class _swoopsionDownloader(util.Downloader):
+    def __init__(self, units):
+        self.units = units
+
+    def intervals(self, starttime, endtime):
+        out = []
+        for year in range(starttime.year, endtime.year + 1):
+            if year == starttime.year:
+                start_month = starttime.month
+            else:
+                start_month = 1
+
+            if year == endtime.year:
+                end_month = endtime.month
+            else:
+                end_month = 12
+            for month in range(start_month, end_month + 1):
+                out.append(sunpy.time.TimeRange(datetime(year, month, 1),
+                                                datetime(year, month + 1, 1)))
+
+        return out
+
+    def fname(self, interval):
+        dtime = interval.start.to_datetime()
+        year = dtime.strftime('%Y')
+        doy = dtime.strftime('%j')
+        return 'u{}{}bam.dat'.format(str(year)[2:], doy)
+
+    @staticmethod
+    def yearstr(interval):
+        return interval.start.to_datetime().strftime('%Y')
+
+    def local_dir(self, interval):
+        return pathlib.Path('ulysses') / 'swoops' / 'ions'
+
+    def download(self, interval):
+        local_dir = self.local_path(interval).parent
+        local_dir.mkdir(parents=True, exist_ok=True)
+        fname = self.fname(interval)
+        yearstr = self.yearstr(interval)
+
+        remote_base_url = ulysses_url
+        swoops_options = url_options
+        year = fname[1:3]
+        # doy = fname[5:8]
+        swoops_options['FILE_NAME'] = fname
+        swoops_options['FILE_PATH'] =\
+            ('/ufa/stageIngestArea/swoops/ions/bamion{}.zip_files'.format(year))
+        for key in swoops_options:
+            remote_base_url += key + '=' + swoops_options[key] + '&'
+        util._download_remote(remote_base_url, fname, local_dir)
+        return self.local_path(interval)
+
+    def load_local_file(self, interval):
         readargs = {'names': ['year', 'doy', 'hour', 'minute', 'second',
-                              'Bx', 'By', 'Bz', '|B|'],
+                              'r', 'hlat', 'hlon', 'n_p', 'n_a',
+                              'T_p_large', 'T_p_small',
+                              'v_r', 'v_t', 'v_n', 'iqual'],
                     'delim_whitespace': True}
-        thisdata = pd.read_csv(f, **readargs)
+        thisdata = pd.read_csv(self.local_path(interval), **readargs)
         thisdata = _convert_ulysses_time(thisdata)
         return thisdata
 
-    for dtime in dtimes:
-        date = dtime[0]
-        yearstr = date.strftime('%Y')
-        filename = ('U' + yearstr[-2:] + date.strftime('%j') + 'SH')
-        fnames.append(filename)
-        this_relative_dir = local_base_dir / yearstr
-        dirs.append(this_relative_dir)
 
-    return util.process(
-        dirs, fnames, extension, local_base_dir, remote_base_url,
-        download_func, processing_func, starttime, endtime, units=units,
-        try_download=True)
-
-
-def swoops_ions(starttime, endtime, try_download=True):
+def swoops_ions(starttime, endtime):
     """
     Import SWOOPS ion data.
 
@@ -251,11 +325,6 @@ def swoops_ions(starttime, endtime, try_download=True):
         Requested data
     """
 
-    dirs = []
-    fnames = []
-    extension = '.dat'
-    local_base_dir = ulysses_dir / 'swoops' / 'ions'
-    remote_base_url = ulysses_url
     units = OrderedDict([('T_p_large', u.K), ('T_p_small', u.K),
                         ('v_t', u.km / u.s), ('v_r', u.km / u.s),
                         ('v_n', u.km / u.s), ('r', u.au),
@@ -263,56 +332,8 @@ def swoops_ions(starttime, endtime, try_download=True):
                         ('hlat', u.deg),
                         ('hlon', u.deg),
                         ('iqual', u.dimensionless_unscaled)])
-
-    def download_func(remote_base_url, local_base_dir,
-                      directory, fname, remote_fname, extension):
-        local_dir = local_base_dir / directory
-        swoops_options = url_options
-        year = fname[1:3]
-        # doy = fname[5:8]
-        swoops_options['FILE_NAME'] = fname + extension
-        swoops_options['FILE_PATH'] =\
-            ('/ufa/stageIngestArea/swoops/ions/bamion{}.zip_files'.format(year))
-        for key in swoops_options:
-            remote_base_url += key + '=' + swoops_options[key] + '&'
-        try:
-            util._load_remote(remote_base_url, fname + extension, local_dir, 'ascii')
-            # f = util.load('', local_dir, remote_base_url)
-        except Exception as err:
-            return
-
-    def processing_func(f):
-        readargs = {'names': ['year', 'doy', 'hour', 'minute', 'second',
-                              'r', 'hlat', 'hlon', 'n_p', 'n_a',
-                              'T_p_large', 'T_p_small',
-                              'v_r', 'v_t', 'v_n', 'iqual'],
-                    'delim_whitespace': True}
-        thisdata = pd.read_csv(f, **readargs)
-        thisdata = _convert_ulysses_time(thisdata)
-        return thisdata
-
-    # Loop through years
-    for year in range(starttime.year, endtime.year + 1):
-        if year == starttime.year:
-            start_month = starttime.month
-        else:
-            start_month = 1
-
-        if year == endtime.year:
-            end_month = endtime.month
-        else:
-            end_month = 12
-        for month in range(start_month, end_month + 1):
-            doy = datetime(year, month, 1).strftime('%j')
-            fanme = ('u{}{}bam'.format(str(year)[2:], doy))
-            # Local locaiton to download to
-            dirs.append('{}'.format(year))
-            fnames.append(fanme)
-
-    return util.process(
-        dirs, fnames, extension, local_base_dir, remote_base_url,
-        download_func, processing_func, starttime, endtime,
-        units=units, try_download=try_download)
+    downloader = _swoopsionDownloader(units)
+    return downloader.load(starttime, endtime)
 
 
 def _convert_ulysses_time(data):

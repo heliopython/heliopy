@@ -15,6 +15,7 @@ import sys
 import urllib.error as urlerror
 import urllib.request as urlreq
 import astropy.units as u
+import sunpy.time
 import sunpy.timeseries as ts
 import warnings
 import collections as coll
@@ -49,6 +50,10 @@ class Downloader:
       that interval.
     - :meth:`Downloader.load_local_file()`: given an interval, load the local
       file and return a :class:`pandas.DataFrame` object containing the data.
+
+    Attributes
+    ----------
+    units : dict
     """
     def load(self, starttime, endtime):
         """
@@ -73,8 +78,9 @@ class Downloader:
                 try:
                     dl_path = self.download(interval)
                     local_path.parent.mkdir(parents=True, exist_ok=True)
-                    shutil.copy(dl_path, local_path)
-                    os.remove(dl_path)
+                    if dl_path is not None and dl_path != local_path:
+                        shutil.copy(dl_path, local_path)
+                        os.remove(dl_path)
                 except NoDataError:
                     continue
 
@@ -89,9 +95,11 @@ class Downloader:
         # Attach units
         if local_path.suffix == '.cdf':
             cdf = _load_local(local_path)
-            units = cdf_units(cdf, manual_units=self.units)
+            self.units = cdf_units(cdf, manual_units=self.units)
+        if not hasattr(self, 'warn_missing_units'):
+            self.warn_missing_units = True
         return units_attach(
-            data, units, warn_missing_units=self.warn_missing_units)
+            data, self.units, warn_missing_units=self.warn_missing_units)
 
     def local_path(self, interval):
         local_path = self.local_dir(interval) / self.fname(interval)
@@ -122,6 +130,18 @@ class Downloader:
         """
         raise NotImplementedError
 
+    @staticmethod
+    def intervals_yearly(starttime, endtime):
+        """
+        Returns all annual intervals between *starttime* and *endtime*.
+        """
+        out = []
+        # Loop through years
+        for year in range(starttime.year, endtime.year + 1):
+            out.append(sunpy.time.TimeRange(dt.datetime(year, 1, 1),
+                                            dt.datetime(year + 1, 1, 1)))
+        return out
+
     def fname(self, interval):
         """
         Return the filename for a given interval.
@@ -139,7 +159,8 @@ class Downloader:
 
     def local_dir(self, interval):
         """
-        Local directory for a given interval.
+        Local directory for a given interval. This is relative to the base
+        HelioPy data directory.
 
         Parameters
         ----------
@@ -423,14 +444,15 @@ def units_attach(data, units, warn_missing_units=True):
     missing_msg = ('If you are trying to auomatically download data '
                    'with HelioPy this is a bug, please report it at '
                    'https://github.com/heliopython/heliopy/issues')
-    unit_key = list(units.keys())
+    unit_keys = list(units.keys())
     for column_name in data.columns:
-        if column_name not in unit_key:
+        if column_name not in unit_keys:
             units[column_name] = u.dimensionless_unscaled
             if warn_missing_units:
                 message = (f"{column_name} column has missing units."
                            f"\n{missing_msg}")
                 warnings.warn(message, Warning)
+
     timeseries_data = ts.GenericTimeSeries(data, units=units)
     return timeseries_data
 
@@ -502,7 +524,7 @@ def cdf_units(cdf_, manual_units=None, length=None):
             except (TypeError, ValueError):
                 if manual_units and key in manual_units:
                     temp_unit = manual_units[key]
-                elif helper.cdf_dict(unit_str):
+                elif helper.cdf_dict(unit_str) is not None:
                     temp_unit = helper.cdf_dict(unit_str)
 
                 if temp_unit is None:
@@ -909,13 +931,13 @@ def _download_remote_unknown_version(
 
 
 def _download_remote(remote_url, filename, local_dir):
-    local_dir = path.Path(local_dir)
+    dl_path = path.Path(local_dir) / filename
     remote_url = _fix_url(remote_url)
     remote_url = remote_url + '/' + filename
-    print('Downloading', remote_url)
-    urlreq.urlretrieve(remote_url,
-                       filename=str(local_dir / filename),
-                       reporthook=_reporthook)
+    print(f'Downloading {remote_url} to {dl_path}')
+    fname, _ = urlreq.urlretrieve(remote_url,
+                                  filename=str(dl_path),
+                                  reporthook=_reporthook)
     print('\n')
 
 

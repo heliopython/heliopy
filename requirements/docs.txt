@@ -5,7 +5,7 @@ matplotlib
 mock
 sphinx>=2
 sphinx-automodapi
-sphinx-bootstrap-theme<0.7
+sphinx-bootstrap-theme>=0.7
 sphinx-gallery
 sphinx-issues
 pillow

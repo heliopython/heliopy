@@ -91,6 +91,16 @@ span.caption-text {
   margin-right: 10px;
 }
 
+.navbar-brand {
+  width: 300px;
+  padding: 0px;
+}
+
+.navbar-brand img {
+  height: 110%;
+  padding-left: 10%;
+}
+
 .navbar-default .navbar-nav > li > a:hover,
 .navbar-default .navbar-nav > li > a:focus,
 .navbar-default .navbar-nav > li > a:active {
