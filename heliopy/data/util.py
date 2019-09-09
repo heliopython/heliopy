@@ -91,7 +91,7 @@ class Downloader:
         if local_path.suffix == '.cdf':
             cdf = _load_local(local_path)
             units = cdf_units(cdf, manual_units=self.units)
-        return units_attach(
+        return units_xarray(
             data, units, warn_missing_units=self.warn_missing_units)
 
     def local_path(self, interval):
