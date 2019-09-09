@@ -11,6 +11,7 @@ import pandas as pd
 import astropy.units as u
 import datetime as dt
 from collections import OrderedDict
+import xarray as xr
 
 from heliopy.data import util
 from heliopy import config
@@ -20,11 +21,8 @@ omni_dir = data_dir / 'omni'
 omni_url = 'https://cdaweb.gsfc.nasa.gov/pub/data/omni/'
 
 
-<<<<<<< Updated upstream
-def low(starttime, endtime, try_download=True):
-=======
+
 def low(starttime, endtime, product_list = None, try_download=True):
->>>>>>> Stashed changes
     """
     Import data from OMNI Web Interface.
 
@@ -148,12 +146,7 @@ def low(starttime, endtime, product_list = None, try_download=True):
         hour_list = list(thisdata['Hour'])
         len_ = len(thisdata)
         time_index = convert_datetime(year, day_list, hour_list, len_)
-<<<<<<< Updated upstream
-        thisdata['Time'] = pd.to_datetime(time_index)
-        thisdata = thisdata.set_index('Time')
-        thisdata = thisdata.drop(['Year', 'Decimal Day', 'Hour'], axis=1)
-        return thisdata
-=======
+
         thisdata['time'] = pd.to_datetime(time_index)
         thisdata = thisdata.set_index('time')
         thisdata = thisdata.drop(['Year', 'Decimal Day', 'Hour'], axis=1)
@@ -174,7 +167,7 @@ def low(starttime, endtime, product_list = None, try_download=True):
             data.attrs = units
         
         return data
->>>>>>> Stashed changes
+
 
     def convert_datetime(year, day_list, hour_list, len_):
         datetime_index = []

@@ -1096,8 +1096,7 @@ def dtime2doy(dt):
         Day of year
     """
     return int(dt.strftime('%j'))
-<<<<<<< Updated upstream
-=======
+
 
 
 def cdf2xr(cdf, starttime, endtime, index_key, list_keys=None, dtimeindex=True,
@@ -1443,4 +1442,4 @@ def xr_timefilter(data, starttime, endtime):
 
 
     return data
->>>>>>> Stashed changes
+
