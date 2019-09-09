@@ -172,9 +172,22 @@ class MMSDownloader(util.Downloader):
         #     version_info | file_info) are true
         if name == 'anc_product':
             self.data_type = 'ancillary'
+        
         elif name == 'data_type':
             if value not in ('ancillary', 'hk', 'science'):
-                raise ValueError('Invalid value for attribute "' + name + '".')
+                raise ValueError('Invalid value for attribute {}.'.format(name))
+        
+        elif name == 'end_date':
+            # Convert string to datetime object
+            if isinstance(value, str):
+                try:
+                    value = dt.datetime.strptime(value[0:19], '%Y-%m-%dT%H:%M:%S')
+                except:
+                    try:
+                        value = dt.datetime.strptime(value, '%Y-%m-%d')
+                    except:
+                        ValueError('Invalid value for attribute {}.'.format(name))
+        
         elif name == 'files':
             if value is not None:
                 self.sc = None
@@ -183,11 +196,36 @@ class MMSDownloader(util.Downloader):
                 self.level = None
                 self.optdesc = None
                 self.version = None
+        
         elif name == 'level':
+            # L2 and L3 are the only public data levels
             if value in [None, 'l2', 'l3']:
                 self.site = 'public'
             else:
                 self.site = 'private'
+        
+        elif name == 'site':
+            # Team site is most commonly referred to as the "team",
+            # or "private" site, but in the URL is referred to as the
+            # "sitl" site. Accept any of these values.
+            if value in ['private', 'team', 'sitl']:
+                value = 'sitl'
+            elif value == 'public':
+                value = 'public'
+            else:
+                raise ValueError('Invalid value for attribute {}.'.format(name))
+        
+        elif name == 'start_date':
+            # Convert string to datetime object
+            if isinstance(value, str):
+                try:
+                    value = dt.datetime.strptime(value[0:19], '%Y-%m-%dT%H:%M:%S')
+                except:
+                    try:
+                        value = dt.datetime.strptime(value, '%Y-%m-%d')
+                    except:
+                        ValueError('Invalid value for attribute {}.'.format(name))
+            
         
         # Set the value
         super(MMSDownloader, self).__setattr__(name, value)
@@ -233,7 +271,7 @@ class MMSDownloader(util.Downloader):
             # End time of interval. Subtract one second to prevent the file
             # that begins at trange[i+1] is not included in any results.
             if i == (nfiles-1):
-                end = self._end_date
+                end = self.end_date
             elif i >= 0:
                 end = trange[i+1].start - dt.timedelta(seconds=1)
             
@@ -308,7 +346,7 @@ class MMSDownloader(util.Downloader):
         interval : sunpy.time.TimeRange
             Start and end time of the data interval
         """
-        return sunpy.time.TimeRange(self._start_date, self._end_date)
+        return sunpy.time.TimeRange(self.start_date, self.end_date)
     
     
     def set_interval(self, interval):
@@ -331,6 +369,7 @@ class MMSDownloader(util.Downloader):
         Parameters
         ----------
         interval : sunpy.time.TimeRange
+            Time interval for which to download data.
 
         Returns
         -------
@@ -352,6 +391,25 @@ class MMSDownloader(util.Downloader):
         
         self.set_interval(interval_in)
         return file
+    
+    
+    def load_local_file(self, interval):
+        """
+        Load a local file
+        
+        Parameters
+        ----------
+        interval : sunpy.time.TimeRange
+            Time interval of data to be loaded.
+        
+        Returns
+        -------
+        pandas.DataFrame
+        """
+        
+        local_path = os.path.join(self.local_dir(interval), self.fname(interval))
+        cdf = util._load_cdf(local_path)
+        return util.cdf2df(cdf, index_key='Epoch')
         
     
     def fnames(self):
@@ -514,17 +572,6 @@ class MMSDownloader(util.Downloader):
         return local_files
     
     
-    def load_local_file(self, starttime=None, endtime=None):
-        if starttime:
-            self.start_date = starttime
-        if endtime:
-            self.end_date = endtime
-        
-        # Download the files
-        #   - If already downloaded, returns local files
-        files = self.download()
-    
-    
     def file_info(self):
         """Obtain file information from the SDC."""
         self._info_type = 'file_info'
@@ -561,12 +608,8 @@ class MMSDownloader(util.Downloader):
         # If no start or end date have been defined,
         #   - Start at beginning of mission
         #   - End at today's date
-        start_date = self._start_date
-        end_date = self._end_date
-        if self._start_date is None:
-            start_date = dt.datetime(2015, 9, 1)
-        if self._end_date is None:
-            end_date = dt.datetime.today()
+        start_date = self.start_date
+        end_date = self.end_date
         
         # Create all dates between start_date and end_date
         deltat = dt.timedelta(days=1)
@@ -739,11 +782,11 @@ class MMSDownloader(util.Downloader):
         #   - If the dates are the same but the times are different, then files between
         #     self.start_date and self.end_date will not be found
         #   - In these circumstances, increase the end date by one day
-        end_date = self._end_date
+        end_date = self.end_date
         if end_date is not None:
-            end_date = self._end_date.strftime('%Y-%m-%d')
-            if self._start_date.date() == self._end_date.date() or self._end_date.time() != dt.time(0,0,0):
-                end_date = (self._end_date + dt.timedelta(1)).strftime('%Y-%m-%d')
+            end_date = self.end_date.strftime('%Y-%m-%d')
+            if self.start_date.date() == self.end_date.date() or self.end_date.time() != dt.time(0,0,0):
+                end_date = (self.end_date + dt.timedelta(1)).strftime('%Y-%m-%d')
         
         query = {}
         if self.sc is not None:
@@ -761,7 +804,7 @@ class MMSDownloader(util.Downloader):
         if self.files is not None:
             query['files'] = self.files if isinstance(self.files, str) else ','.join(self.files)
         if self.start_date is not None:
-            query['start_date'] = self._start_date.strftime('%Y-%m-%d')
+            query['start_date'] = self.start_date.strftime('%Y-%m-%d')
         if self.end_date is not None:
             query['end_date'] = end_date
         
@@ -844,92 +887,6 @@ class MMSDownloader(util.Downloader):
         self._info_type = 'version_info'
         response = self.Get()
         return response.json()
-    
-    
-    @property
-    def site(self):
-        """
-        Return self.site
-    
-        Returns
-        -------
-        site : str
-            Indicates whether the API is posting to the public or private side of the SDC.
-        """
-        return self._site
-    
-    @site.setter
-    def site(self, value):
-        """
-        Set the site attribute. Team site is most commonly referred to as the "team",
-        or "private" site, but in the URL is referred to as the "sitl" site. Accept
-        any of these values.
-    
-        Parameters
-        ----------
-        value : str
-            Request that the API interface with either the public or private side
-            of the SDC. Accepted values are:
-                public: "public"
-                private: "team", "sitl", "private"
-        """
-        if value in ['private', 'team', 'sitl']:
-            self._site = 'sitl'
-        elif value == 'public':
-            self._site = 'public'
-        else:
-            raise ValueError('Invalid value for the "site" attribute')
-    
-    @property
-    def start_date(self):
-        if isinstance(self._start_date, dt.datetime):
-            theDate = self._start_date.isoformat()
-        else:
-            theDate = self._start_date
-        
-        return theDate
-    
-    
-    @start_date.setter
-    def start_date(self, value):
-        # Convert string to datetime object
-        if isinstance(value, str):
-            try:
-                value = dt.datetime.strptime(value[0:19], '%Y-%m-%dT%H:%M:%S')
-            except:
-                try:
-                    value = dt.datetime.strptime(value, '%Y-%m-%d')
-                except:
-                    ValueError('Invalid format for attribute start_date.')
-        
-        self._start_date = value
-    
-    
-    @property
-    def end_date(self):
-        if isinstance(self._end_date, dt.datetime):
-            theDate = self._end_date.isoformat()
-        else:
-            theDate = self._end_date
-        
-        return theDate
-    
-    
-    @end_date.setter
-    def end_date(self, value):
-        # Convert string to datetime object
-        if isinstance(value, str):
-            try:
-                value = dt.datetime.strptime(value[0:19], '%Y-%m-%dT%H:%M:%S')
-            except:
-                try:
-                    value = dt.datetime.strptime(value, '%Y-%m-%d')
-                except:
-                    ValueError('Invalid format for attribute start_date.')
-        
-        self._end_date = value
-
-
 
 
 def construct_filename(sc, instr=None, mode=None, level=None, tstart='*', version='*',
@@ -1202,10 +1159,6 @@ def filter_time(fnames, start_date, end_date):
     files = fnames
     if isinstance(files, str):
         files = [files]
-    
-    # Convert date range to datetime objects
-    start_date = dt.datetime.strptime(start_date, '%Y-%m-%dT%H:%M:%S')
-    end_date = dt.datetime.strptime(end_date, '%Y-%m-%dT%H:%M:%S')
     
     # Parse the time out of the file name
     parts = parse_file_names(fnames)
