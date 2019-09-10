@@ -1,8 +1,13 @@
 [tool.towncrier]
     package = "heliopy"
-    filename = "CHANGELOG.rst"
+    filename = "CHANGES.rst"
     directory = "changelog/"
     issue_format = "`#{issue} <https://github.com/heliopython/heliopy/pull/{issue}>`__"
+
+    [[tool.towncrier.type]]
+      directory = "feature"
+      name = "Features"
+      showcontent = true
 
     [[tool.towncrier.type]]
         directory = "breaking"
@@ -17,11 +22,6 @@
     [[tool.towncrier.type]]
       directory = "removal"
       name = "Deprecations and Removals"
-      showcontent = true
-
-    [[tool.towncrier.type]]
-      directory = "feature"
-      name = "Features"
       showcontent = true
 
     [[tool.towncrier.type]]
