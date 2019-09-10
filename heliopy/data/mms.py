@@ -431,7 +431,8 @@ class MMSDownloader(util.Downloader):
         query : bool
             If True (default), add the query string to the url.
         
-        Returns:
+        Returns
+        -------
         url : str
             URL used to retrieve information from the SDC.
         """
@@ -458,10 +459,15 @@ class MMSDownloader(util.Downloader):
         Check the status code for a requests response and perform
         and appropriate action (e.g. log-in, raise error, etc.)
         
-        Parameters:
-        -----------
+        Parameters
+        ----------
         response : `requests.response`
             Response from the SDC
+        
+        Returns
+        -------
+        r : `requests.response`
+            Updated response
         '''
         
         # OK
