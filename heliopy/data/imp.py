@@ -4,20 +4,18 @@ Methods for importing data from the IMP spacecraft.
 All data is publically available at https://cdaweb.gsfc.nasa.gov/pub/data/imp/
 """
 from collections import OrderedDict
-import pathlib as path
+from datetime import datetime
+import pathlib
+from dateutil.relativedelta import relativedelta
 
-import pandas as pd
 import astropy.units as u
+import pandas as pd
+import sunpy.time
 
-from heliopy import config
 from heliopy.data import util
 from heliopy.data import cdasrest
 
-data_dir = path.Path(config['download_dir'])
-use_hdf = config['use_hdf']
 imp_url = 'https://cdaweb.gsfc.nasa.gov/pub/data/imp/'
-imp_dir = data_dir / 'imp'
-valid_probes = ['1', '2', '3', '4', '5', '6', '7', '8']
 
 
 def _check_probe(probe, valid_probes):
@@ -28,84 +26,59 @@ def _check_probe(probe, valid_probes):
     return True
 
 
-def merged(probe, starttime, endtime, try_download=True):
-    """
-    Import merged plasma data. See
-    https://cdaweb.gsfc.nasa.gov/pub/data/imp/imp8/merged/00readme.txt
-    for information on variables.
+class _MergedDownloader(util.Downloader):
+    def __init__(self, probe):
+        _check_probe(probe, ['8'])
+        self.probe = probe
 
-    Parameters
-    ----------
-    probe : string
-        Probe number.
-    starttime : datetime
-        Start of interval.
-    endtime : datetime
-        End of interval.
-    verbose : bool, optional
-        If ``True``, print information whilst loading. Default is
-        ``False``.
+        self.units = OrderedDict(
+            [('sw_flag', u.dimensionless_unscaled),
+             ('x_gse', u.R_earth), ('y_gse', u.R_earth),
+             ('z_gse', u.R_earth), ('y_gsm', u.R_earth),
+             ('z_gsm', u.R_earth), ('Nm', u.dimensionless_unscaled),
+             ('<|B|>', u.nT), ('|<B>|', u.nT), ('<B_lat>', u.nT),
+             ('<B_long>', u.nT), ('Bx_gse', u.nT), ('By_gse', u.nT),
+             ('Bz_gse', u.nT), ('By_gsm', u.nT), ('Bz_gsm', u.nT),
+             ('sigma|B|', u.nT), ('sigma B', u.nT),
+             ('sigma B_x', u.nT), ('sigma B_y', u.nT),
+             ('sigma B_z', u.nT),
+             ('plas_reg', u.dimensionless_unscaled),
+             ('Npp', u.dimensionless_unscaled),
+             ('v_fit', u.km / u.s), ('vx_fit_gse', u.km / u.s),
+             ('vy_fit_gse', u.km / u.s), ('vz_fit_gse', u.km / u.s),
+             ('vlong_fit', u.deg), ('vlat_fit', u.deg),
+             ('np_fit', u.cm**-3), ('Tp_fit', u.K),
+             ('v_mom', u.km / u.s), ('vx_mom_gse', u.km / u.s),
+             ('vy_mom_gse', u.km / u.s), ('vz_mom_gse', u.km / u.s),
+             ('vlong_mom', u.deg), ('vlat_mom', u.deg),
+             ('np_mom', u.cm**-3), ('Tp_mom', u.K),
+             ('FCp', u.dimensionless_unscaled),
+             ('DWp', u.dimensionless_unscaled)])
 
-    Returns
-    -------
-    data : :class:`~sunpy.timeseries.TimeSeries`
-        Requested data.
-    """
-    _check_probe(probe, ['8'])
-    dirs = []
-    fnames = []
-    extension = '.asc'
-    units = OrderedDict([('sw_flag', u.dimensionless_unscaled),
-                        ('x_gse', u.R_earth), ('y_gse', u.R_earth),
-                        ('z_gse', u.R_earth), ('y_gsm', u.R_earth),
-                        ('z_gsm', u.R_earth), ('Nm', u.dimensionless_unscaled),
-                        ('<|B|>', u.nT), ('|<B>|', u.nT), ('<B_lat>', u.nT),
-                        ('<B_long>', u.nT), ('Bx_gse', u.nT), ('By_gse', u.nT),
-                        ('Bz_gse', u.nT), ('By_gsm', u.nT), ('Bz_gsm', u.nT),
-                        ('sigma|B|', u.nT), ('sigma B', u.nT),
-                        ('sigma B_x', u.nT), ('sigma B_y', u.nT),
-                        ('sigma B_z', u.nT),
-                        ('plas_reg', u.dimensionless_unscaled),
-                        ('Npp', u.dimensionless_unscaled),
-                        ('v_fit', u.km/u.s), ('vx_fit_gse', u.km/u.s),
-                        ('vy_fit_gse', u.km/u.s), ('vz_fit_gse', u.km/u.s),
-                        ('vlong_fit', u.deg), ('vlat_fit', u.deg),
-                        ('np_fit', u.cm**-3), ('Tp_fit', u.K),
-                        ('v_mom', u.km/u.s), ('vx_mom_gse', u.km/u.s),
-                        ('vy_mom_gse', u.km/u.s), ('vz_mom_gse', u.km/u.s),
-                        ('vlong_mom', u.deg), ('vlat_mom', u.deg),
-                        ('np_mom', u.cm**-3), ('Tp_mom', u.K),
-                        ('FCp', u.dimensionless_unscaled),
-                        ('DWp', u.dimensionless_unscaled)])
-    local_base_dir = imp_dir / 'imp{}'.format(probe) / 'merged'
-    remote_base_url = imp_url + 'imp{}/merged'.format(probe)
+    def intervals(self, starttime, endtime):
+        ret = []
+        while starttime < endtime:
+            start_month = datetime(starttime.year, starttime.month, 1)
+            end_month = start_month + relativedelta(months=1)
+            ret.append(sunpy.time.TimeRange(start_month, end_month))
+            starttime += relativedelta(months=1)
+        return ret
 
-    # Populate directories and filenames
-    startyear = starttime.year
-    endyear = endtime.year
-    for year in range(startyear, endyear + 1):
-        if year == startyear:
-            startmonth = starttime.month
-        else:
-            startmonth = 1
+    def fname(self, interval):
+        start = interval.start.to_datetime()
+        intervalstring = str(start.year) + str(start.month).zfill(2)
+        return f'imp_min_merge{intervalstring}.asc'
 
-        if year == endyear:
-            endmonth = endtime.month
-        else:
-            endmonth = 12
-        for month in range(startmonth, endmonth + 1):
-            intervalstring = str(year) + str(month).zfill(2)
-            fname = 'imp_min_merge' + intervalstring
-            fnames.append(fname)
-            dirs.append('')
+    def local_dir(self, interval):
+        return pathlib.Path('imp') / f'imp{self.probe}'
 
-    def download_func(remote_base_url, local_base_dir,
-                      directory, fname, remote_fname, extension):
-        filename = fname + extension
-        local_dir = path.Path(local_base_dir) / directory
+    def download(self, interval):
+        filename = self.fname(interval)
+        local_dir = self.local_path(interval).parent
+        remote_base_url = imp_url + f'imp{self.probe}/merged'
         util._download_remote(remote_base_url, filename, local_dir)
 
-    def processing_func(f):
+    def load_local_file(self, interval):
         readargs = {'names': ['Year', 'doy', 'Hour', 'Minute', 'sw_flag',
                               'x_gse', 'y_gse', 'z_gse', 'y_gsm', 'z_gsm',
                               'Nm', 'FCm', 'DWm',
@@ -141,7 +114,7 @@ def merged(probe, starttime, endtime, try_download=True):
                                   '9999.9', '9999999.'],
                     'delim_whitespace': True}
         # Read in data
-        data = pd.read_csv(f, **readargs)
+        data = pd.read_csv(self.local_path(interval), **readargs)
         data['Time'] = (pd.to_datetime(data['Year'], format='%Y') +
                         pd.to_timedelta(data['doy'] - 1, unit='d') +
                         pd.to_timedelta(data['Hour'], unit='h') +
@@ -151,10 +124,29 @@ def merged(probe, starttime, endtime, try_download=True):
         data = data.set_index('Time', drop=True)
         return data
 
-    return util.process(dirs, fnames, extension, local_base_dir,
-                        remote_base_url, download_func, processing_func,
-                        starttime, endtime, units=units,
-                        try_download=try_download)
+
+def merged(probe, starttime, endtime):
+    """
+    Import merged plasma data. See
+    https://cdaweb.gsfc.nasa.gov/pub/data/imp/imp8/merged/00readme.txt
+    for information on variables.
+
+    Parameters
+    ----------
+    probe : string
+        Probe number.
+    starttime : datetime
+        Start of interval.
+    endtime : datetime
+        End of interval.
+
+    Returns
+    -------
+    data : :class:`~sunpy.timeseries.TimeSeries`
+        Requested data.
+    """
+    dl = _MergedDownloader(probe)
+    return dl.load(starttime, endtime)
 
 
 def _imp8(starttime, endtime, identifier, units=None, badvalues=None,
