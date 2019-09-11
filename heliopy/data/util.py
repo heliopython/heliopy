@@ -70,6 +70,8 @@ class Downloader:
             # Try to load HDF file
             if hdf_path.exists():
                 data.append(pd.read_hdf(hdf_path))
+                # Store the local path if loading data was successful
+                local_path_successful = local_path
                 continue
 
             # Try to load original file
@@ -85,6 +87,7 @@ class Downloader:
                     continue
 
             data.append(self.load_local_file(interval))
+            local_path_successful = local_path
             if use_hdf:
                 data[-1].to_hdf(hdf_path, 'data', mode='w', format='f')
 
@@ -94,7 +97,7 @@ class Downloader:
 
         # Attach units
         if local_path.suffix == '.cdf':
-            cdf = _load_local(local_path)
+            cdf = _load_local(local_path_successful)
             self.units = cdf_units(cdf, manual_units=self.units)
         if not hasattr(self, 'warn_missing_units'):
             self.warn_missing_units = True
