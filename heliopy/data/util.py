@@ -5,6 +5,7 @@ Utility functions for data downloading.
 """
 import abc
 import datetime as dt
+from dateutil.relativedelta import relativedelta
 import ftplib
 import io
 import os
@@ -132,19 +133,6 @@ class Downloader(abc.ABC):
         """
         pass
 
-    @staticmethod
-    def intervals_yearly(starttime, endtime):
-        """
-        Returns all annual intervals between *starttime* and *endtime*.
-        """
-        out = []
-        # Loop through years
-        for year in range(starttime.year, endtime.year + 1):
-            out.append(sunpy.time.TimeRange(dt.datetime(year, 1, 1),
-                                            dt.datetime(year + 1, 1, 1)))
-        return out
-
-    @abc.abstractmethod
     def fname(self, interval):
         """
         Return the filename to which the data is saved for a given interval.
@@ -210,6 +198,31 @@ class Downloader(abc.ABC):
         data : pandas.DataFrame
         """
         pass
+
+    @staticmethod
+    def intervals_yearly(starttime, endtime):
+        """
+        Returns all annual intervals between *starttime* and *endtime*.
+        """
+        out = []
+        # Loop through years
+        for year in range(starttime.year, endtime.year + 1):
+            out.append(sunpy.time.TimeRange(dt.datetime(year, 1, 1),
+                                            dt.datetime(year + 1, 1, 1)))
+        return out
+
+    @staticmethod
+    def intervals_monthly(starttime, endtime):
+        """
+        Returns all monthly intervals between *starttime* and *endtime*.
+        """
+        out = []
+        while starttime < endtime:
+            start_month = dt.datetime(starttime.year, starttime.month, 1)
+            end_month = start_month + relativedelta(months=1)
+            out.append(sunpy.time.TimeRange(start_month, end_month))
+            starttime += relativedelta(months=1)
+        return out
 
 
 def process(dirs, fnames, extension, local_base_dir, remote_base_url,

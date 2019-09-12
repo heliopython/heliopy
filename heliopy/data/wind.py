@@ -18,6 +18,8 @@ def _wind(starttime, endtime, identifier, badvalues=None, units=None):
     """
     dl = cdasrest.CDASDwonloader('wi', identifier, 'wind', badvalues=badvalues,
                                  units=units)
+    # Override intervals
+    dl.intervals = dl.intervals_monthly
     return dl.load(starttime, endtime)
 
 

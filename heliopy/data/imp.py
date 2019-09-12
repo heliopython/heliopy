@@ -56,13 +56,7 @@ class _MergedDownloader(util.Downloader):
              ('DWp', u.dimensionless_unscaled)])
 
     def intervals(self, starttime, endtime):
-        ret = []
-        while starttime < endtime:
-            start_month = datetime(starttime.year, starttime.month, 1)
-            end_month = start_month + relativedelta(months=1)
-            ret.append(sunpy.time.TimeRange(start_month, end_month))
-            starttime += relativedelta(months=1)
-        return ret
+        return self.intervals_monthly(starttime, endtime)
 
     def fname(self, interval):
         start = interval.start.to_datetime()
