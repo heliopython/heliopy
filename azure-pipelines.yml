@@ -9,14 +9,21 @@ trigger:
 variables:
   Azure: 'True'
 
-pool:
-  vmImage: 'vs2017-win2016'
 strategy:
   matrix:
-    Python36:
+    linux36:
+      imageName: "ubuntu-16.04"
       python.version: '3.6'
-    Python37:
+    linux37:
+      imageName: "ubuntu-16.04"
       python.version: '3.7'
+    windows36:
+      imageName: "vs2017-win2016"
+      python.version: '3.6'
+    windows37:
+      imageName: "vs2017-win2016"
+      python.version: '3.7'
+maxParallel: 2
 
 steps:
 - task: UsePythonVersion@0
