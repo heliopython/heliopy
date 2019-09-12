@@ -10,37 +10,27 @@ variables:
   Azure: 'True'
 
 jobs:
-- job: Linux
-  strategy:
-    matrix:
-      linux36:
-        imageName: "ubuntu-16.04"
-        python.version: '3.6'
-      linux37:
-        imageName: "ubuntu-16.04"
-        python.version: '3.7'
--job: Windows
-  strategy:
-    matrix:
-      windows36:
-        imageName: "vs2017-win2016"
-        python.version: '3.6'
-      windows37:
-        imageName: "vs2017-win2016"
-        python.version: '3.7'
-
-steps:
-- task: UsePythonVersion@0
-  inputs:
-    versionSpec: '$(python.version)'
-  displayName: 'Use Python $(python.version)'
-
-- script: |
-    python -m pip install --upgrade pip
-    pip install -r requirements/test.txt
-    pip install pytest-azurepipelines
-  displayName: 'Install dependencies'
-
-- script: |
-    pytest heliopy/ --cov=heliopy/ -v --durations=5  -n auto
-  displayName: 'pytest'
+- job: Linux36
+  pool:
+    vmImage: "ubuntu-16.04"
+    python.version: '3.6'
+  steps:
+    - ci/azure-steps.yml
+- job: Linux37
+  pool:
+    vmImage: "ubuntu-16.04"
+    python.version: '3.7'
+  steps:
+    - ci/azure-steps.yml
+- job: Windows36
+  pool:
+    vmImage: "vs2017-win2016"
+    python.version: '3.6'
+  steps:
+    - ci/azure-steps.yml
+- job: Windows37
+  pool:
+    vmImage: "vs2017-win2016"
+    python.version: '3.7'
+  steps:
+    - ci/azure-steps.yml
