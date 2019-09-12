@@ -13,24 +13,24 @@ jobs:
 - job: Linux36
   pool:
     vmImage: "ubuntu-16.04"
-    python.version: '3.6'
+    python.version: '3.6.8'
   steps:
     - template: ci/azure-steps.yml
 - job: Linux37
   pool:
     vmImage: "ubuntu-16.04"
-    python.version: '3.7'
+    python.version: '3.7.4'
   steps:
     - template: ci/azure-steps.yml
 - job: Windows36
   pool:
     vmImage: "vs2017-win2016"
-    python.version: '3.6'
+    python.version: '3.6.8'
   steps:
     - template: ci/azure-steps.yml
 - job: Windows37
   pool:
     vmImage: "vs2017-win2016"
-    python.version: '3.7'
+    python.version: '3.7.4'
   steps:
     - template: ci/azure-steps.yml
