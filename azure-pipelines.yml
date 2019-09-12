@@ -23,7 +23,6 @@ strategy:
     windows37:
       imageName: "vs2017-win2016"
       python.version: '3.7'
-maxParallel: 2
 
 steps:
 - task: UsePythonVersion@0
