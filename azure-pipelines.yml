@@ -9,20 +9,25 @@ trigger:
 variables:
   Azure: 'True'
 
-strategy:
-  matrix:
-    linux36:
-      imageName: "ubuntu-16.04"
-      python.version: '3.6'
-    linux37:
-      imageName: "ubuntu-16.04"
-      python.version: '3.7'
-    windows36:
-      imageName: "vs2017-win2016"
-      python.version: '3.6'
-    windows37:
-      imageName: "vs2017-win2016"
-      python.version: '3.7'
+jobs:
+- job: Linux
+  strategy:
+    matrix:
+      linux36:
+        imageName: "ubuntu-16.04"
+        python.version: '3.6'
+      linux37:
+        imageName: "ubuntu-16.04"
+        python.version: '3.7'
+-job: Windows
+  strategy:
+    matrix:
+      windows36:
+        imageName: "vs2017-win2016"
+        python.version: '3.6'
+      windows37:
+        imageName: "vs2017-win2016"
+        python.version: '3.7'
 
 steps:
 - task: UsePythonVersion@0
