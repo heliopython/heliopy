@@ -76,8 +76,8 @@ class Downloader:
             if not local_path.exists():
                 # Try to download file
                 try:
-                    dl_path = self.download(interval)
                     local_path.parent.mkdir(parents=True, exist_ok=True)
+                    dl_path = self.download(interval)
                     if dl_path is not None and dl_path != local_path:
                         shutil.copy(dl_path, local_path)
                         os.remove(dl_path)
@@ -144,7 +144,10 @@ class Downloader:
 
     def fname(self, interval):
         """
-        Return the filename for a given interval.
+        Return the filename to which the data is saved for a given interval.
+
+        n.b. this does not in general have to be equal to the remote filename
+        of the data.
 
         Parameters
         ----------
