@@ -5,7 +5,7 @@ Utility functions for data downloading.
 """
 import abc
 import datetime as dt
-from dateutil.relativedelta import relativedelta
+import dateutil.relativedelta as reldelt
 import ftplib
 import io
 import os
@@ -219,9 +219,9 @@ class Downloader(abc.ABC):
         out = []
         while starttime < endtime:
             start_month = dt.datetime(starttime.year, starttime.month, 1)
-            end_month = start_month + relativedelta(months=1)
+            end_month = start_month + reldelt.relativedelta(months=1)
             out.append(sunpy.time.TimeRange(start_month, end_month))
-            starttime += relativedelta(months=1)
+            starttime += reldelt.relativedelta(months=1)
         return out
 
 
