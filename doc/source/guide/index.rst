@@ -8,5 +8,3 @@ HelioPy guide
    configuring
    citing
    whatsnew
-   code-of-conduct
-   logo
