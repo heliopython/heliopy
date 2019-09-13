@@ -27,6 +27,10 @@ a:hover {
   color: #00438a;
 }
 
+ul {
+  padding-left: 1.5em;
+}
+
 p.content {
   line-height: 24px;
 }
