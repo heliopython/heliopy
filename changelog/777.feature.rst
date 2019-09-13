@@ -1,0 +1,1 @@
+Added the SOHO SPICE kernels to :mod:`heliopy.data.spice`.
