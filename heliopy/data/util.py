@@ -224,6 +224,14 @@ class Downloader(abc.ABC):
             starttime += reldelt.relativedelta(months=1)
         return out
 
+    @staticmethod
+    def intervals_daily(starttime, endtime):
+        interval = sunpy.time.TimeRange(starttime, endtime)
+        daylist = interval.get_dates()
+        intervallist = [sunpy.time.TimeRange(t, t + dt.timedelta(days=1)) for
+                        t in daylist]
+        return intervallist
+
 
 def process(dirs, fnames, extension, local_base_dir, remote_base_url,
             download_func, processing_func, starttime, endtime,
