@@ -3,6 +3,7 @@ Utility functions for data downloading.
 
 **Note**: these methods are liable to change at any time.
 """
+import abc
 import datetime as dt
 import ftplib
 import io
@@ -31,7 +32,7 @@ data_dir = path.Path(config['download_dir'])
 logger = logging.getLogger(__name__)
 
 
-class Downloader:
+class Downloader(abc.ABC):
     """
     A template class, that should be sub-classed to provide methods for
     downloading a single dataset.
@@ -112,6 +113,7 @@ class Downloader:
     def local_file_exists(self, interval):
         return self.local_path(interval).exists()
 
+    @abc.abstractmethod
     def intervals(self, starttime, endtime):
         """
         The complete list of sub-intervals that cover a time range
@@ -128,7 +130,7 @@ class Downloader:
         fnames : list of sunpy.time.TimeRange
             List of intervals
         """
-        raise NotImplementedError
+        pass
 
     @staticmethod
     def intervals_yearly(starttime, endtime):
@@ -142,6 +144,7 @@ class Downloader:
                                             dt.datetime(year + 1, 1, 1)))
         return out
 
+    @abc.abstractmethod
     def fname(self, interval):
         """
         Return the filename to which the data is saved for a given interval.
@@ -158,8 +161,9 @@ class Downloader:
         fname : str
             Filename
         """
-        raise NotImplementedError
+        pass
 
+    @abc.abstractmethod
     def local_dir(self, interval):
         """
         Local directory for a given interval. This is relative to the base
@@ -174,8 +178,9 @@ class Downloader:
         dir : pathlib.Path
             Local directory
         """
-        raise NotImplementedError
+        pass
 
+    @abc.abstractmethod
     def download(self, interval):
         """
         Download data for a given interval.
@@ -189,8 +194,9 @@ class Downloader:
         dl_path : pathlib.Path
             Path to the downloaded file.
         """
-        raise NotImplementedError
+        pass
 
+    @abc.abstractmethod
     def load_local_file(self, interval):
         """
         Load local file for a given interval.
@@ -203,7 +209,7 @@ class Downloader:
         -------
         data : pandas.DataFrame
         """
-        raise NotImplementedError
+        pass
 
 
 def process(dirs, fnames, extension, local_base_dir, remote_base_url,
