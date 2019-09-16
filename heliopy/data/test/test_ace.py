@@ -6,8 +6,8 @@ from .util import check_data_output
 ace = pytest.importorskip('heliopy.data.ace')
 pytest.mark.data()
 
-starttime = datetime(2018, 1, 1, 0, 0, 0)
-endtime = datetime(2019, 1, 1, 0, 0, 0)
+starttime = datetime(2010, 1, 1, 0, 0, 0)
+endtime = datetime(2010, 1, 2, 0, 0, 0)
 
 
 def test_mfi_h0():
