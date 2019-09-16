@@ -217,7 +217,7 @@ class Downloader(abc.ABC):
         Returns all monthly intervals between *starttime* and *endtime*.
         """
         out = []
-        while starttime < endtime:
+        while starttime < endtime + reldelt.relativedelta(months=1):
             start_month = dt.datetime(starttime.year, starttime.month, 1)
             end_month = start_month + reldelt.relativedelta(months=1)
             out.append(sunpy.time.TimeRange(start_month, end_month))
