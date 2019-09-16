@@ -12,12 +12,18 @@ def _docstring(identifier, description):
     return cdasrest._docstring(identifier, 'W', description)
 
 
-def _wind(starttime, endtime, identifier, badvalues=None, units=None):
+def _wind(starttime, endtime, identifier, badvalues=None, units=None,
+          intervals='monthly'):
     """
     Generic method for downloading ACE data.
     """
     dl = cdasrest.CDASDwonloader('wi', identifier, 'wind', badvalues=badvalues,
                                  units=units)
+    # Override intervals
+    if intervals == 'daily':
+        dl.intervals = dl.intervals_daily
+    else:
+        dl.intervals = dl.intervals_monthly
     return dl.load(starttime, endtime)
 
 
@@ -37,7 +43,8 @@ swe_h1.__doc__ = _docstring(
 def mfi_h0(starttime, endtime):
     identifier = 'WI_H0_MFI'
     units = {'BGSEa_0': u.nT, 'BGSEa_1': u.nT, 'BGSEa_2': u.nT}
-    return _wind(starttime, endtime, identifier, units=units)
+    return _wind(starttime, endtime, identifier, units=units,
+                 intervals='daily')
 
 
 mfi_h0.__doc__ = _docstring(
@@ -46,7 +53,7 @@ mfi_h0.__doc__ = _docstring(
 
 def mfi_h2(starttime, endtime):
     identifier = 'WI_H2_MFI'
-    return _wind(starttime, endtime, identifier)
+    return _wind(starttime, endtime, identifier, intervals='daily')
 
 
 mfi_h2.__doc__ = _docstring(
@@ -55,7 +62,7 @@ mfi_h2.__doc__ = _docstring(
 
 def threedp_pm(starttime, endtime):
     identifier = 'WI_PM_3DP'
-    return _wind(starttime, endtime, identifier)
+    return _wind(starttime, endtime, identifier, intervals='daily')
 
 
 threedp_pm.__doc__ = _docstring(
