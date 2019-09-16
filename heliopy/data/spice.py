@@ -52,12 +52,15 @@ def _stereo_kernels(probe, type):
     if not isinstance(probe, str):
         raise TypeError('argument not of type \'str\'')
     if probe == 'ahead' or probe == 'behind':
-        request = requests.get(
-            'https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/{}/{}/'.format(
-                type, probe), timeout=5)
-        return ['https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/{}/{}/{}'.format(
-                type, probe, S.split('"')[1])
-                for S in request.text.split('href') if '.bsp' in S]
+        try:
+            request = requests.get(
+                'https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/{}/{}/'.format(
+                    type, probe), timeout=5)
+            return ['https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/{}/{}/{}'.format(
+                    type, probe, S.split('"')[1])
+                    for S in request.text.split('href') if '.bsp' in S]
+        except requests.exceptions.ConnectionError:
+            return []
     else:
         raise ValueError('argument should be either \'ahead\' or \'behind\'')
 
