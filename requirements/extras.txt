@@ -1,6 +1,6 @@
 -r base.txt
 
-cdflib!=0.3.5,<0.3.14
+cdflib!=0.3.5
 pandas
 requests
 bs4
