@@ -19,6 +19,6 @@ Module documentation
 .. toctree::
    :maxdepth: 1
 
-   data/index
-   coords
-   spice
+   reference/data/index
+   reference/coords/index
+   reference/spice/index
