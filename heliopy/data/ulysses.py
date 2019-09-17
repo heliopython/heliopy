@@ -177,13 +177,7 @@ class _fgmDownloader(util.Downloader):
         self.units = units
 
     def intervals(self, starttime, endtime):
-        out = []
-        # Loop through days
-        for date, _, _ in util._daysplitinterval(starttime, endtime):
-            stime = datetime(date.year, date.month, date.day)
-            etime = stime + timedelta(days=1)
-            out.append(sunpy.time.TimeRange(stime, etime))
-        return out
+        return self.intervals_daily(starttime, endtime)
 
     def fname(self, interval):
         dtime = interval.start.to_datetime()
@@ -249,22 +243,7 @@ class _swoopsionDownloader(util.Downloader):
         self.units = units
 
     def intervals(self, starttime, endtime):
-        out = []
-        for year in range(starttime.year, endtime.year + 1):
-            if year == starttime.year:
-                start_month = starttime.month
-            else:
-                start_month = 1
-
-            if year == endtime.year:
-                end_month = endtime.month
-            else:
-                end_month = 12
-            for month in range(start_month, end_month + 1):
-                out.append(sunpy.time.TimeRange(datetime(year, month, 1),
-                                                datetime(year, month + 1, 1)))
-
-        return out
+        return self.intervals_monthly(starttime, endtime)
 
     def fname(self, interval):
         dtime = interval.start.to_datetime()
