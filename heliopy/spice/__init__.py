@@ -7,9 +7,8 @@ import os
 import numpy as np
 import spiceypy
 import astropy.units as u
-
-data_dir = config['download_dir']
-spice_dir = os.path.join(data_dir, 'spice')
+import astropy.coordinates as astrocoords
+import sunpy.coordinates as suncoords
 
 _SPICE_SETUP = False
 
@@ -25,6 +24,12 @@ def _setup_spice():
             loc = dataspice.get_kernel(kernel.short_name)
             spiceypy.furnsh(loc)
         _SPICE_SETUP = True
+
+
+spice_astropy_frame_mapping = {
+    'J2000': astrocoords.ICRS,
+    'IAU_SUN': suncoords.HeliographicCarrington,
+}
 
 
 def furnish(fname):
@@ -59,7 +64,7 @@ class Trajectory:
 
     Parameters
     ----------
-    spacecraft : str
+    target : str
         Name of the target. The name must be present in the loaded kernels.
 
     Notes
@@ -104,8 +109,8 @@ class Trajectory:
         positions = np.array(pos_vel)[:, :3] * u.km
         velocities = np.array(pos_vel)[:, 3:] * u.km / u.s
 
+        self._frame = frame
         self._times = times
-        self._positions = positions
         self._velocities = velocities
         self._x = positions[:, 0]
         self._y = positions[:, 1]
@@ -123,6 +128,13 @@ class Trajectory:
         this body.
         '''
         return self._observing_body
+
+    @property
+    def spice_frame(self):
+        """
+        The coordinate frame used by SPICE.
+        """
+        return self._spice_frame
 
     @property
     def times(self):
@@ -160,6 +172,23 @@ class Trajectory:
         return np.sqrt(self.x**2 + self.y**2 + self.z**2)
 
     @property
+    def coords(self):
+        """
+        Returns an `astropy.coordinates` object with the coordinates of the
+        object.
+        """
+        if self._frame not in spice_astropy_frame_mapping:
+            raise ValueError(f'Current frame "{self._frame}" not in list of '
+                             f'known coordinate frames implemented in astropy '
+                             f'or sunpy ({spice_astropy_frame_mapping})')
+
+        frame = spice_astropy_frame_mapping[self._frame]
+        return astrocoords.SkyCoord(
+            self.x, self.y, self.z,
+            frame=frame, representation_type='cartesian',
+            obstime=self.times)
+
+    @property
     def vx(self):
         """
         x component of velocity.
@@ -179,6 +208,16 @@ class Trajectory:
         z component of velocity.
         """
         return self._vz
+
+    @property
+    def velocity(self):
+        """
+        Velocity.
+
+        Returned as a shape ``(n, 3)`` array, where the ``n`` axis
+        is the time axis.
+        """
+        return self._velocities
 
     @property
     def speed(self):
@@ -213,4 +252,3 @@ class Trajectory:
         self._x = self._x.to(unit)
         self._y = self._y.to(unit)
         self._z = self._z.to(unit)
-        self._positions = self._positions.to(unit)
