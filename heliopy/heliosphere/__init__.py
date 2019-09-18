@@ -28,11 +28,13 @@ class ParkerSpiral:
     is the solar rotation rate, :math:`v_{sw}` is the solar wind speed,
     and :math:`r` is the radial distance from the solar center.
     """
+    @u.quantity_input(v='speed', r0='length', l0='angle')
     def __init__(self, v, r0, l0):
         self.v = v
         self.r0 = r0
         self.l0 = l0
 
+    @u.quantity_input(rs='length')
     def longitude(self, rs):
         """
         Sample the spiral longitude at given radial distances.
@@ -43,4 +45,4 @@ class ParkerSpiral:
             Radial distance(s).
         """
         omega_sun = 14.713 * (u.deg / u.day)
-        return (self.l0 - (omega_sun * (rs - self.r0) / self.vsw)).to(u.deg)
+        return (self.l0 - (omega_sun * (rs - self.r0) / self.v)).to(u.deg)
