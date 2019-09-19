@@ -1,3 +1,24 @@
+"""
+Overview
+--------
+`SPICE`_ is a NASA toolkit for calculating the position of bodies
+(including planets and spacecraft) within the solar system. This module builds
+on the `spiceypy`_ package to provide a high level interface to the SPICE
+toolkit for performing orbital calculations using spice kernels.
+
+Integration with :mod:`astropy.coordinates`
+-------------------------------------------
+As well as allowing positions to be calculated in any coordinate system defined
+in the `SPICE`_ toolkit, :mod:`heliopy.spice` can also construct
+:class:`astropy.coordinates.SkyCoord` objects if the frame is implemented in
+astropy or SunPy. See the documentaiton of
+:meth:`heliopy.spice.Trajectory.coords()` for information on which frames are
+supported.
+
+.. _SPICE: https://naif.jpl.nasa.gov/naif/toolkit.html
+.. _spiceypy: https://spiceypy.readthedocs.io/en/master/
+"""
+
 from heliopy import config
 import heliopy.data.helper as helper
 import heliopy.data.spice as dataspice
@@ -174,8 +195,7 @@ class Trajectory:
     @property
     def coords(self):
         """
-        Returns an `astropy.coordinates` object with the coordinates of the
-        object.
+        A :class:`~astropy.coordinates.SkyCoord` object.
         """
         if self._frame not in spice_astropy_frame_mapping:
             raise ValueError(f'Current frame "{self._frame}" not in list of '
@@ -252,3 +272,20 @@ class Trajectory:
         self._x = self._x.to(unit)
         self._y = self._y.to(unit)
         self._z = self._z.to(unit)
+
+
+Trajectory.coords.__doc__ += '''
+
+Notes
+-----
+The following frames are supported:
+
+.. csv-table::
+   :name: supported_python_coords
+   :header: "Spice name", "SkyCoord class"
+   :widths: 20, 20
+'''
+
+for spice_frame in spice_astropy_frame_mapping:
+    _astropy_frame = spice_astropy_frame_mapping[spice_frame]
+    Trajectory.coords.__doc__ += f'\n   {spice_frame}, :class:`{_astropy_frame.__name__}`'
