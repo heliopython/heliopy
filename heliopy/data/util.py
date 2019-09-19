@@ -104,14 +104,23 @@ class Downloader(abc.ABC):
             data, self.units, warn_missing_units=self.warn_missing_units)
 
     def local_path(self, interval):
+        """
+        Absolute path to a single local file.
+        """
         local_path = self.local_dir(interval) / self.fname(interval)
         return data_dir / local_path
 
     def local_hdf_path(self, interval):
+        """
+        Absolute path to a single .hdf file.
+        """
         local_path = self.local_path(interval)
         return local_path.with_suffix('.hdf')
 
     def local_file_exists(self, interval):
+        """
+        Return ``True`` if the local file exists.
+        """
         return self.local_path(interval).exists()
 
     @abc.abstractmethod
