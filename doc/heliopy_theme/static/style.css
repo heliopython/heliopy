@@ -387,6 +387,10 @@ pre {
   border: 1px solid #e3e3e3;
 }
 
+dl.attribute code.descname, dl.method code.descname {
+  background-color: #fcdf9c;
+}
+
 /* Warning */
 
 div.admonition {
