@@ -7,7 +7,7 @@ import heliopy.data.ulysses as ulysses
 pytest.mark.data()
 
 starttime = datetime(1990, 10, 1)
-endtime = datetime(1990, 12, 1)
+endtime = datetime(1991, 1, 1)
 
 
 def test_fgm_hires():
