@@ -1,16 +1,51 @@
-<div id="navbar" class="{{ theme_navbar_class }} navbar-default {% if theme_navbar_fixed_top|tobool -%} navbar-fixed-top{%- endif -%}">
+<div id="navbar"
+  class="{{ theme_navbar_class }} navbar-default {% if theme_navbar_fixed_top|tobool -%} navbar-fixed-top{%- endif -%}">
   <div class="container">
-	  <div class="navbar-header">
-	    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
-	      <span class="icon-bar"></span>
-	      <span class="icon-bar"></span>
-	      <span class="icon-bar"></span>
-	    </button>
-	  </div>
-	  <div class="collapse navbar-collapse nav-collapse">
-      <img src="{{ pathto('_static/navbar.svg', 1) }}" alt="HelioPy logo" height=70px/>
-	    </div>
+    <div class="navbar-header">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="{{ theme_logo_url }}">
+        {%- block sidebarlogo %}
+        <img src="{{ pathto('_static/navbar.svg', 1) }}">
+        {%- endblock %}
+      </a>
+    </div>
+
+    <div class="collapse navbar-collapse nav-collapse">
+      <ul class="nav navbar-nav navbar-left">
+        {% if theme_about_links %}
+        <li class="dropdown">
+          <a role="button" data-toggle="dropdown" data-target="#" href="#" }}>About<b class="caret"></b></a>
+          <ul class="dropdown-menu">
+            {%- for link in theme_about_links %}
+            <li class="dropdown-submenu">
+              <a href="{{ pathto(*link[1:]) }}">{{ link[0] }}</a></li>
+            {%- endfor %}
+          </ul>
+        </li>
+        {% endif %}
+        {% if theme_navbar_docs %}
+        <li class="dropdown">
+          <a role="button" data-toggle="dropdown" data-target="" href="">Documentation<b class="caret"></b></a>
+          <ul class="dropdown-menu">
+            {%- for link in theme_navbar_docs %}
+            <li class="dropdown-submenu">
+              <a href="{{ pathto(*link[1:]) }}">{{ link[0] }}</a></li>
+            {%- endfor %}
+          </ul>
+        </li>
+        {% endif %}
+        {% if theme_navbar_links %}
+        {%- for link in theme_navbar_links %}
+        <li><a href="{{ pathto(*link[1:]) }}">{{ link[0] }}</a></li>
+        {%- endfor %}
+        {% endif %}
       </ul>
-	  </div>
+    </div>
   </div>
 </div>

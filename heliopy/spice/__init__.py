@@ -1,3 +1,24 @@
+"""
+Overview
+--------
+`SPICE`_ is a NASA toolkit for calculating the position of bodies
+(including planets and spacecraft) within the solar system. This module builds
+on the `spiceypy`_ package to provide a high level interface to the SPICE
+toolkit for performing orbital calculations using spice kernels.
+
+Integration with :mod:`astropy.coordinates`
+-------------------------------------------
+As well as allowing positions to be calculated in any coordinate system defined
+in the `SPICE`_ toolkit, :mod:`heliopy.spice` can also construct
+:class:`astropy.coordinates.SkyCoord` objects if the frame is implemented in
+astropy or SunPy. See the documentaiton of
+:meth:`heliopy.spice.Trajectory.coords()` for information on which frames are
+supported.
+
+.. _SPICE: https://naif.jpl.nasa.gov/naif/toolkit.html
+.. _spiceypy: https://spiceypy.readthedocs.io/en/master/
+"""
+
 from heliopy import config
 import heliopy.data.helper as helper
 import heliopy.data.spice as dataspice
@@ -7,9 +28,8 @@ import os
 import numpy as np
 import spiceypy
 import astropy.units as u
-
-data_dir = config['download_dir']
-spice_dir = os.path.join(data_dir, 'spice')
+import astropy.coordinates as astrocoords
+import sunpy.coordinates as suncoords
 
 _SPICE_SETUP = False
 
@@ -25,6 +45,12 @@ def _setup_spice():
             loc = dataspice.get_kernel(kernel.short_name)
             spiceypy.furnsh(loc)
         _SPICE_SETUP = True
+
+
+spice_astropy_frame_mapping = {
+    'J2000': astrocoords.ICRS,
+    'IAU_SUN': suncoords.HeliographicCarrington,
+}
 
 
 def furnish(fname):
@@ -59,7 +85,7 @@ class Trajectory:
 
     Parameters
     ----------
-    spacecraft : str
+    target : str
         Name of the target. The name must be present in the loaded kernels.
 
     Notes
@@ -104,8 +130,8 @@ class Trajectory:
         positions = np.array(pos_vel)[:, :3] * u.km
         velocities = np.array(pos_vel)[:, 3:] * u.km / u.s
 
+        self._frame = frame
         self._times = times
-        self._positions = positions
         self._velocities = velocities
         self._x = positions[:, 0]
         self._y = positions[:, 1]
@@ -123,6 +149,13 @@ class Trajectory:
         this body.
         '''
         return self._observing_body
+
+    @property
+    def spice_frame(self):
+        """
+        The coordinate frame used by SPICE.
+        """
+        return self._spice_frame
 
     @property
     def times(self):
@@ -160,6 +193,22 @@ class Trajectory:
         return np.sqrt(self.x**2 + self.y**2 + self.z**2)
 
     @property
+    def coords(self):
+        """
+        A :class:`~astropy.coordinates.SkyCoord` object.
+        """
+        if self._frame not in spice_astropy_frame_mapping:
+            raise ValueError(f'Current frame "{self._frame}" not in list of '
+                             f'known coordinate frames implemented in astropy '
+                             f'or sunpy ({spice_astropy_frame_mapping})')
+
+        frame = spice_astropy_frame_mapping[self._frame]
+        return astrocoords.SkyCoord(
+            self.x, self.y, self.z,
+            frame=frame, representation_type='cartesian',
+            obstime=self.times)
+
+    @property
     def vx(self):
         """
         x component of velocity.
@@ -179,6 +228,16 @@ class Trajectory:
         z component of velocity.
         """
         return self._vz
+
+    @property
+    def velocity(self):
+        """
+        Velocity.
+
+        Returned as a shape ``(n, 3)`` array, where the ``n`` axis
+        is the time axis.
+        """
+        return self._velocities
 
     @property
     def speed(self):
@@ -213,4 +272,21 @@ class Trajectory:
         self._x = self._x.to(unit)
         self._y = self._y.to(unit)
         self._z = self._z.to(unit)
-        self._positions = self._positions.to(unit)
+
+
+Trajectory.coords.__doc__ += '''
+
+Notes
+-----
+The following frames are supported:
+
+.. csv-table::
+   :name: supported_python_coords
+   :header: "Spice name", "SkyCoord class"
+   :widths: 20, 20
+'''
+
+for spice_frame in spice_astropy_frame_mapping:
+    _astropy_frame = spice_astropy_frame_mapping[spice_frame]
+    Trajectory.coords.__doc__ += \
+        f'\n   {spice_frame}, :class:`{_astropy_frame.__name__}`'
