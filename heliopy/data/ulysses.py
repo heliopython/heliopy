@@ -6,6 +6,7 @@ All data is publically available at http://ufa.esac.esa.int/ufa/
 from collections import OrderedDict
 from datetime import datetime, timedelta
 import pathlib
+import urllib.error
 
 import astropy.units as u
 import sunpy.time
@@ -138,7 +139,7 @@ class _swicsDownloader(util.Downloader):
         return self.intervals_yearly(starttime, endtime)
 
     def fname(self, interval):
-        yearstr = str(interval.start.to_datetime().year)[-2:]
+        yearstr = interval.start.strftime('%Y')[-2:]
         return f'{self.product}{yearstr}.dat'
 
     def local_dir(self, interval):
@@ -149,13 +150,10 @@ class _swicsDownloader(util.Downloader):
         local_dir.mkdir(parents=True, exist_ok=True)
         fname = self.fname(interval)
 
-        remote_base_url = ulysses_url
         swics_options = url_options
         swics_options['FILE_NAME'] = fname
         swics_options['FILE_PATH'] = '/ufa/HiRes/data/swics'
-        for key in swics_options:
-            remote_base_url += key + '=' + swics_options[key] + '&'
-        util._download_remote(remote_base_url, fname, local_dir)
+        _download_ulysses(swics_options, fname, local_dir)
         return self.local_path(interval)
 
     def load_local_file(self, interval):
@@ -180,14 +178,14 @@ class _fgmDownloader(util.Downloader):
         return self.intervals_daily(starttime, endtime)
 
     def fname(self, interval):
-        dtime = interval.start.to_datetime()
+        dtime = interval.start
         yearstr = self.yearstr(interval)
         filename = ('U' + yearstr[-2:] + dtime.strftime('%j') + 'SH')
         return f'{filename}.ASC'
 
     @staticmethod
     def yearstr(interval):
-        return interval.start.to_datetime().strftime('%Y')
+        return interval.start.strftime('%Y')
 
     def local_dir(self, interval):
         return pathlib.Path('ulysses') / 'fgm' / 'hires'
@@ -198,13 +196,10 @@ class _fgmDownloader(util.Downloader):
         fname = self.fname(interval)
         yearstr = self.yearstr(interval)
 
-        remote_base_url = ulysses_url
         fgm_options = url_options
         fgm_options['FILE_NAME'] = fname
         fgm_options['FILE_PATH'] = '/ufa/HiRes/VHM-FGM/' + yearstr
-        for key in fgm_options:
-            remote_base_url += key + '=' + fgm_options[key] + '&'
-        util._download_remote(remote_base_url, fname, local_dir)
+        _download_ulysses(fgm_options, fname, local_dir)
         return self.local_path(interval)
 
     def load_local_file(self, interval):
@@ -246,14 +241,14 @@ class _swoopsionDownloader(util.Downloader):
         return self.intervals_monthly(starttime, endtime)
 
     def fname(self, interval):
-        dtime = interval.start.to_datetime()
+        dtime = interval.start
         year = dtime.strftime('%Y')
         doy = dtime.strftime('%j')
         return 'u{}{}bam.dat'.format(str(year)[2:], doy)
 
     @staticmethod
     def yearstr(interval):
-        return interval.start.to_datetime().strftime('%Y')
+        return interval.start.strftime('%Y')
 
     def local_dir(self, interval):
         return pathlib.Path('ulysses') / 'swoops' / 'ions'
@@ -264,16 +259,13 @@ class _swoopsionDownloader(util.Downloader):
         fname = self.fname(interval)
         yearstr = self.yearstr(interval)
 
-        remote_base_url = ulysses_url
         swoops_options = url_options
         year = fname[1:3]
         # doy = fname[5:8]
         swoops_options['FILE_NAME'] = fname
         swoops_options['FILE_PATH'] =\
             ('/ufa/stageIngestArea/swoops/ions/bamion{}.zip_files'.format(year))
-        for key in swoops_options:
-            remote_base_url += key + '=' + swoops_options[key] + '&'
-        util._download_remote(remote_base_url, fname, local_dir)
+        _download_ulysses(swoops_options, fname, local_dir)
         return self.local_path(interval)
 
     def load_local_file(self, interval):
@@ -313,6 +305,18 @@ def swoops_ions(starttime, endtime):
                         ('iqual', u.dimensionless_unscaled)])
     downloader = _swoopsionDownloader(units)
     return downloader.load(starttime, endtime)
+
+
+def _download_ulysses(options, fname, local_dir):
+    """Common downloading functionality"""
+    dl_url = ulysses_url
+    for key in options:
+        dl_url += key + '=' + options[key] + '&'
+    # Download data
+    try:
+        util._download_remote(dl_url, fname, local_dir)
+    except urllib.error.HTTPError:
+        raise util.NoDataError
 
 
 def _convert_ulysses_time(data):
