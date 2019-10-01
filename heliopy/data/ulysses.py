@@ -139,7 +139,7 @@ class _swicsDownloader(util.Downloader):
         return self.intervals_yearly(starttime, endtime)
 
     def fname(self, interval):
-        yearstr = str(interval.start.to_datetime().year)[-2:]
+        yearstr = interval.start.strftime('%Y')[-2:]
         return f'{self.product}{yearstr}.dat'
 
     def local_dir(self, interval):
@@ -178,14 +178,14 @@ class _fgmDownloader(util.Downloader):
         return self.intervals_daily(starttime, endtime)
 
     def fname(self, interval):
-        dtime = interval.start.to_datetime()
+        dtime = interval.start
         yearstr = self.yearstr(interval)
         filename = ('U' + yearstr[-2:] + dtime.strftime('%j') + 'SH')
         return f'{filename}.ASC'
 
     @staticmethod
     def yearstr(interval):
-        return interval.start.to_datetime().strftime('%Y')
+        return interval.start.strftime('%Y')
 
     def local_dir(self, interval):
         return pathlib.Path('ulysses') / 'fgm' / 'hires'
@@ -241,14 +241,14 @@ class _swoopsionDownloader(util.Downloader):
         return self.intervals_monthly(starttime, endtime)
 
     def fname(self, interval):
-        dtime = interval.start.to_datetime()
+        dtime = interval.start
         year = dtime.strftime('%Y')
         doy = dtime.strftime('%j')
         return 'u{}{}bam.dat'.format(str(year)[2:], doy)
 
     @staticmethod
     def yearstr(interval):
-        return interval.start.to_datetime().strftime('%Y')
+        return interval.start.strftime('%Y')
 
     def local_dir(self, interval):
         return pathlib.Path('ulysses') / 'swoops' / 'ions'
