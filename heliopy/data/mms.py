@@ -96,8 +96,9 @@ def available_files(probe, instrument, starttime, endtime, data_rate=''):
 
 
 
-def download_files(probe, instrument, data_rate, starttime, endtime, product_list = None,
-                   verbose=True, product_string='', warn_missing_units=True):
+def download_files(probe, instrument, data_rate, starttime, endtime, product_list=None,
+                   verbose=True, product_string='', warn_missing_units=True,
+                   want_xr=False):
     """
     Download MMS files.
 
@@ -158,11 +159,14 @@ def download_files(probe, instrument, data_rate, starttime, endtime, product_lis
                         fd.write(chunk)
 
     def processing_func(cdf):
-        return util.cdf2xr(cdf, starttime, endtime, 'Epoch', product_list)
-
+        if want_xr:
+            return util.cdf2xr(cdf, starttime, endtime, 'Epoch', product_list)
+        else:
+            return util.cdf2df(cdf, starttime, endtime, 'Epoch', product_list)
+        
     return util.process(dirs, fnames, extension, local_base_dir,
                         remote_base_url, download_func, processing_func,
-                        starttime, endtime,
+                        starttime, endtime, want_xr=want_xr,
                         warn_missing_units=warn_missing_units)
 
 
@@ -188,39 +192,45 @@ data : :class:`~sunpy.timeseries.TimeSeries`
 """.format(product)
 
 
-def fpi_dis_moms(probe, mode, starttime, endtime):
+def fpi_dis_moms(probe, mode, starttime, endtime, product_list=None, want_xr=False):
     return download_files(probe, 'fpi', mode, starttime, endtime,
-                          product_string='dis-moms')
+                          product_string='dis-moms', 
+                          product_list=product_list, want_xr=want_xr)
 
 
 fpi_dis_moms.__doc__ = _fpi_docstring('ion distribution moment')
 
 
-def fpi_des_moms(probe, mode, starttime, endtime):
+def fpi_des_moms(probe, mode, starttime, endtime, product_list=None, want_xr=False):
     return download_files(probe, 'fpi', mode, starttime, endtime,
-                          product_string='des-moms')
+                          product_string='des-moms',
+                          product_list=product_list, want_xr=want_xr)
 
 
 fpi_des_moms.__doc__ = _fpi_docstring('electron distribution moment')
 
 
-def fpi_dis_dist(probe, mode, starttime, endtime):
+def fpi_dis_dist(probe, mode, starttime, endtime, product_list=None, want_xr=False):
     return download_files(probe, 'fpi', mode, starttime, endtime,
-                          product_string='dis-dist', warn_missing_units=False)
+                          product_string='dis-dist',
+                          warn_missing_units=False,
+                          product_list=product_list, want_xr=want_xr)
 
 
 fpi_dis_dist.__doc__ = _fpi_docstring('ion distribution function')
 
 
-def fpi_des_dist(probe, mode, starttime, endtime):
+def fpi_des_dist(probe, mode, starttime, endtime, product_list=None, want_xr=False):
     return download_files(probe, 'fpi', mode, starttime, endtime,
-                          product_string='des-dist', warn_missing_units=False)
+                          product_string='des-dist',
+                          warn_missing_units=False,
+                          product_list=product_list, want_xr=want_xr)
 
 
 fpi_des_dist.__doc__ = _fpi_docstring('electron distribution function')
 
 
-def fgm(probe, mode, starttime, endtime):
+def fgm(probe, mode, starttime, endtime, product_list=None, want_xr=False):
     """
     Import fgm survey mode magnetic field data.
 
@@ -240,4 +250,5 @@ def fgm(probe, mode, starttime, endtime):
     data : :class:`~sunpy.timeseries.TimeSeries`
         Imported data.
     """
-    return download_files(probe, 'fgm', mode, starttime, endtime)
+    return download_files(probe, 'fgm', mode, starttime, endtime,
+                          product_list=product_list, want_xr=want_xr)

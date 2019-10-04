@@ -17,7 +17,6 @@ import pathlib as path
 import tarfile
 import urllib.request as urlreq
 
-import numpy as np
 
 from heliopy import config
 from heliopy.data import util
@@ -39,7 +38,7 @@ cda_time_fmt = '%Y-%m-%dT%H:%M:%SZ'
 
 
 def _load(probe, starttime, endtime, instrument, product_id,
-          try_download, product_list = None):
+          try_download, product_list=None, want_xr=False):
     dirs = []
     fnames = []
     download_info = []
@@ -79,14 +78,15 @@ def _load(probe, starttime, endtime, instrument, product_id,
                 index_key = key
                 break
 
-        return util.cdf2xr(file, starttime, endtime, index_key, product_list)
-
-
+        if want_xr:
+            return util.cdf2xr(file, starttime, endtime, index_key, product_list)
+        else:
+            return util.cdf2df(file, starttime, endtime, index_key, product_list)
 
     return util.process(dirs, fnames, extension, local_base_dir,
                         remote_base_url, download_func, processing_func,
                         starttime, endtime, try_download=try_download,
-                        units=None,
+                        units=None, want_xr=want_xr,
                         download_info=download_info)
 
 
@@ -158,7 +158,7 @@ def _download(probe, starttime, endtime, instrument, product_id):
         os.rmdir(os.path.join(local_dir, d))
 
 
-def fgm(probe, starttime, endtime, try_download=True):
+def fgm(probe, starttime, endtime, try_download=True, want_xr=False):
     """
     Download fluxgate magnetometer data.
 
@@ -180,11 +180,11 @@ def fgm(probe, starttime, endtime, try_download=True):
             Requested data.
     """
     return _load(probe, starttime, endtime, 'fgm', 'CP_FGM_FULL',
-                 try_download=try_download)
+                 try_download=try_download, want_xr=want_xr)
 
 
 def cis_codif_h1_moms(probe, starttime, endtime, sensitivity='high',
-                      try_download=True):
+                      try_download=True, want_xr=False):
     """
     Load H+ moments from CIS instrument.
 
@@ -211,10 +211,10 @@ def cis_codif_h1_moms(probe, starttime, endtime, sensitivity='high',
     sensitivity = sensitivitydict[sensitivity]
     endstr = '_CP_CIS-CODIF_' + sensitivity + '_H1_MOMENTS'
     return _load(probe, starttime, endtime, 'peace', endstr[1:],
-                 try_download=try_download)
+                 try_download=try_download, want_xr=want_xr)
 
 
-def peace_moments(probe, starttime, endtime, try_download=True):
+def peace_moments(probe, starttime, endtime, try_download=True, want_xr=False):
     """
     Download electron moments from the PEACE instrument.
 
@@ -236,10 +236,11 @@ def peace_moments(probe, starttime, endtime, try_download=True):
             Requested data.
     """
     return _load(probe, starttime, endtime, 'peace', 'CP_PEA_MOMENTS',
-                 try_download=try_download)
+                 try_download=try_download, want_xr=want_xr)
 
 
-def cis_hia_onboard_moms(probe, starttime, endtime, try_download=True):
+def cis_hia_onboard_moms(probe, starttime, endtime, try_download=True, 
+                         want_xr=False):
     """
     Download onboard ion moments from the CIS instrument.
 
@@ -265,5 +266,5 @@ def cis_hia_onboard_moms(probe, starttime, endtime, try_download=True):
                          'cluster probes 2 or 4')
     data = _load(probe, starttime, endtime, 'cis',
                  'CP_CIS-HIA_ONBOARD_MOMENTS',
-                 try_download=try_download)
+                 try_download=try_download, want_xr=want_xr)
     return data

@@ -1,6 +1,5 @@
 """
 Methods for importing data from the OMNI.
-
 All data is publically available at
 https://cdaweb.gsfc.nasa.gov/pub/data/omni.
 """
@@ -11,24 +10,17 @@ import pathlib
 import astropy.units as u
 import numpy as np
 import pandas as pd
-<<<<<<< HEAD
 import astropy.units as u
 import datetime as dt
 from collections import OrderedDict
 import xarray as xr
-=======
 import sunpy.time
->>>>>>> c4db0488d35a67e9b76b2872094726de1b7a2a09
 
 from heliopy.data import util
 
 omni_url = 'https://cdaweb.gsfc.nasa.gov/pub/data/omni/'
 
 
-<<<<<<< HEAD
-
-def low(starttime, endtime, product_list = None, try_download=True):
-=======
 class _omniDownloader(util.Downloader):
     def __init__(self, units):
         self.units = units
@@ -37,7 +29,8 @@ class _omniDownloader(util.Downloader):
         return self.intervals_yearly(starttime, endtime)
 
     def fname(self, interval):
-        year = interval.start.to_datetime().year
+#        year = interval.start.to_datetime().year
+        year = interval.start.year
         return f'omni2_{year}.dat'
 
     def local_dir(self, interval):
@@ -51,7 +44,7 @@ class _omniDownloader(util.Downloader):
         fname = self.fname(interval)
         util._download_remote(url, fname, local_dir)
 
-    def load_local_file(self, interval):
+    def load_local_file(self, interval, product_list=None):
         names = ['Year', 'Decimal Day', 'Hour', 'Bartels Rotation Number',
                  'ID IMF Spacecraft', 'ID SW Plasma Spacecraft',
                  'points(IMF Average)', 'points(Plasma Average)',
@@ -94,7 +87,25 @@ class _omniDownloader(util.Downloader):
         thisdata['Time'] = pd.to_datetime(time_index)
         thisdata = thisdata.set_index('Time')
         thisdata = thisdata.drop(['Year', 'Decimal Day', 'Hour'], axis=1)
-        return thisdata
+        
+        if product_list:
+            prod_list = []
+            for val in product_list.values():
+                prod_list.append(val)
+            thisdata = pd.DataFrame(thisdata,columns=prod_list)
+            data = xr.DataArray(thisdata, coords = [time_index, prod_list], dims=['time', 'products'])
+            data.attrs['Units']={}
+            for product in prod_list:
+                data.attrs['Units'][product] = self.units[product]
+        else:
+            thisdata = pd.DataFrame(thisdata)
+            data = xr.Dataset({})
+            for i, product in enumerate(thisdata.columns):
+                data[product] = xr.DataArray(thisdata[product], 
+                                coords = [time_index],
+                                dims=['time'])
+            data.attrs['Units'] = self.units        
+        return data
 
     def _convert_datetime(self, year, day_list, hour_list, len_):
         datetime_index = []
@@ -105,18 +116,15 @@ class _omniDownloader(util.Downloader):
         return datetime_index
 
 
-def low(starttime, endtime):
->>>>>>> c4db0488d35a67e9b76b2872094726de1b7a2a09
+def low(starttime, endtime, product_list=None, want_xr=False):
     """
     Import data from OMNI Web Interface.
-
     Parameters
     ----------
     starttime : datetime
         Interval start time.
     endtime : datetime
         Interval end time.
-
     Returns
     -------
         data : :class:`~sunpy.timeseries.TimeSeries`
@@ -174,66 +182,5 @@ def low(starttime, endtime):
                          ('AU index (Kyoto)', u.nT),
                          ('Magnetosonic Mach No.', u.dimensionless_unscaled),
                          ('f10.7 index', sfu)])
-<<<<<<< HEAD
-    extension = '.dat'
-    for year in range(starttime.year, endtime.year + 1):
-        fnames.append("omni2_{}".format(year))
-        dirs.append(local_base_dir)
-
-    def download_func(remote_base_url, local_base_dir,
-                      directory, fname, remote_fname, extension):
-        url = '{}'.format(remote_base_url)
-        util._download_remote(url,
-                              fname + extension,
-                              local_base_dir / directory)
-
-    def processing_func(file):
-        thisdata = pd.read_csv(file, names=names,
-                               delim_whitespace=True)
-        for name, bad_value in zip(names, badvalues):
-            if name in ['Year', 'Decimal Day', 'Hour']:
-                continue
-            thisdata[name] = thisdata[name].replace(bad_value, np.nan)
-        year = thisdata['Year'][0]
-        day_list = list(thisdata['Decimal Day'])
-        hour_list = list(thisdata['Hour'])
-        len_ = len(thisdata)
-        time_index = convert_datetime(year, day_list, hour_list, len_)
-
-        thisdata['time'] = pd.to_datetime(time_index)
-        thisdata = thisdata.set_index('time')
-        thisdata = thisdata.drop(['Year', 'Decimal Day', 'Hour'], axis=1)
-        
-        
-        if product_list:
-            thisdata = pd.DataFrame(thisdata,columns=product_list)
-            data = xr.DataArray(thisdata, coords = [time_index, product_list], dims=['time', 'products'])
-            for product in product_list:
-                data.attrs[product] = units[product]
-        else:
-            thisdata = pd.DataFrame(thisdata)
-            data = xr.Dataset({})
-            for i,product in enumerate(thisdata.columns):
-                data[product] = xr.DataArray(thisdata[product], 
-                                coords = [time_index],
-                                dims=['time'])
-            data.attrs = units
-        
-        return data
-
-
-    def convert_datetime(year, day_list, hour_list, len_):
-        datetime_index = []
-        base_date = dt.datetime(year, 1, 1, 0, 0, 0)
-        for x in range(0, len_):
-            time_delta = dt.timedelta(days=day_list[x] - 1, hours=hour_list[x])
-            datetime_index.append(base_date + time_delta)
-        return datetime_index
-
-    return util.process(dirs, fnames, extension, local_base_dir,
-                        remote_base_url, download_func, processing_func,
-                        starttime, endtime, units=units)
-=======
     downloader = _omniDownloader(units)
-    return downloader.load(starttime, endtime)
->>>>>>> c4db0488d35a67e9b76b2872094726de1b7a2a09
+    return downloader.load(starttime, endtime, product_list, want_xr)
