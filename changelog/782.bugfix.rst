@@ -1,3 +1,0 @@
-:mod:`heliopy.data.spice` can now be imported without internet access. If this
-is the case determining the names of STEREO kernels (which requires internet)
-will not be possible.
