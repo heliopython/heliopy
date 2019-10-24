@@ -29,8 +29,7 @@ class _omniDownloader(util.Downloader):
         return self.intervals_yearly(starttime, endtime)
 
     def fname(self, interval):
-#        year = interval.start.to_datetime().year
-        year = interval.start.year
+        year = interval.start.to_datetime().year
         return f'omni2_{year}.dat'
 
     def local_dir(self, interval):
@@ -90,7 +89,7 @@ class _omniDownloader(util.Downloader):
         
         if product_list:
             prod_list = []
-            for val in product_list.values():
+            for val in product_list:
                 prod_list.append(val)
             thisdata = pd.DataFrame(thisdata,columns=prod_list)
             data = xr.DataArray(thisdata, coords = [time_index, prod_list], dims=['time', 'products'])
