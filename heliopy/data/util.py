@@ -238,9 +238,9 @@ class Downloader(abc.ABC):
 
 def process(dirs, fnames, extension, local_base_dir, remote_base_url,
             download_func, processing_func, starttime, endtime,
-            try_download=True, units=None,
+            want_xr=False, try_download=True, units=None,
             processing_kwargs={}, download_info=[], remote_fnames=None,
-            warn_missing_units=True, want_xr=False):
+            warn_missing_units=True):
     """
     The main utility method for systematically loading, downloading, and saving
     data.
@@ -397,7 +397,6 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
             msg = ('File {a}/{b}{c} not available locally,\n'
                    'and "try_download" set to False')
             logger.info(msg.format(a=local_dir, b=fname, c=extension))
-
 
     # Loaded all the data, now filter between times
     if not want_xr:
@@ -1463,9 +1462,9 @@ def units_xarray(data, units, warn_missing_units=True):
                     message = (f"{dim} column has missing units."
                            f"\n{missing_msg}")
                     warnings.warn(message, Warning)
-                data_units[dim] = units[dim].name
+                data_units[dim] = units[dim]
             else:
-                data_units[dim] = units[dim].name
+                data_units[dim] = units[dim]
         
         data.attrs['Units'] = data_units
     
@@ -1518,7 +1517,7 @@ def xr_timefilter(data, starttime, endtime):
     
     if isinstance(data, list) and 'time' in data[0].dims:
         # Concatenate the list along time
-        data = xr.concat(data, dim = 'time')
+        data = xr.concat(data, dim='time')
 
     else:
         raise KeyError('The label "time" was not found in '

@@ -10,6 +10,7 @@ import pathlib
 from collections import OrderedDict
 import requests
 from tqdm.auto import tqdm
+import datetime
 
 from heliopy.data import util
 from heliopy import config
@@ -24,7 +25,7 @@ dl_url = mms_url + '/files/api/v1/download/science'
 
 def _validate_instrument(instrument):
     allowed_instruments = ['afg', 'aspoc', 'dfg', 'dsp', 'edi',
-                           'edp', 'fgm', 'fpi', 'fields', 'scm', 'sdp', ]
+                           'edp', 'fgm', 'fpi', 'fields', 'scm', 'sdp', 'mec']
     if instrument not in allowed_instruments:
         raise ValueError(
             'Instrument {} not in list of allowed instruments: {}'.format(
@@ -82,6 +83,11 @@ def available_files(probe, instrument, starttime, endtime, data_rate=''):
     start_date = starttime.strftime('%Y-%m-%d')
     end_date = endtime.strftime('%Y-%m-%d')
 
+    # Selecting burst mode (ensure at least 2 mins to avoid empty files list)
+    if data_rate == 'brst':
+        start_date = (starttime-datetime.timedelta(minutes=1)).strftime('%Y-%m-%d-%H-%M')
+        end_date = (endtime+datetime.timedelta(minutes=1)).strftime('%Y-%m-%d-%H-%M')
+
     query = {}
     query['sc_id'] = 'mms' + probe
     query['instrument_id'] = instrument
@@ -92,8 +98,8 @@ def available_files(probe, instrument, starttime, endtime, data_rate=''):
 
     r = requests.get(query_url, params=query)
     files = r.text.split(',')
-    return files
 
+    return files
 
 
 def download_files(probe, instrument, data_rate, starttime, endtime, product_list=None,
@@ -140,9 +146,18 @@ def download_files(probe, instrument, data_rate, starttime, endtime, product_lis
                                 starttime, endtime, data_rate)
         for file in files:
             fname = pathlib.Path(file).stem
-            if product_string in fname and len(fname):
+            # Make sure that only the needed files will be loaded (i.e., in the queried time interval)
+            namestr = [j for i, j in enumerate(fname.split('_')) if j.startswith(endtime.strftime('%Y%m%d'))]
+            # Select only one 'mec' (metadata) file (here 'epht89d') to avoid redundancy
+            if instrument == 'mec':
+                if 'epht89d' in fname:
+                    fnames.append(fname)
+                    dirs.append('')
+            elif product_string in fname and len(fname) and namestr and namestr[0] < endtime.strftime('%Y%m%d%H%M%S'):
                 fnames.append(fname)
                 dirs.append('')
+            else:
+                pass
 
     extension = '.cdf'
     local_base_dir = mms_dir / probe / instrument / data_rate
@@ -166,8 +181,9 @@ def download_files(probe, instrument, data_rate, starttime, endtime, product_lis
         
     return util.process(dirs, fnames, extension, local_base_dir,
                         remote_base_url, download_func, processing_func,
-                        starttime, endtime, want_xr=want_xr,
+                        starttime, endtime, want_xr,
                         warn_missing_units=warn_missing_units)
+
 
 
 def _fpi_docstring(product):
