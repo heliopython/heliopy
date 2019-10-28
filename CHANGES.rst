@@ -1,3 +1,21 @@
+Heliopy 0.8.2 (2019-10-21)
+==========================
+
+Features
+--------
+
+- Added the SOHO SPICE kernels to :mod:`heliopy.data.spice`. (`#777 <https://github.com/heliopython/heliopy/pull/777>`__)
+
+
+Bug Fixes
+---------
+
+- :mod:`heliopy.data.spice` can now be imported without internet access. If this
+  is the case determining the names of STEREO kernels (which requires internet)
+  will not be possible. (`#782 <https://github.com/heliopython/heliopy/pull/782>`__)
+- Fixed loading Ulysses data when at least some of it isn't available. (`#795 <https://github.com/heliopython/heliopy/pull/795>`__)
+
+
 HelioPy 0.8.1 (2019-08-14)
 ==========================
 
