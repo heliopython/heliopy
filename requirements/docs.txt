@@ -8,4 +8,5 @@ sphinx-automodapi
 sphinx-bootstrap-theme>=0.7
 sphinx-gallery
 sphinx-issues
+towncrier
 pillow
