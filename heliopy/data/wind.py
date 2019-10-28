@@ -86,3 +86,12 @@ def swe_h3(starttime, endtime):
 
 swe_h3.__doc__ = _docstring(
     'WI_H3_SWE', '12 second electron pitch angle')
+
+
+def threedp_elpd(starttime, endtime):
+    identifier = 'WI_ELPD_3DP'
+    return _wind(starttime, endtime, identifier)
+
+
+threedp_elpd.__doc__ = _docstring(
+    'WI_ELPD_3DP', 'Electron pitch angle')
