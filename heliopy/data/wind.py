@@ -76,3 +76,12 @@ def threedp_e0_emfits(starttime, endtime):
 
 threedp_e0_emfits.__doc__ = _docstring(
     'WI_EMFITS_E0_3DP', 'Electron moment')
+
+
+def swe_h3(starttime, endtime):
+    identifier = 'WI_H3_SWE'
+    return _wind(starttime, endtime, identifier)
+
+
+swe_h3.__doc__ = _docstring(
+    'WI_H3_SWE', '12 second electron pitch angle')
