@@ -199,7 +199,9 @@ def cdf_dict(unit_string):
                         ('nT (>200)', u.nT),
                         ('msec', u.ms),
                         ('milliseconds', u.ms),
-                        ('ionic charge', ionic_charge)])
+                        ('ionic charge', ionic_charge),
+                        ('#/cm2-ster-eV-sec',
+                         1 / (u.cm**2 * u.sr * u.eV * u.s))])
     try:
         return units[unit_string]
     except KeyError:
