@@ -16,7 +16,7 @@ doc-test: &doc-test
 
 doc-changeog: &doc-changelog
   name: Merge changelog
-  command: towncrier --yes
+  command: python -m towncrier --yes
 
 doc-run: &doc-build
   name: Build documentation
