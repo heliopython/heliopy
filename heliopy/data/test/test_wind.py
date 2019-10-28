@@ -33,3 +33,8 @@ def test_threedp_e0_emfits():
 def test_swe_h1():
     df = wind.swe_h1(starttime, endtime)
     check_data_output(df)
+
+
+def test_swe_h3():
+    df = wind.swe_h3(starttime, endtime)
+    check_data_output(df)
