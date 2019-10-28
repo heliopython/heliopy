@@ -79,8 +79,9 @@ threedp_e0_emfits.__doc__ = _docstring(
 
 
 def swe_h3(starttime, endtime):
+    badvalues = -9.99999985e+30
     identifier = 'WI_H3_SWE'
-    return _wind(starttime, endtime, identifier)
+    return _wind(starttime, endtime, identifier, badvalues=badvalues)
 
 
 swe_h3.__doc__ = _docstring(
