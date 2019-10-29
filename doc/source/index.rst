@@ -22,4 +22,4 @@ Module documentation
    reference/data/index
    reference/coords/index
    reference/spice/index
-   reference/heliosphere/index
+   reference/models/index
