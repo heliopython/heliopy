@@ -1,1 +1,1 @@
-:function:`heliopy.data.wind.threedp_elpd()` has been added.
+:func:`heliopy.data.wind.threedp_elpd()` has been added.
