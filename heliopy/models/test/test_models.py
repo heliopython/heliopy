@@ -1,6 +1,6 @@
 import astropy.units as u
 from astropy.tests.helper import assert_quantity_allclose
-from heliopy.heliosphere import ParkerSpiral
+from heliopy.models import ParkerSpiral
 
 
 def test_parker_spiral():
