@@ -162,7 +162,6 @@ def het(starttime, endtime, spacecraft, timeres):
     
     sc_identifiers = {"STA": "Ahead",
                         "STB": "Behind"}
-    
     sc_ident = sc_identifiers[_identifier_select(spacecraft)]
         
     local_base_dir = stereo_dir / sc_ident / timedirs[timeres]
