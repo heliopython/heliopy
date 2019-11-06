@@ -41,7 +41,6 @@ def _docstring(identifier, letter, description):
     return ds
 
 
-<<<<<<< HEAD
 def _day_intervals(starttime, endtime):
     interval = stime.TimeRange(starttime, endtime)
     daylist = interval.get_dates()
