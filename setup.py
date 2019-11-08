@@ -40,7 +40,7 @@ setup(name='HelioPy',
       packages=['heliopy',
                 'heliopy.coordinates',
                 'heliopy.data',
-                'heliopy.heliosphere',
+                'heliopy.models',
                 'heliopy.spice',
                 'heliopy.util'],
       package_data={'heliopy': ['heliopyrc']})
