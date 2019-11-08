@@ -1,0 +1,1 @@
+Fixed downloading narrow time intervals of MMS data.
