@@ -1,0 +1,2 @@
+Fixed a bug in loading .cdf data where either all files were either converted
+to .hdf files or at least one of the intervals of data is missing.
