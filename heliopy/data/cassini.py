@@ -6,7 +6,7 @@ http://pds-atmospheres.nmsu.edu/data_and_services/atmospheres_data/Cassini/Cassi
 """
 import datetime
 import os
-import pathlib as path
+import pathlib
 import pandas as pd
 import calendar
 import astropy.units as u
@@ -15,7 +15,7 @@ from collections import OrderedDict
 from heliopy.data import util
 from heliopy import config
 
-data_dir = path.Path(config['download_dir'])
+data_dir = pathlib.Path(config['download_dir'])
 use_hdf = config['use_hdf']
 cassini_dir = data_dir / 'cassini'
 
@@ -46,6 +46,70 @@ leapmonth2str = {1: '001_031_JAN',
                  12: '336_366_DEC'}
 
 
+class _mag1minDownloader(util.Downloader):
+    def __init__(self, coords):
+        valid_coords = ['KRTP', 'KSM', 'KSO', 'RTN']
+        if coords not in valid_coords:
+            raise ValueError('coords must be one of {}'.format(valid_coords))
+        self.coords = coords
+
+        Rs = u.def_unit('saturnRad', 60268 * u.km)
+        if (coords == 'KRTP'):
+            self.units = OrderedDict([('Bx', u.nT), ('By', u.nT), ('Bz', u.nT),
+                                      ('X', Rs), ('|B|', u.nT),
+                                      ('Y', u.deg),
+                                      ('Z', u.deg),
+                                      ('Local hour', u.dimensionless_unscaled),
+                                      ('n points', u.dimensionless_unscaled)])
+        if (coords == 'RTN'):
+            self.units = OrderedDict([('Bx', u.nT), ('By', u.nT), ('Bz', u.nT),
+                                      ('X', u.AU), ('Y', u.AU), ('Z', u.AU),
+                                      ('|B|', u.nT),
+                                      ('Local hour', u.dimensionless_unscaled),
+                                      ('n points', u.dimensionless_unscaled)])
+        if (coords == 'KSM' or coords == 'KSO'):
+            self.units = OrderedDict([('Bx', u.nT), ('By', u.nT), ('Bz', u.nT),
+                                      ('X', Rs), ('Y', Rs), ('Z', Rs),
+                                      ('|B|', u.nT),
+                                      ('Local hour', u.dimensionless_unscaled),
+                                      ('n points', u.dimensionless_unscaled)])
+
+    def intervals(self, starttime, endtime):
+        return self.intervals_yearly(starttime, endtime)
+
+    def fname(self, interval):
+        year = interval.start.strftime('%Y')
+        return f'{year}_FGM_{self.coords}_1M.TAB'
+
+    def local_dir(self, interval):
+        return pathlib.Path('cassini') / 'mag' / '1min'
+
+    def download(self, interval):
+        local_dir = self.local_path(interval).parent
+        local_dir.mkdir(parents=True, exist_ok=True)
+        year = interval.start.strftime('%Y')
+        base_url = ('http://pds-ppi.igpp.ucla.edu/ditdos/download?'
+                    'id=pds://PPI/CO-E_SW_J_S-MAG-4-SUMM-1MINAVG-V1.0/DATA')
+        url = '{}/{}'.format(base_url, year)
+        util._download_remote(url,
+                              self.fname(interval),
+                              local_dir)
+
+    def load_local_file(self, interval):
+        f = open(self.local_path(interval))
+        if 'error_message' in f.readline():
+            f.close()
+            os.remove(f.name)
+            raise util.NoDataError()
+        data = pd.read_csv(f,
+                           names=['Time', 'Bx', 'By', 'Bz', '|B|',
+                                  'X', 'Y', 'Z', 'Local hour', 'n points'],
+                           delim_whitespace=True,
+                           parse_dates=[0], index_col=0)
+        f.close()
+        return data
+
+
 def mag_1min(starttime, endtime, coords):
     """
     Import 1 minute magnetic field from Cassini.
@@ -74,63 +138,8 @@ def mag_1min(starttime, endtime, coords):
     data : :class:`~sunpy.timeseries.TimeSeries`
         Requested data
     """
-    valid_coords = ['KRTP', 'KSM', 'KSO', 'RTN']
-    if coords not in valid_coords:
-        raise ValueError('coords must be one of {}'.format(valid_coords))
-    base_url = ('http://pds-ppi.igpp.ucla.edu/ditdos/download?'
-                'id=pds://PPI/CO-E_SW_J_S-MAG-4-SUMM-1MINAVG-V1.0/DATA')
-    Rs = u.def_unit('saturnRad', 60268 * u.km)
-    if (coords == 'KRTP'):
-        units = OrderedDict([('Bx', u.nT), ('By', u.nT), ('Bz', u.nT),
-                            ('X', Rs), ('|B|', u.nT),
-                            ('Y', u.deg),
-                            ('Z', u.deg),
-                            ('Local hour', u.dimensionless_unscaled),
-                            ('n points', u.dimensionless_unscaled)])
-    if (coords == 'RTN'):
-        units = OrderedDict([('Bx', u.nT), ('By', u.nT), ('Bz', u.nT),
-                            ('X', u.AU), ('Y', u.AU), ('Z', u.AU),
-                            ('|B|', u.nT),
-                            ('Local hour', u.dimensionless_unscaled),
-                            ('n points', u.dimensionless_unscaled)])
-    if (coords == 'KSM' or coords == 'KSO'):
-        units = OrderedDict([('Bx', u.nT), ('By', u.nT), ('Bz', u.nT),
-                            ('X', Rs), ('Y', Rs), ('Z', Rs),
-                            ('|B|', u.nT),
-                            ('Local hour', u.dimensionless_unscaled),
-                            ('n points', u.dimensionless_unscaled)])
-
-    local_base_dir = cassini_dir / 'mag' / '1min'
-    dirs = []
-    fnames = []
-    extension = '.TAB'
-    for year in starttime.year, endtime.year:
-        dirs.append('{}'.format(year))
-        fnames.append('{}_FGM_{}_1M'.format(year, coords))
-
-    def download_func(remote_base_url, local_base_dir,
-                      directory, fname, remote_fname, extension):
-        url = '{}/{}'.format(base_url, year)
-        util._download_remote(url,
-                              fname + extension,
-                              local_base_dir / directory)
-
-    def processing_func(f):
-        if 'error_message' in f.readline():
-            f.close()
-            os.remove(f.name)
-            raise util.NoDataError()
-        data = pd.read_csv(f,
-                           names=['Time', 'Bx', 'By', 'Bz', '|B|',
-                                  'X', 'Y', 'Z', 'Local hour', 'n points'],
-                           delim_whitespace=True,
-                           parse_dates=[0], index_col=0)
-        f.close()
-        return data
-
-    return util.process(dirs, fnames, extension, local_base_dir,
-                        base_url, download_func, processing_func,
-                        starttime, endtime, units=units)
+    dl = _mag1minDownloader(coords)
+    return dl.load(starttime, endtime)
 
 
 def mag_hires(starttime, endtime, try_download=True):
@@ -180,14 +189,14 @@ def mag_hires(starttime, endtime, try_download=True):
         else:
             coords = 'KRTP'
         doy = day.strftime('%j')
-        dirs.append(path.Path(str(year)) / monthstr)
+        dirs.append(pathlib.Path(str(year)) / monthstr)
         fnames.append(str(year)[2:] + doy + '_FGM_{}'.format(coords))
 
     def download_func(remote_base_url, local_base_dir,
                       directory, fname, remote_fname, extension):
-            url = remote_base_url + '/' + str(directory)
-            util._download_remote(url, fname + extension,
-                                  local_base_dir / directory)
+        url = remote_base_url + '/' + str(directory)
+        util._download_remote(url, fname + extension,
+                              local_base_dir / directory)
 
     def processing_func(f):
         if 'error_message' in f.readline():
