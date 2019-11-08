@@ -1,0 +1,4 @@
+The times stored in the ``time`` property of :class:`heliopy.spice.Trajectory`
+are now always parsed by `astropy.time.Time` before being stored, and are
+always returned as a `~astropy.time.Time` object, no matter what format they
+were supplied in.
