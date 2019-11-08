@@ -27,6 +27,7 @@ import os
 
 import numpy as np
 import spiceypy
+import astropy.time as time
 import astropy.units as u
 import astropy.coordinates as astrocoords
 import sunpy.coordinates as suncoords
@@ -131,7 +132,7 @@ class Trajectory:
         velocities = np.array(pos_vel)[:, 3:] * u.km / u.s
 
         self._frame = frame
-        self._times = times
+        self._times = time.Time(times)
         self._velocities = velocities
         self._x = positions[:, 0]
         self._y = positions[:, 1]
@@ -160,7 +161,7 @@ class Trajectory:
     @property
     def times(self):
         '''
-        The `list` of `datetime` at which positions were last sampled.
+        A :class:`~astropy.time.Time` object containing the times sampled.
         '''
         return self._times
 

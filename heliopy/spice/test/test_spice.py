@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 
+from astropy.time import Time
 from astropy.utils.exceptions import ErfaWarning
 import numpy as np
 import pytest
@@ -23,7 +24,7 @@ def times():
 
 def test_spice(solo_trajectory, times):
     solo_trajectory.generate_positions(times, 'Sun', 'ECLIPJ2000')
-    assert solo_trajectory.times == times
+    assert (solo_trajectory.times == Time(times)).all()
 
     # Check it works with numpy arrays too
     times = np.array(times)
