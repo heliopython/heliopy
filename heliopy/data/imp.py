@@ -6,11 +6,9 @@ All data is publically available at https://cdaweb.gsfc.nasa.gov/pub/data/imp/
 from collections import OrderedDict
 from datetime import datetime
 import pathlib
-from dateutil.relativedelta import relativedelta
 
 import astropy.units as u
 import pandas as pd
-import sunpy.time
 
 from heliopy.data import util
 from heliopy.data import cdasrest

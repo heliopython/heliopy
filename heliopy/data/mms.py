@@ -7,7 +7,6 @@ is at https://lasp.colorado.edu/mms/sdc/public/.
 """
 import os
 import pathlib
-from collections import OrderedDict
 import requests
 from tqdm.auto import tqdm
 from datetime import datetime, timedelta
