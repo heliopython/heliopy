@@ -9,7 +9,6 @@ import pathlib
 import urllib.error
 
 import astropy.units as u
-import sunpy.time
 import pandas as pd
 
 from heliopy.data import util
@@ -257,7 +256,6 @@ class _swoopsionDownloader(util.Downloader):
         local_dir = self.local_path(interval).parent
         local_dir.mkdir(parents=True, exist_ok=True)
         fname = self.fname(interval)
-        yearstr = self.yearstr(interval)
 
         swoops_options = url_options
         year = fname[1:3]

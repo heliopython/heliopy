@@ -11,7 +11,6 @@ import pathlib
 import astropy.units as u
 import numpy as np
 import pandas as pd
-import sunpy.time
 
 from heliopy.data import util
 
