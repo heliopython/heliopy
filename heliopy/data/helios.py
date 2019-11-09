@@ -912,12 +912,79 @@ def corefit(probe, starttime, endtime):
     return dl.load(starttime, endtime)
 
 
-def _4hz_filename(probe, year, doy):
-    # Returns 4hz filename WITHOUT extension
-    return 'he{}1s{}{:03}'.format(probe, year - 1900, doy)
+class _4hzDownloader(util.Downloader):
+    def __init__(self, probe):
+        self.probe = _check_probe(probe)
+        self.units = OrderedDict([('Bx', u.nT), ('By', u.nT),
+                                  ('Bz', u.nT), ('|B|', u.nT)])
+
+    def intervals(self, starttime, endtime):
+        return self.intervals_daily(starttime, endtime)
+
+    def fname(self, interval):
+        year = int(interval.start.strftime('%Y'))
+        doy = int(interval.start.strftime('%j'))
+        return 'he{}1s{}{:03}.asc'.format(self.probe, year - 1900, doy)
+
+    def local_dir(self, interval):
+        year = interval.start.strftime('%Y')
+        return pathlib.Path('helios') / 'mag4hz' / year
+
+    def download(self, interval):
+        remote_dir = ('E2_experiment/'
+                      'Data_Cologne_Nov2016_bestdata/'
+                      'HR/helios{}'.format(self.probe))
+        remote_url = f'{remote_base_url}/{remote_dir}'
+
+        local_fname = self.fname(interval)
+        remote_fname = None
+
+        # Because the filename contains a number between 0 and 24 at the end,
+        # get a list of all the filenames and compare them to the filename
+        # we want
+        def get_file_list(url, ext='', params={}):
+            response = requests.get(url, params=params)
+            if response.ok:
+                response_text = response.text
+            else:
+                return response.raise_for_status()
+            soup = BeautifulSoup(response_text, 'html.parser')
+            complete_file_list = [node.get('href') for node in
+                                  soup.find_all('a') if
+                                  node.get('href').endswith(ext)]
+            return complete_file_list
+
+        ext = 'asc'
+        remote_file_list = get_file_list(remote_url, ext)
+        for filename in remote_file_list:
+            if local_fname[:-4] in filename:
+                remote_fname = filename
+                break
+        if remote_fname is None:
+            raise util.NoDataError
+
+        dl_dir = self.local_path(interval).parent
+        util._download_remote(remote_url, remote_fname, dl_dir)
+
+        # Rename to a sensible and deterministic file name
+        downloaded_path = (dl_dir / remote_fname)
+        new_path = self.local_path(interval)
+        downloaded_path.rename(new_path)
+
+    def load_local_file(self, interval):
+        # Read in data
+        headings = ['Time', 'Bx', 'By', 'Bz']
+        cols = [0, 4, 5, 6]
+        data = pd.read_csv(self.local_path(interval), names=headings,
+                           header=None, usecols=cols, delim_whitespace=True)
+
+        # Convert date info to datetime
+        data['Time'] = pd.to_datetime(data['Time'], format='%Y-%m-%dT%H:%M:%S')
+        data = data.set_index('Time', drop=True)
+        return data
 
 
-def mag_4hz(probe, starttime, endtime, try_download=True):
+def mag_4hz(probe, starttime, endtime):
     """
     Read in 4Hz magnetic field data.
 
@@ -937,81 +1004,8 @@ def mag_4hz(probe, starttime, endtime, try_download=True):
     data : :class:`~sunpy.timeseries.TimeSeries`
         4Hz magnetic field data set
     """
-    probe = _check_probe(probe)
-    local_base_dir = (pathlib.Path(helios_dir) / 'E2_experiment' /
-                      'Data_Cologne_Nov2016_bestdata' / 'HR' /
-                      'helios{}'.format(probe))
-    extension = '.asc'
-    dirs = []
-    fnames = []
-    units = OrderedDict([('Bx', u.nT), ('By', u.nT),
-                        ('Bz', u.nT), ('|B|', u.nT)])
-
-    daylist = util._daysplitinterval(starttime, endtime)
-    for [day, _, _] in daylist:
-        dirs.append('')
-        doy = int(day.strftime('%j'))
-        year = day.year
-        fnames.append('he{}1s{}{:03}'.format(probe, year - 1900, doy))
-
-    def download_func(remote_base_url, local_base_dir,
-                      directory, fname, remote_fname, extension):
-        remote_dir = ('E2_experiment/'
-                      'Data_Cologne_Nov2016_bestdata/'
-                      'HR/helios{}'.format(probe))
-        remote_url = remote_base_url + '/' + remote_dir
-
-        original_fname = fname
-        fname = None
-        # Because the filename contains a number between 0 and 24 at the end,
-        # get a list of all the filenames and compare them to the filename
-        # we want
-
-        # new http functionality
-
-        def get_file_list(url, ext='', params={}):
-            response = requests.get(url, params=params)
-            if response.ok:
-                response_text = response.text
-            else:
-                return response.raise_for_status()
-            soup = BeautifulSoup(response_text, 'html.parser')
-            complete_file_list = [node.get('href') for node in
-                                  soup.find_all('a') if
-                                  node.get('href').endswith(ext)]
-            return complete_file_list
-
-        ext = 'asc'
-        file_list = get_file_list(remote_url, ext)
-        for filename in file_list:
-            if original_fname in filename:
-                fname = filename
-                break
-        if fname is None:
-            raise util.NoDataError
-        util._download_remote(remote_url, fname, local_base_dir)
-
-        # Rename to a sensible and deterministic file name
-        downloaded_path = (local_base_dir / fname).with_suffix(extension)
-        new_path = (local_base_dir / original_fname).with_suffix(extension)
-        downloaded_path.rename(new_path)
-
-    def processing_func(f):
-        # Read in data
-        headings = ['Time', 'Bx', 'By', 'Bz', '|B|']
-        cols = [0, 4, 5, 6, 7]
-        data = pd.read_csv(f, names=headings, header=None,
-                           usecols=cols, delim_whitespace=True)
-
-        # Convert date info to datetime
-        data['Time'] = pd.to_datetime(data['Time'], format='%Y-%m-%dT%H:%M:%S')
-        data = data.set_index('Time', drop=True)
-        return data
-
-    return util.process(dirs, fnames, extension, local_base_dir,
-                        remote_base_url, download_func, processing_func,
-                        starttime, endtime, units=units,
-                        try_download=try_download)
+    dl = _4hzDownloader(probe)
+    return dl.load(starttime, endtime)
 
 
 def mag_ness(probe, starttime, endtime, try_download=True):
