@@ -76,7 +76,8 @@ def swics_heavy_ions(starttime, endtime):
                         ('VEL_SI9', u.km / u.s), ('TEMP_SI9', u.K),
                         ('VEL_SI10', u.km / u.s), ('TEMP_SI10', u.K),
                         ('VEL_FE11', u.km / u.s), ('TEMP_FE11', u.K),
-                        ('DENS_O6', u.cm**-3), ('DENS_ALPHA', u.dimensionless_unscaled),
+                        ('DENS_O6', u.cm**-3),
+                        ('DENS_ALPHA', u.dimensionless_unscaled),
                         ('DENS_C6', u.dimensionless_unscaled),
                         ('DENS_O6', u.dimensionless_unscaled),
                         ('DENS_NE8', u.dimensionless_unscaled),
@@ -262,7 +263,7 @@ class _swoopsionDownloader(util.Downloader):
         # doy = fname[5:8]
         swoops_options['FILE_NAME'] = fname
         swoops_options['FILE_PATH'] =\
-            ('/ufa/stageIngestArea/swoops/ions/bamion{}.zip_files'.format(year))
+            (f'/ufa/stageIngestArea/swoops/ions/bamion{year}.zip_files')
         _download_ulysses(swoops_options, fname, local_dir)
         return self.local_path(interval)
 

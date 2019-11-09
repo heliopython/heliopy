@@ -30,7 +30,8 @@ class ParkerSpiral:
     is the solar rotation rate, :math:`v_{sw}` is the solar wind speed,
     and :math:`r` is the radial distance from the solar center.
     """
-    @u.quantity_input(v='speed', r0='length', l0='angle', omega_sun=u.deg / u.day)
+    @u.quantity_input(v='speed', r0='length', l0='angle',
+                      omega_sun=u.deg / u.day)
     def __init__(self, v, r0, l0, omega_sun=14.713 * (u.deg / u.day)):
         self.v = v
         self.r0 = r0
