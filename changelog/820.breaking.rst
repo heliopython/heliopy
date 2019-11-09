@@ -1,0 +1,3 @@
+The `heliopy.coordinates` module has been removed completely. This only ever
+contained two coordinate frames and a single transformation, both of which are
+implemented in :mod:`sunpy.coordinates` now.
