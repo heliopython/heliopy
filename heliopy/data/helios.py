@@ -3,7 +3,8 @@ Methods for importing Helios data.
 """
 from datetime import date, time, datetime, timedelta
 import os
-import pathlib as path
+import pathlib
+import urllib.error
 from urllib.error import URLError
 from collections import OrderedDict
 import warnings
@@ -837,7 +838,57 @@ def ion_dist_single(probe, year, doy, hour, minute, second,
     return dist
 
 
-def corefit(probe, starttime, endtime, try_download=True):
+class _CoreFitDownloader(util.Downloader):
+    def __init__(self, probe):
+        self.probe = _check_probe(probe)
+        self.units = OrderedDict([
+            ('B instrument', u.dimensionless_unscaled),
+            ('Bx', u.nT), ('By', u.nT), ('Bz', u.nT),
+            ('sigma B', u.nT),
+            ('Ion instrument', u.dimensionless_unscaled),
+            ('Status', u.dimensionless_unscaled),
+            ('Tp_par', u.K), ('Tp_perp', u.K),
+            ('carrot', u.dimensionless_unscaled),
+            ('r_sun', u.AU), ('clat', u.deg),
+            ('clong', u.deg), ('earth_he_angle', u.deg),
+            ('n_p', u.cm**-3), ('vp_x', u.km / u.s),
+            ('vp_y', u.km / u.s), ('vp_z', u.km / u.s),
+            ('vth_p_par', u.km / u.s), ('vth_p_perp', u.km / u.s)])
+
+    def intervals(self, starttime, endtime):
+        return self.intervals_daily(starttime, endtime)
+
+    def fname(self, interval):
+        year = interval.start.strftime('%Y')
+        doy = interval.start.strftime('%j')
+        return f'h{self.probe}_{year}_{doy.zfill(3)}_corefit.csv'
+
+    def local_dir(self, interval):
+        year = interval.start.strftime('%Y')
+        return pathlib.Path('helios') / 'corefit' / year
+
+    def download(self, interval):
+        local_dir = self.local_path(interval).parent
+        local_dir.mkdir(parents=True, exist_ok=True)
+        year = interval.start.strftime('%Y')
+        remote_dir = (pathlib.Path('E1_experiment') /
+                      'New_proton_corefit_data_2017' /
+                      'ascii' /
+                      f'helios{self.probe}' /
+                      f'{year}')
+        remote_url = '{}{}'.format(remote_base_url, remote_dir)
+        try:
+            util._download_remote(remote_url,
+                                  self.fname(interval),
+                                  local_dir)
+        except urllib.error.HTTPError:
+            raise util.NoDataError
+
+    def load_local_file(self, interval):
+        return pd.read_csv(self.local_path(interval), parse_dates=['Time'])
+
+
+def corefit(probe, starttime, endtime):
     """
     Read in merged data set
 
@@ -857,59 +908,8 @@ def corefit(probe, starttime, endtime, try_download=True):
     data : :class:`~sunpy.timeseries.TimeSeries`
         Data set
     """
-    probe = _check_probe(probe)
-    dirs = []
-    fnames = []
-    units = OrderedDict([('B instrument', u.dimensionless_unscaled),
-                        ('Bx', u.nT), ('By', u.nT), ('Bz', u.nT),
-                        ('sigma B', u.nT),
-                        ('Ion instrument', u.dimensionless_unscaled),
-                        ('Status', u.dimensionless_unscaled),
-                        ('Tp_par', u.K), ('Tp_perp', u.K),
-                        ('carrot', u.dimensionless_unscaled),
-                        ('r_sun', u.AU), ('clat', u.deg),
-                        ('clong', u.deg), ('earth_he_angle', u.deg),
-                        ('n_p', u.cm**-3), ('vp_x', u.km / u.s),
-                        ('vp_y', u.km / u.s), ('vp_z', u.km / u.s),
-                        ('vth_p_par', u.km / u.s), ('vth_p_perp', u.km / u.s)])
-    daylist = util._daysplitinterval(starttime, endtime)
-    for day in daylist:
-        this_date = day[0]
-        # Check that data for this day exists
-        if probe == '1':
-            if this_date < date(1974, 12, 12) or this_date > date(1985, 9, 4):
-                continue
-        if probe == '2':
-            if this_date < date(1976, 1, 17) or this_date > date(1980, 3, 8):
-                continue
-
-        doy = int(this_date.strftime('%j'))
-        year = this_date.year
-        floc = (path.Path('E1_experiment') /
-                'New_proton_corefit_data_2017' /
-                'ascii' /
-                'helios{}'.format(probe) /
-                '{}'.format(year))
-        dirs.append(floc)
-        fname = 'h{}_{}_{:03}_corefit'.format(probe, year, doy)
-        fnames.append(fname)
-
-    extension = '.csv'
-    local_base_dir = path.Path(helios_dir)
-
-    def download_func(remote_base_url, local_base_dir, directory,
-                      fname, remote_fname, extension):
-        remote_url = '{}{}'.format(remote_base_url, directory)
-        util.load(fname + extension,
-                  local_base_dir / directory,
-                  remote_url)
-
-    def processing_func(f):
-        return pd.read_csv(f, parse_dates=['Time'])
-
-    return util.process(dirs, fnames, extension, local_base_dir,
-                        remote_base_url, download_func, processing_func,
-                        starttime, endtime, try_download, units=units)
+    dl = _CoreFitDownloader(probe)
+    return dl.load(starttime, endtime)
 
 
 def _4hz_filename(probe, year, doy):
@@ -938,7 +938,7 @@ def mag_4hz(probe, starttime, endtime, try_download=True):
         4Hz magnetic field data set
     """
     probe = _check_probe(probe)
-    local_base_dir = (path.Path(helios_dir) / 'E2_experiment' /
+    local_base_dir = (pathlib.Path(helios_dir) / 'E2_experiment' /
                       'Data_Cologne_Nov2016_bestdata' / 'HR' /
                       'helios{}'.format(probe))
     extension = '.asc'
@@ -1037,7 +1037,7 @@ def mag_ness(probe, starttime, endtime, try_download=True):
     probe = _check_probe(probe)
     mag_ness_url = (remote_base_url +
                     '/E3_experiment/helios{}_6sec_ness/'.format(probe))
-    local_base_dir = (path.Path(helios_dir) /
+    local_base_dir = (pathlib.Path(helios_dir) /
                       'E3_experiment' /
                       'helios{}_6sec_ness'.format(probe))
     dirs = []
