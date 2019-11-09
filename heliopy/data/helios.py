@@ -1008,7 +1008,66 @@ def mag_4hz(probe, starttime, endtime):
     return dl.load(starttime, endtime)
 
 
-def mag_ness(probe, starttime, endtime, try_download=True):
+class _NessDownloader(util.Downloader):
+    def __init__(self, probe):
+        self.probe = _check_probe(probe)
+        self.units = OrderedDict([('probe', u.dimensionless_unscaled),
+                                  ('naverage', u.dimensionless_unscaled),
+                                  ('Bx', u.nT), ('By', u.nT), ('Bz', u.nT),
+                                  ('|B|', u.nT), ('sigma_Bx', u.nT),
+                                  ('sigma_By', u.nT), ('sigma_Bz', u.nT)])
+
+    def intervals(self, starttime, endtime):
+        return self.intervals_daily(starttime, endtime)
+
+    def fname(self, interval):
+        year = int(interval.start.strftime('%Y'))
+        doy = int(interval.start.strftime('%j'))
+        return 'h{}{}{:03}.asc'.format(self.probe, year - 1900, doy)
+
+    def local_dir(self, interval):
+        year = interval.start.strftime('%Y')
+        return pathlib.Path('helios') / 'mag4hz' / year
+
+    def download(self, interval):
+        remote_dir = (pathlib.Path('E3_experiment') /
+                      'helios{}_6sec_ness'.format(self.probe) /
+                      interval.start.strftime('%Y'))
+        remote_url = f'{remote_base_url}{remote_dir}'
+
+        try:
+            util._download_remote(remote_url,
+                                  self.fname(interval),
+                                  self.local_path(interval).parent)
+        except URLError:
+            raise util.NoDataError
+
+    def load_local_file(self, interval):
+        # Read in data
+        headings = ['probe', 'year', 'doy', 'hour', 'minute', 'second',
+                    'naverage', 'Bx', 'By', 'Bz', '|B|',
+                    'sigma_Bx', 'sigma_By', 'sigma_Bz']
+
+        colspecs = [(1, 2), (2, 4), (4, 7), (7, 9), (9, 11), (11, 13),
+                    (13, 15), (15, 22), (22, 29), (29, 36), (36, 42), (42, 48),
+                    (48, 54), (54, 60)]
+        data = pd.read_fwf(self.local_path(interval), names=headings,
+                           header=None, colspecs=colspecs)
+
+        # Process data
+        data['year'] += 1900
+        # Convert date info to datetime
+        data['Time'] = pd.to_datetime(data['year'], format='%Y') + \
+            pd.to_timedelta(data['doy'] - 1, unit='d') + \
+            pd.to_timedelta(data['hour'], unit='h') + \
+            pd.to_timedelta(data['minute'], unit='m') + \
+            pd.to_timedelta(data['second'], unit='s')
+        data = data.drop(['year', 'doy', 'hour', 'minute', 'second'], axis=1)
+        data = data.set_index('Time', drop=False)
+        return data
+
+
+def mag_ness(probe, starttime, endtime):
     """
     Read in 6 second magnetic field data.
 
@@ -1028,65 +1087,8 @@ def mag_ness(probe, starttime, endtime, try_download=True):
     data : DataFrame
         6 second magnetic field data set
     """
-    probe = _check_probe(probe)
-    mag_ness_url = (remote_base_url +
-                    '/E3_experiment/helios{}_6sec_ness/'.format(probe))
-    local_base_dir = (pathlib.Path(helios_dir) /
-                      'E3_experiment' /
-                      'helios{}_6sec_ness'.format(probe))
-    dirs = []
-    fnames = []
-    extension = '.asc'
-    units = OrderedDict([('probe', u.dimensionless_unscaled),
-                         ('naverage', u.dimensionless_unscaled),
-                         ('Bx', u.nT), ('By', u.nT), ('Bz', u.nT),
-                         ('|B|', u.nT), ('sigma_Bx', u.nT),
-                         ('sigma_By', u.nT), ('sigma_Bz', u.nT)])
-    daylist = util._daysplitinterval(starttime, endtime)
-    for [day, _, _] in daylist:
-        year = day.year
-        doy = int(day.strftime('%j'))
-        dirs.append('{}'.format(day.year))
-        fnames.append('h{}{}{:03}'.format(probe, year - 1900, doy))
-
-    def download_func(remote_url, local_base_dir,
-                      directory, fname, remote_fname, extension):
-        url = mag_ness_url + str(directory)
-        local_dir = local_base_dir / directory
-        filename = fname + extension
-        try:
-            util._download_remote(url, filename, local_dir)
-        except URLError:
-            raise util.NoDataError
-
-    def processing_func(f):
-        # Read in data
-        headings = ['probe', 'year', 'doy', 'hour', 'minute', 'second',
-                    'naverage', 'Bx', 'By', 'Bz', '|B|',
-                    'sigma_Bx', 'sigma_By', 'sigma_Bz']
-
-        colspecs = [(1, 2), (2, 4), (4, 7), (7, 9), (9, 11), (11, 13),
-                    (13, 15), (15, 22), (22, 29), (29, 36), (36, 42), (42, 48),
-                    (48, 54), (54, 60)]
-        data = pd.read_fwf(f, names=headings, header=None,
-                           colspecs=colspecs)
-
-        # Process data
-        data['year'] += 1900
-        # Convert date info to datetime
-        data['Time'] = pd.to_datetime(data['year'], format='%Y') + \
-            pd.to_timedelta(data['doy'] - 1, unit='d') + \
-            pd.to_timedelta(data['hour'], unit='h') + \
-            pd.to_timedelta(data['minute'], unit='m') + \
-            pd.to_timedelta(data['second'], unit='s')
-        data = data.drop(['year', 'doy', 'hour', 'minute', 'second'], axis=1)
-        data = data.set_index('Time', drop=False)
-        return data
-
-    return util.process(dirs, fnames, extension, local_base_dir,
-                        remote_base_url, download_func, processing_func,
-                        starttime, endtime, units=units,
-                        try_download=try_download)
+    dl = _NessDownloader(probe)
+    return dl.load(starttime, endtime)
 
 
 def _docstring(identifier, extra):
