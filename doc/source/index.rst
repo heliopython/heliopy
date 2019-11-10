@@ -20,6 +20,5 @@ Module documentation
    :maxdepth: 1
 
    reference/data/index
-   reference/coords/index
    reference/spice/index
    reference/models/index
