@@ -36,7 +36,7 @@ def mag_h0(starttime, endtime):
     for day in daylist:
         date = day[0]
         filename = "dscovr_h0_mag_{}{:02}{:02}_v01".format(
-                     date.year, date.month, date.day)
+            date.year, date.month, date.day)
         fnames.append(filename)
         this_relative_dir = 'h0/mag/' + str(date.year)
         dirs.append(this_relative_dir)
@@ -46,10 +46,10 @@ def mag_h0(starttime, endtime):
 
     def download_func(remote_base_url, local_base_dir,
                       directory, fname, remote_fname, extension):
-            remote_url = remote_base_url + str(directory)
-            util.load(fname + extension,
-                      local_base_dir / directory,
-                      remote_url)
+        remote_url = remote_base_url + str(directory)
+        util.load(fname + extension,
+                  local_base_dir / directory,
+                  remote_url)
 
     def processing_func(cdf):
         df = util.cdf2df(cdf, 'Epoch1', ignore=ignore)
