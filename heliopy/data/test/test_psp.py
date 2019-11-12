@@ -13,5 +13,11 @@ endtime = datetime(2018, 12, 19, 1)
 
 
 def test_sweap_spc_l3():
-    df = psp.sweap_spc_l3(starttime, endtime)
+    with pytest.warns(Warning, match='has missing units'):
+        df = psp.sweap_spc_l3(starttime, endtime)
+    check_data_output(df)
+
+
+def test_fields_mag_rtn_1min():
+    df = psp.fields_mag_rtn_1min(starttime, endtime)
     check_data_output(df)
