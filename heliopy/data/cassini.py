@@ -89,7 +89,7 @@ class _mag1minDownloader(util.Downloader):
         local_dir.mkdir(parents=True, exist_ok=True)
         year = interval.start.strftime('%Y')
         base_url = ('http://pds-ppi.igpp.ucla.edu/ditdos/download?'
-                    'id=pds://PPI/CO-E_SW_J_S-MAG-4-SUMM-1MINAVG-V1.0/DATA')
+                    'id=pds://PPI/CO-E_SW_J_S-MAG-4-SUMM-1MINAVG-V2.0/DATA')
         url = '{}/{}'.format(base_url, year)
         util._download_remote(url,
                               self.fname(interval),
