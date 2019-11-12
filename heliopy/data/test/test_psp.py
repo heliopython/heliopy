@@ -8,8 +8,8 @@ from .util import check_data_output
 pytest.mark.data()
 
 
-starttime = datetime(2018, 10, 25)
-endtime = datetime(2018, 10, 25, 1)
+starttime = datetime(2018, 12, 19)
+endtime = datetime(2018, 12, 19, 1)
 
 
 def test_sweap_spc_l3():
