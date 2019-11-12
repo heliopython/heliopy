@@ -100,6 +100,8 @@ class Downloader(abc.ABC):
         # Attach units
         if local_path.suffix == '.cdf':
             cdf = _load_local(local_path_successful)
+            if not hasattr(self, 'units'):
+                self.units = None
             self.units = cdf_units(cdf, manual_units=self.units)
         if not hasattr(self, 'warn_missing_units'):
             self.warn_missing_units = True
