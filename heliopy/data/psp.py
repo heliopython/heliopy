@@ -4,8 +4,6 @@ Methods for importing data from Parker Solar Probe.
 import pathlib
 import urllib.error
 
-import astropy.units as u
-from heliopy.data import cdasrest
 from heliopy.data import util
 
 
@@ -64,7 +62,6 @@ class _FIELDSmag_RTN_1min_Downloader(_FIELDSDownloader):
 
     def local_dir(self, interval):
         year = interval.start.strftime('%Y')
-        month = interval.start.strftime('%m')
         return pathlib.Path('psp') / 'fields' / 'l2' / 'mag_rtn_1min' / year
 
     def fname(self, interval):
