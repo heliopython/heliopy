@@ -169,7 +169,7 @@ def mag_hires(starttime, endtime, try_download=True):
         Requested data
     """
     remote_base_url = ('http://pds-ppi.igpp.ucla.edu/ditdos/download?id='
-                       'pds://PPI/CO-E_SW_J_S-MAG-3-RDR-FULL-RES-V1.0/DATA')
+                       'pds://PPI/CO-E_SW_J_S-MAG-3-RDR-FULL-RES-V2.0/DATA')
     dirs = []
     fnames = []
     extension = '.TAB'

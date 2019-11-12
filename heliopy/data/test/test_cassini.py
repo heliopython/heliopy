@@ -5,8 +5,6 @@ from .util import check_data_output
 pytest.mark.data()
 cassini = pytest.importorskip("heliopy.data.cassini")
 
-# Server down
-'''
 def test_mag_hires():
     starttime = datetime(2008, 6, 1, 0, 0, 0)
     endtime = datetime(2008, 6, 2, 1, 0, 0)
@@ -24,7 +22,6 @@ def test_mag_hires():
     endtime = datetime(2040, 5, 2)
     with pytest.raises(RuntimeError):
         df = cassini.mag_hires(starttime, endtime)
-'''
 
 
 def test_mag_1min():
