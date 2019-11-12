@@ -156,6 +156,8 @@ def cdf_dict(unit_string):
                         ('(10=He_OK,>1=P_OK)', u.dimensionless_unscaled),
                         ('(1=NTMS,2=TMS,3=AQM)', u.dimensionless_unscaled),
                         ('(1=SW,2=MULT,3=NSW)', u.dimensionless_unscaled),
+                        ('None', u.dimensionless_unscaled),
+                        ('none', u.dimensionless_unscaled),
                         ('8=IMP8', u.dimensionless_unscaled),
                         ('microW m^-2', u.mW * u.m**-2),
                         ('years', u.yr),

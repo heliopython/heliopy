@@ -11,6 +11,7 @@ import io
 import os
 import logging
 import pathlib as path
+import requests
 import re
 import shutil
 import sys
@@ -100,6 +101,8 @@ class Downloader(abc.ABC):
         # Attach units
         if local_path.suffix == '.cdf':
             cdf = _load_local(local_path_successful)
+            if not hasattr(self, 'units'):
+                self.units = None
             self.units = cdf_units(cdf, manual_units=self.units)
         if not hasattr(self, 'warn_missing_units'):
             self.warn_missing_units = True
@@ -977,6 +980,9 @@ def _download_remote(remote_url, filename, local_dir):
     dl_path = path.Path(local_dir) / filename
     remote_url = _fix_url(remote_url)
     remote_url = remote_url + '/' + filename
+    with requests.head(remote_url) as r:
+        if r.status_code != requests.codes.ok:
+            raise NoDataError
     print(f'Downloading {remote_url} to {dl_path}')
     fname, _ = urlreq.urlretrieve(remote_url,
                                   filename=str(dl_path),
