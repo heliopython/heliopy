@@ -1,3 +1,0 @@
-All functions in :mod:`heliopy.data.wind` now download data in monthly
-(as opposed to daily) intervals. You may need to delete existing data to
-correctly load complete datasets.
