@@ -3,10 +3,10 @@ import pytest
 from .util import check_data_output
 
 pytest.mark.data()
-pytest.skip("Cassini tests do not work on CI")
 cassini = pytest.importorskip("heliopy.data.cassini")
 
 
+@pytest.mark.skip("Cassini tests do not work on CI")
 def test_mag_hires():
     starttime = datetime(2002, 2, 1)
     endtime = datetime(2002, 2, 1, 1)
@@ -26,6 +26,7 @@ def test_mag_hires():
         df = cassini.mag_hires(starttime, endtime)
 
 
+@pytest.mark.skip("Cassini tests do not work on CI")
 def test_mag_1min():
     starttime = datetime(2008, 6, 1)
     endtime = datetime(2008, 6, 2, 23)
