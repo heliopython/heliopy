@@ -1,3 +1,0 @@
-The new `heliopy.data.psp` module contains methods to automatically download
-and load Parker Solar Probe data. Currently SWEAP SPC L3 data and FIELDS MAG
-fluxgate data are available.

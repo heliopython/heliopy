@@ -1,3 +1,0 @@
-A new module :mod:`heliopy.heliopshere` has been added to contain
-heliospheric concepts, the first one of which is
-:class:`heliopy.heliosphere.ParkerSpiral`.

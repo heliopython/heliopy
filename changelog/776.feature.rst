@@ -1,9 +1,0 @@
-:class:`heliopy.spice.Trajectory` objects now have the
-:attr:`~heliopy.spice.Trajectory.coords` property, that contains the trajectory
-coordinates as an `~astropy.coordinates.SkyCoord` object.
-
-In order to do this
-currently only the 'J2000' and 'IAU_SUN' spice frames are supported as they
-have direct mappings to Sunpy/Astropy coordinate systems, but it is possible
-to generate coordinates in either of these systems and then transform them
-post-hoc to another Sunpy/Astropy coordinate system.

@@ -1,9 +1,0 @@
-A handful of data download functions have migrated to using the CDAS restful
-service, and have therefore had their call signatures changed. In particular
-the following functions have lost their ``try_download`` keyword argument:
-  - :func:`heliopy.data.ace.swics_heavy_ions`
-  - :func:`heliopy.data.ace.swics_abundances`
-  - :func:`heliopy.data.ulysses.fgm_hires` (748)
-  - :func:`heliopy.data.ulysses.swoops_ions` (761)
-  - :func:`heliopy.data.omni.low` (765)
-  - `heliopy.data.imp.merged` (771)

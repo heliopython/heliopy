@@ -1,1 +1,0 @@
-:func:`heliopy.data.wind.swe_h3()` has been added.

@@ -1,3 +1,60 @@
+Heliopy 0.9.0 (2019-11-13)
+==========================
+
+Features
+--------
+
+- A new module :mod:`heliopy.models` has been added to contain
+  heliospheric concepts, the first one of which is
+  :class:`heliopy.models.ParkerSpiral`. (`#768 <https://github.com/heliopython/heliopy/pull/768>`__)
+- All functions in :mod:`heliopy.data.wind` now download data in monthly
+  (as opposed to daily) intervals. You may need to delete existing data to
+  correctly load complete datasets. (`#772 <https://github.com/heliopython/heliopy/pull/772>`__)
+- :class:`heliopy.spice.Trajectory` objects now have the
+  :attr:`~heliopy.spice.Trajectory.coords` property, that contains the trajectory
+  coordinates as an :class:`~astropy.coordinates.SkyCoord` object.
+
+  In order to do this
+  currently only the 'J2000' and 'IAU_SUN' spice frames are supported as they
+  have direct mappings to Sunpy/Astropy coordinate systems, but it is possible
+  to generate coordinates in either of these systems and then transform them
+  post-hoc to another Sunpy/Astropy coordinate system. (`#776 <https://github.com/heliopython/heliopy/pull/776>`__)
+- :func:`heliopy.data.wind.swe_h3()` has been added. (`#800 <https://github.com/heliopython/heliopy/pull/800>`__)
+- :func:`heliopy.data.wind.threedp_elpd()` has been added. (`#802 <https://github.com/heliopython/heliopy/pull/802>`__)
+- The new `heliopy.data.psp` module contains methods to automatically download
+  and load Parker Solar Probe data. Currently SWEAP SPC L3 data and FIELDS MAG
+  fluxgate data are available. (`#822 <https://github.com/heliopython/heliopy/pull/822>`__)
+
+
+Backwards Incompatible Changes
+------------------------------
+
+- A handful of data download functions have migrated to using the CDAS restful
+  service, and have therefore had their call signatures changed. In particular
+  the following functions have lost their ``try_download`` keyword argument:
+  :func:`heliopy.data.ulysses.swics_heavy_ions` (`#747 <https://github.com/heliopython/heliopy/pull/747>`__),
+  :func:`heliopy.data.ulysses.swics_abundances` (`#747 <https://github.com/heliopython/heliopy/pull/747>`__),
+  :func:`heliopy.data.ulysses.fgm_hires` (`#748 <https://github.com/heliopython/heliopy/pull/748>`__),
+  :func:`heliopy.data.ulysses.swoops_ions` (`#761 <https://github.com/heliopython/heliopy/pull/761>`__),
+  :func:`heliopy.data.omni.low` (`#765 <https://github.com/heliopython/heliopy/pull/765>`__),
+  :func:`heliopy.data.imp.merged` (`#771 <https://github.com/heliopython/heliopy/pull/771>`__)
+- The times stored in the ``time`` property of :class:`heliopy.spice.Trajectory`
+  are now always parsed by `astropy.time.Time` before being stored, and are
+  always returned as a `~astropy.time.Time` object, no matter what format they
+  were supplied in. (`#794 <https://github.com/heliopython/heliopy/pull/794>`__)
+- The `heliopy.coordinates` module has been removed completely. This only ever
+  contained two coordinate frames and a single transformation, both of which are
+  implemented in :mod:`sunpy.coordinates` now. (`#820 <https://github.com/heliopython/heliopy/pull/820>`__)
+
+
+Bug Fixes
+---------
+
+- Fixed a bug in loading .cdf data where either all files were either converted
+  to .hdf files or at least one of the intervals of data is missing. (`#768 <https://github.com/heliopython/heliopy/pull/768>`__)
+- Fixed downloading narrow time intervals of MMS data. (`#810 <https://github.com/heliopython/heliopy/pull/810>`__)
+
+
 Heliopy 0.8.2 (2019-10-21)
 ==========================
 
