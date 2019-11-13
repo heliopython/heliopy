@@ -45,6 +45,9 @@ Backwards Incompatible Changes
 - The `heliopy.coordinates` module has been removed completely. This only ever
   contained two coordinate frames and a single transformation, both of which are
   implemented in :mod:`sunpy.coordinates` now. (`#820 <https://github.com/heliopython/heliopy/pull/820>`__)
+- :mod:`heliopy.data.cassini` data download methods have been updated to use the newly released V2
+  Cassini MAG data. You may need to delete old data to be able to download the
+  newer data.
 
 
 Bug Fixes
