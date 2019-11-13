@@ -48,6 +48,9 @@ class _SWEAPL3Downloader(_SWEAPDownloader):
 
 
 def sweap_spc_l3(starttime, endtime):
+    """
+    SWEAP SPC proton and alpha particle moments and fits.
+    """
     dl = _SWEAPL3Downloader()
     return dl.load(starttime, endtime)
 
@@ -70,5 +73,8 @@ class _FIELDSmag_RTN_1min_Downloader(_FIELDSDownloader):
 
 
 def fields_mag_rtn_1min(starttime, endtime):
+    """
+    1 minute averaged magnetic field data.
+    """
     dl = _FIELDSmag_RTN_1min_Downloader()
     return dl.load(starttime, endtime)
