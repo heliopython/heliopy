@@ -3,6 +3,7 @@ import pytest
 from .util import check_data_output
 
 pytest.mark.data()
+pytest.skip("Cassini tests do not work on CI")
 cassini = pytest.importorskip("heliopy.data.cassini")
 
 
