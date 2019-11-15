@@ -33,10 +33,6 @@ class _PSPDownloader(util.Downloader):
 
 # SWEAP classes/methods
 class _SWEAPDownloader(_PSPDownloader):
-    badvalues = None
-
-
-class _SWEAPL3Downloader(_SWEAPDownloader):
     badvalues = [-1e31]
     units = {'u/e': u.dimensionless_unscaled}
     # Fill in some missing units
@@ -53,20 +49,33 @@ class _SWEAPL3Downloader(_SWEAPDownloader):
             units[f'v{j}_moment_RTN_deltahigh_{i}'] = u.km / u.s
             units[f'v{j}_moment_RTN_deltalow_{i}'] = u.km / u.s
 
+    def __init__(self, level):
+        assert level in (2, 3)
+        self.level = level
+
     def local_dir(self, interval):
         year = interval.start.strftime('%Y')
-        return pathlib.Path('psp') / 'sweap' / 'spc' / 'l3' / 'l3i' / year
+        return (pathlib.Path('psp') / 'sweap' / 'spc' /
+                f'l{self.level}' / f'l{self.level}i' / year)
 
     def fname(self, interval):
         datestr = interval.start.strftime('%Y%m%d')
-        return f'psp_swp_spc_l3i_{datestr}_v01.cdf'
+        return f'psp_swp_spc_l{self.level}i_{datestr}_v01.cdf'
+
+
+def sweap_spc_l2(starttime, endtime):
+    """
+    SWEAP SPC proton and alpha particle moments and fits.
+    """
+    dl = _SWEAPDownloader(level=2)
+    return dl.load(starttime, endtime)
 
 
 def sweap_spc_l3(starttime, endtime):
     """
     SWEAP SPC proton and alpha particle moments and fits.
     """
-    dl = _SWEAPL3Downloader()
+    dl = _SWEAPDownloader(level=3)
     return dl.load(starttime, endtime)
 
 

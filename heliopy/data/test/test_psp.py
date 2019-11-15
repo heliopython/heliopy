@@ -12,6 +12,11 @@ starttime = datetime(2018, 12, 19)
 endtime = datetime(2018, 12, 19, 1)
 
 
+def test_sweap_spc_l2():
+    df = psp.sweap_spc_l2(starttime, endtime)
+    check_data_output(df)
+
+
 def test_sweap_spc_l3():
     df = psp.sweap_spc_l3(starttime, endtime)
     check_data_output(df)
