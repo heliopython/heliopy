@@ -13,8 +13,7 @@ endtime = datetime(2018, 12, 19, 1)
 
 
 def test_sweap_spc_l3():
-    with pytest.warns(Warning, match='has missing units'):
-        df = psp.sweap_spc_l3(starttime, endtime)
+    df = psp.sweap_spc_l3(starttime, endtime)
     check_data_output(df)
 
 
