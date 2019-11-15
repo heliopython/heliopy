@@ -1,6 +1,7 @@
 """
 Methods for importing data from Parker Solar Probe.
 """
+import astropy.units as u
 import pathlib
 import urllib.error
 
@@ -37,6 +38,20 @@ class _SWEAPDownloader(_PSPDownloader):
 
 class _SWEAPL3Downloader(_SWEAPDownloader):
     badvalues = [-1e31]
+    units = {'u/e': u.dimensionless_unscaled}
+    # Fill in some missing units
+    for i in range(3):
+        for j in ['p', 'p1', 'a', '3']:
+            units[f'v{j}_fit_SC_{i}'] = u.km / u.s
+            units[f'v{j}_fit_SC_uncertainty_{i}'] = u.km / u.s
+            units[f'v{j}_fit_RTN_{i}'] = u.km / u.s
+            units[f'v{j}_fit_RTN_uncertainty_{i}'] = u.km / u.s
+            units[f'v{j}_moment_SC_{i}'] = u.km / u.s
+            units[f'v{j}_moment_SC_deltahigh_{i}'] = u.km / u.s
+            units[f'v{j}_moment_SC_deltalow_{i}'] = u.km / u.s
+            units[f'v{j}_moment_RTN_{i}'] = u.km / u.s
+            units[f'v{j}_moment_RTN_deltahigh_{i}'] = u.km / u.s
+            units[f'v{j}_moment_RTN_deltalow_{i}'] = u.km / u.s
 
     def local_dir(self, interval):
         year = interval.start.strftime('%Y')
