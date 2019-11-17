@@ -12,16 +12,9 @@ starttime = datetime(2018, 12, 19)
 endtime = datetime(2018, 12, 19, 1)
 
 
-def test_sweap_spc_l2():
-    df = psp.sweap_spc_l2(starttime, endtime)
-    check_data_output(df)
-
-
-def test_sweap_spc_l3():
-    df = psp.sweap_spc_l3(starttime, endtime)
-    check_data_output(df)
-
-
-def test_fields_mag_rtn_1min():
-    df = psp.fields_mag_rtn_1min(starttime, endtime)
+@pytest.mark.parametrize('func', [psp.sweap_spc_l2,
+                                  psp.sweap_spc_l3,
+                                  psp.fields_mag_rtn_1min])
+def test_psp(func):
+    df = func(starttime, endtime)
     check_data_output(df)
