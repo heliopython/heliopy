@@ -122,12 +122,17 @@ class Trajectory:
             https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/frames.html
             for a list of frames.
         """
+        times = time.Time(times)
         # Spice needs a funny set of times
         fmt = '%Y %b %d, %H:%M:%S'
         spice_times = [spiceypy.str2et(time.strftime(fmt)) for time in times]
-        # 'None' specifies no light-travel time correction
+        light_travel_correction = 'None'
+
+        # Do the calculation
         pos_vel, lightTimes = spiceypy.spkezr(
-            self.target, spice_times, frame, 'None', observing_body)
+            self.target, spice_times, frame, light_travel_correction,
+            observing_body)
+
         positions = np.array(pos_vel)[:, :3] * u.km
         velocities = np.array(pos_vel)[:, 3:] * u.km / u.s
 
