@@ -109,9 +109,8 @@ class Trajectory:
 
         Parameters
         ----------
-        times : iterable of `datetime`
-            An iterable (e.g. a `list`) of `datetime` objects at which the
-            positions are calculated.
+        times : time like
+            An object that can be parsed by `~astropy.time.Time`.
         observing_body : str or int
             The observing body. Output position vectors are given relative to
             the position of this body. See
