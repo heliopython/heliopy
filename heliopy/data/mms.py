@@ -798,12 +798,12 @@ class MMSDownloader(util.Downloader):
             optdesc:  optional filename descriptor
             tstart:   start time of file
             vX.Y.Z    file version, with X, Y, and Z version numbers
-
+        
         Parameters
         ----------
         filename : str
             An MMS file name
-
+        
         Returns
         -------
         parts : tuple
@@ -827,7 +827,7 @@ class MMSDownloader(util.Downloader):
     def post(self):
         '''
         Retrieve data from the SDC.
-
+        
         Returns
         -------
         r : `session.response`
@@ -851,7 +851,7 @@ class MMSDownloader(util.Downloader):
         '''
         build a dictionary of key-value pairs that serve as the URL
         query string.
-
+        
         Returns
         -------
         query : dict
@@ -905,15 +905,15 @@ class MMSDownloader(util.Downloader):
     def remote2localnames(self, remote_names):
         '''
         Convert remote file names to local file names.
-
+        
         Directories of a remote file name are separated by the '/' character,
         as in a web address.
-
+        
         Parameters
         ----------
         remote_names : list
             Remote file names returned by FileNames.
-
+        
         Returns
         -------
         local_names : list
@@ -937,7 +937,7 @@ class MMSDownloader(util.Downloader):
     def search(self):
         '''
         Search for files locally and at the SDC.
-
+        
         Returns
         -------
         files : tuple
@@ -974,7 +974,14 @@ class MMSDownloader(util.Downloader):
 
 
     def version_info(self):
-        """Obtain version information from the SDC."""
+        '''
+        Obtain version information from the SDC.
+        
+        Returns
+        -------
+        vinfo : dict
+            Version information regarding the requested files
+        '''
         self._info_type = 'version_info'
         response = self.Get()
         return response.json()
@@ -986,7 +993,7 @@ def construct_file_names(*args, data_type='science', **kwargs):
 
     MMS file names follow the convention
         sc_instr_mode_level[_optdesc]_tstart_vX.Y.Z.cdf
-
+    
     Parameters
     ----------
         *args : dict
@@ -999,7 +1006,7 @@ def construct_file_names(*args, data_type='science', **kwargs):
             construct_selections_file_names.
         **kwargs : dict
             Keywords to be passed along.
-
+    
     Returns
     -------
         fnames : list
@@ -1018,10 +1025,10 @@ def construct_selections_file_names(data_type, tstart='*', gls_type=None):
     '''
     Construct a SITL selections file name compliant with
     MMS file name format guidelines.
-
+    
     MMS SITL selection file names follow the convention
         data_type_[gls_type]_tstart.sav
-
+    
     Parameters
     ----------
         data_type : str, list, tuple
@@ -1033,7 +1040,7 @@ def construct_selections_file_names(data_type, tstart='*', gls_type=None):
         gls_type : str, list
             Type of ground-loop selections. Possible values are:
             mp-dl-unh.
-
+    
     Returns
     -------
         fnames : list
@@ -1080,7 +1087,7 @@ def construct_science_file_names(sc, instr=None, mode=None, level=None,
 
     MMS science file names follow the convention
         sc_instr_mode_level[_optdesc]_tstart_vX.Y.Z.cdf
-
+    
     Parameters
     ----------
         sc : str, list, tuple
@@ -1103,7 +1110,7 @@ def construct_science_file_names(sc, instr=None, mode=None, level=None,
             Optional file name descriptor. If multiple parts,
             they should be separated by hyphens ("-"), not under-
             scores ("_").
-
+    
     Returns
     -------
         fnames : str, list
@@ -1169,7 +1176,7 @@ def construct_path(*args, data_type='science', **kwargs):
         selections: sitl/type_selections_[gls_type_]
         brst: sc/instr/mode/level[/optdesc]/<year>/<month>/<day>
         srvy: sc/instr/mode/level[/optdesc]/<year>/<month>
-
+    
     Parameters
     ----------
         *args : dict
@@ -1182,7 +1189,7 @@ def construct_path(*args, data_type='science', **kwargs):
             construct_selections_file_names.
         **kwargs : dict
             Keywords to be passed along.
-
+    
     Returns
     -------
     paths : list
@@ -1207,7 +1214,7 @@ def construct_selections_path(data_type, tstart='*', gls_type=None,
 
     MMS SITL selections paths follow the convention
         sitl/[data_type]_selections[_gls_type]/
-
+    
     Parameters
     ----------
         data_type : str, list, tuple
@@ -1223,7 +1230,7 @@ def construct_selections_path(data_type, tstart='*', gls_type=None,
             Root of the SDC-like directory structure.
         files : bool
             If True, file names are associated with each path.
-
+    
     Returns
     -------
     paths : list
@@ -1281,11 +1288,11 @@ def construct_science_path(sc, instr=None, mode=None, level=None, tstart='*',
     '''
     Construct a directory structure compliant with
     MMS path guidelines for science files.
-
+    
     MMS science paths follow the convention
         brst: sc/instr/mode/level[/optdesc]/<year>/<month>/<day>
         srvy: sc/instr/mode/level[/optdesc]/<year>/<month>
-
+    
     Parameters
     ----------
         sc : str, list, tuple
@@ -1310,7 +1317,7 @@ def construct_science_path(sc, instr=None, mode=None, level=None, tstart='*',
             If True, file names will be generated and appended to the
             paths. The file tstart will be "YYYYMMDD*" (i.e. the date
             with an asterisk) and the version number will be "*".
-
+    
     Returns
     -------
     fnames : str, list
@@ -1434,11 +1441,11 @@ def file_start_time(file_name):
 def filename2path(fname, root=''):
     """
     Convert an MMS file name to an MMS path.
-
+    
     MMS paths take the form
-
+    
         sc/instr/mode/level[/optdesc]/YYYY/MM[/DD/]
-
+    
     where the optional descriptor [/optdesc] is included if it is also in the
     file name and day directory [/DD] is included if mode='brst'.
 
@@ -1447,7 +1454,7 @@ def filename2path(fname, root=''):
         File name to be turned into a path.
     root : str
         Absolute directory
-
+    
     Returns
     -------
     path : list
@@ -1479,7 +1486,7 @@ def filename2path(fname, root=''):
 def filter_time(fnames, start_date, end_date):
     """
     Filter files by their start times.
-
+    
     Parameters
     ----------
     fnames : str, list
@@ -1488,7 +1495,7 @@ def filter_time(fnames, start_date, end_date):
         Start date of time interval, formatted as '%Y-%m-%dT%H:%M:%S'
     end_date : str
         End date of time interval, formatted as '%Y-%m-%dT%H:%M:%S'
-
+    
     Returns
     -------
     paths : list
@@ -1549,21 +1556,28 @@ def filter_time(fnames, start_date, end_date):
 
 
 def filter_version(files, latest=None, version=None, min_version=None):
-    """
+    '''
     Filter file names according to their version numbers.
-
-    Arguments:
-        files (str,list):    File names to be turned into paths.
-        latest (bool):       If True, the latest version of each file type is
-                             returned. if `version` and `min_version` are not
-                             set, this is the default.
-        version (str):       Only files with this version are returned.
-        min_version (str):   All files with version greater or equal to this
-                             are returned.
-
-    Returns:
-        filtered_files (list):     The files remaining after applying filter conditions.
-    """
+    
+    Parameters
+    ----------
+    files : str, list
+        File names to be turned into paths.
+    latest : bool
+        If True, the latest version of each file type is
+        returned. if `version` and `min_version` are not
+        set, this is the default.
+    version : str
+        Only files with this version are returned.
+    min_version : str
+        All files with version greater or equal to this
+        are returned.
+    
+    Returns
+    -------
+    filtered_files : list
+        The files remaining after applying filter conditions.
+    '''
 
     if version is None and min is None:
         latest = True
@@ -1625,12 +1639,12 @@ def filter_version(files, latest=None, version=None, min_version=None):
 def parse_file_names(fnames):
     """
     Parse file name(s) compliant with MMS file name format guidelines.
-
+    
     Parameters
     ----------
     fname : str, list
         File names to be parsed.
-
+    
     Returns
     -------
     parts : list
@@ -1673,12 +1687,12 @@ def parse_file_names(fnames):
 def parse_time(times):
     """
     Parse the start time of MMS file names.
-
+    
     Parameters
     ----------
     times : str, list
         Start times of file names.
-
+    
     Returns
     -------
     parts : list
@@ -1795,11 +1809,11 @@ def sitl_selections(data_type='abs_selections', gls_type='',
 def sort_files(files):
     """
     Sort MMS file names by data product and time.
-
+    
     Parameters:
     files : str, list
         Files to be sorted
-
+    
     Returns
     -------
     sorted : tuple
@@ -1856,11 +1870,11 @@ def _validate_data_rate(data_rate):
 def available_files(probe, instrument, starttime, endtime, data_rate=''):
     """
     Get available MMS files as a list.
-
+    
     See the "Query paramters" section of
     https://lasp.colorado.edu/mms/sdc/public/about/how-to/ for more information
     on the query paramters.
-
+    
     Parameters
     ----------
     probe : int or str
@@ -1874,7 +1888,7 @@ def available_files(probe, instrument, starttime, endtime, data_rate=''):
         End time.
     data_rate : str, optional
         Data rate. Must be in ``['slow', 'fast', 'brst', 'srvy']``
-
+    
     Returns
     -------
     list
