@@ -19,5 +19,5 @@ def test_spiral_rot_rate():
     spiral2 = ParkerSpiral(v, r0, l0, 14 * u.deg / u.day)
 
     long1 = spiral1.longitude(1 * u.au)
-    long2 = spiral1.longitude(2 * u.au)
+    long2 = spiral2.longitude(2 * u.au)
     assert long1 > long2

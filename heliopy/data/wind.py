@@ -39,6 +39,19 @@ def swe_h1(starttime, endtime):
 swe_h1.__doc__ = _docstring(
     'WI_H1_SWE', '92-second Solar Wind Alpha and Proton Anisotropy Analysis')
 
+breakpoint()
+
+def swe_h3(starttime, endtime):
+    identifier = 'WI_H3_SWE'
+    badvalues = 99999.9
+    units = {'ChisQ_DOF_nonlin': u.dimensionless_unscaled}
+    return _wind(starttime, endtime, identifier,
+                 badvalues=badvalues, units=units)
+
+
+swe_h3.__doc__ = _docstring(
+    'WI_H1_SWE', '92-second Solar Wind Alpha and Proton Anisotropy Analysis')
+
 
 def mfi_h0(starttime, endtime):
     identifier = 'WI_H0_MFI'
