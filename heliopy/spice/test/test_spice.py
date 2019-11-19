@@ -1,29 +1,51 @@
-import heliopy.data.spice as spicedata
 from datetime import datetime, timedelta
+
+from astropy.time import Time
+from astropy.utils.exceptions import ErfaWarning
 import numpy as np
 import pytest
 
-try:
-    import spiceypy
-    import heliopy.spice as spice
-    has_spice = True
-except ModuleNotFoundError:
-    has_spice = False
+import heliopy.spice as spice
+import heliopy.data.spice as spicedata
 
 
-@pytest.mark.skipif(not has_spice, reason='Importing spice module failed')
-def test_spice():
+@pytest.fixture
+def solo_trajectory():
     orbiter_kernel = spicedata.get_kernel('solo_2020')
     spice.furnish(orbiter_kernel)
-    orbiter = spice.Trajectory('Solar Orbiter')
+    return spice.Trajectory('Solar Orbiter')
 
-    # Generate 1000 days of data
+
+@pytest.fixture
+def times():
     starttime = datetime(2020, 3, 1)
-    times = [starttime + n * timedelta(days=1) for n in range(1000)]
+    return [starttime + n * timedelta(days=1) for n in range(1000)]
 
-    orbiter.generate_positions(times, 'Sun', 'ECLIPJ2000')
-    assert orbiter.times == times
+
+def test_spice(solo_trajectory, times):
+    with pytest.warns(ErfaWarning):
+        solo_trajectory.generate_positions(times, 'Sun', 'ECLIPJ2000')
+        assert (solo_trajectory.times == Time(times)).all()
 
     # Check it works with numpy arrays too
     times = np.array(times)
-    orbiter.generate_positions(times, 'Sun', 'ECLIPJ2000')
+    with pytest.warns(ErfaWarning):
+        solo_trajectory.generate_positions(times, 'Sun', 'ECLIPJ2000')
+
+
+def test_coords(solo_trajectory, times):
+    # Smoke test that coords work
+
+    # Catch ErfaWarnings for dates long in the future
+    with pytest.warns(ErfaWarning):
+        solo_trajectory.generate_positions(times, 'Sun', 'J2000')
+        solo_trajectory.coords
+
+    with pytest.warns(ErfaWarning):
+        solo_trajectory.generate_positions(times, 'Sun', 'IAU_SUN')
+        solo_trajectory.coords
+
+    with pytest.warns(ErfaWarning):
+        solo_trajectory.generate_positions(times, 'Sun', 'ECLIPJ2000')
+    with pytest.raises(ValueError):
+        solo_trajectory.coords

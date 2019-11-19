@@ -156,7 +156,11 @@ def cdf_dict(unit_string):
                         ('(10=He_OK,>1=P_OK)', u.dimensionless_unscaled),
                         ('(1=NTMS,2=TMS,3=AQM)', u.dimensionless_unscaled),
                         ('(1=SW,2=MULT,3=NSW)', u.dimensionless_unscaled),
+                        ('None', u.dimensionless_unscaled),
+                        ('none', u.dimensionless_unscaled),
                         ('8=IMP8', u.dimensionless_unscaled),
+                        (' index value', u.dimensionless_unscaled),
+                        (' none', u.dimensionless_unscaled),
                         ('microW m^-2', u.mW * u.m**-2),
                         ('years', u.yr),
                         ('(2038=Yr0)', u.yr),
@@ -172,7 +176,9 @@ def cdf_dict(unit_string):
                         ('km/sec (from fits)', u.km / u.s),
                         ('km/sec (from moments)', u.km / u.s),
                         ('km (>200)', u.km),
-                        ('ionic charge', u.electron),
+                        ('ionic charge', u.dimensionless_unscaled),
+                        ('u/e', u.dimensionless_unscaled),
+                        ('Volts', u.V),
                         ('earth radii', u.earthRad),
                         ('Re', u.earthRad),
                         ('Earth Radii', u.earthRad),
@@ -199,7 +205,9 @@ def cdf_dict(unit_string):
                         ('nT (>200)', u.nT),
                         ('msec', u.ms),
                         ('milliseconds', u.ms),
-                        ('ionic charge', ionic_charge)])
+                        ('ionic charge', ionic_charge),
+                        ('#/cm2-ster-eV-sec',
+                         1 / (u.cm**2 * u.sr * u.eV * u.s))])
     try:
         return units[unit_string]
     except KeyError:

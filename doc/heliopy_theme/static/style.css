@@ -27,6 +27,10 @@ a:hover {
   color: #00438a;
 }
 
+ul {
+  padding-left: 1.5em;
+}
+
 p.content {
   line-height: 24px;
 }
@@ -381,6 +385,10 @@ pre {
   margin: 30px 0;
   background-color: white;
   border: 1px solid #e3e3e3;
+}
+
+dl.attribute code.descname, dl.method code.descname {
+  background-color: #fcdf9c;
 }
 
 /* Warning */

@@ -21,6 +21,7 @@ own sub-module:
    messenger
    mms
    omni
+   psp
    ulysses
    wind
 

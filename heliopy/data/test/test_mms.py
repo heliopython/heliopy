@@ -41,3 +41,12 @@ def test_fpi_dis_dist(probe):
 def test_fpi_des_dist(probe):
     df = mms.fpi_des_dist(probe, 'fast', starttime, endtime)
     check_data_output(df)
+
+
+def test_narrow_interval():
+    # Check that a narrow time interval downloads properly
+    starttime = datetime(2017, 7, 11, 22, 30)
+    endtime = datetime(2017, 7, 11, 22, 36)
+
+    data = mms.fpi_dis_moms(1, 'fast', starttime, endtime)
+    check_data_output(data)

@@ -1,15 +1,7 @@
 """
 Methods for importing data from the Messenger spacecraft.
 """
-import pathlib as path
-
-import astropy.units as u
-
-from heliopy import config
 from heliopy.data import cdasrest
-
-data_dir = path.Path(config['download_dir'])
-mess_dir = data_dir / 'messenger'
 
 
 def _messenger(starttime, endtime, identifier):
