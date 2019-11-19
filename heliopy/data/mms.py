@@ -167,19 +167,20 @@ class MMSDownloader(util.Downloader):
             self.data_type = 'ancillary'
 
         elif name == 'data_type':
-            if value not in ('ancillary', 'hk', 'science'):
-                raise ValueError('Invalid value for attribute {}.'.format(name))
-
-        elif name == 'end_date':
-            # Convert string to datetime object
-            if isinstance(value, str):
-                try:
-                    value = dt.datetime.strptime(value[0:19], '%Y-%m-%dT%H:%M:%S')
-                except:
-                    try:
-                        value = dt.datetime.strptime(value, '%Y-%m-%d')
-                    except:
-                        ValueError('Invalid value for attribute {}.'.format(name))
+            if 'gls_selections' in value:
+                if value[15:] not in ('mp-dl-unh',):
+                    ValueError('Unknown GLS Selections type.')
+            elif value not in ('ancillary', 'hk', 'science', 'abs_selections', 'sitl_selections'):
+                raise ValueError('Invalid value for attribute "' + name + '".')
+            
+            # Unset attributes related to data_type = 'science'
+            if 'selections' in value:
+                self.sc = None
+                self.instr = None
+                self.mode = None
+                self.level = None
+                self.optdesc = None
+                self.version = None
 
         elif name == 'files':
             if value is not None:
@@ -208,7 +209,7 @@ class MMSDownloader(util.Downloader):
             else:
                 raise ValueError('Invalid value for attribute {}.'.format(name))
 
-        elif name == 'start_date':
+        elif name in ('start_date', 'end_date'):
             # Convert string to datetime object
             if isinstance(value, str):
                 try:
@@ -432,7 +433,6 @@ class MMSDownloader(util.Downloader):
         url : str
             URL used to retrieve information from the SDC.
         """
-
         sep = '/'
         url = sep.join((self._sdc_home, self.site, 'files', 'api', 'v1',
                         self._info_type, self.data_type))
@@ -494,7 +494,7 @@ class MMSDownloader(util.Downloader):
                 if r.ok:
                     break
                 else:
-                    Print('Incorrect username or password. %d tries ' +
+                    print('Incorrect username or password. %d tries ' +
                           'remaining.' % maxAttempts-nAttemps)
                     nAttempts += 1
 
@@ -503,13 +503,23 @@ class MMSDownloader(util.Downloader):
                 raise ConnectionError('Failed log-in.')
 
         else:
-            raise ConnectionError(r.reason)
+            raise ConnectionError(response.reason)
 
         # Return the resulting request
         return r
 
 
     def downloads(self):
+        '''
+        Download multiple files. First, search the local file system
+        to see if any of the files have been downloaded previously.
+        
+        Returns
+        -------
+        local_files : list
+            Names of the local files. Remote files downloaded
+            only if they do not already exist locally
+        '''
         self._info_type = 'download'
         # Build the URL sans query
         url = self.url(query=False)
@@ -574,39 +584,86 @@ class MMSDownloader(util.Downloader):
 
             local_files.append(file)
 
+        self.files = None
         for key in state:
-            self.files = None
             setattr(self, key, state[key])
 
         return local_files
 
 
     def file_info(self):
-        """Obtain file information from the SDC."""
+        '''
+        Obtain file information from the SDC.
+        
+        Returns
+        -------
+        file_info : list
+            Information about each file.
+        '''
         self._info_type = 'file_info'
-        response = self.get()
+        response = self.post()
         return response.json()
 
 
     def file_names(self):
-        """Obtain file names from the SDC."""
+        '''
+        Obtain file names from the SDC. Note that the SDC accepts only
+        start and end dates, not datetimes. Therefore the files returned
+        by this function may lie outside the time interval of interest.
+        For a more precise list of file names, use the search method or
+        filter the files with filter_time.
+        
+        Returns
+        -------
+        file_names : list
+            Names of the requested files.
+        '''
         self._info_type = 'file_names'
-        response = self.get()
-
-        if response.text == '':
-            files = []
-        else:
-            files = filter_time(response.text.split(','),
-                                self.start_date, self.end_date)
-
-        return files
+        response = self.post()
+        
+        return response.text.split(',')
+    
+    
+    def get(self):
+        '''
+        Download files from the SDC. First, search the local file
+        system to see if they have already been downloaded.
+        
+        Returns
+        -------
+        local_files : list
+            Names of the local files.
+        '''
+        
+        # Get available files
+        local_files, remote_files = self.search()
+        if self.offline:
+            return local_files
+        
+        # Download remote files
+        downloaded_files = self.download_files(remote_files)
+        local_files.append(downloaded_files)
+        
+        return local_files
 
 
     def local_file_names(self, mirror=False):
-        """Search for MMS files on the local system.
+        '''
+        Search for MMS files on the local system. Files must be
+        located in an MMS-like directory structure.
 
-        Files must be located in an MMS-like directory structure.
-        """
+        Parameters
+        ----------
+        mirror : bool
+            If True, the local data directory is used as the
+            root directory. Otherwise the mirror directory is
+            used.
+
+        Returns
+        -------
+        local_files : list
+            Names of the local files
+        '''
 
         # Search the mirror or local directory
         if mirror:
@@ -626,12 +683,16 @@ class MMSDownloader(util.Downloader):
         while start_date <= end_date:
             dates.append(start_date.strftime('%Y%m%d'))
             start_date += deltat
-
+        
         # Paths in which to look for files
         #   - Files of all versions and times within interval
-        paths = construct_path(self.sc, self.instr, self.mode, self.level,
-                               dates, optdesc=self.optdesc,
-                               root=data_root, files=True)
+        if 'selections' in self.data_type:
+            paths = construct_path(data_type=self.data_type, 
+                                   root=data_root, files=True)
+        else
+            paths = construct_path(self.sc, self.instr, self.mode, self.level,
+                                   dates, optdesc=self.optdesc,
+                                   root=data_root, files=True)
 
         # Search
         result = []
@@ -656,13 +717,14 @@ class MMSDownloader(util.Downloader):
 
 
     def login(self, username=None, password=None):
-        """Log-In to the SDC
+        '''
+        Log-In to the SDC
 
         Parameters
         ----------
         username (str):     Account username
         password (str):     Account password
-        """
+        '''
 
         # Ask for inputs
         if username is None:
@@ -674,31 +736,8 @@ class MMSDownloader(util.Downloader):
         self._session.auth = (username, password)
 
 
-    def get(self):
-        """
-        Retrieve data from the SDC.
-
-        Returns
-        -------
-        r : `session.response`
-            Response to the request posted to the SDC.
-        """
-        # Build the URL sans query
-        url = self.url(query=False)
-
-        # Check on query
-        r = self._session.post(url, data=self.query())
-
-        # Check if everything is ok
-        if not r.ok:
-            r = self.check_response(r)
-
-        # Return the response for the requested URL
-        return r
-
-
     def name2path(self, filename):
-        """
+        '''
         Convert remote file names to local file name.
 
         Directories of a remote file name are separated by the '/' character,
@@ -711,21 +750,30 @@ class MMSDownloader(util.Downloader):
 
         Returns
         -------
-        local_name : str
+        path : str
             Equivalent local file name. This is the location to
             which local files are downloaded.
-        """
+        '''
         parts = filename.split('_')
-
+        
+        # burst data selection directories and file names are structured as
+        #   - dirname:  sitl/[type]_selections/
+        #   - basename: [type]_selections_[optdesc]_YYYY-MM-DD-hh-mm-ss.sav
+        # To get year, index from end to skip optional descriptor
+        if parts[1] == 'selections':
+            path = os.path.join(self.data_root, 'sitl', 
+                                '_'.join(parts[0:2]),
+                                filename)
+        
         # Burst directories and file names are structured as:
         #   - dirname:  sc/instr/mode/level[/optdesc]/YYYY/MM/DD/
         #   - basename: sc_instr_mode_level[_optdesc]_YYYYMMDDhhmmss_vX.Y.Z.cdf
         # Index from end to catch the optional descriptor, if it exists
-        if parts[2] == 'brst':
+        elif parts[2] == 'brst':
             path = os.path.join(self.data_root, *parts[0:-2],
                                 parts[-2][0:4], parts[-2][4:6],
                                 parts[-2][6:8], filename)
-
+        
         # Survey (slow,fast,srvy) directories and file names are structured as:
         #   - dirname:  sc/instr/mode/level[/optdesc]/YYYY/MM/
         #   - basename: sc_instr_mode_level[_optdesc]_YYYYMMDD_vX.Y.Z.cdf
@@ -733,12 +781,12 @@ class MMSDownloader(util.Downloader):
         else:
             path = os.path.join(self.data_root, *parts[0:-2],
                                 parts[-2][0:4], parts[-2][4:6], filename)
-
+        
         return path
 
 
     def parse_file_name(self, filename):
-        """
+        '''
         Parse an official MMS file name. MMS file names are formatted as
             sc_instr_mode_level[_optdesc]_tstart_vX.Y.Z.cdf
         where
@@ -762,7 +810,7 @@ class MMSDownloader(util.Downloader):
                 (sc, instr, mode, level, optdesc, tstart, version)
             If opdesc is not present in the file name, the output will
             contain the empty string ('').
-        """
+        '''
         parts = os.path.basename(filename).split('_')
 
         # If the file does not have an optional descriptor,
@@ -775,8 +823,31 @@ class MMSDownloader(util.Downloader):
         return tuple(parts)
 
 
+    def post(self):
+        '''
+        Retrieve data from the SDC.
+
+        Returns
+        -------
+        r : `session.response`
+            Response to the request posted to the SDC.
+        '''
+        # Build the URL sans query
+        url = self.url(query=False)
+
+        # Check on query
+        r = self._session.post(url, data=self.query())
+
+        # Check if everything is ok
+        if not r.ok:
+            r = self.check_response(r)
+
+        # Return the response for the requested URL
+        return r
+
+
     def query(self):
-        """
+        '''
         build a dictionary of key-value pairs that serve as the URL
         query string.
 
@@ -784,7 +855,7 @@ class MMSDownloader(util.Downloader):
         -------
         query : dict
             URL query
-        """
+        '''
 
         # Adjust end date
         #   - The query takes '%Y-%m-%d' but the object allows
@@ -794,8 +865,7 @@ class MMSDownloader(util.Downloader):
         #     files between self.start_date and self.end_date will not be
         #     found
         #   - In these circumstances, increase the end date by one day
-        end_date = self.end_date
-        if end_date is not None:
+        if self.end_date is not None:
             end_date = self.end_date.strftime('%Y-%m-%d')
             if self.start_date.date() == self.end_date.date() or
                self.end_date.time() != dt.time(0,0,0):
@@ -832,7 +902,8 @@ class MMSDownloader(util.Downloader):
 
 
     def remote2localnames(self, remote_names):
-        """Convert remote file names to local file names.
+        '''
+        Convert remote file names to local file names.
 
         Directories of a remote file name are separated by the '/' character,
         as in a web address.
@@ -844,10 +915,10 @@ class MMSDownloader(util.Downloader):
 
         Returns
         -------
-        local_names :list
+        local_names : list
             Equivalent local file name. This is the location to
             which local files are downloaded.
-        """
+        '''
         # os.path.join() requires string arguments
         #   - str.split() return list.
         #   - Unpack with *: https://docs.python.org/2/tutorial/controlflow.html#unpacking-argument-lists
@@ -863,18 +934,15 @@ class MMSDownloader(util.Downloader):
 
 
     def search(self):
-        """Search for files locally and at the SDC.
-
-        TODO:
-            Filter results in self.Local_FileNames() by time and remove the
-            time filters here. self.FileNames() already filters by time.
+        '''
+        Search for files locally and at the SDC.
 
         Returns
         -------
         files : tuple
             Local and remote files within the interval, returned as
             (local, remote), where `local` and `remote` are lists.
-        """
+        '''
 
         # Search locally if offline
         if self.offline:
@@ -911,12 +979,105 @@ class MMSDownloader(util.Downloader):
         return response.json()
 
 
-def construct_filename(sc, instr=None, mode=None, level=None,
-                       tstart='*', version='*', optdesc=None):
-    """
+def construct_file_names(*args, data_type='science', **kwargs):
+    '''
     Construct a file name compliant with MMS file name format guidelines.
 
     MMS file names follow the convention
+        sc_instr_mode_level[_optdesc]_tstart_vX.Y.Z.cdf
+
+    Parameters
+    ----------
+        *args : dict
+            Arguments to be passed along.
+        data_type : str
+            Type of file names to construct. Options are:
+            science or *_selections. If science, inputs are
+            passed to construct_science_file_names. If
+            *_selections, inputs are passed to
+            construct_selections_file_names.
+        **kwargs : dict
+            Keywords to be passed along.
+
+    Returns
+    -------
+        fnames : list
+            File names constructed from inputs.
+    '''
+    
+    if data_type == 'science':
+        fnames = construct_science_file_names(*args, **kwargs)
+    elif 'selections' in data_type:
+        fnames = construct_selections_file_names(data_type, **kwargs)
+    
+    return fnames
+
+
+def construct_selections_file_names(data_type, tstart='*', gls_type=None):
+    '''
+    Construct a SITL selections file name compliant with
+    MMS file name format guidelines.
+
+    MMS SITL selection file names follow the convention
+        data_type_[gls_type]_tstart.sav
+
+    Parameters
+    ----------
+        data_type : str, list, tuple
+            Type of selections. Options are abs_selections
+            sitl_selections, or gls_selections.
+        tstart : str, list
+            Start time of data file. The format is
+            YYYY-MM-DD-hh-mm-ss. If not given, the default is "*".
+        gls_type : str, list
+            Type of ground-loop selections. Possible values are:
+            mp-dl-unh.
+
+    Returns
+    -------
+        fnames : list
+            File names constructed from inputs.
+    '''
+    
+    # Convert inputs to iterable lists
+    if isinstance(data_type, str):
+        data_type = [data_type]
+    if isinstance(gls_type, str):
+        gls_type = [gls_type]
+    if isinstance(tstart, str):
+        tstart = [tstart]
+    
+    # Accept tuples, as those returned by Construct_Filename
+    if isinstance(data_type, tuple):
+        data_type = [file[0] for file in data_type]
+        tstart = [file[-1] for file in data_type]
+        
+        if len(data_type > 2):
+            gls_type = [file[1] for file in data_type]
+        else:
+            gls_type = None
+        
+    
+    # Create the file names
+    if gls_type is None:
+        fnames = ['_'.join((d, g, t+'.sav')) for d in data_type
+                                             for t in tstart]
+    
+    else:
+        fnames = ['_'.join((d, g, t+'.sav')) for d in data_type
+                                             for g in gls_type
+                                             for t in tstart]
+    
+    return fnames
+
+
+def construct_science_file_names(sc, instr=None, mode=None, level=None,
+                                 tstart='*', version='*', optdesc=None):
+    '''
+    Construct a science file name compliant with MMS
+    file name format guidelines.
+
+    MMS science file names follow the convention
         sc_instr_mode_level[_optdesc]_tstart_vX.Y.Z.cdf
 
     Parameters
@@ -946,8 +1107,8 @@ def construct_filename(sc, instr=None, mode=None, level=None,
     -------
         fnames : str, list
             File names constructed from inputs.
-    """
-
+    '''
+    
     # Convert all to lists
     if isinstance(sc, str):
         sc = [sc]
@@ -963,8 +1124,8 @@ def construct_filename(sc, instr=None, mode=None, level=None,
         version = [version]
     if optdesc is not None and isinstance(optdesc, str):
         optdesc = [optdesc]
-
-    # Accept tuples, as those returned by MrMMS_Construct_Filename
+    
+    # Accept tuples, as those returned by Construct_Filename
     if type(sc) == 'tuple':
         sc_ids = [file[0] for file in sc]
         instr = [file[1] for file in sc]
@@ -972,47 +1133,160 @@ def construct_filename(sc, instr=None, mode=None, level=None,
         level = [file[3] for file in sc]
         tstart = [file[-2] for file in sc]
         version = [file[-1] for file in sc]
-
+        
         if len(sc) > 6:
             optdesc = [file[4] for file in sc]
         else:
             optdesc = None
     else:
         sc_ids = sc
-
+    
+    
     if optdesc is None:
-        fnames = ['_'.join((s, i, m, l, t, 'v'+v+'.cdf'))
-                  for s in sc_ids
-                  for i in instr
-                  for m in mode
-                  for l in level
-                  for t in tstart
-                  for v in version
-                 ]
+        fnames = ['_'.join((s,i,m,l,t,'v'+v+'.cdf')) for s in sc_ids
+                                                     for i in instr
+                                                     for m in mode
+                                                     for l in level
+                                                     for t in tstart
+                                                     for v in version]
     else:
-        fnames = ['_'.join((s, i, m, l, o, t, 'v'+v+'.cdf'))
-                  for s in sc_ids
-                  for i in instr
-                  for m in mode
-                  for l in level
-                  for o in optdesc
-                  for t in tstart
-                  for v in version
-                 ]
-
+        fnames = ['_'.join((s,i,m,l,o,t,'v'+v+'.cdf')) for s in sc_ids
+                                                       for i in instr
+                                                       for m in mode
+                                                       for l in level
+                                                       for o in optdesc
+                                                       for t in tstart
+                                                       for v in version]
     return fnames
 
 
-def construct_path(sc, instr=None, mode=None, level=None,
-                   tstart='*', optdesc=None, root='', files=False):
-    """
+def construct_path(*args, data_type='science', **kwargs):
+    '''
     Construct a directory structure compliant with MMS path guidelines.
 
     MMS paths follow the convention
+        selections: sitl/type_selections_[gls_type_]
         brst: sc/instr/mode/level[/optdesc]/<year>/<month>/<day>
         srvy: sc/instr/mode/level[/optdesc]/<year>/<month>
 
-    Arguments:
+    Parameters
+    ----------
+        *args : dict
+            Arguments to be passed along.
+        data_type : str
+            Type of file names to construct. Options are:
+            science or *_selections. If science, inputs are
+            passed to construct_science_file_names. If
+            *_selections, inputs are passed to
+            construct_selections_file_names.
+        **kwargs : dict
+            Keywords to be passed along.
+
+    Returns
+    -------
+    paths : list
+        Paths constructed from inputs.
+    '''
+    
+    if data_type == 'science':
+        paths = construct_science_path(*args, **kwargs)
+    elif 'selections' in data_type:
+        paths = construct_selections_path(data_type, **kwargs)
+    else:
+        raise ValueError('Invalid value for keyword data_type')
+    
+    return paths
+
+
+def construct_selections_path(data_type, tstart='*', gls_type=None,
+                              root='', files=False):
+    '''
+    Construct a directory structure compliant with MMS path
+    guidelines for SITL selections.
+
+    MMS SITL selections paths follow the convention
+        sitl/[data_type]_selections[_gls_type]/
+
+    Parameters
+    ----------
+        data_type : str, list, tuple
+            Type of selections. Options are abs_selections
+            sitl_selections, or gls_selections.
+        tstart : str, list
+            Start time of data file. The format is
+            YYYY-MM-DD-hh-mm-ss. If not given, the default is "*".
+        gls_type : str, list
+            Type of ground-loop selections. Possible values are:
+            mp-dl-unh.
+        root : str
+            Root of the SDC-like directory structure.
+        files : bool
+            If True, file names are associated with each path.
+
+    Returns
+    -------
+    paths : list
+        Paths constructed from inputs.
+    '''
+    
+    # Convert inputs to iterable lists
+    if isinstance(data_type, str):
+        data_type = [data_type]
+    if isinstance(gls_type, str):
+        gls_type = [gls_type]
+    if isinstance(tstart, str):
+        tstart = [tstart]
+    
+    # Accept tuples, as those returned by Construct_Filename
+    if isinstance(data_type, tuple):
+        data_type = [file[0] for file in data_type]
+        tstart = [file[-1] for file in data_type]
+        
+        if len(data_type > 2):
+            gls_type = [file[1] for file in data_type]
+        else:
+            gls_type = None
+    
+    # Paths + Files
+    if files:
+        if gls_type is None:
+            fnames = [os.path.join(root, 'sitl', d, '_'.join((d, t+'.sav')))
+                        for d in data_type
+                        for t in tstart
+                     ]
+        else:
+            fnames = [os.path.join(root, 'sitl', d, '_'.join((d, g, t+'.sav')))
+                        for d in data_type
+                        for g in gls_type
+                        for t in tstart
+                     ]
+    
+    # Paths
+    else:
+        if gls_type is None:
+            fnames = [os.path.join(root, 'sitl', d)
+                        for d in data_type
+                     ]
+        else:
+            fnames = [os.path.join(root, 'sitl', d)
+                        for d in data_type
+                     ]
+    
+    return paths
+
+
+def construct_science_path(sc, instr=None, mode=None, level=None, tstart='*',
+                           optdesc=None, root='', files=False):
+    '''
+    Construct a directory structure compliant with
+    MMS path guidelines for science files.
+
+    MMS science paths follow the convention
+        brst: sc/instr/mode/level[/optdesc]/<year>/<month>/<day>
+        srvy: sc/instr/mode/level[/optdesc]/<year>/<month>
+
+    Parameters
+    ----------
         sc : str, list, tuple
             Spacecraft ID(s)
         instr : str, list
@@ -1040,8 +1314,8 @@ def construct_path(sc, instr=None, mode=None, level=None,
     -------
     fnames : str, list
         File names constructed from inputs.
-    """
-
+    '''
+    
     # Convert all to lists
     if isinstance(sc, str):
         sc = [sc]
@@ -1055,82 +1329,108 @@ def construct_path(sc, instr=None, mode=None, level=None,
         tstart = [tstart]
     if optdesc is not None and isinstance(optdesc, str):
         optdesc = [optdesc]
-
-    # Accept tuples, as those returned by MrMMS_Construct_Filename
+    
+    # Accept tuples, as those returned by construct_filename
     if type(sc) == 'tuple':
         sc_ids = [file[0] for file in sc]
         instr = [file[1] for file in sc]
         mode = [file[2] for file in sc]
         level = [file[3] for file in sc]
         tstart = [file[-2] for file in sc]
-
+        
         if len(sc) > 6:
             optdesc = [file[4] for file in sc]
         else:
             optdesc = None
     else:
         sc_ids = sc
-
+    
     # Paths + Files
     if files:
         if optdesc is None:
-            paths = [os.path.join(root, s, i, m, l, t[0:4], t[4:6], t[6:8],
-                                  '_'.join((s, i, m, l, t+'*', 'v*.cdf'))
-                                 )
-                     if m == 'brst'
-                     else os.path.join(root, s, i, m, l, t[0:4], t[4:6],
-                                       '_'.join((s, i, m, l, t+'*', 'v*.cdf'))
-                                      )
+            paths = [os.path.join(root,s,i,m,l,t[0:4],t[4:6],t[6:8],'_'.join((s,i,m,l,t+'*','v*.cdf'))) if m == 'brst' else
+                     os.path.join(root,s,i,m,l,t[0:4],t[4:6],'_'.join((s,i,m,l,t+'*','v*.cdf')))
                      for s in sc_ids
                      for i in instr
                      for m in mode
                      for l in level
-                     for t in tstart
-                    ]
+                     for t in tstart]
         else:
-            paths = [os.path.join(root, s, i, m, l, o, t[0:4], t[4:6], t[6:8],
-                                  '_'.join((s, i, m, l, o, t+'*', 'v*.cdf'))
-                                 )
-                     if m == 'brst'
-                     else os.path.join(root, s, i, m, l, o, t[0:4], t[4:6],
-                                       '_'.join((s, i, m, l, o, t+'*', 'v*.cdf'))
-                                      )
+            paths = [os.path.join(root,s,i,m,l,o,t[0:4],t[4:6],t[6:8],'_'.join((s,i,m,l,o,t+'*','v*.cdf'))) if m == 'brst' else
+                     os.path.join(root,s,i,m,l,o,t[0:4],t[4:6],'_'.join((s,i,m,l,o,t+'*','v*.cdf')))
                      for s in sc_ids
                      for i in instr
                      for m in mode
                      for l in level
                      for o in optdesc
-                     for t in tstart
-                    ]
-
+                     for t in tstart]
+    
     # Paths
     else:
         if optdesc is None:
-            paths = [os.path.join(root, s, i, m, l, t[0:4], t[4:6], t[6:8])
-                     if m == 'brst'
-                     else os.path.join(root, s, i, m, l, t[0:4], t[4:6])
-                     for s in sc_ids
-                     for i in instr
-                     for m in mode
-                     for l in level
-                     for t in tstart
-                    ]
+            paths = [os.path.join(root,s,i,m,l,t[0:4],t[4:6],t[6:8]) if m == 'brst' else
+                     os.path.join(root,s,i,m,l,t[0:4],t[4:6]) for s in sc_ids
+                                                              for i in instr
+                                                              for m in mode
+                                                              for l in level
+                                                              for t in tstart]
         else:
-            paths = [os.path.join(root, s, i, m, l, o, t[0:4], t[4:6], t[6:8])
-                     if m == 'brst'
-                     else os.path.join(root, s, i, m, l, o, t[0:4], t[4:6])
-                     for s in sc_ids
-                     for i in instr
-                     for m in mode
-                     for l in level
-                     for o in optdesc
-                     for t in tstart
-                    ]
-
+            paths = [os.path.join(root,s,i,m,l,o,t[0:4],t[4:6],t[6:8]) if m == 'brst' else
+                     os.path.join(root,s,i,m,l,o,t[0:4],t[4:6]) for s in sc_ids
+                                                                for i in instr
+                                                                for m in mode
+                                                                for l in level
+                                                                for o in optdesc
+                                                                for t in tstart]
+    
     return paths
 
 
-def filename2path(fnames, root=''):
+def file_start_time(file_name):
+    '''
+    Extract the start time from a file name.
+    
+    Parameters
+    ----------
+        file_name : str
+            File name from which the start time is extracted.
+    
+    Returns
+    -------
+        fstart : `datetime.datetime`
+            Start time of the file, extracted from the file name
+    '''
+    
+    try:
+        # Selections: YYYY-MM-DD-hh-mm-ss
+        fstart = re.search('[0-9]{4}(-[0-9]{2}){5}', file_name).group(0)
+        fstart = dt.datetime.strptime('%Y-%m-%d-%H-%M-%S')
+    except AttributeError:
+        try:
+            # Brst: YYYYMMDDhhmmss
+            fstart = re.search('20[0-9]{2}'           # Year
+                               '(0[0-9]|1[0-2])'      # Month
+                               '([0-2][0-9]|3[0-1])'  # Day
+                               '([0-1][0-9]|2[0-4])'  # Hour
+                               '[0-5][0-9]'           # Minute
+                               '([0-5][0-9]|60)',     # Second
+                               file_name).group(0)
+            fstart = dt.datetime.strptime('%Y%m%d%H%M%S')
+        except AttributeError:
+            try:
+                # Srvy: YYYYMMDD
+                fstart = re.search('20[0-9]{2}'            # Year
+                                   '(0[0-9]|1[0-2])'       # Month
+                                   '([0-2][0-9]|3[0-1])',  # Day
+                                   file_name).group(0)
+                fstart = dt.datetime.strptime('%Y%m%d')
+            except AttributeError:
+                raise('File start time not identified.')
+    
+    return fstart
+
+
+def filename2path(fname, root=''):
     """
     Convert an MMS file name to an MMS path.
 
@@ -1142,40 +1442,37 @@ def filename2path(fnames, root=''):
     file name and day directory [/DD] is included if mode='brst'.
 
     Parameters:
-    fnames : str, list
-        File names to be turned into paths.
+    fname : str
+        File name to be turned into a path.
     root : str
         Absolute directory
 
     Returns
     -------
-    paths : list
+    path : list
         Path to the data file.
     """
-
-    paths = []
-
-    # Convert input file names to an array
-    if type(fnames) is str:
-        fnames = [fnames]
-
-    parts = parse_filename(fnames)
-
-    for idx, part in enumerate(parts):
+    
+    parts = parse_filename(fname)
+    
+    # data_type = '*_selections'
+    if 'selections' in parts[0]:
+        path = os.path.join(root, parts[0])
+    
+    # data_type = 'science'
+    else
         # Create the directory structure
         #   sc/instr/mode/level[/optdesc]/YYYY/MM/
         path = os.path.join(root, *part[0:5], part[5][0:4], part[5][4:6])
-
+        
         # Burst files require the DAY directory
         #   sc/instr/mode/level[/optdesc]/YYYY/MM/DD/
         if part[3] == 'brst':
             path = os.path.join(path, part[5][6:8])
-
-        # Append the filename
-        path = os.path.join(path, fnames[idx])
-        paths.append(path)
-
-    return paths
+    
+    path = os.path.join(path, fname)
+    
+    return path
 
 
 def filter_time(fnames, start_date, end_date):
@@ -1196,20 +1493,22 @@ def filter_time(fnames, start_date, end_date):
     paths : list
         Path to the data file.
     """
-
-    # Output
+    
+    # Make sure file names are iterable. Allocate output array
     files = fnames
     if isinstance(files, str):
         files = [files]
-
+    
+    # If dates are strings, convert them to datetimes
+    if isinstance(start_date, str):
+        start_date = dt.datetime.strptime(start_date, '%Y-%m-%dT%H:%M:%S')
+    if isinstance(end_date, str):
+        end_date = dt.datetime.strptime(end_date, '%Y-%m-%dT%H:%M:%S')
+    
     # Parse the time out of the file name
-    parts = parse_file_names(fnames)
-    fstart = [dt.datetime.strptime(name[-2], '%Y%m%d')
-              if len(name[-2]) == 8
-              else dt.datetime.strptime(name[-2], '%Y%m%d%H%M%S')
-              for name in parts]
+    fstart = [file_start_time(file) for file in files]
 
-    # Sor the files by start time
+    # Sort the files by start time
     isort = sorted(range(len(fstart)), key=lambda k: fstart[k])
     fstart = [fstart[i] for i in isort]
     files = [files[i] for i in isort]
@@ -1343,28 +1642,29 @@ def parse_file_names(fnames):
             [5]: Start times
             [6]: File version number
     """
+    parts = os.path.basename(fname).split('_')
 
-    # Allocate space
-    out = []
+    # data_type = '*_selections'
+    if 'selections' in fname:
+        # datatype_glstype_YYYY-mm-dd-HH-MM-SS.sav
+        if len(parts) == 3
+            gls_type = ''
+        else:
+            gls_type = parts[2]
+    
+        # (data_type, [gls_type,] start_date)
+        out = ('_'.join(parts[0:2]), gls_type, parts[-1][0:-4])
 
-    if type(fnames) is str:
-        files = [fnames]
+    # data_type = 'science'
     else:
-        files = fnames
-
-    # Parse each file
-    for file in files:
-        # Parse the file names
-        parts = os.path.basename(file).split('_')
-
-        # Include the optional descriptor
+        # sc_instr_mode_level_[optdesc]_fstart_vVersion.cdf
         if len(parts) == 6:
-            parts.insert(-2, '')
-
-        # Trim the "v" from the version number, remove ".cdf" extension
-        parts[-1] = parts[-1][1:-4]
-
-        out.append(tuple(parts))
+            optdesc = ''
+        else:
+            optdesc = parts[4]
+    
+        # (sc, instr, mode, level, [optdesc,] start_date, version)
+        out = (*parts[0:4], optdesc, parts[-2], parts[-1][1:-4])
 
     return out
 
@@ -1389,17 +1689,106 @@ def parse_time(times):
             [4]: Minute
             [5]: Second
     """
-
+    
     if isinstance(times, str):
         times = [times]
-
-    # Two types: srvy=YYYYMMDD and brst=YYYYMMDDhhmmss
-    #   - Accessing "hhmmss" of srvy times returns empty strings, not errors
-    parts = [(time[0:4], time[4:6], time[6:8],
-              time[8:10], time[10:12], time[12:14])
-             for time in times]
-
+    
+    # Three types:
+    #    srvy        YYYYMMDD
+    #    brst        YYYYMMDDhhmmss
+    #    selections  YYYY-MM-DD-hh-mm-ss
+    parts = [None]*len(times)
+    for idx, time in enumerate(times):
+        if len(time) == 21:
+            parts[idx] = (time[0:4], time[5:7], time[8:10], time[11:13], time[14:16], time[17:])
+        elif len(time) == 16
+            parts[idx] = (time[0:4], time[4:6], time[6:8], time[8:10], time[10:12], time[12:14])
+        else:
+            parts[idx] = (time[0:4], time[4:6], time[6:8], '00', '00', '00')
+    
     return parts
+
+
+def read_selections(sav_filename):
+    '''
+    Returns a dictionary that mirrors the SITL selections fomstr structure
+    that is in the IDL .sav file.
+    
+    Parameters
+    ----------
+    sav_filename : str
+        Name of the IDL sav file containing the SITL selections
+    
+    Returns
+    -------
+    d : dict
+        The FOM structure.
+    '''
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        sav = readsav(sav_filename)
+    
+    assert 'fomstr' in sav, 'save file does not have a fomstr structure'
+    fomstr = sav['fomstr']
+
+    d = {'valid': int(fomstr.valid[0]),
+         'error': fomstr.error[0],
+         'algversion': fomstr.algversion[0],
+         'sourceid': fomstr.sourceid[0].tolist(),
+         'cyclestart': int(fomstr.cyclestart[0]),
+         'numcycles': int(fomstr.numcycles[0]),
+         'nsegs': int(fomstr.nsegs[0]),
+         'start': [int(x) for x in fomstr.start[0].tolist()],
+         'stop': [int(x) for x in fomstr.stop[0].tolist()],
+         'seglengths': [int(x) for x in fomstr.seglengths[0].tolist()],
+         'fom': [float(x) for x in fomstr.fom[0].tolist()],
+         'nbuffs': int(fomstr.nbuffs[0]),
+         'mdq': [float(x) for x in fomstr.mdq[0].tolist()],
+         'timestamps': [int(x) for x in fomstr.timestamps[0].tolist()],
+         'targetbuffs': int(fomstr.targetbuffs[0]),
+         'fomave': float(fomstr.fomave[0]),
+         'targetratio': float(fomstr.targetratio[0]),
+         'minsegmentsize': float(fomstr.minsegmentsize[0]),
+         'maxsegmentsize': float(fomstr.maxsegmentsize[0]),
+         'pad': int(fomstr.pad[0]),
+         'searchratio': float(fomstr.searchratio[0]),
+         'fomwindowsize': int(fomstr.fomwindowsize[0]),
+         'fomslope': float(fomstr.fomslope[0]),
+         'fomskew': float(fomstr.fomskew[0]),
+         'fombias': float(fomstr.fombias[0]),
+         'metadatainfo': fomstr.metadatainfo[0],
+         'oldestavailableburstdata': fomstr.oldestavailableburstdata[0],
+         'metadataevaltime': fomstr.metadataevaltime[0]}
+    if 'DISCUSSION' in fomstr.dtype.names:
+        d['discussion'] = [x for x in fomstr.discussion[0].tolist()]
+    if 'NOTE' in fomstr.dtype.names:
+        d['note'] = fomstr.note[0]
+    return d
+
+
+def sitl_selections(data_type='abs_selections', gls_type='',
+                    start_date=None, end_date=None):
+    """Obtain version information from the SDC."""
+    
+    if gls_type is not None:
+        data_type = '_'.join((data_type, gls_type))
+    
+    # Setup the API
+    api = MrMMS_SDC_API()
+    api.data_type = data_type
+    api.start_date = start_date
+    api.end_date = end_date
+    
+    # Download the files
+    file_names = api.file_names()
+    local_files = api.download_files(file_names)
+    
+    return local_files
+    
+    # Read the data
+    data = read_selections(file_names[0])
+    
+    return data
 
 
 def sort_files(files):
