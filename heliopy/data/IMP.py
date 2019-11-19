@@ -146,7 +146,7 @@ def _imp8(starttime, endtime, identifier, units=None, badvalues=None,
     """
     Generic method for downloading IMP8 data.
     """
-    dl = cdasrest.CDASDwonloader('imp8', identifier, 'imp', units=units,
+    dl = cdasrest.CDASDownloader('imp8', identifier, 'imp', units=units,
                                  badvalues=badvalues,
                                  warn_missing_units=warn_missing_units)
     return dl.load(starttime, endtime)

@@ -1100,7 +1100,7 @@ def _helios(starttime, endtime, identifier, units=None, badvalues=None,
     """
     Generic method for downloading Helios data from CDAWeb.
     """
-    dl = cdasrest.CDASDwonloader('helios', identifier, 'helios', units=units,
+    dl = cdasrest.CDASDownloader('helios', identifier, 'helios', units=units,
                                  badvalues=badvalues,
                                  warn_missing_units=warn_missing_units)
     return dl.load(starttime, endtime)

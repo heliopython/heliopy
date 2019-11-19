@@ -4,31 +4,32 @@ Utility functions for data downloading.
 **Note**: these methods are liable to change at any time.
 """
 import abc
+import collections as coll
 import datetime as dt
-import dateutil.relativedelta as reldelt
 import ftplib
 import io
-import os
 import logging
+import os
 import pathlib as path
-import requests
 import re
 import shutil
 import sys
 import urllib.error as urlerror
 import urllib.request as urlreq
-import astropy.units as u
-import sunpy.time
-import sunpy.timeseries as ts
 import warnings
-import collections as coll
-import cdflib
 
+import astropy.units as u
+import cdflib
+import dateutil.relativedelta as reldelt
 import numpy as np
 import pandas as pd
-import heliopy.data.helper as helper
+import requests
+import sunpy.time
+import sunpy.timeseries as ts
 
+import heliopy.data.helper as helper
 from heliopy import config
+
 use_hdf = config['use_hdf']
 data_dir = path.Path(config['download_dir'])
 logger = logging.getLogger(__name__)
@@ -58,7 +59,8 @@ class Downloader(abc.ABC):
     ----------
     units : dict
     """
-    def load(self, starttime, endtime):
+
+    def load(self, starttime, endtime, index_key='Epoch'):
         """
         Load all data between *starttime* and *endtime*.
         """
@@ -404,7 +406,7 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
                 continue
             else:
                 logger.info('File {}{}/{}{} not available remotely\n'.format(
-                            remote_base_url, directory, fname, extension))
+                    remote_base_url, directory, fname, extension))
                 continue
         else:
             msg = ('File {a}/{b}{c} not available locally,\n'
@@ -751,8 +753,8 @@ def cdf2df(cdf, index_key, dtimeindex=True, badvalues=None, ignore=None):
     try:
         utc_comp = cdflib.cdfepoch.breakdown(index_, to_np=True)
         if utc_comp.shape[1] == 9:
-            millis = utc_comp[:, 6] * (10**3)
-            micros = utc_comp[:, 8] * (10**2)
+            millis = utc_comp[:, 6] * (10 ** 3)
+            micros = utc_comp[:, 8] * (10 ** 2)
             nanos = utc_comp[:, 7]
             utc_comp[:, 6] = millis + micros + nanos
             utc_comp = np.delete(utc_comp, np.s_[-2:], axis=1)
@@ -964,7 +966,7 @@ def _reporthook(blocknum, blocksize, totalsize):
 
 
 def _download_remote_unknown_version(
-    remote_base_url, local_base_dir, directory,
+        remote_base_url, local_base_dir, directory,
         fname, remote_fname, extension):
     """
     Generic donwload code that can be used by data methods to download
@@ -1090,8 +1092,8 @@ def _cart2sph(x, y, z):
         Azimuthal angles defined in the x-y plane, clockwise about the
         z-axis, from the x-axis. Angles are in the range [-pi, pi].
     """
-    xy = x**2 + y**2
-    r = np.sqrt(xy + z**2)
+    xy = x ** 2 + y ** 2
+    r = np.sqrt(xy + z ** 2)
     theta = np.arctan2(z, np.sqrt(xy))
     phi = np.arctan2(y, x)
     return r, theta, phi

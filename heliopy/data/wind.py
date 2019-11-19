@@ -1,6 +1,6 @@
 """
 Methods for importing data from the WIND spacecraft.
-All data is publically available at ftp://spdf.gsfc.nasa.gov/pub/data/wind.
+All data is publicly available at ftp://spdf.gsfc.nasa.gov/pub/data/wind.
 See https://wind.nasa.gov/data_sources.php for more information on different
 data products.
 """
@@ -13,18 +13,18 @@ def _docstring(identifier, description):
 
 
 def _wind(starttime, endtime, identifier, badvalues=None, units=None,
-          intervals='monthly'):
+          intervals='monthly', index_key='Epoch'):
     """
     Generic method for downloading ACE data.
     """
-    dl = cdasrest.CDASDwonloader('wi', identifier, 'wind', badvalues=badvalues,
-                                 units=units)
+    dl = cdasrest.CDASDownloader('wi', identifier, 'wind', badvalues=badvalues,
+                                 units=units, index_key=index_key)
     # Override intervals
     if intervals == 'daily':
         dl.intervals = dl.intervals_daily
     else:
         dl.intervals = dl.intervals_monthly
-    return dl.load(starttime, endtime)
+    return dl.load(starttime, endtime, index_key)
 
 
 # Actual download functions start here
@@ -39,7 +39,6 @@ def swe_h1(starttime, endtime):
 swe_h1.__doc__ = _docstring(
     'WI_H1_SWE', '92-second Solar Wind Alpha and Proton Anisotropy Analysis')
 
-breakpoint()
 
 def swe_h3(starttime, endtime):
     identifier = 'WI_H3_SWE'
@@ -53,11 +52,18 @@ swe_h3.__doc__ = _docstring(
     'WI_H1_SWE', '92-second Solar Wind Alpha and Proton Anisotropy Analysis')
 
 
-def mfi_h0(starttime, endtime):
+def mfi_h0(starttime, endtime, index_key):
     identifier = 'WI_H0_MFI'
     units = {'BGSEa_0': u.nT, 'BGSEa_1': u.nT, 'BGSEa_2': u.nT}
     return _wind(starttime, endtime, identifier, units=units,
-                 intervals='daily')
+                 intervals='daily', index_key=index_key)
+
+import datetime
+
+start = datetime.datetime(2016,1,1)
+end = datetime.datetime(2016,1,2)
+
+df = mfi_h0(start, end, 'Epoch2')
 
 
 mfi_h0.__doc__ = _docstring(

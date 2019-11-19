@@ -8,7 +8,7 @@ def _messenger(starttime, endtime, identifier):
     """
     Generic method for downloading IMP8 data.
     """
-    dl = cdasrest.CDASDwonloader('messenger', identifier, 'messenger')
+    dl = cdasrest.CDASDownloader('messenger', identifier, 'messenger')
     return dl.load(starttime, endtime)
 
 
