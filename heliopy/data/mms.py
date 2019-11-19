@@ -7,7 +7,7 @@ is at https://lasp.colorado.edu/mms/sdc/public/.
 """
 import os
 import pathlib
-import glob.glob
+import glob
 import datetime as dt
 import requests
 from tqdm.auto import tqdm
@@ -17,6 +17,7 @@ from collections import OrderedDict
 import heliopy
 from heliopy.data import util
 import sunpy.time
+from scipy.io import readsav
 
 
 class MMSDownloader(util.Downloader):
@@ -689,7 +690,7 @@ class MMSDownloader(util.Downloader):
         if 'selections' in self.data_type:
             paths = construct_path(data_type=self.data_type, 
                                    root=data_root, files=True)
-        else
+        else:
             paths = construct_path(self.sc, self.instr, self.mode, self.level,
                                    dates, optdesc=self.optdesc,
                                    root=data_root, files=True)
@@ -867,31 +868,31 @@ class MMSDownloader(util.Downloader):
         #   - In these circumstances, increase the end date by one day
         if self.end_date is not None:
             end_date = self.end_date.strftime('%Y-%m-%d')
-            if self.start_date.date() == self.end_date.date() or
+            if self.start_date.date() == self.end_date.date() or \
                self.end_date.time() != dt.time(0,0,0):
                 end_date = (self.end_date + dt.timedelta(1)).strftime('%Y-%m-%d')
 
         query = {}
         if self.sc is not None:
-            query['sc_id'] = self.sc if isinstance(self.sc, str)
+            query['sc_id'] = self.sc if isinstance(self.sc, str) \
                                      else ','.join(self.sc)
         if self.instr is not None:
-            query['instrument_id'] = self.instr if isinstance(self.instr, str)
+            query['instrument_id'] = self.instr if isinstance(self.instr, str) \
                                                 else ','.join(self.instr)
         if self.mode is not None:
-            query['data_rate_mode'] = self.mode if isinstance(self.mode, str)
+            query['data_rate_mode'] = self.mode if isinstance(self.mode, str) \
                                                 else ','.join(self.mode)
         if self.level is not None:
-            query['data_level'] = self.level if isinstance(self.level, str)
+            query['data_level'] = self.level if isinstance(self.level, str) \
                                              else ','.join(self.level)
         if self.optdesc is not None:
-            query['descriptor'] = self.optdesc if isinstance(self.optdesc, str)
+            query['descriptor'] = self.optdesc if isinstance(self.optdesc, str) \
                                                else ','.join(self.optdesc)
         if self.version is not None:
-            query['version'] = self.version if isinstance(self.version, str)
+            query['version'] = self.version if isinstance(self.version, str) \
                                             else ','.join(self.version)
         if self.files is not None:
-            query['files'] = self.files if isinstance(self.files, str)
+            query['files'] = self.files if isinstance(self.files, str) \
                                         else ','.join(self.files)
         if self.start_date is not None:
             query['start_date'] = self.start_date.strftime('%Y-%m-%d')
@@ -1460,7 +1461,7 @@ def filename2path(fname, root=''):
         path = os.path.join(root, parts[0])
     
     # data_type = 'science'
-    else
+    else:
         # Create the directory structure
         #   sc/instr/mode/level[/optdesc]/YYYY/MM/
         path = os.path.join(root, *part[0:5], part[5][0:4], part[5][4:6])
@@ -1647,7 +1648,7 @@ def parse_file_names(fnames):
     # data_type = '*_selections'
     if 'selections' in fname:
         # datatype_glstype_YYYY-mm-dd-HH-MM-SS.sav
-        if len(parts) == 3
+        if len(parts) == 3:
             gls_type = ''
         else:
             gls_type = parts[2]
@@ -1701,7 +1702,7 @@ def parse_time(times):
     for idx, time in enumerate(times):
         if len(time) == 21:
             parts[idx] = (time[0:4], time[5:7], time[8:10], time[11:13], time[14:16], time[17:])
-        elif len(time) == 16
+        elif len(time) == 16:
             parts[idx] = (time[0:4], time[4:6], time[6:8], time[8:10], time[10:12], time[12:14])
         else:
             parts[idx] = (time[0:4], time[4:6], time[6:8], '00', '00', '00')
