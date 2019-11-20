@@ -18,7 +18,7 @@ from heliopy.data import util
 import sunpy.time
 import scipy.io
 
-data_dir = pathlib.Path(config['download_dir'])
+data_dir = pathlib.Path(heliopy.config['download_dir'])
 mms_dir = data_dir / 'mms'
 mms_url = 'https://lasp.colorado.edu/mms/sdc/public'
 remote_mms_dir = mms_url + '/data/'
