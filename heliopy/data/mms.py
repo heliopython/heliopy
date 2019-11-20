@@ -10,7 +10,7 @@ import pathlib
 import glob
 import datetime as dt
 import requests
-from tqdm.auto as tqdm
+import tqdm.auto as tqdm
 from urllib
 
 import heliopy
@@ -169,9 +169,9 @@ class MMSDownloader(util.Downloader):
             if 'gls_selections' in value:
                 if value[15:] not in ('mp-dl-unh',):
                     raise ValueError('Unknown GLS Selections type.')
-            elif value not in ('ancillary', 'hk', 'science', 
+            elif value not in ('ancillary', 'hk', 'science',
                                'abs_selections', 'sitl_selections'
-                              ):
+            ):
                 raise ValueError('Invalid value for attribute "' + name + '".')
 
             # Unset attributes related to data_type = 'science'
@@ -210,15 +210,15 @@ class MMSDownloader(util.Downloader):
             else:
                 raise ValueError('Invalid value for attribute {}.'
                                  .format(name)
-                      )
+                                 )
 
         elif name in ('start_date', 'end_date'):
             # Convert string to datetime object
             if isinstance(value, str):
                 try:
                     value = dt.datetime.strptime(value[0:19],
-                                '%Y-%m-%dT%H:%M:%S'
-                            )
+                                                 '%Y-%m-%dT%H:%M:%S'
+                                                 )
                 except ValueError:
                     try:
                         value = dt.datetime.strptime(value, '%Y-%m-%d')
@@ -402,9 +402,9 @@ class MMSDownloader(util.Downloader):
         pandas.DataFrame
         """
 
-        local_path = os.path.join(self.local_dir(interval), 
+        local_path = os.path.join(self.local_dir(interval),
                                   self.fname(interval)
-                     )
+                                  )
         cdf = util._load_cdf(local_path)
         return util.cdf2df(cdf, index_key='Epoch')
 
@@ -563,8 +563,11 @@ class MMSDownloader(util.Downloader):
                 r = self._session.post(url,
                                        data={'file': info['file_name']},
                                        stream=True)
-                with tqdm.tqdm(total=info['file_size'], unit='B', unit_scale=True,
-                               unit_divisor=1024) as pbar:
+                with tqdm.tqdm(total=info['file_size'],
+                               unit='B',
+                               unit_scale=True,
+                               unit_divisor=1024
+                ) as pbar:
                     with open(file, 'wb') as f:
                         for chunk in r.iter_content(chunk_size=block_size):
                             if chunk:  # filter out keep-alive new chunks
@@ -751,7 +754,7 @@ class MMSDownloader(util.Downloader):
         #   - basename: [type]_selections_[optdesc]_YYYY-MM-DD-hh-mm-ss.sav
         # To get year, index from end to skip optional descriptor
         if parts[1] == 'selections':
-            path = os.path.join(self.data_root, 'sitl', 
+            path = os.path.join(self.data_root, 'sitl',
                                 '_'.join(parts[0:2]),
                                 filename)
 
@@ -857,7 +860,7 @@ class MMSDownloader(util.Downloader):
             if self.start_date.date() == self.end_date.date() or \
                self.end_date.time() != dt.time(0, 0, 0):
                 end_date = (self.end_date + dt.timedelta(1)
-                           ).strftime('%Y-%m-%d')
+                ).strftime('%Y-%m-%d')
 
         query = {}
         if self.sc is not None:
@@ -945,27 +948,27 @@ class MMSDownloader(util.Downloader):
 
             # Search for the equivalent local file names
             local_files = self.remote2localnames(remote_files)
-            idx = [i for i, local in enumerate(local_files) 
-                         if os.path.isfile(local)
-                  ]
+            idx = [i for i, local in enumerate(local_files)
+                      if os.path.isfile(local)
+                   ]
 
             # Filter based on location
             local_files = [local_files[i] for i in idx]
             remote_files = [remote_files[i] for i in range(len(remote_files))
-                                            if i not in idx
-                           ]
+                                if i not in idx
+                            ]
 
         # Filter based on time interval
         if len(local_files) > 0:
             local_files = filter_time(local_files,
                                       self.start_date,
                                       self.end_date
-                          )
+                                      )
         if len(remote_files) > 0:
             remote_files = filter_time(remote_files,
                                        self.start_date,
                                        self.end_date
-                           )
+                                       )
 
         return (local_files, remote_files)
 
@@ -1063,16 +1066,16 @@ def construct_selections_file_names(data_type, tstart='*', gls_type=None):
     # Create the file names
     if gls_type is None:
         fnames = ['_'.join((d, g, t+'.sav'))
-                      for d in data_type
-                      for t in tstart
-                 ]
+                  for d in data_type
+                  for t in tstart
+                  ]
 
     else:
         fnames = ['_'.join((d, g, t+'.sav'))
-                      for d in data_type
-                      for g in gls_type
-                      for t in tstart
-                 ]
+                  for d in data_type
+                  for g in gls_type
+                  for t in tstart
+                  ]
 
     return fnames
 
@@ -1148,25 +1151,24 @@ def construct_science_file_names(sc, instr=None, mode=None, level=None,
 
     if optdesc is None:
         fnames = ['_'.join((s, i, m, l, t, 'v'+v+'.cdf'))
-                      for s in sc_ids
-                      for i in instr
-                      for m in mode
-                      for l in level
-                      for t in tstart
-                      for v in version
-                 ]
+                  for s in sc_ids
+                  for i in instr
+                  for m in mode
+                  for l in level
+                  for t in tstart
+                  for v in version
+                  ]
     else:
-        fnames = ['_'.join((s,i,m,l,o,t,'v'+v+'.cdf'))
-                      for s in sc_ids
-                      for i in instr
-                      for m in mode
-                      for l in level
-                      for o in optdesc
-                      for t in tstart
-                      for v in version
-                 ]
+        fnames = ['_'.join((s, i, m, l, o, t, 'v'+v+'.cdf'))
+                  for s in sc_ids
+                  for i in instr
+                  for m in mode
+                  for l in level
+                  for o in optdesc
+                  for t in tstart
+                  for v in version
+                  ]
     return fnames
-
 
 def construct_path(*args, data_type='science', **kwargs):
     '''
@@ -1259,26 +1261,26 @@ def construct_selections_path(data_type, tstart='*', gls_type=None,
     if files:
         if gls_type is None:
             paths = [os.path.join(root, 'sitl', d, '_'.join((d, t+'.sav')))
-                         for d in data_type
-                         for t in tstart
-                    ]
+                     for d in data_type
+                     for t in tstart
+                     ]
         else:
             paths = [os.path.join(root, 'sitl', d, '_'.join((d, g, t+'.sav')))
-                         for d in data_type
-                         for g in gls_type
-                         for t in tstart
-                    ]
+                     for d in data_type
+                     for g in gls_type
+                     for t in tstart
+                     ]
 
     # Paths
     else:
         if gls_type is None:
             paths = [os.path.join(root, 'sitl', d)
-                        for d in data_type
-                    ]
+                     for d in data_type
+                     ]
         else:
             paths = [os.path.join(root, 'sitl', d)
-                        for d in data_type
-                    ]
+                     for d in data_type
+                     ]
 
     return paths
 
@@ -1358,34 +1360,34 @@ def construct_science_path(sc, instr=None, mode=None, level=None, tstart='*',
         if optdesc is None:
             paths = [os.path.join(root, s, i, m, l, t[0:4], t[4:6], t[6:8],
                                   '_'.join((s, i, m, l, t+'*', 'v*.cdf'))
-                     )
+                                  )
                      if m == 'brst'
                      else
-                     os.path.join(root, s, i, m, l, t[0:4], t[4:6], 
+                     os.path.join(root, s, i, m, l, t[0:4], t[4:6],
                                   '_'.join((s, i, m, l, t+'*', 'v*.cdf'))
-                     )
+                                  )
                      for s in sc_ids
                      for i in instr
                      for m in mode
                      for l in level
                      for t in tstart
-                    ]
+                     ]
         else:
             paths = [os.path.join(root, s, i, m, l, o, t[0:4], t[4:6], t[6:8],
-                                  '_'.join((s,i,m,l,o,t+'*','v*.cdf'))
-                     )
+                                  '_'.join((s, i, m, l, o, t+'*', 'v*.cdf'))
+                                  )
                      if m == 'brst'
                      else
                      os.path.join(root, s, i, m, l, o, t[0:4], t[4:6],
-                                  '_'.join((s,i,m,l,o,t+'*','v*.cdf'))
-                     )
+                                  '_'.join((s, i, m, l, o, t+'*', 'v*.cdf'))
+                                  )
                      for s in sc_ids
                      for i in instr
                      for m in mode
                      for l in level
                      for o in optdesc
                      for t in tstart
-                    ]
+                     ]
 
     # Paths
     else:
@@ -1393,22 +1395,22 @@ def construct_science_path(sc, instr=None, mode=None, level=None, tstart='*',
             paths = [os.path.join(root, s, i, m, l, t[0:4], t[4:6], t[6:8])
                      if m == 'brst' else
                      os.path.join(root, s, i, m, l, t[0:4], t[4:6])
-                         for s in sc_ids
-                         for i in instr
-                         for m in mode
-                         for l in level
-                         for t in tstart
-                    ]
+                     for s in sc_ids
+                     for i in instr
+                     for m in mode
+                     for l in level
+                     for t in tstart
+                     ]
         else:
             paths = [os.path.join(root, s, i, m, l, o, t[0:4], t[4:6], t[6:8])
                      if m == 'brst' else
                      os.path.join(root, s, i, m, l, o, t[0:4], t[4:6])
-                         for s in sc_ids
-                         for i in instr
-                         for m in mode
-                         for l in level
-                         for o in optdesc
-                         for t in tstart
+                     for s in sc_ids
+                     for i in instr
+                     for m in mode
+                     for l in level
+                     for o in optdesc
+                     for t in tstart
                     ]
 
     return paths
@@ -1631,7 +1633,7 @@ def filter_version(files, latest=None, version=None, min_version=None):
                     (vXYZ[0] == vXYZ_ref[0]
                      and vXYZ[1] == vXYZ_ref[1]
                      and vXYZ[2] > vXYZ_ref[2]
-                    )
+                     )
                 ):
                     filtered_files[-1] = files[i]
 
@@ -1645,7 +1647,7 @@ def filter_version(files, latest=None, version=None, min_version=None):
                 (vXYZ[0] == vXYZ_min[0]
                  and vXYZ[1] == vXYZ_min[1]
                  and vXYZ[2] >= vXYZ_min[2]
-                )
+                 )
             ):
                 filtered_files.append(files[idx])
 
@@ -1742,9 +1744,13 @@ def parse_time(times):
     parts = [None]*len(times)
     for idx, time in enumerate(times):
         if len(time) == 21:
-            parts[idx] = (time[0:4], time[5:7], time[8:10], time[11:13], time[14:16], time[17:])
+            parts[idx] = (time[0:4], time[5:7], time[8:10],
+                          time[11:13], time[14:16], time[17:]
+                          )
         elif len(time) == 16:
-            parts[idx] = (time[0:4], time[4:6], time[6:8], time[8:10], time[10:12], time[12:14])
+            parts[idx] = (time[0:4], time[4:6], time[6:8],
+                          time[8:10], time[10:12], time[12:14]
+                          )
         else:
             parts[idx] = (time[0:4], time[4:6], time[6:8], '00', '00', '00')
 
@@ -1923,7 +1929,7 @@ def available_files(probe, instrument, starttime, endtime, data_rate='',
 
     start_date = starttime.strftime('%Y-%m-%d')
     if starttime.date() == endtime.date():
-        end_date = (endtime.date() + timedelta(days=1)).strftime('%Y-%m-%d')
+        end_date = (endtime.date() + dt.timedelta(days=1)).strftime('%Y-%m-%d')
     else:
         end_date = endtime.strftime('%Y-%m-%d')
 
