@@ -5,6 +5,7 @@ See https://wind.nasa.gov/data_sources.php for more information on different
 data products.
 """
 import astropy.units as u
+
 from heliopy.data import cdasrest
 
 
@@ -58,16 +59,9 @@ def mfi_h0(starttime, endtime, index_key):
     return _wind(starttime, endtime, identifier, units=units,
                  intervals='daily', index_key=index_key)
 
-import datetime
-
-start = datetime.datetime(2016,1,1)
-end = datetime.datetime(2016,1,2)
-
-df = mfi_h0(start, end, 'Epoch2')
-
 
 mfi_h0.__doc__ = _docstring(
-    'WI_H0_MFI', 'Composite magnetic field')
+    'WI_H0_MFI', 'Composite magnetic field: Epoch - 60 sec; Epoch1 - 1hr; Epoch3 - 3 sec measurements')
 
 
 def mfi_h2(starttime, endtime):

@@ -60,7 +60,7 @@ class Downloader(abc.ABC):
     units : dict
     """
 
-    def load(self, starttime, endtime, index_key='Epoch'):
+    def load(self, starttime, endtime):
         """
         Load all data between *starttime* and *endtime*.
         """
@@ -782,7 +782,7 @@ def cdf2df(cdf, index_key, dtimeindex=True, badvalues=None, ignore=None):
             if ignore:
                 if cdf_key in ignore:
                     continue
-            if cdf_key == 'Epoch':
+            if cdf_key == index_key:
                 keys[cdf_key] = 'Time'
             else:
                 keys[cdf_key] = cdf_key
