@@ -18,6 +18,12 @@ from heliopy.data import util
 import sunpy.time
 import scipy.io
 
+data_dir = pathlib.Path(config['download_dir'])
+mms_dir = data_dir / 'mms'
+mms_url = 'https://lasp.colorado.edu/mms/sdc/public'
+remote_mms_dir = mms_url + '/data/'
+query_url = mms_url + '/files/api/v1/file_names/science'
+dl_url = mms_url + '/files/api/v1/download/science'
 
 class MMSDownloader(util.Downloader):
     """
@@ -171,7 +177,7 @@ class MMSDownloader(util.Downloader):
                     raise ValueError('Unknown GLS Selections type.')
             elif value not in ('ancillary', 'hk', 'science',
                                'abs_selections', 'sitl_selections'
-            ):
+                               ):
                 raise ValueError('Invalid value for attribute "' + name + '".')
 
             # Unset attributes related to data_type = 'science'
@@ -567,7 +573,7 @@ class MMSDownloader(util.Downloader):
                                unit='B',
                                unit_scale=True,
                                unit_divisor=1024
-                ) as pbar:
+                               ) as pbar:
                     with open(file, 'wb') as f:
                         for chunk in r.iter_content(chunk_size=block_size):
                             if chunk:  # filter out keep-alive new chunks
@@ -860,7 +866,7 @@ class MMSDownloader(util.Downloader):
             if self.start_date.date() == self.end_date.date() or \
                self.end_date.time() != dt.time(0, 0, 0):
                 end_date = (self.end_date + dt.timedelta(1)
-                ).strftime('%Y-%m-%d')
+                            ).strftime('%Y-%m-%d')
 
         query = {}
         if self.sc is not None:
@@ -949,13 +955,13 @@ class MMSDownloader(util.Downloader):
             # Search for the equivalent local file names
             local_files = self.remote2localnames(remote_files)
             idx = [i for i, local in enumerate(local_files)
-                      if os.path.isfile(local)
+                   if os.path.isfile(local)
                    ]
 
             # Filter based on location
             local_files = [local_files[i] for i in idx]
             remote_files = [remote_files[i] for i in range(len(remote_files))
-                                if i not in idx
+                            if i not in idx
                             ]
 
         # Filter based on time interval
@@ -1017,7 +1023,6 @@ def construct_file_names(*args, data_type='science', **kwargs):
         fnames = construct_selections_file_names(data_type, **kwargs)
 
     return fnames
-
 
 def construct_selections_file_names(data_type, tstart='*', gls_type=None):
     '''
@@ -1206,7 +1211,6 @@ def construct_path(*args, data_type='science', **kwargs):
         raise ValueError('Invalid value for keyword data_type')
 
     return paths
-
 
 def construct_selections_path(data_type, tstart='*', gls_type=None,
                               root='', files=False):
@@ -1411,10 +1415,9 @@ def construct_science_path(sc, instr=None, mode=None, level=None, tstart='*',
                      for l in level
                      for o in optdesc
                      for t in tstart
-                    ]
+                     ]
 
     return paths
-
 
 def file_start_time(file_name):
     '''
@@ -1629,12 +1632,13 @@ def filter_version(files, latest=None, version=None, min_version=None):
             for i in test_idx:
                 vXYZ = versions[i].split('.')
                 if ((vXYZ[0] > vXYZ_ref[0]) or
-                    (vXYZ[0] == vXYZ_ref[0] and vXYZ[1] > vXYZ_ref[1]) or
-                    (vXYZ[0] == vXYZ_ref[0]
-                     and vXYZ[1] == vXYZ_ref[1]
-                     and vXYZ[2] > vXYZ_ref[2]
-                     )
-                ):
+                     (vXYZ[0] == vXYZ_ref[0] and vXYZ[1] > vXYZ_ref[1]) or
+                     (vXYZ[0] == vXYZ_ref[0] and
+                      vXYZ[1] == vXYZ_ref[1] and
+                      vXYZ[2] > vXYZ_ref[2]
+                      )
+                    ):
+                    # Select the last file
                     filtered_files[-1] = files[i]
 
     # All files with version number greater or equal to MIN_VERSION
@@ -1644,11 +1648,12 @@ def filter_version(files, latest=None, version=None, min_version=None):
             vXYZ = v.split('.')
             if ((vXYZ[0] > vXYZ_min[0]) or
                 (vXYZ[0] == vXYZ_min[0] and vXYZ[1] > vXYZ_min[1]) or
-                (vXYZ[0] == vXYZ_min[0]
-                 and vXYZ[1] == vXYZ_min[1]
-                 and vXYZ[2] >= vXYZ_min[2]
+                (vXYZ[0] == vXYZ_min[0] and
+                 vXYZ[1] == vXYZ_min[1] and
+                 vXYZ[2] >= vXYZ_min[2]
                  )
-            ):
+                ):
+                # Append the file if it passes the criteria
                 filtered_files.append(files[idx])
 
     # All files with a particular version number
@@ -1659,7 +1664,8 @@ def filter_version(files, latest=None, version=None, min_version=None):
             if (vXYZ[0] == vXYZ_ref[0] and
                 vXYZ[1] == vXYZ_ref[1] and
                 vXYZ[2] == vXYZ_ref[2]
-            ):
+                ):
+                # Keep the file if it has the right version
                 filtered_files.append(files[idx])
 
     return filtered_files
@@ -1947,7 +1953,6 @@ def available_files(probe, instrument, starttime, endtime, data_rate='',
     files = r.text.split(',')
     files = filter_time(files, starttime, endtime)
     return files
-
 
 def download_files(probe, instrument, data_rate, starttime, endtime,
                    verbose=True, product_string='', warn_missing_units=True):
