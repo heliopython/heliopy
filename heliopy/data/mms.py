@@ -1783,13 +1783,11 @@ def filter_version(files, latest=None, version=None, min_version=None):
             for i in test_idx:
                 vXYZ = versions[i].split('.')
                 if ((vXYZ[0] > vXYZ_ref[0]) or
-                    (vXYZ[0] == vXYZ_ref[0] and vXYZ[1] > vXYZ_ref[1]) or
-                    (vXYZ[0] == vXYZ_ref[0] and
-                     vXYZ[1] == vXYZ_ref[1] and
-                     vXYZ[2] > vXYZ_ref[2]
-                     )
-                    ):
-                    # Select the last file
+                        (vXYZ[0] == vXYZ_ref[0] and 
+                         vXYZ[1] > vXYZ_ref[1]) or
+                        (vXYZ[0] == vXYZ_ref[0] and
+                         vXYZ[1] == vXYZ_ref[1] and
+                         vXYZ[2] > vXYZ_ref[2])):
                     filtered_files[-1] = files[i]
 
     # All files with version number greater or equal to MIN_VERSION
@@ -1798,13 +1796,11 @@ def filter_version(files, latest=None, version=None, min_version=None):
         for idx, v in enumerate(versions):
             vXYZ = v.split('.')
             if ((vXYZ[0] > vXYZ_min[0]) or
-                (vXYZ[0] == vXYZ_min[0] and vXYZ[1] > vXYZ_min[1]) or
-                (vXYZ[0] == vXYZ_min[0] and
-                 vXYZ[1] == vXYZ_min[1] and
-                 vXYZ[2] >= vXYZ_min[2]
-                 )
-            ):
-                # Append the file if it passes the criteria
+                    (vXYZ[0] == vXYZ_min[0] and
+                     vXYZ[1] > vXYZ_min[1]) or
+                    (vXYZ[0] == vXYZ_min[0] and
+                     vXYZ[1] == vXYZ_min[1] and
+                     vXYZ[2] >= vXYZ_min[2])):
                 filtered_files.append(files[idx])
 
     # All files with a particular version number
@@ -1813,10 +1809,8 @@ def filter_version(files, latest=None, version=None, min_version=None):
         for idx, v in enumerate(versions):
             vXYZ = v.split('.')
             if (vXYZ[0] == vXYZ_ref[0] and
-                vXYZ[1] == vXYZ_ref[1] and
-                vXYZ[2] == vXYZ_ref[2]
-                ):
-                # Keep the file if it has the right version
+                    vXYZ[1] == vXYZ_ref[1] and
+                    vXYZ[2] == vXYZ_ref[2]):
                 filtered_files.append(files[idx])
 
     return filtered_files
@@ -1890,9 +1884,7 @@ def mission_events(start_date, end_date, source=None, event_type=None):
 
     resp = requests.get(url, params=query)
     data = _response_text_to_dict(resp.text)
-    
-    pdb.set_trace()
-    
+
     # Add useful tags
     #   - Number of seconds elapsed
     #   - TAISTARTIME as datetime
