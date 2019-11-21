@@ -14,3 +14,7 @@ use_hdf = False
 
 ; Cluster user cookie
 cluster_cookie = none
+
+; MMS login credentials
+mms_username = none
+mms_password = none

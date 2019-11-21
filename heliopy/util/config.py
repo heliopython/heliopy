@@ -70,5 +70,9 @@ def load_config():
     config_dict['cluster_cookie'] = config['DEFAULT']['cluster_cookie']
 
     config_dict['use_hdf'] = config['DEFAULT']['use_hdf'] == 'True'
+    
+    # MMS login credentials
+    config_dict['mms_username'] = config['DEFAULT']['mms_username']
+    config_dict['mms_password'] = config['DEFAULT']['mms_password']
 
     return config_dict

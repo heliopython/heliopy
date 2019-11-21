@@ -9,16 +9,25 @@ import os
 import pathlib
 import glob
 import datetime as dt
+import re
 import requests
 import tqdm.auto as tqdm
 import urllib
+import urllib3
+import pdb
+import io
+import csv
 
 import heliopy
 from heliopy.data import util
 import sunpy.time
 import scipy.io
+from cdflib import epochs
+import numpy as np
 
 data_dir = pathlib.Path(heliopy.config['download_dir'])
+sdc_username = heliopy.config['mms_username']
+sdc_password = heliopy.config['mms_password']
 mms_dir = data_dir / 'mms'
 mms_url = 'https://lasp.colorado.edu/mms/sdc/public'
 remote_mms_dir = mms_url + '/data/'
@@ -156,6 +165,7 @@ class MMSDownloader(util.Downloader):
 
         # Create a persistent session
         self._session = requests.Session()
+        self._session.auth = (sdc_username, sdc_password)
 
     def __str__(self):
         return self.url()
@@ -991,6 +1001,137 @@ class MMSDownloader(util.Downloader):
         response = self.Get()
         return response.json()
 
+
+def _datetime_to_list(datetime):
+    return [datetime.year, datetime.month, datetime.day,
+            datetime.hour, datetime.minute, datetime.second,
+            datetime.microsecond//1000, datetime.microsecond%1000, 0
+            ]
+
+
+def burst_data_segments(start_date, end_date, team=False):
+    """
+    Get information about burst data segments.
+    
+    Parameters
+    ----------
+    start_date : `datetime`
+        Start date of time interval for which information is desired.
+    end_date : `datetime`
+        End date of time interval for which information is desired.
+    team : bool=False
+        If set, information will be taken from the team site
+        (login required). Otherwise, it is take from the public site.
+    
+    Returns
+    -------
+    data : dict
+        Dictionary of information about burst data segments
+            DATASEGMENTID
+            TAISTARTTIME    - Start time of burst segment in
+                              TAI sec since 1958-01-01
+            TAIENDTIME      - End time of burst segment in
+                              TAI sec since 1958-01-01
+            PARAMETERSETID
+            FOM             - Figure of merit given to the burst segment
+            ISPENDING
+            INPLAYLIST
+            STATUS          - Download status of the segment
+            NUMEVALCYCLES
+            SOURCEID        - Username of SITL who selected the segment
+            CREATETIME      - ? as datetime
+            FINISHTIME      - ? as datetime
+            OBS1NUMBUFS
+            OBS2NUMBUFS
+            OBS3NUMBUFS
+            OBS4NUMBUFS
+            OBS1ALLOCBUFS
+            OBS2ALLOCBUFS
+            OBS3ALLOCBUFS
+            OBS4ALLOCBUFS
+            OBS1REMFILES
+            OBS2REMFILES
+            OBS3REMFILES
+            OBS4REMFILES
+            DISCUSSION      - Description given to segment by SITL
+            DT              - Duration of burst segment in seconds
+            TSTART          - Start time of burst segment as datetime
+            TEND            - End time of burst segment as datetime
+    """
+    
+    # Convert times to TAI since 1958
+    t0 = _datetime_to_list(start_date)
+    t1 = _datetime_to_list(end_date)
+    t_1958 = epochs.CDFepoch.compute_tt2000([1958, 1, 1, 0, 0, 0, 0, 0, 0])
+    t0 = int((epochs.CDFepoch.compute_tt2000(t0) - t_1958) // 1e9)
+    t1 = int((epochs.CDFepoch.compute_tt2000(t1) - t_1958) // 1e9)
+    
+    # URL
+    url_path = 'https://lasp.colorado.edu/mms/sdc/'
+    url_path += 'sitl/latis/dap/' if team else 'public/service/latis/'
+    url_path += 'mms_burst_data_segment.csv'
+    
+    # Query string
+    query = {}
+    query['TAISTARTTIME>'] = '{0:d}'.format(t0)
+    query['TAIENDTIME<'] = '{0:d}'.format(t1)
+    
+    # Post the query
+    sesh = requests.Session()
+    sesh.auth = (sdc_username, sdc_password)
+    data = sesh.get(url_path, params=query)
+    
+    # Read first line as dict keys. Cut text from TAI keys
+    data = _response_text_to_dict(data.text)
+    
+    # Convert to useful types
+    types = ['int16', 'int64', 'int64', 'str', 'float32', 'int8',
+             'int8', 'str', 'int32', 'str', 'datetime', 'datetime',
+             'int32', 'int32', 'int32', 'int32', 'int32', 'int32',
+             'int32', 'int32', 'int32', 'int32', 'int32', 'str']
+    for items in zip(data, types):
+        if items[1] == 'str':
+            pass
+        elif items[1] == 'datetime':
+            data[items[0]] = [dt.datetime.strptime(value, 
+                                                   '%Y-%m-%d %H:%M:%S'
+                                                   )
+                              if value != '' else value
+                              for value in data[items[0]]
+                              ]
+        else:
+            data[items[0]] = np.asarray(data[items[0]], dtype=items[1])
+    
+    # Add useful tags
+    #   - Number of seconds elapsed
+    #   - TAISTARTIME as datetime
+    #   - TAIENDTIME as datetime
+    data['TAISTARTTIME'] = data.pop('TAISTARTTIME (TAI seconds since 1958-01-01)')
+    data['TAIENDTIME'] = data.pop('TAIENDTIME (TAI seconds since 1958-01-01)')
+    data['DT'] = data['TAIENDTIME'] - data['TAISTARTTIME']
+    
+    # NOTE! If data['TAISTARTTIME'] is a scalar, this will not work
+    #       unless everything after "in" is turned into a list
+    data['TSTART'] = [dt.datetime(
+                         *value[0:6], value[6]*1000+value[7]
+                         )
+                         for value in
+                         epochs.CDFepoch.breakdown_tt2000(
+                            data['TAISTARTTIME']*int(1e9)+t_1958
+                            )
+                      ]
+    data['TEND'] = [dt.datetime(
+                         *value[0:6], value[6]*1000+value[7]
+                         )
+                         for value in
+                         epochs.CDFepoch.breakdown_tt2000(
+                            data['TAIENDTIME']*int(1e9)+t_1958
+                            )
+                      ]
+    
+    return data
+
+
 def construct_file_names(*args, data_type='science', **kwargs):
     '''
     Construct a file name compliant with MMS file name format guidelines.
@@ -1671,6 +1812,98 @@ def filter_version(files, latest=None, version=None, min_version=None):
     return filtered_files
 
 
+def _response_text_to_dict(text):
+    # Read first line as dict keys. Cut text from TAI keys
+    f = io.StringIO(text)
+    reader = csv.reader(f, delimiter=',')
+    
+    # Read remaining lines into columns
+    data = {key: [] for key in next(reader)}
+    keys = data.keys()
+    for row in reader:
+        for item in zip(keys, row):
+            data[item[0]].append(item[1])
+    
+    return data
+
+
+def mission_events(start_date, end_date, source=None, event_type=None):
+    """
+    Download MMS mission events. See the filters on the webpage
+    for more ideas.
+        https://lasp.colorado.edu/mms/sdc/public/about/events/#/
+    
+    NOTE: some sources, such as 'burst_segment' returns a format
+          that is not yet parsed properly. Try source='BDM'
+    
+    Parameters
+    ----------
+    start_date : `datetime`
+        Start date of time interval for which information is desired.
+    end_date : `datetime`
+        End date of time interval for which information is desired.
+    source : str
+        Source of the mission event. Options include
+            'Timeline', 'Burst', 'BDM', 'SITL'
+    event_type : str
+        Type of mission event. Options include
+            BDM: sitl_window, evaluate_metadata, science_roi
+    
+    Returns
+    -------
+    data : dict
+        Information about each event.
+            start_time_utc - Start time of event %Y-%m-%dT%H:%M:%S.%f
+            end_time_utc   - End time of event %Y-%m-%dT%H:%M:%S.%f
+            event_type     - Type of event
+            sc_id          - Spacecraft to which the event applies
+            source         - Source of event
+            description    - Description of event
+            discussion
+            start_orbit    - Orbit on which the event started
+            end_orbit      - Orbit on which the event ended
+            tag
+            id
+            tstart         - Start time of event as datetime
+            tend           - end time of event as datetime
+    """
+    url = 'https://lasp.colorado.edu/' \
+          'mms/sdc/public/service/latis/mms_events_view.csv'
+    
+    query = {}
+    query['start_time_utc>'] = start_date.strftime('%Y-%m-%d')#T%H:%M:%S.%f')[:-3]
+    query['end_time_utc<'] = end_date.strftime('%Y-%m-%d')#T%H:%M:%S.%f')[:-3]
+    if source is not None:
+        query['source'] = source
+    if event_type is not None:
+        query['event_type'] = event_type
+    
+    resp = requests.get(url, params=query)
+    data = _response_text_to_dict(resp.text)
+    
+    # Add useful tags
+    #   - Number of seconds elapsed
+    #   - TAISTARTIME as datetime
+    #   - TAIENDTIME as datetime
+    data["start_time_utc"] = data.pop("start_time_utc (yyyy-MM-dd'T'HH:mm:ss.SSS)")
+    data["end_time_utc"] = data.pop("end_time_utc (yyyy-MM-dd'T'HH:mm:ss.SSS)")
+    
+    # NOTE! If data['TAISTARTTIME'] is a scalar, this will not work
+    #       unless everything after "in" is turned into a list
+    data['tstart'] = [dt.datetime.strptime(
+                          value, '%Y-%m-%dT%H:%M:%S.%f'
+                          )
+                      for value in data['start_time_utc']
+                      ]
+    data['tend'] = [dt.datetime.strptime(
+                        value, '%Y-%m-%dT%H:%M:%S.%f'
+                        )
+                    for value in data['end_time_utc']
+                    ]
+    
+    return data
+
+
 def parse_file_name(fname):
     """
     Parse a file name compliant with MMS file name format guidelines.
@@ -1819,10 +2052,141 @@ def read_selections(sav_filename):
         d['note'] = fomstr.note[0]
     return d
 
+def _sdc_parse_form(r):
+    '''Parse key-value pairs from the log-in form
+    
+    Parameters
+    ----------
+    r (object):    requests.response object.
+    
+    Returns
+    -------
+    form (dict):   key-value pairs parsed from the form.
+    '''
+    # Find action URL
+    pstart = r.text.find('<form')
+    pend = r.text.find('>', pstart)
+    paction = r.text.find('action', pstart, pend)
+    pquote1 = r.text.find('"', pstart, pend)
+    pquote2 = r.text.find('"', pquote1+1, pend)
+    url5 = r.text[pquote1+1:pquote2]
+    url5 = url5.replace('&#x3a;', ':')
+    url5 = url5.replace('&#x2f;', '/')
+
+    # Parse values from the form
+    pinput = r.text.find('<input', pend+1)
+    inputs = {}
+    while pinput != -1:
+        # Parse the name-value pair
+        pend = r.text.find('/>', pinput)
+
+        # Name
+        pname = r.text.find('name', pinput, pend)
+        pquote1 = r.text.find('"', pname, pend)
+        pquote2 = r.text.find('"', pquote1+1, pend)
+        name = r.text[pquote1+1:pquote2]
+
+        # Value
+        if pname != -1:
+            pvalue = r.text.find('value', pquote2+1, pend)
+            pquote1 = r.text.find('"', pvalue, pend)
+            pquote2 = r.text.find('"', pquote1+1, pend)
+            value = r.text[pquote1+1:pquote2]
+            value = value.replace('&#x3a;', ':')
+
+            # Extract the values
+            inputs[name] = value
+
+        # Next iteraction
+        pinput = r.text.find('<input', pend+1)
+    
+    form = {'url': url5,
+            'payload': inputs}
+    
+    return form
+
+def sdc_login(username=None, password=None):
+    '''
+    Log-In to the MMS Science Data Center.
+
+    Parameters:
+    -----------
+    username : str
+        Account username.
+    password : str
+        Account password.
+    
+    Returns:
+    --------
+    Cookies : dict
+        Session cookies for continued access to the SDC. Can
+        be passed to an instance of requests.Session.
+    '''
+    
+    # Use login credentials from heliopyrc
+    if username is None:
+        username = sdc_username
+    if password is None:
+        password = sdc_password
+    
+    # Disable warnings because we are not going to obtain certificates
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+    # Attempt to access the site
+    #   - Each of the redirects are stored in the history attribute
+    url0 = 'https://lasp.colorado.edu/mms/sdc/team/'
+    r = requests.get(url0, verify=False)
+
+    # Extract cookies and url
+    cookies = r.cookies
+    for response in r.history:
+        cookies.update(response.cookies)
+    
+        try:
+            url = response.headers['Location']
+        except:
+            pass
+    
+    # Submit login information
+    payload = {'j_username': username, 'j_password': password}
+    r = requests.post(url, cookies=cookies, data=payload, verify=False)
+
+    # After submitting info, we land on a page with a form
+    #   - Parse form and submit values to continue
+    form = _sdc_parse_form(r)
+    r = requests.post(form['url'], cookies=cookies, data=form['payload'], verify=False)
+
+    # Update cookies to get session information
+    cookies = r.cookies
+    for response in r.history:
+        cookies.update(response.cookies)
+
+    return cookies
 
 def sitl_selections(data_type='abs_selections', gls_type='',
                     start_date=None, end_date=None):
-    """Obtain version information from the SDC."""
+    """
+    Download SITL selections from the SDC.
+    
+    Parameters
+    ----------
+    data_type : str
+        Type of SITL selections to download. Options are
+            'abs_selections', 'sitl_selections', 'gls_selections'
+    gls_type : str
+        Type of gls_selections. Options are
+            'mp-dl-unh'
+    start_date : `dt.datetime` or str
+        Start date of data interval
+    end_date : `dt.datetime` or str
+        End date of data interval
+    
+    Returns
+    -------
+    local_files : list
+        Names of the selection files that were downloaded. Files
+        can be read using mms.read_selections()
+    """
 
     if gls_type is not None:
         data_type = '_'.join((data_type, gls_type))
