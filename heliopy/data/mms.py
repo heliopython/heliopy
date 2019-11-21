@@ -343,7 +343,18 @@ class MMSDownloader(util.Downloader):
 
         # Get the file name
         try:
-            file = self.fnames()[0]
+            file = self.fnames()
+            file = filter_time(file, 
+                               interval.start.to_datetime(),
+                               interval.end.to_datetime()
+                              )
+
+            # Filter to within given interval.
+            if len(file) == 1:
+                file = file[0]
+            elif len(file) > 1:
+                ValueError('More than one file found. '
+                           'Restrict interval or use fnames().')
         except IndexError:
             file = ''
 
@@ -351,6 +362,24 @@ class MMSDownloader(util.Downloader):
         self.set_interval(interval_in)
 
         return file
+
+    @staticmethod
+    def datetime2interval(start_date, end_date):
+        """
+        Convert datetimes to a sunpy TimeRange instance.
+
+        Parameters
+        ----------
+        start_date : datetime
+            Start time of interval
+        end_Date : End time of interval
+
+        Returns
+        ----------
+        interval : sunpy.time.TimeRange
+            Start and end time of the data interval
+        """
+        return sunpy.time.TimeRange(start_date, end_date)
 
     def get_interval(self):
         """
@@ -361,7 +390,7 @@ class MMSDownloader(util.Downloader):
         interval : sunpy.time.TimeRange
             Start and end time of the data interval
         """
-        return sunpy.time.TimeRange(self.start_date, self.end_date)
+        return self.datetime2interval(self.start_date, self.end_date)
 
     def set_interval(self, interval):
         """
@@ -398,7 +427,7 @@ class MMSDownloader(util.Downloader):
         self.set_interval(interval)
 
         try:
-            file = self.downloads()[0]
+            file = self.get()[0]
         except IndexError:
             file = ''
 
@@ -422,11 +451,24 @@ class MMSDownloader(util.Downloader):
         local_path = os.path.join(self.local_dir(interval),
                                   self.fname(interval)
                                   )
+        pdb.set_trace()
         cdf = util._load_cdf(local_path)
         return util.cdf2df(cdf, index_key='Epoch')
 
     def fnames(self):
-        """Obtain file names from the SDC."""
+        """
+        Obtain file names from the SDC.
+
+        NOTE: The SDC API is lenient on file start times
+              and the retured list of files may be more
+              inclusive than desired. Use the filter_time
+              function to hone in on the desired time range.
+
+        Returns
+        -------
+        files : list
+            File names.
+        """
 
         # File names have version numbers in them. To get the most recent
         # version, call out to the SDC.
@@ -522,10 +564,17 @@ class MMSDownloader(util.Downloader):
         # Return the resulting request
         return r
 
-    def downloads(self):
+    def download_files(self, file_names):
         '''
-        Download multiple files. First, search the local file system
-        to see if any of the files have been downloaded previously.
+        Download multiple files. To prevent downloading the same
+        file multiple times and to properly filter by file start
+        time, see the get method.
+
+        Parameters
+        ----------
+        file_names : str, list
+            File names of the data files to be downloaded. See
+            the file_names method.
 
         Returns
         -------
@@ -533,22 +582,15 @@ class MMSDownloader(util.Downloader):
             Names of the local files. Remote files downloaded
             only if they do not already exist locally
         '''
-        self._info_type = 'download'
-        # Build the URL sans query
-        url = self.url(query=False)
 
-        # Get available files
-        local_files, remote_files = self.search()
-        if self.offline:
-            return local_files
+        # Make sure files is a list
+        if isinstance(file_names, str):
+            file_names = [file_names]
 
         # Get information on the files that were found
-        #   - To do that, specify the specific files. This sets all other
-        #     properties to None
-        #   - Save the state of the object as it currently is so that it can
-        #     be restored
-        #   - Setting FILES will indirectly cause SITE='public'. Keep track
-        #     of SITE.
+        #   - To do that, specify the specific files. This sets all other properties to None
+        #   - Save the state of the object as it currently is so that it can be restored
+        #   - Setting FILES will indirectly cause SITE='public'. Keep track of SITE.
         site = self.site
         state = {}
         state['sc'] = self.sc
@@ -558,13 +600,20 @@ class MMSDownloader(util.Downloader):
         state['optdesc'] = self.optdesc
         state['version'] = self.version
         state['files'] = self.files
-        self.files = [file.split('/')[-1] for file in remote_files]
 
+        # Build the URL sans query
         self.site = site
+        self._info_type = 'download'
+        self.files = file_names
+        url = '/'.join((self._sdc_home, self.site, 'files', 'api', 'v1',
+                        self._info_type, self.data_type))
+
+        # Get file name and size
         file_info = self.file_info()
 
         # Amount to download per iteration
         block_size = 1024*128
+        local_file_names = []
 
         # Download each file individually
         for info in file_info['files']:
@@ -573,12 +622,11 @@ class MMSDownloader(util.Downloader):
             if not os.path.isdir(os.path.dirname(file)):
                 os.makedirs(os.path.dirname(file))
 
-            # Downloading and progress bar:
-            # https://stackoverflow.com/questions/16694907/how-to-download-large-file-in-python-with-requests-py
-            # https://stackoverflow.com/questions/37573483/progress-bar-while-download-file-over-http-with-requests
+            # downloading: https://stackoverflow.com/questions/16694907/how-to-download-large-file-in-python-with-requests-py
+            # progress bar: https://stackoverflow.com/questions/37573483/progress-bar-while-download-file-over-http-with-requests
             try:
                 r = self._session.post(url,
-                                       data={'file': info['file_name']},
+                                       data={'file': info['file_name']}, 
                                        stream=True)
                 with tqdm.tqdm(total=info['file_size'],
                                unit='B',
@@ -587,7 +635,7 @@ class MMSDownloader(util.Downloader):
                                ) as pbar:
                     with open(file, 'wb') as f:
                         for chunk in r.iter_content(chunk_size=block_size):
-                            if chunk:  # filter out keep-alive new chunks
+                            if chunk: # filter out keep-alive new chunks
                                 f.write(chunk)
                                 pbar.update(block_size)
             except:
@@ -598,13 +646,14 @@ class MMSDownloader(util.Downloader):
                     setattr(self, key, state[key])
                 raise
 
-            local_files.append(file)
+            local_file_names.append(file)
 
+        # Restore the entry state
         self.files = None
         for key in state:
             setattr(self, key, state[key])
 
-        return local_files
+        return local_file_names
 
     def file_info(self):
         '''
@@ -654,8 +703,11 @@ class MMSDownloader(util.Downloader):
             return local_files
 
         # Download remote files
-        downloaded_files = self.download_files(remote_files)
-        local_files.append(downloaded_files)
+        #   - file_info() does not want the remote path
+        if len(remote_files) > 0:
+            remote_files = [file.split('/')[-1] for file in remote_files]
+            downloaded_files = self.download_files(remote_files)
+            local_files.append(downloaded_files)
 
         return local_files
 
@@ -999,7 +1051,7 @@ class MMSDownloader(util.Downloader):
             Version information regarding the requested files
         '''
         self._info_type = 'version_info'
-        response = self.Get()
+        response = self.post()
         return response.json()
 
 
@@ -1716,10 +1768,14 @@ def filter_time(fnames, start_date, end_date):
     #   - With this, we look for the file that begins just prior to START_DATE
     #     and throw away any files that start before it.
     idx = [i for i, t in enumerate(fstart) if t >= start_date]
-
-    if (len(idx) == 0) & (fstart[-1].date() == start_date.date()):
+    if (len(idx) == 0) and \
+            (len(fstart) > 0) and \
+            (fstart[-1].date() == start_date.date()):
         idx = [len(fstart)-1]
-    elif (len(idx) != 0) & ((idx[0] != 0) & (fstart[idx[0]] != start_date)):
+
+    elif (len(idx) != 0) and \
+            ((idx[0] != 0) and \
+            (fstart[idx[0]] != start_date)):
         idx.insert(0, idx[0]-1)
 
     if len(idx) > 0:
@@ -1783,7 +1839,7 @@ def filter_version(files, latest=None, version=None, min_version=None):
             for i in test_idx:
                 vXYZ = versions[i].split('.')
                 if ((vXYZ[0] > vXYZ_ref[0]) or
-                        (vXYZ[0] == vXYZ_ref[0] and 
+                        (vXYZ[0] == vXYZ_ref[0] and
                          vXYZ[1] > vXYZ_ref[1]) or
                         (vXYZ[0] == vXYZ_ref[0] and
                          vXYZ[1] == vXYZ_ref[1] and

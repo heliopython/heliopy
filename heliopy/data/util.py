@@ -925,7 +925,7 @@ def _load_cdf(file_path):
     go wrong.
     '''
     try:
-        cdf = cdflib.CDF(str(file_path))
+        cdf = cdflib.cdfread.CDF(str(file_path))
     except Exception as err:
         print('Error whilst trying to load {}\n'.format(file_path))
         raise err
