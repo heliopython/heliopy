@@ -34,6 +34,7 @@ remote_mms_dir = mms_url + '/data/'
 query_url = mms_url + '/files/api/v1/file_names/science'
 dl_url = mms_url + '/files/api/v1/download/science'
 
+
 class MMSDownloader(util.Downloader):
     """
     Download data from the Magnetospheric Multiscale (MMS) Science
@@ -1005,14 +1006,14 @@ class MMSDownloader(util.Downloader):
 def _datetime_to_list(datetime):
     return [datetime.year, datetime.month, datetime.day,
             datetime.hour, datetime.minute, datetime.second,
-            datetime.microsecond//1000, datetime.microsecond%1000, 0
+            datetime.microsecond // 1000, datetime.microsecond % 1000, 0
             ]
 
 
 def burst_data_segments(start_date, end_date, team=False):
     """
     Get information about burst data segments.
-    
+
     Parameters
     ----------
     start_date : `datetime`
@@ -1022,7 +1023,7 @@ def burst_data_segments(start_date, end_date, team=False):
     team : bool=False
         If set, information will be taken from the team site
         (login required). Otherwise, it is take from the public site.
-    
+
     Returns
     -------
     data : dict
@@ -1058,32 +1059,32 @@ def burst_data_segments(start_date, end_date, team=False):
             TSTART          - Start time of burst segment as datetime
             TEND            - End time of burst segment as datetime
     """
-    
+
     # Convert times to TAI since 1958
     t0 = _datetime_to_list(start_date)
     t1 = _datetime_to_list(end_date)
     t_1958 = epochs.CDFepoch.compute_tt2000([1958, 1, 1, 0, 0, 0, 0, 0, 0])
     t0 = int((epochs.CDFepoch.compute_tt2000(t0) - t_1958) // 1e9)
     t1 = int((epochs.CDFepoch.compute_tt2000(t1) - t_1958) // 1e9)
-    
+
     # URL
     url_path = 'https://lasp.colorado.edu/mms/sdc/'
     url_path += 'sitl/latis/dap/' if team else 'public/service/latis/'
     url_path += 'mms_burst_data_segment.csv'
-    
+
     # Query string
     query = {}
     query['TAISTARTTIME>'] = '{0:d}'.format(t0)
     query['TAIENDTIME<'] = '{0:d}'.format(t1)
-    
+
     # Post the query
     sesh = requests.Session()
     sesh.auth = (sdc_username, sdc_password)
     data = sesh.get(url_path, params=query)
-    
+
     # Read first line as dict keys. Cut text from TAI keys
     data = _response_text_to_dict(data.text)
-    
+
     # Convert to useful types
     types = ['int16', 'int64', 'int64', 'str', 'float32', 'int8',
              'int8', 'str', 'int32', 'str', 'datetime', 'datetime',
@@ -1093,7 +1094,7 @@ def burst_data_segments(start_date, end_date, team=False):
         if items[1] == 'str':
             pass
         elif items[1] == 'datetime':
-            data[items[0]] = [dt.datetime.strptime(value, 
+            data[items[0]] = [dt.datetime.strptime(value,
                                                    '%Y-%m-%d %H:%M:%S'
                                                    )
                               if value != '' else value
@@ -1101,34 +1102,38 @@ def burst_data_segments(start_date, end_date, team=False):
                               ]
         else:
             data[items[0]] = np.asarray(data[items[0]], dtype=items[1])
-    
+
     # Add useful tags
     #   - Number of seconds elapsed
     #   - TAISTARTIME as datetime
     #   - TAIENDTIME as datetime
-    data['TAISTARTTIME'] = data.pop('TAISTARTTIME (TAI seconds since 1958-01-01)')
-    data['TAIENDTIME'] = data.pop('TAIENDTIME (TAI seconds since 1958-01-01)')
+    data['TAISTARTTIME'] = data.pop('TAISTARTTIME '
+                                    '(TAI seconds since 1958-01-01)'
+                                    )
+    data['TAIENDTIME'] = data.pop('TAIENDTIME '
+                                  '(TAI seconds since 1958-01-01)'
+                                  )
     data['DT'] = data['TAIENDTIME'] - data['TAISTARTTIME']
-    
+
     # NOTE! If data['TAISTARTTIME'] is a scalar, this will not work
     #       unless everything after "in" is turned into a list
     data['TSTART'] = [dt.datetime(
                          *value[0:6], value[6]*1000+value[7]
                          )
-                         for value in
-                         epochs.CDFepoch.breakdown_tt2000(
-                            data['TAISTARTTIME']*int(1e9)+t_1958
-                            )
+                      for value in
+                      epochs.CDFepoch.breakdown_tt2000(
+                          data['TAISTARTTIME']*int(1e9)+t_1958
+                          )
                       ]
     data['TEND'] = [dt.datetime(
                          *value[0:6], value[6]*1000+value[7]
                          )
-                         for value in
-                         epochs.CDFepoch.breakdown_tt2000(
-                            data['TAIENDTIME']*int(1e9)+t_1958
-                            )
-                      ]
-    
+                    for value in
+                    epochs.CDFepoch.breakdown_tt2000(
+                        data['TAIENDTIME']*int(1e9)+t_1958
+                        )
+                    ]
+
     return data
 
 
@@ -1164,6 +1169,7 @@ def construct_file_names(*args, data_type='science', **kwargs):
         fnames = construct_selections_file_names(data_type, **kwargs)
 
     return fnames
+
 
 def construct_selections_file_names(data_type, tstart='*', gls_type=None):
     '''
@@ -1224,6 +1230,7 @@ def construct_selections_file_names(data_type, tstart='*', gls_type=None):
                   ]
 
     return fnames
+
 
 def construct_science_file_names(sc, instr=None, mode=None, level=None,
                                  tstart='*', version='*', optdesc=None):
@@ -1316,6 +1323,7 @@ def construct_science_file_names(sc, instr=None, mode=None, level=None,
                   ]
     return fnames
 
+
 def construct_path(*args, data_type='science', **kwargs):
     '''
     Construct a directory structure compliant with MMS path guidelines.
@@ -1352,6 +1360,7 @@ def construct_path(*args, data_type='science', **kwargs):
         raise ValueError('Invalid value for keyword data_type')
 
     return paths
+
 
 def construct_selections_path(data_type, tstart='*', gls_type=None,
                               root='', files=False):
@@ -1559,6 +1568,7 @@ def construct_science_path(sc, instr=None, mode=None, level=None, tstart='*',
                      ]
 
     return paths
+
 
 def file_start_time(file_name):
     '''
@@ -1773,11 +1783,11 @@ def filter_version(files, latest=None, version=None, min_version=None):
             for i in test_idx:
                 vXYZ = versions[i].split('.')
                 if ((vXYZ[0] > vXYZ_ref[0]) or
-                     (vXYZ[0] == vXYZ_ref[0] and vXYZ[1] > vXYZ_ref[1]) or
-                     (vXYZ[0] == vXYZ_ref[0] and
-                      vXYZ[1] == vXYZ_ref[1] and
-                      vXYZ[2] > vXYZ_ref[2]
-                      )
+                    (vXYZ[0] == vXYZ_ref[0] and vXYZ[1] > vXYZ_ref[1]) or
+                    (vXYZ[0] == vXYZ_ref[0] and
+                     vXYZ[1] == vXYZ_ref[1] and
+                     vXYZ[2] > vXYZ_ref[2]
+                     )
                     ):
                     # Select the last file
                     filtered_files[-1] = files[i]
@@ -1793,7 +1803,7 @@ def filter_version(files, latest=None, version=None, min_version=None):
                  vXYZ[1] == vXYZ_min[1] and
                  vXYZ[2] >= vXYZ_min[2]
                  )
-                ):
+            ):
                 # Append the file if it passes the criteria
                 filtered_files.append(files[idx])
 
@@ -1816,14 +1826,14 @@ def _response_text_to_dict(text):
     # Read first line as dict keys. Cut text from TAI keys
     f = io.StringIO(text)
     reader = csv.reader(f, delimiter=',')
-    
+
     # Read remaining lines into columns
     data = {key: [] for key in next(reader)}
     keys = data.keys()
     for row in reader:
         for item in zip(keys, row):
             data[item[0]].append(item[1])
-    
+
     return data
 
 
@@ -1832,10 +1842,10 @@ def mission_events(start_date, end_date, source=None, event_type=None):
     Download MMS mission events. See the filters on the webpage
     for more ideas.
         https://lasp.colorado.edu/mms/sdc/public/about/events/#/
-    
+
     NOTE: some sources, such as 'burst_segment' returns a format
           that is not yet parsed properly. Try source='BDM'
-    
+
     Parameters
     ----------
     start_date : `datetime`
@@ -1848,7 +1858,7 @@ def mission_events(start_date, end_date, source=None, event_type=None):
     event_type : str
         Type of mission event. Options include
             BDM: sitl_window, evaluate_metadata, science_roi
-    
+
     Returns
     -------
     data : dict
@@ -1869,25 +1879,31 @@ def mission_events(start_date, end_date, source=None, event_type=None):
     """
     url = 'https://lasp.colorado.edu/' \
           'mms/sdc/public/service/latis/mms_events_view.csv'
-    
+
     query = {}
-    query['start_time_utc>'] = start_date.strftime('%Y-%m-%d')#T%H:%M:%S.%f')[:-3]
-    query['end_time_utc<'] = end_date.strftime('%Y-%m-%d')#T%H:%M:%S.%f')[:-3]
+    query['start_time_utc>'] = start_date.strftime('%Y-%m-%d')
+    query['end_time_utc<'] = end_date.strftime('%Y-%m-%d')
     if source is not None:
         query['source'] = source
     if event_type is not None:
         query['event_type'] = event_type
-    
+
     resp = requests.get(url, params=query)
     data = _response_text_to_dict(resp.text)
+    
+    pdb.set_trace()
     
     # Add useful tags
     #   - Number of seconds elapsed
     #   - TAISTARTIME as datetime
     #   - TAIENDTIME as datetime
-    data["start_time_utc"] = data.pop("start_time_utc (yyyy-MM-dd'T'HH:mm:ss.SSS)")
-    data["end_time_utc"] = data.pop("end_time_utc (yyyy-MM-dd'T'HH:mm:ss.SSS)")
-    
+    data["start_time_utc"] = data.pop("start_time_utc "
+                                      "(yyyy-MM-dd'T'HH:mm:ss.SSS)"
+                                      )
+    data["end_time_utc"] = data.pop("end_time_utc "
+                                    "(yyyy-MM-dd'T'HH:mm:ss.SSS)"
+                                    )
+
     # NOTE! If data['TAISTARTTIME'] is a scalar, this will not work
     #       unless everything after "in" is turned into a list
     data['tstart'] = [dt.datetime.strptime(
@@ -1900,7 +1916,7 @@ def mission_events(start_date, end_date, source=None, event_type=None):
                         )
                     for value in data['end_time_utc']
                     ]
-    
+
     return data
 
 
@@ -2052,13 +2068,14 @@ def read_selections(sav_filename):
         d['note'] = fomstr.note[0]
     return d
 
+
 def _sdc_parse_form(r):
     '''Parse key-value pairs from the log-in form
-    
+
     Parameters
     ----------
     r (object):    requests.response object.
-    
+
     Returns
     -------
     form (dict):   key-value pairs parsed from the form.
@@ -2099,11 +2116,12 @@ def _sdc_parse_form(r):
 
         # Next iteraction
         pinput = r.text.find('<input', pend+1)
-    
+
     form = {'url': url5,
             'payload': inputs}
-    
+
     return form
+
 
 def sdc_login(username=None, password=None):
     '''
@@ -2115,20 +2133,20 @@ def sdc_login(username=None, password=None):
         Account username.
     password : str
         Account password.
-    
+
     Returns:
     --------
     Cookies : dict
         Session cookies for continued access to the SDC. Can
         be passed to an instance of requests.Session.
     '''
-    
+
     # Use login credentials from heliopyrc
     if username is None:
         username = sdc_username
     if password is None:
         password = sdc_password
-    
+
     # Disable warnings because we are not going to obtain certificates
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -2141,12 +2159,12 @@ def sdc_login(username=None, password=None):
     cookies = r.cookies
     for response in r.history:
         cookies.update(response.cookies)
-    
+
         try:
             url = response.headers['Location']
         except:
             pass
-    
+
     # Submit login information
     payload = {'j_username': username, 'j_password': password}
     r = requests.post(url, cookies=cookies, data=payload, verify=False)
@@ -2154,7 +2172,11 @@ def sdc_login(username=None, password=None):
     # After submitting info, we land on a page with a form
     #   - Parse form and submit values to continue
     form = _sdc_parse_form(r)
-    r = requests.post(form['url'], cookies=cookies, data=form['payload'], verify=False)
+    r = requests.post(form['url'],
+                      cookies=cookies,
+                      data=form['payload'],
+                      verify=False
+                      )
 
     # Update cookies to get session information
     cookies = r.cookies
@@ -2163,11 +2185,12 @@ def sdc_login(username=None, password=None):
 
     return cookies
 
+
 def sitl_selections(data_type='abs_selections', gls_type='',
                     start_date=None, end_date=None):
     """
     Download SITL selections from the SDC.
-    
+
     Parameters
     ----------
     data_type : str
@@ -2180,7 +2203,7 @@ def sitl_selections(data_type='abs_selections', gls_type='',
         Start date of data interval
     end_date : `dt.datetime` or str
         End date of data interval
-    
+
     Returns
     -------
     local_files : list
@@ -2318,6 +2341,7 @@ def available_files(probe, instrument, starttime, endtime, data_rate='',
     files = filter_time(files, starttime, endtime)
     return files
 
+
 def download_files(probe, instrument, data_rate, starttime, endtime,
                    verbose=True, product_string='', warn_missing_units=True):
     """
@@ -2375,7 +2399,7 @@ def download_files(probe, instrument, data_rate, starttime, endtime,
         local_fname = os.path.join(local_base_dir, fname + extension)
         with requests.get(url, stream=True) as request:
             with open(local_fname, 'wb') as fd:
-                for chunk in tqdm(
+                for chunk in tqdm.tqdm(
                         request.iter_content(chunk_size=128)):
                     fd.write(chunk)
 
