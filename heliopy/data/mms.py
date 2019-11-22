@@ -344,10 +344,10 @@ class MMSDownloader(util.Downloader):
         # Get the file name
         try:
             file = self.fnames()
-            file = filter_time(file, 
+            file = filter_time(file,
                                interval.start.to_datetime(),
                                interval.end.to_datetime()
-                              )
+                               )
 
             # Filter to within given interval.
             if len(file) == 1:
@@ -588,9 +588,12 @@ class MMSDownloader(util.Downloader):
             file_names = [file_names]
 
         # Get information on the files that were found
-        #   - To do that, specify the specific files. This sets all other properties to None
-        #   - Save the state of the object as it currently is so that it can be restored
-        #   - Setting FILES will indirectly cause SITE='public'. Keep track of SITE.
+        #   - To do that, specify the specific files.
+        #     This sets all other properties to None
+        #   - Save the state of the object as it currently
+        #     is so that it can be restored
+        #   - Setting FILES will indirectly cause SITE='public'.
+        #     Keep track of SITE.
         site = self.site
         state = {}
         state['sc'] = self.sc
@@ -622,11 +625,10 @@ class MMSDownloader(util.Downloader):
             if not os.path.isdir(os.path.dirname(file)):
                 os.makedirs(os.path.dirname(file))
 
-            # downloading: https://stackoverflow.com/questions/16694907/how-to-download-large-file-in-python-with-requests-py
-            # progress bar: https://stackoverflow.com/questions/37573483/progress-bar-while-download-file-over-http-with-requests
+            # Download data with progress bar
             try:
                 r = self._session.post(url,
-                                       data={'file': info['file_name']}, 
+                                       data={'file': info['file_name']},
                                        stream=True)
                 with tqdm.tqdm(total=info['file_size'],
                                unit='B',
@@ -635,7 +637,7 @@ class MMSDownloader(util.Downloader):
                                ) as pbar:
                     with open(file, 'wb') as f:
                         for chunk in r.iter_content(chunk_size=block_size):
-                            if chunk: # filter out keep-alive new chunks
+                            if chunk:  # filter out keep-alive new chunks
                                 f.write(chunk)
                                 pbar.update(block_size)
             except:
@@ -1774,8 +1776,7 @@ def filter_time(fnames, start_date, end_date):
         idx = [len(fstart)-1]
 
     elif (len(idx) != 0) and \
-            ((idx[0] != 0) and \
-            (fstart[idx[0]] != start_date)):
+            ((idx[0] != 0) and (fstart[idx[0]] != start_date)):
         idx.insert(0, idx[0]-1)
 
     if len(idx) > 0:
@@ -1887,14 +1888,16 @@ def _response_text_to_dict(text):
     return data
 
 
-def mission_events(start_date, end_date, source=None, event_type=None):
+def mission_events(start_date=None, end_date=None, 
+                   start_orbit=None, end_orbit=None,
+                   source=None, event_type=None):
     """
     Download MMS mission events. See the filters on the webpage
     for more ideas.
         https://lasp.colorado.edu/mms/sdc/public/about/events/#/
 
-    NOTE: some sources, such as 'burst_segment' returns a format
-          that is not yet parsed properly. Try source='BDM'
+    NOTE: some sources, such as 'burst_segment', return a format
+          that is not yet parsed properly.
 
     Parameters
     ----------
@@ -1902,6 +1905,14 @@ def mission_events(start_date, end_date, source=None, event_type=None):
         Start date of time interval for which information is desired.
     end_date : `datetime`
         End date of time interval for which information is desired.
+    start_orbit : `datetime`
+        Start date of data interval for which information is desired.
+        If provided with start_date, the two must overlap for any data
+        to be returned.
+    end_orbit : `datetime`
+        End orbit of data interval for which information is desired.
+        If provided with end_date, the two must overlap for any data
+        to be returned.
     source : str
         Source of the mission event. Options include
             'Timeline', 'Burst', 'BDM', 'SITL'
@@ -1931,8 +1942,16 @@ def mission_events(start_date, end_date, source=None, event_type=None):
           'mms/sdc/public/service/latis/mms_events_view.csv'
 
     query = {}
-    query['start_time_utc>'] = start_date.strftime('%Y-%m-%d')
-    query['end_time_utc<'] = end_date.strftime('%Y-%m-%d')
+    if start_date is not None:
+        query['start_time_utc>'] = start_date.strftime('%Y-%m-%d')
+    if end_date is not None:
+        query['end_time_utc>'] = end_date.strftime('%Y-%m-%d')
+
+    if start_orbit is not None:
+        query['start_orbit>'] = start_orbit
+    if end_orbit is not None:
+        query['end_orbit<'] = end_orbit
+
     if source is not None:
         query['source'] = source
     if event_type is not None:
