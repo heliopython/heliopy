@@ -17,6 +17,7 @@ import urllib3
 import pdb
 import io
 import csv
+import pathlib
 
 import heliopy
 from heliopy.data import util
@@ -92,6 +93,9 @@ class MMSDownloader(util.Downloader):
                 "science" - Science data
                 "hk" - Housekeeping data
                 "ancillary" - attitude and emphemeris data
+                "abs_selections" - Automated burst segment selections
+                "sitl_selections" - Burst selections made by the SITL
+                "gls_selections_*" - Burst selections made by the ground loop
         data_root : str
             Root directory in which to download MMS data. Additional
             directories beyond data_root are created to mimic the MMS
@@ -451,7 +455,6 @@ class MMSDownloader(util.Downloader):
         local_path = os.path.join(self.local_dir(interval),
                                   self.fname(interval)
                                   )
-        pdb.set_trace()
         cdf = util._load_cdf(local_path)
         return util.cdf2df(cdf, index_key='Epoch')
 
@@ -709,7 +712,7 @@ class MMSDownloader(util.Downloader):
         if len(remote_files) > 0:
             remote_files = [file.split('/')[-1] for file in remote_files]
             downloaded_files = self.download_files(remote_files)
-            local_files.append(downloaded_files)
+            local_files.append(*downloaded_files)
 
         return local_files
 
@@ -1663,7 +1666,8 @@ def file_start_time(file_name):
                                    file_name).group(0)
                 fstart = dt.datetime.strptime(fstart, '%Y%m%d')
             except AttributeError:
-                raise AttributeError('File start time not identified.')
+                raise AttributeError('File start time not identified in: \n'
+                                     '  "{}"'.format(file_name))
 
     return fstart
 
@@ -1873,6 +1877,83 @@ def filter_version(files, latest=None, version=None, min_version=None):
     return filtered_files
 
 
+def load_science_files(sc, instr, mode, level, start_date, end_date,
+                       optdesc=None, offline=False, ignore=None,
+                       include=None, index_key='Epoch'):
+    """
+    Download and read data from science data files. Data files that are
+    present locally will not be downloaded again.
+
+    Params
+    ------
+        sc : str, list
+            Spacecraft ID.
+        instr : str, list
+            Instrument ID.
+        mode : str, list
+            Data rate mode.
+        level : str, list
+            Data product quality level. Setting level to None, "l2", or "l3"
+            automatically sets site to "public".
+        end_date : str, `datetime.datetime`
+            End time of data interval of interest. If a string, it must be in
+            ISO-8601 format: YYYY-MM-DDThh:mm:ss, and is subsequently
+            converted to a datetime object.
+        ignore : list, optional
+            In case a CDF file has columns that are unused / not required,
+            then the column names can be passed as a list into the function.
+        offline : bool
+            If True, file information will be gathered from the local file
+            system only (i.e. no requests will be posted to the SDC).
+        optdesc : str, list
+            Optional descriptor of the data products.
+        start_date : str, :class:`datetime.datetime`
+            Start time of data interval of interest. If a string, it must be
+            in ISO-8601 format: YYYY-MM-DDThh:mm:ss, and is subsequently
+            converted to a datetime object.
+
+        Returns
+        -------
+        data : :class:`pandas.Dataframe`, list
+            A list of dataframes containing data from the requested files.
+            If only a single file type is request, a single dataframe is
+            returned.
+    """
+
+    def processing_func(cdf, **kwargs):
+        return util.cdf2df(cdf, **kwargs)
+
+    # Download files and sort them into types
+    sdc = MMSDownloader(sc, instr, mode, level, optdesc=optdesc,
+                        start_date=start_date, end_date=end_date,
+                        offline=offline)
+    fnames = sdc.get()
+    fgroups = sort_files(fnames)
+
+    # Load each file type
+    data = []
+    for fgroup in fgroups:
+        dgroup = []
+        for file in fgroup:
+            df = util._load_raw_file(pathlib.Path(file), processing_func,
+                                     ignore=ignore, include=include,
+                                     index_key=index_key)
+            if df is not None:
+                dgroup.append(df)
+        # Filter to the correct time range
+        #   - Will also concatenate dataframes together
+        dgroup = util.timefilter(dgroup, start_date, end_date)
+        dgroup = dgroup.sort_index()
+        data.append(dgroup)
+
+    # Return a single data frame if only one
+    # file type is present
+    if len(data) == 1:
+        data = data[0]
+
+    return data
+
+
 def _response_text_to_dict(text):
     # Read first line as dict keys. Cut text from TAI keys
     f = io.StringIO(text)
@@ -1888,8 +1969,9 @@ def _response_text_to_dict(text):
     return data
 
 
-def mission_events(start_date=None, end_date=None, 
+def mission_events(start_date=None, end_date=None,
                    start_orbit=None, end_orbit=None,
+                   sc=None,
                    source=None, event_type=None):
     """
     Download MMS mission events. See the filters on the webpage
@@ -1913,6 +1995,9 @@ def mission_events(start_date=None, end_date=None,
         End orbit of data interval for which information is desired.
         If provided with end_date, the two must overlap for any data
         to be returned.
+    sc : str
+        Spacecraft ID (mms, mms1, mms2, mms3, mms4) for which event
+        information is to be returned.
     source : str
         Source of the mission event. Options include
             'Timeline', 'Burst', 'BDM', 'SITL'
@@ -1945,13 +2030,15 @@ def mission_events(start_date=None, end_date=None,
     if start_date is not None:
         query['start_time_utc>'] = start_date.strftime('%Y-%m-%d')
     if end_date is not None:
-        query['end_time_utc>'] = end_date.strftime('%Y-%m-%d')
+        query['end_time_utc<'] = end_date.strftime('%Y-%m-%d')
 
     if start_orbit is not None:
         query['start_orbit>'] = start_orbit
     if end_orbit is not None:
         query['end_orbit<'] = end_orbit
 
+    if sc is not None:
+        query['sc_id'] = sc
     if source is not None:
         query['source'] = source
     if event_type is not None:
@@ -1959,6 +2046,15 @@ def mission_events(start_date=None, end_date=None,
 
     resp = requests.get(url, params=query)
     data = _response_text_to_dict(resp.text)
+
+    # Convert to useful types
+    types = ['str', 'str', 'str', 'str', 'str', 'str', 'str',
+             'int32', 'int32', 'str', 'int32']
+    for items in zip(data, types):
+        if items[1] == 'str':
+            pass
+        else:
+            data[items[0]] = np.asarray(data[items[0]], dtype=items[1])
 
     # Add useful tags
     #   - Number of seconds elapsed
@@ -2008,6 +2104,7 @@ def parse_file_name(fname):
             [5]: Start times
             [6]: File version number
     """
+
     parts = os.path.basename(fname).split('_')
 
     # data_type = '*_selections'
@@ -2310,7 +2407,7 @@ def sort_files(files):
     """
 
     # File types and start times
-    parts = parse_file_name(files)
+    parts = [parse_file_name(file) for file in files]
     bases = ['_'.join(p[0:5]) for p in parts]
     tstart = [p[-2] for p in parts]
 
