@@ -110,12 +110,11 @@ class Downloader(abc.ABC):
             self.units = cdf_units(cdf, manual_units=self.units)
         if not hasattr(self, 'warn_missing_units'):
             self.warn_missing_units = True
-	if want_xr:
-	    return units_xarray(
-	        data, self.units, warn_missing_units=self.warn_missing_units)
-	else:
-            return units_attach(
-                data, self.units, warn_missing_units=self.warn_missing_units)
+
+        if want_xr:
+            return units_xarray(data, self.units, warn_missing_units=self.warn_missing_units)
+        else:
+            return units_attach(data, self.units, warn_missing_units=self.warn_missing_units)
 
     def local_path(self, interval):
         """
