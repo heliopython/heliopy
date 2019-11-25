@@ -6,3 +6,4 @@ pytest-pep8
 pytest-xdist
 spiceypy
 tables
+xarray
