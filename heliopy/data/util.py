@@ -372,7 +372,7 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
             raw_file_path = local_dir / raw_fname
             logger.info('Loading {}'.format(raw_file_path))
             df = _load_raw_file(raw_file_path,
-                                processing_func, processing_kwargs)
+                                processing_func, **processing_kwargs)
             if df is not None:
                 data.append(df)
                 continue
@@ -398,7 +398,7 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
             if raw_fname is not None:
                 raw_file_path = local_dir / raw_fname
                 df = _load_raw_file(raw_file_path,
-                                    processing_func, processing_kwargs)
+                                    processing_func, **processing_kwargs)
                 if df is not None:
                     data.append(df)
                 continue

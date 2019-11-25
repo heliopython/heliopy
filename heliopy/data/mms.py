@@ -1920,8 +1920,8 @@ def load_science_files(sc, instr, mode, level, start_date, end_date,
             returned.
     """
 
-    def processing_func(cdf, **kwargs):
-        return util.cdf2df(cdf, **kwargs)
+    def processing_func(cdf, kwargs):
+        return util.cdf2df(cdf, kwargs)
 
     # Download files and sort them into types
     sdc = MMSDownloader(sc, instr, mode, level, optdesc=optdesc,
@@ -1936,8 +1936,11 @@ def load_science_files(sc, instr, mode, level, start_date, end_date,
         dgroup = []
         for file in fgroup:
             df = util._load_raw_file(pathlib.Path(file), processing_func,
-                                     ignore=ignore, include=include,
-                                     index_key=index_key)
+                                     processing_kwargs={'ignore': ignore,
+                                             'include': include,
+                                             'index_key': index_key
+                                             }
+                                     )
             if df is not None:
                 dgroup.append(df)
         # Filter to the correct time range
