@@ -1,5 +1,6 @@
 """
 Utility functions for data downloading.
+
 **Note**: these methods are liable to change at any time.
 """
 import abc
@@ -10,6 +11,7 @@ import io
 import os
 import logging
 import pathlib as path
+import requests
 import re
 import shutil
 import sys
@@ -39,6 +41,7 @@ class Downloader(abc.ABC):
     downloading a single dataset.
 
     The following methods must be implemented by sub-classes:
+
     - :meth:`Downloader.intervals()`: given a time interval, this
       method should split the interval up into sub-intervals. Each of these
       sub-intervals corresponds directly to a single file to download, store,
@@ -51,6 +54,7 @@ class Downloader(abc.ABC):
       that interval.
     - :meth:`Downloader.load_local_file()`: given an interval, load the local
       file and return a :class:`pandas.DataFrame` object containing the data.
+
     Attributes
     ----------
     units : dict
@@ -70,6 +74,8 @@ class Downloader(abc.ABC):
             # Try to load HDF file
             if hdf_path.exists():
                 data.append(pd.read_hdf(hdf_path))
+                # Store the local path if loading data was successful
+                local_path_successful = local_path
                 continue
 
             # Try to load original file
@@ -85,9 +91,10 @@ class Downloader(abc.ABC):
                     continue
 
             data.append(self.load_local_file(interval, product_list))
+            local_path_successful = local_path
             if use_hdf:
                 data[-1].to_hdf(hdf_path, 'data', mode='w', format='f')
-        
+
         # Loaded all the data, now filter between times
         data = xr_timefilter(data, starttime, endtime)
 
@@ -97,16 +104,18 @@ class Downloader(abc.ABC):
 
         # Attach units
         if local_path.suffix == '.cdf':
-            cdf = _load_local(local_path)
+            cdf = _load_local(local_path_successful)
+            if not hasattr(self, 'units'):
+                self.units = None
             self.units = cdf_units(cdf, manual_units=self.units)
         if not hasattr(self, 'warn_missing_units'):
             self.warn_missing_units = True
-            if want_xr:
-                return units_xarray(
-                        data, self.units, warn_missing_units=self.warn_missing_units)
-            else:
-                return units_attach(
-                        data, self.units, warn_missing_units=self.warn_missing_units)
+	if want_xr:
+	    return units_xarray(
+	        data, self.units, warn_missing_units=self.warn_missing_units)
+	else:
+            return units_attach(
+                data, self.units, warn_missing_units=self.warn_missing_units)
 
     def local_path(self, interval):
         """
@@ -134,10 +143,12 @@ class Downloader(abc.ABC):
         The complete list of sub-intervals that cover a time range
         Each sub-interval is associated with a single file to be downloaded and
         read in.
+
         Parameters
         ----------
         starttime : datetime.datetime
         endtime : datetime.datetime
+
         Returns
         -------
         fnames : list of sunpy.time.TimeRange
@@ -148,11 +159,14 @@ class Downloader(abc.ABC):
     def fname(self, interval):
         """
         Return the filename to which the data is saved for a given interval.
+
         n.b. this does not in general have to be equal to the remote filename
         of the data.
+
         Parameters
         ----------
         interval : sunpy.time.TimeRange
+
         Returns
         -------
         fname : str
@@ -165,9 +179,11 @@ class Downloader(abc.ABC):
         """
         Local directory for a given interval. This is relative to the base
         HelioPy data directory.
+
         Parameters
         ----------
         interval : sunpy.time.TimeRange
+
         Returns
         -------
         dir : pathlib.Path
@@ -179,9 +195,11 @@ class Downloader(abc.ABC):
     def download(self, interval):
         """
         Download data for a given interval.
+
         Parameters
         ----------
         interval : sunpy.time.TimeRange
+
         Returns
         -------
         dl_path : pathlib.Path
@@ -193,9 +211,11 @@ class Downloader(abc.ABC):
     def load_local_file(self, interval):
         """
         Load local file for a given interval.
+
         Parameters
         ----------
         interval : sunpy.time.TimeRange
+
         Returns
         -------
         data : pandas.DataFrame
@@ -220,10 +240,11 @@ class Downloader(abc.ABC):
         Returns all monthly intervals between *starttime* and *endtime*.
         """
         out = []
-        while starttime < endtime + reldelt.relativedelta(months=1):
-            start_month = dt.datetime(starttime.year, starttime.month, 1)
-            end_month = start_month + reldelt.relativedelta(months=1)
-            out.append(sunpy.time.TimeRange(start_month, end_month))
+        starttime = dt.datetime(starttime.year, starttime.month, 1)
+        endtime = dt.datetime(endtime.year, endtime.month, 1)
+        while starttime <= endtime:
+            end_month = starttime + reldelt.relativedelta(months=1)
+            out.append(sunpy.time.TimeRange(starttime, end_month))
             starttime += reldelt.relativedelta(months=1)
         return out
 
@@ -276,9 +297,12 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
         - The local filename to download to
         - The remote filename
         - A file extension
+
         and downloads the remote file. The signature must be::
+
             def download_func(remote_base_url, local_base_dir,
                               directory, fname, remote_fname, extension)
+
         The function can also return the path of the file it downloaded,
         if this is different to the filename it is given. *download_func*
         can either silently do nothing if a given file is not available, or
@@ -288,6 +312,7 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
     processing_func
         Function that takes an open CDF file or open plain text file,
         and returns a pandas DataFrame. The signature must be::
+
             def processing_func(file, **processing_kwargs)
 
     starttime : ~datetime.datetime
@@ -1030,6 +1055,9 @@ def _download_remote(remote_url, filename, local_dir):
     dl_path = path.Path(local_dir) / filename
     remote_url = _fix_url(remote_url)
     remote_url = remote_url + '/' + filename
+    with requests.head(remote_url) as r:
+        if r.status_code != requests.codes.ok:
+            raise NoDataError
     print(f'Downloading {remote_url} to {dl_path}')
     fname, _ = urlreq.urlretrieve(remote_url,
                                   filename=str(dl_path),

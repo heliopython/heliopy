@@ -44,6 +44,15 @@ def test_fpi_des_dist_ts(probe):
     check_data_output_ts(data)
 
 
+def test_narrow_interval():
+    # Check that a narrow time interval downloads properly
+    starttime = datetime(2017, 7, 11, 22, 30)
+    endtime = datetime(2017, 7, 11, 22, 36)
+
+    data = mms.fpi_dis_moms(1, 'fast', starttime, endtime)
+    check_data_output(data)
+
+
 # Test xarrays as outputs
 @pytest.mark.parametrize("probe", probes)
 def test_fgm_xr(probe):

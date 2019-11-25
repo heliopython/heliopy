@@ -1,5 +1,6 @@
 """
 Methods for importing data from the OMNI.
+
 All data is publically available at
 https://cdaweb.gsfc.nasa.gov/pub/data/omni.
 """
@@ -10,11 +11,7 @@ import pathlib
 import astropy.units as u
 import numpy as np
 import pandas as pd
-import astropy.units as u
-import datetime as dt
-from collections import OrderedDict
 import xarray as xr
-import sunpy.time
 
 from heliopy.data import util
 
@@ -118,12 +115,14 @@ class _omniDownloader(util.Downloader):
 def low(starttime, endtime, product_list=None, want_xr=False):
     """
     Import data from OMNI Web Interface.
+
     Parameters
     ----------
     starttime : datetime
         Interval start time.
     endtime : datetime
         Interval end time.
+
     Returns
     -------
         data : :class:`~sunpy.timeseries.TimeSeries`

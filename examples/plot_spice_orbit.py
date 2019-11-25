@@ -45,7 +45,7 @@ from astropy.visualization import quantity_support
 quantity_support()
 
 # Generate a set of timestamps to color the orbits by
-times_float = [(t - psp.times[0]).total_seconds() for t in psp.times]
+times_float = (psp.times - psp.times[0]).value
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
 kwargs = {'s': 3, 'c': times_float}
@@ -56,17 +56,18 @@ ax.set_zlim(-1, 1)
 
 ###############################################################################
 # Plot radial distance and elevation as a function of time
+plot_times = psp.times.to_datetime()
 elevation = np.rad2deg(np.arcsin(psp.z / psp.r))
 
 fig, axs = plt.subplots(3, 1, sharex=True)
-axs[0].plot(psp.times, psp.r)
+axs[0].plot(plot_times, psp.r)
 axs[0].set_ylim(0, 1.1)
 axs[0].set_ylabel('r (AU)')
 
-axs[1].plot(psp.times, elevation)
+axs[1].plot(plot_times, elevation)
 axs[1].set_ylabel('Elevation (deg)')
 
-axs[2].plot(psp.times, psp.speed)
+axs[2].plot(plot_times, psp.speed)
 axs[2].set_ylabel('Speed (km/s)')
 
 plt.show()

@@ -14,5 +14,6 @@ pip-wheel-metadata/*
 *.DS_Store*
 build/*
 dist/*
+pip-wheel-metadata/*
 
 env
