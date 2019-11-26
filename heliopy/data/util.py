@@ -417,7 +417,7 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
                 continue
             else:
                 logger.info('File {}{}/{}{} not available remotely\n'.format(
-                            remote_base_url, directory, fname, extension))
+                    remote_base_url, directory, fname, extension))
                 continue
         else:
             msg = ('File {a}/{b}{c} not available locally,\n'
@@ -435,11 +435,9 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
         cdf = _load_local(raw_file_path)
         units = cdf_units(cdf, manual_units=units)
     if want_xr:
-        return units_xarray(
-                data, units, warn_missing_units=warn_missing_units)
+        return units_xarray(data, units, warn_missing_units=warn_missing_units)
     else:
-        return units_attach(
-                data, units, warn_missing_units=warn_missing_units)
+        return units_attach(data, units, warn_missing_units=warn_missing_units)
 
 
 def _file_match(directory, fname_regex):
@@ -765,21 +763,20 @@ def cdf2df(cdf, starttime, endtime, index_key, list_keys=None,
     df : :class:`pandas.DataFrame`
         Data frame with read in data.
     """
-    
     # Get the time index as DatetimeIndex
     index_full = get_index(cdf, index_key)
-    
+
     # Check if required time interval is in cdf file
     # and define required start and end time to extract from current CDF file
     if not starttime or starttime < index_full[0] \
             or starttime > index_full[-1]:
         tstart = [index_full[0].year, index_full[0].month, index_full[0].day, index_full[0].hour,
-        index_full[0].minute, index_full[0].second, int(str(index_full[0].microsecond).zfill(6)[:-3]), 
+        index_full[0].minute, index_full[0].second, int(str(index_full[0].microsecond).zfill(6)[:-3]),
         int(str(index_full[0].microsecond).zfill(6)[3:])]
     else:
         tstart = [starttime.year, starttime.month, starttime.day, starttime.hour,
                   starttime.minute, starttime.second]
-        
+
     if not endtime or endtime < index_full[0] or endtime > index_full[-1] or starttime > endtime:
         tend=[index_full[-1].year, index_full[-1].month, index_full[-1].day, index_full[-1].hour,
         index_full[-1].minute, index_full[-1].second,  int(str(index_full[-1].microsecond).zfill(6)[:-3]),
@@ -788,19 +785,13 @@ def cdf2df(cdf, starttime, endtime, index_key, list_keys=None,
         tend = [endtime.year, endtime.month, endtime.day, endtime.hour,
         endtime.minute, endtime.second]
 
-        
-    # Filter time index with appropriate start and end times
-#    index = pd.DatetimeIndex([x for x in index if x >= starttime and x <= endtime],
-#                             name='time')
-    
     # Reload index with appropriate start and end times
     index = get_index(cdf, index_key, tstart, tend)
     ind = np.intersect1d(index_full, index, return_indices=True)[1]
-     
-        
+
     # If none of the required data in current CDF file, move on to the next one
     if len(index) == 0: return
-    
+
     df = pd.DataFrame(index=index)
     npoints = cdf.varget(index_key, None, tstart, tend).shape[0]
 
@@ -810,7 +801,7 @@ def cdf2df(cdf, starttime, endtime, index_key, list_keys=None,
             if 'variable' in attr.lower():
                 if len(cdf.cdf_info()[attr]) > 0:
                     var_list += [attr]
-    
+
         keys = {}
         for attr in var_list:
             for cdf_key in cdf.cdf_info()[attr]:
@@ -825,19 +816,18 @@ def cdf2df(cdf, starttime, endtime, index_key, list_keys=None,
         keys.pop(index_key)
         # Remove keys for data that doesn't have the right shape to load in CDF
         for cdf_key in keys.copy():
-                if type(cdf.varget(cdf_key, None)) is np.ndarray:
-                    try:
-                        key_shape = cdf.varget(cdf_key, None, tstart, tend).shape                
-                        if len(key_shape) == 0 or key_shape[0] != npoints:
-                            keys.pop(cdf_key)
-                    except:
-                        key_shape = cdf.varget(cdf_key)[ind].shape
-                        if len(key_shape) == 0 or key_shape[0] != npoints:
-                            keys.pop(cdf_key)
-                else:
-                    keys.pop(cdf_key)
+            if type(cdf.varget(cdf_key, None)) is np.ndarray:
+                try:
+                    key_shape = cdf.varget(cdf_key, None, tstart, tend).shape
+                    if len(key_shape) == 0 or key_shape[0] != npoints:
+                        keys.pop(cdf_key)
+                except:
+                    key_shape = cdf.varget(cdf_key)[ind].shape
+                    if len(key_shape) == 0 or key_shape[0] != npoints:
+                        keys.pop(cdf_key)
+            else:
+                keys.pop(cdf_key)
 
-                 
         # Loop through each key and put data into the dataframe
         for cdf_key in keys:
             df_key = keys[cdf_key]
@@ -863,20 +853,20 @@ def cdf2df(cdf, starttime, endtime, index_key, list_keys=None,
                             df[df_key + '_' + str(i)] = cdf.varget(cdf_key, None, tstart, tend)[...][:, i]
                         except:
                             df[df_key + '_' + str(i)] = cdf.varget(cdf_key)[ind][:, i]
-    
+
     elif list_keys and len(list_keys) == 1:
-        for cdf_key in list_keys.values(): 
+        for cdf_key in list_keys.values():
             # If ndims is 1, we just have a single column of data
             # If ndims is 2, have multiple columns of data under same key
             key_shape = cdf.varget(cdf_key).shape
             ndims = len(key_shape)
-            
+
             if ndims == 1:
                 try:
                     df[cdf_key] = cdf.varget(cdf_key, None, tstart, tend)[...]
                 except:
                     df[cdf_key] = cdf.varget(cdf_key)[ind]
-                    
+
             elif ndims == 2:
                 for i in range(key_shape[1]):
                     try:
@@ -1248,20 +1238,20 @@ def dtime2doy(dt):
 def cdf2xr(cdf, starttime, endtime, index_key, list_keys=None, dtimeindex=True,
            badvalues=None, ignore=None):
     """
-    Converts cdf file of spacecraft timeseries data to an xarray (DataArray or 
+    Converts cdf file of spacecraft timeseries data to an xarray (DataArray or
     Dataset) object. xarray package is used as particle distribution functions
-    are usually multidimensional (3/4D) datasets *f(time, energy, theta, phi). 
+    are usually multidimensional (3/4D) datasets *f(time, energy, theta, phi).
     See http://xarray.pydata.org/en/stable/index.html for more information.
     Products to be loaded from the file must be passed as their corresponding
     key in the file. If not key is provided, all data from the file is loaded
-    into a xarray.Dataset (with each key corresponding to a DataArray object). 
+    into a xarray.Dataset (with each key corresponding to a DataArray object).
     Keys must be provided as a dictionary. If the dictionary contains only one
     key, then 1D/2D dataset is assumed and loaded in a xarray.DataArray. If the
-    dictionary contains more than 1 key, a 3D or 4D distribution function is 
+    dictionary contains more than 1 key, a 3D or 4D distribution function is
     assumed and an OrderedDict is required to load it with the following keys:
     {'dist','energy','theta'} or {'dist','energy','theta','phi'}, respectively.
 
-    
+
     Parameters
     ----------
     cdf : cdf
@@ -1270,34 +1260,34 @@ def cdf2xr(cdf, starttime, endtime, index_key, list_keys=None, dtimeindex=True,
         Start of desired time interval.
     endtime : datetime.datetime object
         End of desired time interval.
-    index_key : string 
+    index_key : string
         Time key of the opened cdf file.
     list_keys : dict, optional
-        Dictionary of one or more keys corresponding to the desired products in 
+        Dictionary of one or more keys corresponding to the desired products in
         the CDF file. If more than one key, and OrderedDict is required in the
         form: {'dist', 'energy', 'theta'} or {'dist', 'energy', 'theta', 'phi'}
         depending on the dimension of the dataset, to construct multidimension
         distribution function.
-    
+
     Returns
     -------
     out : :class:`xarray.DataArray` or `xarray.Dataset`
         xarray object containing data from the open CDF file.
     """
-    
+
     # Get the time index as DatetimeIndex
     index_full = get_index(cdf, index_key)
-    
+
     # Check if required time interval is in cdf file
     # and define required start and end time to extract from current CDF file
-    if not starttime or starttime < index_full[0] or starttime > index_full[-1]: 
-        tstart=[index_full[0].year, index_full[0].month, index_full[0].day, index_full[0].hour, 
-        index_full[0].minute, index_full[0].second, int(str(index_full[0].microsecond).zfill(6)[:-3]), 
+    if not starttime or starttime < index_full[0] or starttime > index_full[-1]:
+        tstart=[index_full[0].year, index_full[0].month, index_full[0].day, index_full[0].hour,
+        index_full[0].minute, index_full[0].second, int(str(index_full[0].microsecond).zfill(6)[:-3]),
         int(str(index_full[0].microsecond).zfill(6)[3:])]
     else:
         tstart = [starttime.year, starttime.month, starttime.day, starttime.hour,
                   starttime.minute, starttime.second]
-        
+
     if not endtime or endtime < index_full[0] or endtime > index_full[-1] or starttime > endtime:
         tend=[index_full[-1].year, index_full[-1].month, index_full[-1].day, index_full[-1].hour,
         index_full[-1].minute, index_full[-1].second,  int(str(index_full[-1].microsecond).zfill(6)[:-3]),
@@ -1306,27 +1296,27 @@ def cdf2xr(cdf, starttime, endtime, index_key, list_keys=None, dtimeindex=True,
         tend = [endtime.year, endtime.month, endtime.day, endtime.hour,
         endtime.minute, endtime.second]
 
-        
+
     # Filter time index with appropriate start and end times
 #    index = pd.DatetimeIndex([x for x in index if x >= starttime and x <= endtime],
 #                             name='time')
-    
+
     # Reload index with appropriate start and end times
     index = get_index(cdf, index_key, tstart, tend)
     ind = np.intersect1d(index_full, index, return_indices=True)[1]
-     
-        
+
+
     # If none of the required data in current CDF file, move on to the next one
     if len(index) == 0: return
-     
-    # If no product_list (cdf keys) is passed, load all data in xarray.Dataset  
+
+    # If no product_list (cdf keys) is passed, load all data in xarray.Dataset
     if not list_keys:
-        
+
         data = xr.Dataset({})
-        
+
         # Specify the CDF filename in the Dataset
 #       data['filename'] = cdf.cdf_info()['CDF'].stem
-            
+
         npoints = cdf.varget(index_key,None,tstart,tend).shape[0]
 
         var_list = []
@@ -1338,81 +1328,75 @@ def cdf2xr(cdf, starttime, endtime, index_key, list_keys=None, dtimeindex=True,
         keys = {}
         for attr in var_list:
             for cdf_key in cdf.cdf_info()[attr]:
-#                if ignore:
-#                    if cdf_key in ignore:
-#                        continue
-#                    if cdf_key == 'Epoch':
-#                        keys[cdf_key] = 'Time'
-#                 else:
                 keys[cdf_key] = cdf_key
-                 
+
         # Remove index key, as we have already used it to create the index
         keys.pop(index_key)
-        
+
         # Remove keys for data that doesn't have the right shape to load in CDF
-        # or that cannot be loaded     
+        # or that cannot be loaded
         for cdf_key in keys.copy():
-                if type(cdf.varget(cdf_key)) is np.ndarray:
-                    try:
-                        key_shape = cdf.varget(cdf_key, None, tstart, tend).shape                
-                        if len(key_shape) == 0 or key_shape[0] != npoints:
-                            keys.pop(cdf_key)
-                    except:
-                        key_shape = cdf.varget(cdf_key)[ind].shape
-                        if len(key_shape) == 0 or key_shape[0] != npoints:
-                            keys.pop(cdf_key)
-                else:
-                    keys.pop(cdf_key)
+            if type(cdf.varget(cdf_key)) is np.ndarray:
+                try:
+                    key_shape = cdf.varget(cdf_key, None, tstart, tend).shape
+                    if len(key_shape) == 0 or key_shape[0] != npoints:
+                        keys.pop(cdf_key)
+                except:
+                    key_shape = cdf.varget(cdf_key)[ind].shape
+                    if len(key_shape) == 0 or key_shape[0] != npoints:
+                        keys.pop(cdf_key)
+            else:
+                keys.pop(cdf_key)
 
         # Loop through each key and put dataarrays into a dataset
         for cdf_key in keys:
             df_key = keys[cdf_key]
             if isinstance(df_key, list):
                 for i, subkey in enumerate(df_key):
-                    
+
                     try:
                         data_temp = xr.DataArray(cdf.varget(cdf_key,None,tstart,tend)[...][:, i])
                     except:
                         data_temp = xr.DataArray(cdf.varget(cdf_key)[ind][:, i])
-                    
+
                     data[subkey] = data_temp
             else:
                 try:
                     key_shape = cdf.varget(cdf_key, None, tstart, tend)[...].shape
-                except:   
+                except:
                     key_shape = cdf.varget(cdf_key)[ind].shape
-                    
+
                 data_coords = []
                 for i in np.arange(len(key_shape)): # Define coords in dataarray
                     data_coords += [np.arange(key_shape[i])]
                     data_coords[0] = index
                 data_dims = np.arange(len(key_shape)-1).tolist() # Define dims in dataarray
                 data_dims = ['dim_'+str(x) for x in data_dims] # Convert to strings
-                data_dims = ['time'] + data_dims 
+                data_dims = ['time'] + data_dims
                 try:
                     data_temp = xr.DataArray(cdf.varget(cdf_key, None, tstart, tend)[...],
-                                         coords = data_coords, dims = data_dims)                    
+                                         coords = data_coords, dims = data_dims)
                 except:
                     data_temp = xr.DataArray(cdf.varget(cdf_key)[ind],
                                          coords = data_coords, dims = data_dims)
                 data[df_key] = data_temp
-       
 
-    
+
+
     # If only one cdf key, put associated data in xarray.DataArray (assumes 1D or 2D data)
     elif list_keys and len(list_keys) == 1:
-        for cdf_key in list_keys.values(): 
+        for cdf_key in list_keys.values():
             data = cdf.varget(cdf_key,None,tstart,tend)[...]
             if len(data.shape) == 2:
                 data_coords = ['x','y','z','tot']
                 data = xr.DataArray(data, coords = [index,data_coords[:data.shape[-1]]],
                                     dims=['time',cdf_key])
-            else:    
+            else:
                 data = xr.DataArray(data, coords = [index], dims=['time'])
-            
+
             data.name = cdf_key
 
-      
+
     # If more than 1 key, assumes distribution function (3D or more data)
     elif list_keys and len(list_keys) > 1:
         # Load coordinates and dimensions to match 'dist' shape
@@ -1422,24 +1406,24 @@ def cdf2xr(cdf, starttime, endtime, index_key, list_keys=None, dtimeindex=True,
         for i,key in enumerate(keys):
             coords.append(cdf.varget(list_keys[key],None,tstart,tend)[...])
             dims.append(list_keys[key])
-            
+
             # If energy is 2D, just take first dimension (energies are assumed constant)
             if key == 'energy' and len(coords[i].shape) == 2:
                 coords[i] = coords[i][0, :]
-             
-            
+
+
         data = coords[0]
-        coords[0]=index
-        dims[0]='time'
+        coords[0] = index
+        dims[0] = 'time'
         # Create the xarray.DataArray
         data = xr.DataArray(data, coords, dims)
 
         data.name = list_keys['dist']
         data_units = cdf.varattsget(data.name)['UNITS']
         data.attrs[data.name] = data_units
-        
-    
-    else: 
+
+
+    else:
         raise ValueError(
                 'Unknown CDF key input: must be either empty or of dict type')
     return data
@@ -1448,7 +1432,7 @@ def cdf2xr(cdf, starttime, endtime, index_key, list_keys=None, dtimeindex=True,
 def units_xarray(data, units, warn_missing_units=True):
     """
     Takes the units defined by the user and attaches them to the xarray object.
-    Units are attached as attributes to the xarray object and are accessible 
+    Units are attached as attributes to the xarray object and are accessible
     through the xarray attribute 'attrs'.
 
     Parameters
@@ -1477,12 +1461,12 @@ def units_xarray(data, units, warn_missing_units=True):
                 message = (f"{data.name} column has missing units."
                            f"\n{missing_msg}")
                 warnings.warn(message, Warning)
-            
+
             data_units[data.name] = units[data.name]
-        
+
         else:
             data_units[data.name] = units[data.name]
-    
+
         for dim in data.dims:
             if dim == 'time':
                 continue
@@ -1495,10 +1479,9 @@ def units_xarray(data, units, warn_missing_units=True):
                 data_units[dim] = units[dim]
             else:
                 data_units[dim] = units[dim]
-        
+
         data.attrs['Units'] = data_units
-    
-    
+
     # If data is a xarray.Dataset
     if isinstance(data, xr.core.dataset.Dataset):
         for data_var in data.data_vars:
@@ -1510,15 +1493,15 @@ def units_xarray(data, units, warn_missing_units=True):
                     warnings.warn(message, Warning)
                 data_units[data_var] = units[data_var]
             else:
-                data_units[data_var] = units[data_var]   
-        
+                data_units[data_var] = units[data_var]
+
         data.attrs['Units'] = data_units
 
     with warnings.catch_warnings():
         warnings.simplefilter(
             'ignore', 'Discarding nonzero nanoseconds in conversion')
-        
-    
+
+
     return data
 
 
@@ -1544,7 +1527,7 @@ def xr_timefilter(data, starttime, endtime):
     if len(data) == 0:
         raise RuntimeError(
             'No data available between {} and {}'.format(starttime, endtime))
-    
+
     if isinstance(data, list) and 'time' in data[0].dims:
         # Concatenate the list along time
         data = xr.concat(data, dim='time')
@@ -1552,7 +1535,7 @@ def xr_timefilter(data, starttime, endtime):
     else:
         raise KeyError('The label "time" was not found in '
                        'the xarray coordinates')
-    
+
     # Time filter the xarray
     data = data.sel(time=slice(starttime, endtime))
 
@@ -1562,9 +1545,9 @@ def xr_timefilter(data, starttime, endtime):
 def get_index(cdf, index_key, t_start=None, t_end=None, dtimeindex=True):
 
     # Extract timeindex (time) values from current CDF file
-#    try:
-#        timeindex_ = cdf.varget(index_key, None, t_start, t_end)[...][:,0]
-#    except:
+    # try:
+    # timeindex_ = cdf.varget(index_key, None, t_start, t_end)[...][:,0]
+    # except:
     timeindex_ = cdf.varget(index_key, None, t_start, t_end)
     try:
         utc_comp = cdflib.cdfepoch.breakdown(timeindex_, to_np=True)
@@ -1583,5 +1566,5 @@ def get_index(cdf, index_key, t_start=None, t_end=None, dtimeindex=True):
         timeindex = timeindex_
     if dtimeindex:
         timeindex = pd.DatetimeIndex(timeindex, name='time')
-    
+
     return timeindex
