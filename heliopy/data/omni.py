@@ -83,24 +83,25 @@ class _omniDownloader(util.Downloader):
         thisdata['Time'] = pd.to_datetime(time_index)
         thisdata = thisdata.set_index('Time')
         thisdata = thisdata.drop(['Year', 'Decimal Day', 'Hour'], axis=1)
-        
+
         if product_list:
             prod_list = []
             for val in product_list:
                 prod_list.append(val)
-            thisdata = pd.DataFrame(thisdata,columns=prod_list)
-            data = xr.DataArray(thisdata, coords = [time_index, prod_list], dims=['time', 'products'])
-            data.attrs['Units']={}
+            thisdata = pd.DataFrame(thisdata, columns=prod_list)
+            data = xr.DataArray(thisdata, coords=[time_index, prod_list],
+                                dims=['time', 'products'])
+            data.attrs['Units'] = {}
             for product in prod_list:
                 data.attrs['Units'][product] = self.units[product]
         else:
             thisdata = pd.DataFrame(thisdata)
             data = xr.Dataset({})
             for i, product in enumerate(thisdata.columns):
-                data[product] = xr.DataArray(thisdata[product], 
-                                coords = [time_index],
-                                dims=['time'])
-            data.attrs['Units'] = self.units        
+                data[product] = xr.DataArray(thisdata[product],
+                                             coords=[time_index],
+                                             dims=['time'])
+            data.attrs['Units'] = self.units
         return data
 
     def _convert_datetime(self, year, day_list, hour_list, len_):

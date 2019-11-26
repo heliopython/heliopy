@@ -112,9 +112,11 @@ class Downloader(abc.ABC):
             self.warn_missing_units = True
 
         if want_xr:
-            return units_xarray(data, self.units, warn_missing_units=self.warn_missing_units)
+            return units_xarray(data, self.units,
+                                warn_missing_units=self.warn_missing_units)
         else:
-            return units_attach(data, self.units, warn_missing_units=self.warn_missing_units)
+            return units_attach(data, self.units,
+                                warn_missing_units=self.warn_missing_units)
 
     def local_path(self, interval):
         """
@@ -769,8 +771,9 @@ def cdf2df(cdf, starttime, endtime, index_key, list_keys=None,
     
     # Check if required time interval is in cdf file
     # and define required start and end time to extract from current CDF file
-    if not starttime or starttime < index_full[0] or starttime > index_full[-1]: 
-        tstart=[index_full[0].year, index_full[0].month, index_full[0].day, index_full[0].hour, 
+    if not starttime or starttime < index_full[0] \
+            or starttime > index_full[-1]:
+        tstart = [index_full[0].year, index_full[0].month, index_full[0].day, index_full[0].hour,
         index_full[0].minute, index_full[0].second, int(str(index_full[0].microsecond).zfill(6)[:-3]), 
         int(str(index_full[0].microsecond).zfill(6)[3:])]
     else:

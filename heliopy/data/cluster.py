@@ -239,7 +239,7 @@ def peace_moments(probe, starttime, endtime, try_download=True, want_xr=False):
                  try_download=try_download, want_xr=want_xr)
 
 
-def cis_hia_onboard_moms(probe, starttime, endtime, try_download=True, 
+def cis_hia_onboard_moms(probe, starttime, endtime, try_download=True,
                          want_xr=False):
     """
     Download onboard ion moments from the CIS instrument.
@@ -261,7 +261,7 @@ def cis_hia_onboard_moms(probe, starttime, endtime, try_download=True,
         data : DataFrame
             Requested data.
     """
-    if probe == '2' or probe == '4':
+    if probe in ['2', '4']:
         raise ValueError('Onboard ion moment data is not available for '
                          'cluster probes 2 or 4')
     data = _load(probe, starttime, endtime, 'cis',

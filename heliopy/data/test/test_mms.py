@@ -50,7 +50,7 @@ def test_narrow_interval():
     endtime = datetime(2017, 7, 11, 22, 36)
 
     data = mms.fpi_dis_moms(1, 'fast', starttime, endtime)
-    check_data_output(data)
+    check_data_output_ts(data)
 
 
 # Test xarrays as outputs

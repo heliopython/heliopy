@@ -7,7 +7,6 @@ is at https://lasp.colorado.edu/mms/sdc/public/.
 """
 import os
 import pathlib
-from collections import OrderedDict
 import requests
 from tqdm.auto import tqdm
 from datetime import datetime, timedelta
@@ -83,19 +82,19 @@ def available_files(probe, instrument, starttime, endtime, data_rate='',
     _validate_data_rate(data_rate)
 
     start_date = starttime.strftime('%Y-%m-%d')
- # Selecting burst mode (ensure at least 2 mins to avoid empty files list)
+    # Selecting burst mode (ensure at least 2 mins to avoid empty files list)
     if data_rate == 'brst':
-        start_date = (starttime-datetime.timedelta(minutes=1)).strftime('%Y-%m-%d-%H-%M')
-        end_date = (endtime+datetime.timedelta(minutes=1)).strftime('%Y-%m-%d-%H-%M')
+        start_date = (starttime-datetime.timedelta(
+            minutes=1)).strftime('%Y-%m-%d-%H-%M')
+        end_date = (endtime+datetime.timedelta(
+            minutes=1)).strftime('%Y-%m-%d-%H-%M')
 
     if starttime.date() == endtime.date():
         end_date = (endtime.date() + timedelta(days=1)).strftime('%Y-%m-%d')
     else:
         end_date = endtime.strftime('%Y-%m-%d')
 
-    query = {}
-    query['sc_id'] = 'mms' + probe
-    query['instrument_id'] = instrument
+    query = {'sc_id': 'mms' + probe, 'instrument_id': instrument}
     if len(data_rate):
         query['data_rate_mode'] = data_rate
     if len(product_string):
@@ -224,8 +223,8 @@ def parse_filename(fnames):
 
 
 def download_files(probe, instrument, data_rate, starttime, endtime,
-                   verbose=True, product_string='', warn_missing_units=True,
-                   want_xr=False):
+                   product_list=None, verbose=True, product_string='',
+                   warn_missing_units=True, want_xr=False):
     """
     Download MMS files.
 
@@ -267,14 +266,17 @@ def download_files(probe, instrument, data_rate, starttime, endtime,
                                 data_rate, product_string)
         for file in files:
             fname = pathlib.Path(file).stem
-            # Make sure that only the needed files will be loaded (i.e., in the queried time interval)
-            namestr = [j for i, j in enumerate(fname.split('_')) if j.startswith(endtime.strftime('%Y%m%d'))]
-            # Select only one 'mec' (metadata) file (here 'epht89d') to avoid redundancy
+            # Make sure that only the needed files will be loaded
+            # (i.e., in the queried time interval)
+            namestr = [j for i, j in enumerate(fname.split('_'))
+                       if j.startswith(endtime.strftime('%Y%m%d'))]
+            # Select only one 'mec' (metadata) file to avoid redundancy
             if instrument == 'mec':
                 if 'epht89d' in fname:
                     fnames.append(fname)
                     dirs.append('')
-            elif product_string in fname and len(fname) and namestr and namestr[0] < endtime.strftime('%Y%m%d%H%M%S'):
+            elif product_string in fname and len(fname) and namestr\
+                    and namestr[0] < endtime.strftime('%Y%m%d%H%M%S'):
                 fnames.append(fname)
                 dirs.append('')
             else:
@@ -299,7 +301,7 @@ def download_files(probe, instrument, data_rate, starttime, endtime,
             return util.cdf2xr(cdf, starttime, endtime, 'Epoch', product_list)
         else:
             return util.cdf2df(cdf, starttime, endtime, 'Epoch', product_list)
-        
+
     return util.process(dirs, fnames, extension, local_base_dir,
                         remote_base_url, download_func, processing_func,
                         starttime, endtime, want_xr,
@@ -328,16 +330,18 @@ data : :class:`~sunpy.timeseries.TimeSeries`
 """.format(product)
 
 
-def fpi_dis_moms(probe, mode, starttime, endtime, product_list=None, want_xr=False):
+def fpi_dis_moms(probe, mode, starttime, endtime, product_list=None,
+                 want_xr=False):
     return download_files(probe, 'fpi', mode, starttime, endtime,
-                          product_string='dis-moms', 
+                          product_string='dis-moms',
                           product_list=product_list, want_xr=want_xr)
 
 
 fpi_dis_moms.__doc__ = _fpi_docstring('ion distribution moment')
 
 
-def fpi_des_moms(probe, mode, starttime, endtime, product_list=None, want_xr=False):
+def fpi_des_moms(probe, mode, starttime, endtime, product_list=None,
+                 want_xr=False):
     return download_files(probe, 'fpi', mode, starttime, endtime,
                           product_string='des-moms',
                           product_list=product_list, want_xr=want_xr)
@@ -346,7 +350,8 @@ def fpi_des_moms(probe, mode, starttime, endtime, product_list=None, want_xr=Fal
 fpi_des_moms.__doc__ = _fpi_docstring('electron distribution moment')
 
 
-def fpi_dis_dist(probe, mode, starttime, endtime, product_list=None, want_xr=False):
+def fpi_dis_dist(probe, mode, starttime, endtime, product_list=None,
+                 want_xr=False):
     return download_files(probe, 'fpi', mode, starttime, endtime,
                           product_string='dis-dist',
                           warn_missing_units=False,
@@ -356,7 +361,8 @@ def fpi_dis_dist(probe, mode, starttime, endtime, product_list=None, want_xr=Fal
 fpi_dis_dist.__doc__ = _fpi_docstring('ion distribution function')
 
 
-def fpi_des_dist(probe, mode, starttime, endtime, product_list=None, want_xr=False):
+def fpi_des_dist(probe, mode, starttime, endtime, product_list=None,
+                 want_xr=False):
     return download_files(probe, 'fpi', mode, starttime, endtime,
                           product_string='des-dist',
                           warn_missing_units=False,
