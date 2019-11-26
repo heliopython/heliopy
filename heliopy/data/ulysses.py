@@ -156,7 +156,7 @@ class _swicsDownloader(util.Downloader):
         _download_ulysses(swics_options, fname, local_dir)
         return self.local_path(interval)
 
-    def load_local_file(self, interval):
+    def load_local_file(self, interval, product_list=None):
         readargs = {'names': self.names,
                     'delim_whitespace': True,
                     'na_values': ['******']}
@@ -202,7 +202,7 @@ class _fgmDownloader(util.Downloader):
         _download_ulysses(fgm_options, fname, local_dir)
         return self.local_path(interval)
 
-    def load_local_file(self, interval):
+    def load_local_file(self, interval, product_list=None):
         readargs = {'names': ['year', 'doy', 'hour', 'minute', 'second',
                               'Bx', 'By', 'Bz', '|B|'],
                     'delim_whitespace': True}
@@ -267,7 +267,7 @@ class _swoopsionDownloader(util.Downloader):
         _download_ulysses(swoops_options, fname, local_dir)
         return self.local_path(interval)
 
-    def load_local_file(self, interval):
+    def load_local_file(self, interval, product_list=None):
         readargs = {'names': ['year', 'doy', 'hour', 'minute', 'second',
                               'r', 'hlat', 'hlon', 'n_p', 'n_a',
                               'T_p_large', 'T_p_small',

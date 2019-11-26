@@ -1,7 +1,7 @@
 from datetime import datetime
 import pytest
 
-from .util import check_data_output_ts
+from .util import check_data_output
 from .util import check_data_output_xr
 
 mms = pytest.importorskip('heliopy.data.mms')
@@ -17,31 +17,31 @@ probes = ['1', '4']
 @pytest.mark.parametrize("probe", probes)
 def test_fgm_ts(probe):
     data = mms.fgm(probe, 'srvy', starttime, endtime)
-    check_data_output_ts(data)
+    check_data_output(data)
 
 
 @pytest.mark.parametrize("probe", probes)
 def test_fpi_dis_moms_ts(probe):
     data = mms.fpi_dis_moms(probe, 'fast', starttime, endtime)
-    check_data_output_ts(data)
+    check_data_output(data)
 
 
 @pytest.mark.parametrize("probe", probes)
 def test_fpi_des_moms_ts(probe):
     data = mms.fpi_des_moms(probe, 'fast', starttime, endtime)
-    check_data_output_ts(data)
+    check_data_output(data)
 
 
 @pytest.mark.parametrize("probe", probes)
 def test_fpi_dis_dist_ts(probe):
     data = mms.fpi_dis_dist(probe, 'fast', starttime, endtime)
-    check_data_output_ts(data)
+    check_data_output(data)
 
 
 @pytest.mark.parametrize("probe", probes)
 def test_fpi_des_dist_ts(probe):
     data = mms.fpi_des_dist(probe, 'fast', starttime, endtime)
-    check_data_output_ts(data)
+    check_data_output(data)
 
 
 def test_narrow_interval():
@@ -50,7 +50,7 @@ def test_narrow_interval():
     endtime = datetime(2017, 7, 11, 22, 36)
 
     data = mms.fpi_dis_moms(1, 'fast', starttime, endtime)
-    check_data_output_ts(data)
+    check_data_output(data)
 
 
 # Test xarrays as outputs

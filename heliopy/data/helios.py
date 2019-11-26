@@ -884,7 +884,7 @@ class _CoreFitDownloader(util.Downloader):
         except urllib.error.HTTPError:
             raise util.NoDataError
 
-    def load_local_file(self, interval):
+    def load_local_file(self, interval, product_list=None):
         return pd.read_csv(self.local_path(interval), parse_dates=['Time'])
 
 
@@ -971,7 +971,7 @@ class _4hzDownloader(util.Downloader):
         new_path = self.local_path(interval)
         downloaded_path.rename(new_path)
 
-    def load_local_file(self, interval):
+    def load_local_file(self, interval, product_list=None):
         # Read in data
         headings = ['Time', 'Bx', 'By', 'Bz']
         cols = [0, 4, 5, 6]
@@ -1042,7 +1042,7 @@ class _NessDownloader(util.Downloader):
         except URLError:
             raise util.NoDataError
 
-    def load_local_file(self, interval):
+    def load_local_file(self, interval, product_list=None):
         # Read in data
         headings = ['probe', 'year', 'doy', 'hour', 'minute', 'second',
                     'naverage', 'Bx', 'By', 'Bz', '|B|',

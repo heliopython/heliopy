@@ -11,12 +11,11 @@ def check_data_output_xr(data):
     '''
     check_units_xr(data)
     check_datetime_index_xr(data)
-    assert len(data.time) > 0 
+    assert len(data.time) > 0
     assert len(data.data_vars) > 0
     for var in data.data_vars:
         assert data[str(var)].shape[0] > 0
 
-        
 
 def check_datetime_index_xr(data):
     'Helper function to check all dataframes have a datetime index'
@@ -29,29 +28,30 @@ def check_units_xr(data):
         warnings.warn("Function has no units attached", RuntimeWarning)
     else:
         for unit in data.attrs['Units'].values():
-            assert isinstance(unit,(u.Unit,u.UnrecognizedUnit,
-                                    u.IrreducibleUnit,u.CompositeUnit))
+            assert isinstance(unit, (u.Unit, u.UnrecognizedUnit,
+                                     u.IrreducibleUnit, u.CompositeUnit))
 
 
-
-def check_data_output_ts(df):
-    '''
+def check_data_output(df):
+    """
     Function to check that the output of a data fetch method.
-    '''
-    check_units_ts(df)
+    """
+    check_units(df)
     if type(df) is sunpy.timeseries.timeseriesbase.GenericTimeSeries:
         df = df.data
-    check_datetime_index_ts(df)
+    check_datetime_index(df)
     assert df.shape[0] > 0
     assert df.shape[1] > 0
 
 
-def check_datetime_index_ts(df):
-    'Helper funciton to check all dataframes have a datetime index'
+def check_datetime_index(df):
+    """
+    Helper funciton to check all dataframes have a datetime index
+    """
     assert type(df.index[0]) == pd.Timestamp
 
 
-def check_units_ts(df):
+def check_units(df):
     if type(df) is not sunpy.timeseries.timeseriesbase.GenericTimeSeries:
         warnings.warn("Function has no units attached", RuntimeWarning)
         assert type(df.index[0]) == pd.Timestamp

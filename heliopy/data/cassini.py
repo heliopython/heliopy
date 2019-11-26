@@ -95,7 +95,7 @@ class _mag1minDownloader(util.Downloader):
                               self.fname(interval),
                               local_dir)
 
-    def load_local_file(self, interval):
+    def load_local_file(self, interval, product_list=None):
         f = open(self.local_path(interval))
         if 'error_message' in f.readline():
             f.close()

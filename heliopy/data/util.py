@@ -209,7 +209,7 @@ class Downloader(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def load_local_file(self, interval):
+    def load_local_file(self, interval, product_list):
         """
         Load local file for a given interval.
 

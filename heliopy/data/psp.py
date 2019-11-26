@@ -24,7 +24,7 @@ class _PSPDownloader(util.Downloader):
         except urllib.error.HTTPError:
             raise util.NoDataError
 
-    def load_local_file(self, interval):
+    def load_local_file(self, interval, product_list=None):
         local_path = self.local_path(interval)
         cdf = util._load_cdf(local_path)
         return util.cdf2df(
