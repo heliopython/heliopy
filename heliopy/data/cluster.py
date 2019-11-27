@@ -79,9 +79,9 @@ def _load(probe, starttime, endtime, instrument, product_id,
                 break
 
         if want_xr:
-            return util.cdf2xr(file, starttime, endtime, index_key, product_list)
+            return util.cdf2xr(file, index_key, starttime, endtime, product_list)
         else:
-            return util.cdf2df(file, starttime, endtime, index_key, product_list)
+            return util.cdf2df(file, index_key, starttime, endtime, product_list)
 
     return util.process(dirs, fnames, extension, local_base_dir,
                         remote_base_url, download_func, processing_func,

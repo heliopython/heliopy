@@ -59,13 +59,14 @@ def _year_intervals(starttime, endtime):
 
 class CDASDwonloader(util.Downloader):
     def __init__(self, dataset, identifier, dir, badvalues=None,
-                 warn_missing_units=True, units=None):
+                 warn_missing_units=True, units=None, want_xr=False):
         self.dataset = dataset
         self.identifier = identifier
         self.dir = dir
         self.badvalues = badvalues
         self.units = units
         self.warn_missing_units = warn_missing_units
+        self.want_xr = want_xr
 
     @staticmethod
     def _interval_start(interval):
@@ -99,11 +100,15 @@ class CDASDwonloader(util.Downloader):
         etime = self._interval_end(interval)
         return get_data(self.identifier, stime, etime)
 
-    def load_local_file(self, interval, product_list=None):
+    def load_local_file(self, interval, product_list=None, want_xr=False):
         local_path = self.local_path(interval)
         cdf = util._load_cdf(local_path)
-        return util.cdf2df(cdf, index_key='Epoch',
-                           badvalues=self.badvalues)
+        if self.want_xr:
+            return util.cdf2xr(cdf, index_key='Epoch',
+                               badvalues=self.badvalues)
+        else:
+            return util.cdf2df(cdf, index_key='Epoch',
+                               badvalues=self.badvalues)
 
 
 def get_variables(dataset, timeout=10):

@@ -19,7 +19,7 @@ import requests
 
 from heliopy import config
 from heliopy.data import util
-from heliopy.data import cdasrest
+from heliopy.data import cdasrestt
 
 data_dir = config['download_dir']
 use_hdf = config['use_hdf']
@@ -178,8 +178,8 @@ def integrated_dists(probe, starttime, endtime, verbose=False):
                     dists = {'a': a, 'b': b}
                     for key in dists:
                         dist = dists[key]
-                        dist['Time'] = t
-                        dist = dist.set_index(['Time', 'v'], drop=True)
+                        dist['time'] = t
+                        dist = dist.set_index(['time', 'v'], drop=True)
                         todays_dists[key].append(dist)
         # Go through a and b and concat all the data
         for key in todays_dists:
@@ -390,10 +390,10 @@ def distparams(probe, starttime, endtime, verbose=False):
 
             todays_params = pd.concat(todays_params,
                                       ignore_index=True, axis=1).T
-            todays_params = todays_params.set_index('Time', drop=False)
+            todays_params = todays_params.set_index('time', drop=False)
             # Convert columns to numeric types
             todays_params = todays_params.apply(pd.to_numeric, errors='ignore')
-            todays_params['Time'] = pd.to_datetime(todays_params['Time'])
+            todays_params['time'] = pd.to_datetime(todays_params['time'])
             if use_hdf:
                 todays_params.to_hdf(hdffile, key='distparams', mode='w')
         paramlist.append(todays_params)
@@ -431,7 +431,7 @@ def distparams_single(probe, year, doy, hour, minute, second):
 
     _, month, day = util.doy2ymd(year, doy)
     dtime = datetime(year, month, day, hour, minute, second)
-    distparams = pd.Series(dtime, index=['Time'])
+    distparams = pd.Series(dtime, index=['time'])
     # Ignore the Pizzo et. al. correction at top of file
     for _ in range(0, 3):
         f.readline()
@@ -616,7 +616,7 @@ def electron_dists(probe, starttime, endtime, remove_advect=False,
 
                 t = datetime.combine(starttime.date(),
                                      time(hour, minute, second))
-                d['Time'] = t
+                d['time'] = t
                 if verbose:
                     print(t)
                 todays_dist.append(d)
@@ -625,7 +625,7 @@ def electron_dists(probe, starttime, endtime, remove_advect=False,
             starttime += timedelta(days=1)
             continue
         todays_dist = pd.concat(todays_dist)
-        todays_dist = todays_dist.set_index('Time', append=True)
+        todays_dist = todays_dist.set_index('time', append=True)
         if use_hdf:
             todays_dist.to_hdf(hdffile, key='electron_dists', mode='w')
         distlist.append(todays_dist)
@@ -711,7 +711,7 @@ def ion_dists(probe, starttime, endtime, remove_advect=False, verbose=False):
 
                 t = datetime.combine(starttime.date(),
                                      time(hour, minute, second))
-                d['Time'] = t
+                d['time'] = t
                 if verbose:
                     print(t)
                 todays_dist.append(d)
@@ -720,7 +720,7 @@ def ion_dists(probe, starttime, endtime, remove_advect=False, verbose=False):
             starttime += timedelta(days=1)
             continue
         todays_dist = pd.concat(todays_dist)
-        todays_dist = todays_dist.set_index('Time', append=True)
+        todays_dist = todays_dist.set_index('time', append=True)
         if use_hdf:
             todays_dist.to_hdf(hdffile, key='ion_dist', mode='w')
         distlist.append(todays_dist)
@@ -884,7 +884,7 @@ class _CoreFitDownloader(util.Downloader):
         except urllib.error.HTTPError:
             raise util.NoDataError
 
-    def load_local_file(self, interval, product_list=None):
+    def load_local_file(self, interval, product_list=None, want_xr=False):
         return pd.read_csv(self.local_path(interval), parse_dates=['Time'])
 
 
@@ -971,16 +971,16 @@ class _4hzDownloader(util.Downloader):
         new_path = self.local_path(interval)
         downloaded_path.rename(new_path)
 
-    def load_local_file(self, interval, product_list=None):
+    def load_local_file(self, interval, product_list=None, want_xr=False):
         # Read in data
-        headings = ['Time', 'Bx', 'By', 'Bz']
+        headings = ['time', 'Bx', 'By', 'Bz']
         cols = [0, 4, 5, 6]
         data = pd.read_csv(self.local_path(interval), names=headings,
                            header=None, usecols=cols, delim_whitespace=True)
 
         # Convert date info to datetime
-        data['Time'] = pd.to_datetime(data['Time'], format='%Y-%m-%dT%H:%M:%S')
-        data = data.set_index('Time', drop=True)
+        data['time'] = pd.to_datetime(data['time'], format='%Y-%m-%dT%H:%M:%S')
+        data = data.set_index('time', drop=True)
         return data
 
 
@@ -1042,7 +1042,7 @@ class _NessDownloader(util.Downloader):
         except URLError:
             raise util.NoDataError
 
-    def load_local_file(self, interval, product_list=None):
+    def load_local_file(self, interval, product_list=None, want_xr=False):
         # Read in data
         headings = ['probe', 'year', 'doy', 'hour', 'minute', 'second',
                     'naverage', 'Bx', 'By', 'Bz', '|B|',
@@ -1057,13 +1057,13 @@ class _NessDownloader(util.Downloader):
         # Process data
         data['year'] += 1900
         # Convert date info to datetime
-        data['Time'] = pd.to_datetime(data['year'], format='%Y') + \
+        data['time'] = pd.to_datetime(data['year'], format='%Y') + \
             pd.to_timedelta(data['doy'] - 1, unit='d') + \
             pd.to_timedelta(data['hour'], unit='h') + \
             pd.to_timedelta(data['minute'], unit='m') + \
             pd.to_timedelta(data['second'], unit='s')
         data = data.drop(['year', 'doy', 'hour', 'minute', 'second'], axis=1)
-        data = data.set_index('Time', drop=False)
+        data = data.set_index('time', drop=False)
         return data
 
 

@@ -24,11 +24,10 @@ class _PSPDownloader(util.Downloader):
         except urllib.error.HTTPError:
             raise util.NoDataError
 
-    def load_local_file(self, interval, product_list=None):
+    def load_local_file(self, interval, product_list=None, want_xr=False):
         local_path = self.local_path(interval)
         cdf = util._load_cdf(local_path)
-        return util.cdf2df(
-            cdf, index_key=self.epoch_label, badvalues=self.badvalues)
+        return util.cdf2df(cdf, index_key=self.epoch_label, badvalues=self.badvalues)
 
 
 # SWEAP classes/methods

@@ -40,7 +40,7 @@ class _omniDownloader(util.Downloader):
         fname = self.fname(interval)
         util._download_remote(url, fname, local_dir)
 
-    def load_local_file(self, interval, product_list=None):
+    def load_local_file(self, interval, product_list=None, want_xr=False):
         names = ['Year', 'Decimal Day', 'Hour', 'Bartels Rotation Number',
                  'ID IMF Spacecraft', 'ID SW Plasma Spacecraft',
                  'points(IMF Average)', 'points(Plasma Average)',
@@ -102,6 +102,11 @@ class _omniDownloader(util.Downloader):
                                              coords=[time_index],
                                              dims=['time'])
             data.attrs['Units'] = self.units
+
+        if not want_xr:
+            data = data.to_dataframe()
+            data.index.name = 'Time'
+
         return data
 
     def _convert_datetime(self, year, day_list, hour_list, len_):

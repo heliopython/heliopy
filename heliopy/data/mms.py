@@ -298,9 +298,9 @@ def download_files(probe, instrument, data_rate, starttime, endtime,
 
     def processing_func(cdf):
         if want_xr:
-            return util.cdf2xr(cdf, starttime, endtime, 'Epoch', product_list)
+            return util.cdf2xr(cdf, 'Epoch', starttime, endtime, product_list)
         else:
-            return util.cdf2df(cdf, starttime, endtime, 'Epoch', product_list)
+            return util.cdf2df(cdf, 'Epoch', starttime, endtime, product_list)
 
     return util.process(dirs, fnames, extension, local_base_dir,
                         remote_base_url, download_func, processing_func,

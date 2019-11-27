@@ -70,7 +70,7 @@ class _MergedDownloader(util.Downloader):
         remote_base_url = imp_url + f'imp{self.probe}/merged'
         util._download_remote(remote_base_url, filename, local_dir)
 
-    def load_local_file(self, interval, product_list=None):
+    def load_local_file(self, interval, product_list=None, want_xr=False):
         readargs = {'names': ['Year', 'doy', 'Hour', 'Minute', 'sw_flag',
                               'x_gse', 'y_gse', 'z_gse', 'y_gsm', 'z_gsm',
                               'Nm', 'FCm', 'DWm',

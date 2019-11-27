@@ -90,17 +90,16 @@ class Downloader(abc.ABC):
                 except NoDataError:
                     continue
 
-            data.append(self.load_local_file(interval, product_list))
+            data.append(self.load_local_file(interval, product_list, want_xr))
             local_path_successful = local_path
             if use_hdf:
                 data[-1].to_hdf(hdf_path, 'data', mode='w', format='f')
 
         # Loaded all the data, now filter between times
-        data = xr_timefilter(data, starttime, endtime)
-
-        # If user does not want to retrieve xarray, convert to pd.Dataframe
-        if not want_xr:
-            data = data.to_dataframe()
+        if want_xr:
+            data = xr_timefilter(data, starttime, endtime)
+        else:
+            data = timefilter(data, starttime, endtime)
 
         # Attach units
         if local_path.suffix == '.cdf':
@@ -209,13 +208,15 @@ class Downloader(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def load_local_file(self, interval, product_list):
+    def load_local_file(self, interval, product_list, want_xr):
         """
         Load local file for a given interval.
 
         Parameters
         ----------
         interval : sunpy.time.TimeRange
+        product_list : list
+        want_xr : boolean
 
         Returns
         -------
@@ -634,13 +635,14 @@ def timefilter(data, starttime, endtime):
             'No data available between {} and {}'.format(starttime, endtime))
     if isinstance(data, list):
         data = pd.concat(data)
+
     # Get time values
-    if 'time' in data.columns:
-        time = data['time']
-    elif 'time' in data.index.names:
-        time = data.index.get_level_values('time')
+    if 'Time' in data.columns:
+        time = data['Time']
+    elif 'Time' in data.index.names:
+        time = data.index.get_level_values('Time')
     else:
-        raise KeyError('The label "time" was not found in '
+        raise KeyError('The label "Time" was not found in '
                        'the dataframe columns or index')
 
     data = data[(time > starttime) &
@@ -733,7 +735,7 @@ def pitchdist_cdf2df(cdf, distkeys, energykey, timekey, anglelabels):
     return data
 
 
-def cdf2df(cdf, starttime, endtime, index_key, list_keys=None,
+def cdf2df(cdf, index_key, starttime=None, endtime=None,  list_keys=None,
            dtimeindex=True, badvalues=None, ignore=None):
     """
     Converts a cdf file to a pandas dataframe.
@@ -768,29 +770,38 @@ def cdf2df(cdf, starttime, endtime, index_key, list_keys=None,
 
     # Check if required time interval is in cdf file
     # and define required start and end time to extract from current CDF file
-    if not starttime or starttime < index_full[0] \
-            or starttime > index_full[-1]:
-        tstart = [index_full[0].year, index_full[0].month, index_full[0].day, index_full[0].hour,
-        index_full[0].minute, index_full[0].second, int(str(index_full[0].microsecond).zfill(6)[:-3]),
-        int(str(index_full[0].microsecond).zfill(6)[3:])]
-    else:
-        tstart = [starttime.year, starttime.month, starttime.day, starttime.hour,
-                  starttime.minute, starttime.second]
+    if starttime and endtime:
 
-    if not endtime or endtime < index_full[0] or endtime > index_full[-1] or starttime > endtime:
-        tend=[index_full[-1].year, index_full[-1].month, index_full[-1].day, index_full[-1].hour,
-        index_full[-1].minute, index_full[-1].second,  int(str(index_full[-1].microsecond).zfill(6)[:-3]),
-        int(str(index_full[-1].microsecond).zfill(6)[3:])]
-    else:
-        tend = [endtime.year, endtime.month, endtime.day, endtime.hour,
-        endtime.minute, endtime.second]
+        if not starttime or starttime < index_full[0] \
+                or starttime > index_full[-1]:
+            tstart = [index_full[0].year, index_full[0].month, index_full[0].day, index_full[0].hour,
+            index_full[0].minute, index_full[0].second, int(str(index_full[0].microsecond).zfill(6)[:-3]),
+            int(str(index_full[0].microsecond).zfill(6)[3:])]
+        else:
+            tstart = [starttime.year, starttime.month, starttime.day, starttime.hour,
+                      starttime.minute, starttime.second]
 
-    # Reload index with appropriate start and end times
-    index = get_index(cdf, index_key, tstart, tend)
-    ind = np.intersect1d(index_full, index, return_indices=True)[1]
+        if not endtime or endtime < index_full[0] or endtime > index_full[-1] or starttime > endtime:
+            tend=[index_full[-1].year, index_full[-1].month, index_full[-1].day, index_full[-1].hour,
+            index_full[-1].minute, index_full[-1].second,  int(str(index_full[-1].microsecond).zfill(6)[:-3]),
+            int(str(index_full[-1].microsecond).zfill(6)[3:])]
+        else:
+            tend = [endtime.year, endtime.month, endtime.day, endtime.hour,
+            endtime.minute, endtime.second]
+
+        # Reload index with appropriate start and end times
+        index = get_index(cdf, index_key, tstart, tend)
+        ind = np.intersect1d(index_full, index, return_indices=True)[1]
+
+    else:
+        index = index_full
+        ind = np.intersect1d(index_full, index, return_indices=True)[1]
+        tstart = None
+        tend = None
 
     # If none of the required data in current CDF file, move on to the next one
-    if len(index) == 0: return
+    if len(index) == 0:
+        return
 
     df = pd.DataFrame(index=index)
     npoints = cdf.varget(index_key, None, tstart, tend).shape[0]
@@ -1235,7 +1246,7 @@ def dtime2doy(dt):
 
 
 
-def cdf2xr(cdf, starttime, endtime, index_key, list_keys=None, dtimeindex=True,
+def cdf2xr(cdf, index_key, starttime=None, endtime=None, list_keys=None, dtimeindex=True,
            badvalues=None, ignore=None):
     """
     Converts cdf file of spacecraft timeseries data to an xarray (DataArray or
@@ -1280,34 +1291,42 @@ def cdf2xr(cdf, starttime, endtime, index_key, list_keys=None, dtimeindex=True,
 
     # Check if required time interval is in cdf file
     # and define required start and end time to extract from current CDF file
-    if not starttime or starttime < index_full[0] or starttime > index_full[-1]:
-        tstart=[index_full[0].year, index_full[0].month, index_full[0].day, index_full[0].hour,
-        index_full[0].minute, index_full[0].second, int(str(index_full[0].microsecond).zfill(6)[:-3]),
-        int(str(index_full[0].microsecond).zfill(6)[3:])]
+    if starttime and endtime:
+
+        if not starttime or starttime < index_full[0] or starttime > index_full[-1]:
+            tstart=[index_full[0].year, index_full[0].month, index_full[0].day, index_full[0].hour,
+            index_full[0].minute, index_full[0].second, int(str(index_full[0].microsecond).zfill(6)[:-3]),
+            int(str(index_full[0].microsecond).zfill(6)[3:])]
+        else:
+            tstart = [starttime.year, starttime.month, starttime.day, starttime.hour,
+                      starttime.minute, starttime.second]
+
+        if not endtime or endtime < index_full[0] or endtime > index_full[-1] or starttime > endtime:
+            tend=[index_full[-1].year, index_full[-1].month, index_full[-1].day, index_full[-1].hour,
+            index_full[-1].minute, index_full[-1].second,  int(str(index_full[-1].microsecond).zfill(6)[:-3]),
+            int(str(index_full[-1].microsecond).zfill(6)[3:])]
+        else:
+            tend = [endtime.year, endtime.month, endtime.day, endtime.hour,
+            endtime.minute, endtime.second]
+
+
+        # Filter time index with appropriate start and end times
+    #    index = pd.DatetimeIndex([x for x in index if x >= starttime and x <= endtime],
+    #                             name='time')
+
+        # Reload index with appropriate start and end times
+        index = get_index(cdf, index_key, tstart, tend)
+        ind = np.intersect1d(index_full, index, return_indices=True)[1]
+
     else:
-        tstart = [starttime.year, starttime.month, starttime.day, starttime.hour,
-                  starttime.minute, starttime.second]
-
-    if not endtime or endtime < index_full[0] or endtime > index_full[-1] or starttime > endtime:
-        tend=[index_full[-1].year, index_full[-1].month, index_full[-1].day, index_full[-1].hour,
-        index_full[-1].minute, index_full[-1].second,  int(str(index_full[-1].microsecond).zfill(6)[:-3]),
-        int(str(index_full[-1].microsecond).zfill(6)[3:])]
-    else:
-        tend = [endtime.year, endtime.month, endtime.day, endtime.hour,
-        endtime.minute, endtime.second]
-
-
-    # Filter time index with appropriate start and end times
-#    index = pd.DatetimeIndex([x for x in index if x >= starttime and x <= endtime],
-#                             name='time')
-
-    # Reload index with appropriate start and end times
-    index = get_index(cdf, index_key, tstart, tend)
-    ind = np.intersect1d(index_full, index, return_indices=True)[1]
-
+        index = index_full
+        ind = np.intersect1d(index_full, index, return_indices=True)[1]
+        tstart = None
+        tend = None
 
     # If none of the required data in current CDF file, move on to the next one
-    if len(index) == 0: return
+    if len(index) == 0:
+        return
 
     # If no product_list (cdf keys) is passed, load all data in xarray.Dataset
     if not list_keys:
@@ -1539,18 +1558,18 @@ def xr_timefilter(data, starttime, endtime):
     # Time filter the xarray
     data = data.sel(time=slice(starttime, endtime))
 
-
     return data
+
 
 def get_index(cdf, index_key, t_start=None, t_end=None, dtimeindex=True):
 
-    # Extract timeindex (time) values from current CDF file
-    # try:
-    # timeindex_ = cdf.varget(index_key, None, t_start, t_end)[...][:,0]
-    # except:
-    timeindex_ = cdf.varget(index_key, None, t_start, t_end)
+    # Extract index values
     try:
-        utc_comp = cdflib.cdfepoch.breakdown(timeindex_, to_np=True)
+        index_ = cdf.varget(index_key, None, t_start, t_end)[...][:, 0]
+    except IndexError:
+        index_ = cdf.varget(index_key, None, t_start, t_end)[...]
+    try:
+        utc_comp = cdflib.cdfepoch.breakdown(index_, to_np=True)
         if utc_comp.shape[1] == 9:
             millis = utc_comp[:, 6] * (10**3)
             micros = utc_comp[:, 8] * (10**2)
@@ -1558,13 +1577,13 @@ def get_index(cdf, index_key, t_start=None, t_end=None, dtimeindex=True):
             utc_comp[:, 6] = millis + micros + nanos
             utc_comp = np.delete(utc_comp, np.s_[-2:], axis=1)
         try:
-            timeindex = np.asarray([dt.datetime(*x) for x in utc_comp])
+            index = np.asarray([dt.datetime(*x) for x in utc_comp])
         except ValueError:
             utc_comp[:, 6] -= micros
-            timeindex = np.asarray([dt.datetime(*x) for x in utc_comp])
+            index = np.asarray([dt.datetime(*x) for x in utc_comp])
     except Exception:
-        timeindex = timeindex_
+        index = index_
     if dtimeindex:
-        timeindex = pd.DatetimeIndex(timeindex, name='time')
+        index = pd.DatetimeIndex(index, name='Time')
 
-    return timeindex
+    return index
