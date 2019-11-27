@@ -711,7 +711,7 @@ def ion_dists(probe, starttime, endtime, remove_advect=False, verbose=False):
 
                 t = datetime.combine(starttime.date(),
                                      time(hour, minute, second))
-                d['time'] = t
+                d['Time'] = t
                 if verbose:
                     print(t)
                 todays_dist.append(d)
@@ -720,7 +720,7 @@ def ion_dists(probe, starttime, endtime, remove_advect=False, verbose=False):
             starttime += timedelta(days=1)
             continue
         todays_dist = pd.concat(todays_dist)
-        todays_dist = todays_dist.set_index('time', append=True)
+        todays_dist = todays_dist.set_index('Time', append=True)
         if use_hdf:
             todays_dist.to_hdf(hdffile, key='ion_dist', mode='w')
         distlist.append(todays_dist)
@@ -973,14 +973,14 @@ class _4hzDownloader(util.Downloader):
 
     def load_local_file(self, interval, product_list=None, want_xr=False):
         # Read in data
-        headings = ['time', 'Bx', 'By', 'Bz']
+        headings = ['Time', 'Bx', 'By', 'Bz']
         cols = [0, 4, 5, 6]
         data = pd.read_csv(self.local_path(interval), names=headings,
                            header=None, usecols=cols, delim_whitespace=True)
 
         # Convert date info to datetime
-        data['time'] = pd.to_datetime(data['time'], format='%Y-%m-%dT%H:%M:%S')
-        data = data.set_index('time', drop=True)
+        data['Time'] = pd.to_datetime(data['Time'], format='%Y-%m-%dT%H:%M:%S')
+        data = data.set_index('Time', drop=True)
         return data
 
 
@@ -1057,13 +1057,13 @@ class _NessDownloader(util.Downloader):
         # Process data
         data['year'] += 1900
         # Convert date info to datetime
-        data['time'] = pd.to_datetime(data['year'], format='%Y') + \
+        data['Time'] = pd.to_datetime(data['year'], format='%Y') + \
             pd.to_timedelta(data['doy'] - 1, unit='d') + \
             pd.to_timedelta(data['hour'], unit='h') + \
             pd.to_timedelta(data['minute'], unit='m') + \
             pd.to_timedelta(data['second'], unit='s')
         data = data.drop(['year', 'doy', 'hour', 'minute', 'second'], axis=1)
-        data = data.set_index('time', drop=False)
+        data = data.set_index('Time', drop=False)
         return data
 
 
