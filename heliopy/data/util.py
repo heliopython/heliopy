@@ -354,7 +354,7 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
     """
     local_base_dir = path.Path(local_base_dir)
     data = []
-    if download_info:
+    if download_info == []:
         download_info = [None] * len(dirs)
     if remote_fnames is None:
         remote_fnames = fnames.copy()
