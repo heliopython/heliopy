@@ -79,9 +79,11 @@ def _load(probe, starttime, endtime, instrument, product_id,
                 break
 
         if want_xr:
-            return util.cdf2xr(file, index_key, starttime, endtime, product_list)
+            return util.cdf2xr(file, index_key, starttime, endtime,
+                               product_list)
         else:
-            return util.cdf2df(file, index_key, starttime, endtime, product_list)
+            return util.cdf2df(file, index_key, starttime, endtime,
+                               product_list)
 
     return util.process(dirs, fnames, extension, local_base_dir,
                         remote_base_url, download_func, processing_func,
@@ -173,6 +175,10 @@ def fgm(probe, starttime, endtime, try_download=True, want_xr=False):
             Interval start.
         endtime : datetime
             Interval end.
+        try_download : bool
+            Download file.
+        want_xr : bool
+            If want xarray.
 
     Returns
     -------
@@ -229,6 +235,10 @@ def peace_moments(probe, starttime, endtime, try_download=True, want_xr=False):
             Interval start.
         endtime : datetime
             Interval end.
+        try_download : bool
+            Download file.
+        want_xr : bool
+            If want xarray.
 
     Returns
     -------
@@ -255,6 +265,10 @@ def cis_hia_onboard_moms(probe, starttime, endtime, try_download=True,
             Interval start.
         endtime : datetime
             Interval end.
+        try_download : bool
+            Download file.
+        want_xr : bool
+            If want xarray.
 
     Returns
     -------

@@ -6,9 +6,9 @@ import numpy as np
 
 
 def check_data_output_xr(data):
-    '''
+    """
     Function to check that the output of a data fetch method.
-    '''
+    """
     check_units_xr(data)
     check_datetime_index_xr(data)
     assert len(data.time) > 0

@@ -354,7 +354,7 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
     """
     local_base_dir = path.Path(local_base_dir)
     data = []
-    if download_info == []:
+    if download_info:
         download_info = [None] * len(dirs)
     if remote_fnames is None:
         remote_fnames = fnames.copy()
@@ -561,7 +561,7 @@ def cdf_units(cdf_, manual_units=None, length=None):
             if len(ncols) == 1:
                 key_dict[key] = key
             if len(ncols) > 1:
-                val = []
+                val = list()
                 val.append(key)
                 for x in range(0, ncols[1]):
                     field = key + "{}".format('_' + str(x))
@@ -774,20 +774,24 @@ def cdf2df(cdf, index_key, starttime=None, endtime=None,  list_keys=None,
 
         if not starttime or starttime < index_full[0] \
                 or starttime > index_full[-1]:
-            tstart = [index_full[0].year, index_full[0].month, index_full[0].day, index_full[0].hour,
-            index_full[0].minute, index_full[0].second, int(str(index_full[0].microsecond).zfill(6)[:-3]),
-            int(str(index_full[0].microsecond).zfill(6)[3:])]
+            tstart = [index_full[0].year, index_full[0].month,
+                      index_full[0].day, index_full[0].hour,
+                      index_full[0].minute, index_full[0].second,
+                      int(str(index_full[0].microsecond).zfill(6)[:-3]),
+                      int(str(index_full[0].microsecond).zfill(6)[3:])]
         else:
             tstart = [starttime.year, starttime.month, starttime.day, starttime.hour,
                       starttime.minute, starttime.second]
 
         if not endtime or endtime < index_full[0] or endtime > index_full[-1] or starttime > endtime:
-            tend=[index_full[-1].year, index_full[-1].month, index_full[-1].day, index_full[-1].hour,
-            index_full[-1].minute, index_full[-1].second,  int(str(index_full[-1].microsecond).zfill(6)[:-3]),
-            int(str(index_full[-1].microsecond).zfill(6)[3:])]
+            tend = [index_full[-1].year, index_full[-1].month,
+                    index_full[-1].day, index_full[-1].hour,
+                    index_full[-1].minute, index_full[-1].second,
+                    int(str(index_full[-1].microsecond).zfill(6)[:-3]),
+                    int(str(index_full[-1].microsecond).zfill(6)[3:])]
         else:
             tend = [endtime.year, endtime.month, endtime.day, endtime.hour,
-            endtime.minute, endtime.second]
+                    endtime.minute, endtime.second]
 
         # Reload index with appropriate start and end times
         index = get_index(cdf, index_key, tstart, tend)
@@ -845,7 +849,8 @@ def cdf2df(cdf, index_key, starttime=None, endtime=None,  list_keys=None,
             if isinstance(df_key, list):
                 for i, subkey in enumerate(df_key):
                     try:
-                        df[subkey] = cdf.varget(cdf_key, None, tstart, tend)[...][:, i]
+                        df[subkey] = cdf.varget(cdf_key, None, tstart,
+                                                tend)[...][:, i]
                     except:
                         df[subkey] = cdf.varget(cdf_key)[ind][:, i]
             else:
@@ -861,9 +866,12 @@ def cdf2df(cdf, index_key, starttime=None, endtime=None,  list_keys=None,
                 elif ndims == 2:
                     for i in range(key_shape[1]):
                         try:
-                            df[df_key + '_' + str(i)] = cdf.varget(cdf_key, None, tstart, tend)[...][:, i]
+                            df[df_key + '_' + str(i)] =\
+                                cdf.varget(cdf_key, None, tstart,
+                                           tend)[...][:, i]
                         except:
-                            df[df_key + '_' + str(i)] = cdf.varget(cdf_key)[ind][:, i]
+                            df[df_key + '_' + str(i)] =\
+                                cdf.varget(cdf_key)[ind][:, i]
 
     elif list_keys and len(list_keys) == 1:
         for cdf_key in list_keys.values():
@@ -874,19 +882,24 @@ def cdf2df(cdf, index_key, starttime=None, endtime=None,  list_keys=None,
 
             if ndims == 1:
                 try:
-                    df[cdf_key] = cdf.varget(cdf_key, None, tstart, tend)[...]
+                    df[cdf_key] = cdf.varget(cdf_key,
+                                             None, tstart, tend)[...]
                 except:
                     df[cdf_key] = cdf.varget(cdf_key)[ind]
 
             elif ndims == 2:
                 for i in range(key_shape[1]):
                     try:
-                        df[cdf_key + '_' + str(i)] = cdf.varget(cdf_key, None, tstart, tend)[...][:, i]
+                        df[cdf_key + '_' + str(i)] =\
+                            cdf.varget(cdf_key, None, tstart, tend)[...][:, i]
                     except:
-                        df[cdf_key + '_' + str(i)] = cdf.varget(cdf_key)[ind][:, i]
+                        df[cdf_key + '_' + str(i)] =\
+                            cdf.varget(cdf_key)[ind][:, i]
     else:
-        message = (f"Multidimensional data is not supported by pandas.DataFrame"
-                   f"\nIf you want to load, e.g., particle distribution functions,"
+        message = (f"Multidimensional data is not supported"
+                   f" by pandas.DataFrame"
+                   f"\nIf you want to load, e.g., "
+                   f"particle distribution functions,"
                    f" please use xarrays by setting want_xr=True")
         warnings.warn(message, Warning)
 
@@ -1075,10 +1088,10 @@ def _load_remote(remote_url, filename, local_dir, filetype):
 
 
 def _fix_url(url):
-    '''
+    """
     Given a url possibly constructued using an os.path.join method,
     replace all backlslashes with forward slashes to make the url valid
-    '''
+    """
     if url is not None:
         return url.replace('\\', '/')
     else:
@@ -1245,9 +1258,8 @@ def dtime2doy(dt):
     return int(dt.strftime('%j'))
 
 
-
-def cdf2xr(cdf, index_key, starttime=None, endtime=None, list_keys=None, dtimeindex=True,
-           badvalues=None, ignore=None):
+def cdf2xr(cdf, index_key, starttime=None, endtime=None, list_keys=None,
+           dtimeindex=True, badvalues=None, ignore=None):
     """
     Converts cdf file of spacecraft timeseries data to an xarray (DataArray or
     Dataset) object. xarray package is used as particle distribution functions
@@ -1293,25 +1305,31 @@ def cdf2xr(cdf, index_key, starttime=None, endtime=None, list_keys=None, dtimein
     # and define required start and end time to extract from current CDF file
     if starttime and endtime:
 
-        if not starttime or starttime < index_full[0] or starttime > index_full[-1]:
-            tstart=[index_full[0].year, index_full[0].month, index_full[0].day, index_full[0].hour,
-            index_full[0].minute, index_full[0].second, int(str(index_full[0].microsecond).zfill(6)[:-3]),
-            int(str(index_full[0].microsecond).zfill(6)[3:])]
+        if not starttime or starttime < index_full[0] \
+                or starttime > index_full[-1]:
+            tstart=[index_full[0].year, index_full[0].month,
+                    index_full[0].day, index_full[0].hour,
+                    index_full[0].minute, index_full[0].second,
+                    int(str(index_full[0].microsecond).zfill(6)[:-3]),
+                    int(str(index_full[0].microsecond).zfill(6)[3:])]
         else:
-            tstart = [starttime.year, starttime.month, starttime.day, starttime.hour,
-                      starttime.minute, starttime.second]
+            tstart = [starttime.year, starttime.month, starttime.day,
+                      starttime.hour, starttime.minute, starttime.second]
 
-        if not endtime or endtime < index_full[0] or endtime > index_full[-1] or starttime > endtime:
-            tend=[index_full[-1].year, index_full[-1].month, index_full[-1].day, index_full[-1].hour,
-            index_full[-1].minute, index_full[-1].second,  int(str(index_full[-1].microsecond).zfill(6)[:-3]),
-            int(str(index_full[-1].microsecond).zfill(6)[3:])]
+        if not endtime or endtime < index_full[0] or endtime > index_full[-1]\
+                or starttime > endtime:
+            tend = [index_full[-1].year, index_full[-1].month,
+                    index_full[-1].day, index_full[-1].hour,
+                    index_full[-1].minute, index_full[-1].second,
+                    int(str(index_full[-1].microsecond).zfill(6)[:-3]),
+                    int(str(index_full[-1].microsecond).zfill(6)[3:])]
         else:
             tend = [endtime.year, endtime.month, endtime.day, endtime.hour,
-            endtime.minute, endtime.second]
-
+                    endtime.minute, endtime.second]
 
         # Filter time index with appropriate start and end times
-    #    index = pd.DatetimeIndex([x for x in index if x >= starttime and x <= endtime],
+    #    index = pd.DatetimeIndex([x for x in index
+        #                          if x >= starttime and x <= endtime],
     #                             name='time')
 
         # Reload index with appropriate start and end times
@@ -1374,14 +1392,16 @@ def cdf2xr(cdf, index_key, starttime=None, endtime=None, list_keys=None, dtimein
                 for i, subkey in enumerate(df_key):
 
                     try:
-                        data_temp = xr.DataArray(cdf.varget(cdf_key,None,tstart,tend)[...][:, i])
+                        data_temp = xr.DataArray(
+                            cdf.varget(cdf_key, None, tstart, tend)[...][:, i])
                     except:
                         data_temp = xr.DataArray(cdf.varget(cdf_key)[ind][:, i])
 
                     data[subkey] = data_temp
             else:
                 try:
-                    key_shape = cdf.varget(cdf_key, None, tstart, tend)[...].shape
+                    key_shape = cdf.varget(cdf_key,
+                                           None, tstart, tend)[...].shape
                 except:
                     key_shape = cdf.varget(cdf_key)[ind].shape
 
@@ -1389,32 +1409,36 @@ def cdf2xr(cdf, index_key, starttime=None, endtime=None, list_keys=None, dtimein
                 for i in np.arange(len(key_shape)): # Define coords in dataarray
                     data_coords += [np.arange(key_shape[i])]
                     data_coords[0] = index
-                data_dims = np.arange(len(key_shape)-1).tolist() # Define dims in dataarray
-                data_dims = ['dim_'+str(x) for x in data_dims] # Convert to strings
+                # Define dims in dataarray
+                data_dims = np.arange(len(key_shape)-1).tolist()
+                # Convert to strings
+                data_dims = ['dim_'+str(x) for x in data_dims]
                 data_dims = ['time'] + data_dims
                 try:
-                    data_temp = xr.DataArray(cdf.varget(cdf_key, None, tstart, tend)[...],
-                                         coords = data_coords, dims = data_dims)
+                    data_temp = xr.DataArray(cdf.varget(
+                                             cdf_key, None, tstart, tend)[...],
+                                             coords=data_coords,
+                                             dims=data_dims)
                 except:
                     data_temp = xr.DataArray(cdf.varget(cdf_key)[ind],
-                                         coords = data_coords, dims = data_dims)
+                                             coords=data_coords,
+                                             dims=data_dims)
                 data[df_key] = data_temp
 
-
-
-    # If only one cdf key, put associated data in xarray.DataArray (assumes 1D or 2D data)
+    # If only one cdf key, put associated data in xarray.DataArray
+    # (assumes 1D or 2D data)
     elif list_keys and len(list_keys) == 1:
         for cdf_key in list_keys.values():
-            data = cdf.varget(cdf_key,None,tstart,tend)[...]
+            data = cdf.varget(cdf_key, None, tstart, tend)[...]
             if len(data.shape) == 2:
-                data_coords = ['x','y','z','tot']
-                data = xr.DataArray(data, coords = [index,data_coords[:data.shape[-1]]],
-                                    dims=['time',cdf_key])
+                data_coords = ['x', 'y', 'z', 'tot']
+                data = xr.DataArray(data, coords =
+                                    [index, data_coords[:data.shape[-1]]],
+                                    dims=['time', cdf_key])
             else:
                 data = xr.DataArray(data, coords = [index], dims=['time'])
 
             data.name = cdf_key
-
 
     # If more than 1 key, assumes distribution function (3D or more data)
     elif list_keys and len(list_keys) > 1:
@@ -1422,14 +1446,14 @@ def cdf2xr(cdf, index_key, starttime=None, endtime=None, list_keys=None, dtimein
         coords = []
         dims = []
         keys = list(list_keys.keys())
-        for i,key in enumerate(keys):
-            coords.append(cdf.varget(list_keys[key],None,tstart,tend)[...])
+        for i, key in enumerate(keys):
+            coords.append(cdf.varget(list_keys[key], None, tstart, tend)[...])
             dims.append(list_keys[key])
 
-            # If energy is 2D, just take first dimension (energies are assumed constant)
+            # If energy is 2D, just take first dimension
+            # (energies are assumed constant)
             if key == 'energy' and len(coords[i].shape) == 2:
                 coords[i] = coords[i][0, :]
-
 
         data = coords[0]
         coords[0] = index
@@ -1440,7 +1464,6 @@ def cdf2xr(cdf, index_key, starttime=None, endtime=None, list_keys=None, dtimein
         data.name = list_keys['dist']
         data_units = cdf.varattsget(data.name)['UNITS']
         data.attrs[data.name] = data_units
-
 
     else:
         raise ValueError(
@@ -1493,7 +1516,7 @@ def units_xarray(data, units, warn_missing_units=True):
                 units[dim] = u.dimensionless_unscaled
                 if warn_missing_units:
                     message = (f"{dim} column has missing units."
-                           f"\n{missing_msg}")
+                               f"\n{missing_msg}")
                     warnings.warn(message, Warning)
                 data_units[dim] = units[dim]
             else:
@@ -1508,7 +1531,7 @@ def units_xarray(data, units, warn_missing_units=True):
                 units[data_var] = u.dimensionless_unscaled
                 if warn_missing_units:
                     message = (f"{data[data_var]} column has missing units."
-                           f"\n{missing_msg}")
+                               f"\n{missing_msg}")
                     warnings.warn(message, Warning)
                 data_units[data_var] = units[data_var]
             else:
@@ -1519,7 +1542,6 @@ def units_xarray(data, units, warn_missing_units=True):
     with warnings.catch_warnings():
         warnings.simplefilter(
             'ignore', 'Discarding nonzero nanoseconds in conversion')
-
 
     return data
 

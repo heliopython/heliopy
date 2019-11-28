@@ -41,9 +41,6 @@ def test_cis_codif_h1_moms_ts():
     check_data_output(data)
 
 
-
-
-
 def test_fgm_xr():
     starttime = datetime(2004, 6, 18, 11, 35, 0)
     endtime = datetime(2004, 6, 19, 18, 35, 0)
@@ -61,7 +58,8 @@ def test_peace_moments_xr():
 def test_cis_hia_onboard_moms_xr():
     starttime = datetime(2009, 1, 1, 0, 0, 0)
     endtime = datetime(2009, 1, 1, 2, 0, 0)
-    data = cluster.cis_hia_onboard_moms(probe, starttime, endtime, want_xr=True)
+    data = cluster.cis_hia_onboard_moms(probe,
+                                        starttime, endtime, want_xr=True)
     check_data_output_xr(data)
 
 
