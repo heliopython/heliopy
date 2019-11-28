@@ -780,10 +780,11 @@ def cdf2df(cdf, index_key, starttime=None, endtime=None,  list_keys=None,
                       int(str(index_full[0].microsecond).zfill(6)[:-3]),
                       int(str(index_full[0].microsecond).zfill(6)[3:])]
         else:
-            tstart = [starttime.year, starttime.month, starttime.day, starttime.hour,
-                      starttime.minute, starttime.second]
+            tstart = [starttime.year, starttime.month, starttime.day,
+                      starttime.hour, starttime.minute, starttime.second]
 
-        if not endtime or endtime < index_full[0] or endtime > index_full[-1] or starttime > endtime:
+        if not endtime or endtime < index_full[0] or endtime > index_full[-1]\
+                or starttime > endtime:
             tend = [index_full[-1].year, index_full[-1].month,
                     index_full[-1].day, index_full[-1].hour,
                     index_full[-1].minute, index_full[-1].second,
@@ -1307,11 +1308,11 @@ def cdf2xr(cdf, index_key, starttime=None, endtime=None, list_keys=None,
 
         if not starttime or starttime < index_full[0] \
                 or starttime > index_full[-1]:
-            tstart=[index_full[0].year, index_full[0].month,
-                    index_full[0].day, index_full[0].hour,
-                    index_full[0].minute, index_full[0].second,
-                    int(str(index_full[0].microsecond).zfill(6)[:-3]),
-                    int(str(index_full[0].microsecond).zfill(6)[3:])]
+            tstart = [index_full[0].year, index_full[0].month,
+                      index_full[0].day, index_full[0].hour,
+                      index_full[0].minute, index_full[0].second,
+                      int(str(index_full[0].microsecond).zfill(6)[:-3]),
+                      int(str(index_full[0].microsecond).zfill(6)[3:])]
         else:
             tstart = [starttime.year, starttime.month, starttime.day,
                       starttime.hour, starttime.minute, starttime.second]
@@ -1354,7 +1355,7 @@ def cdf2xr(cdf, index_key, starttime=None, endtime=None, list_keys=None,
         # Specify the CDF filename in the Dataset
 #       data['filename'] = cdf.cdf_info()['CDF'].stem
 
-        npoints = cdf.varget(index_key,None,tstart,tend).shape[0]
+        npoints = cdf.varget(index_key, None, tstart, tend).shape[0]
 
         var_list = []
         for attr in list(cdf.cdf_info().keys()):
@@ -1395,7 +1396,8 @@ def cdf2xr(cdf, index_key, starttime=None, endtime=None, list_keys=None,
                         data_temp = xr.DataArray(
                             cdf.varget(cdf_key, None, tstart, tend)[...][:, i])
                     except:
-                        data_temp = xr.DataArray(cdf.varget(cdf_key)[ind][:, i])
+                        data_temp = xr.DataArray(
+                            cdf.varget(cdf_key)[ind][:, i])
 
                     data[subkey] = data_temp
             else:
