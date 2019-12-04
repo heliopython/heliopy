@@ -84,9 +84,9 @@ def available_files(probe, instrument, starttime, endtime, data_rate='',
     start_date = starttime.strftime('%Y-%m-%d')
     # Selecting burst mode (ensure at least 2 mins to avoid empty files list)
     if data_rate == 'brst':
-        start_date = (starttime-datetime.timedelta(
+        start_date = (starttime-timedelta(
             minutes=1)).strftime('%Y-%m-%d-%H-%M')
-        end_date = (endtime+datetime.timedelta(
+        end_date = (endtime+timedelta(
             minutes=1)).strftime('%Y-%m-%d-%H-%M')
 
     if starttime.date() == endtime.date():
