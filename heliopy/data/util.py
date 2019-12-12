@@ -738,7 +738,7 @@ def cdf2df(cdf, index_key, dtimeindex=True, badvalues=None,
     ignore : list, optional
         In case a CDF file has columns that are unused / not required, then
         the column names can be passed as a list into the function.
-    include : list, optional
+    include : str, list, optional
         If only specific columns of a CDF file are desired, then the column
         names can be passed as a list into the function. Should not be used
         with ``ignore``.
@@ -748,8 +748,13 @@ def cdf2df(cdf, index_key, dtimeindex=True, badvalues=None,
     df : :class:`pandas.DataFrame`
         Data frame with read in data.
     """
-    if (ignore is not None) and (include is not None):
-        raise ValueError('ignore and include are incompatible keywords')
+    if include is not None:
+        if ignore is not None:
+            raise ValueError('ignore and include are incompatible keywords')
+        if isinstance(include, str):
+            include = [include]
+        if index_key not in include:
+            include.append(index_key)
 
     # Extract index values
     try:

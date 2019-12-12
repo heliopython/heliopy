@@ -18,6 +18,7 @@ import pdb
 import io
 import csv
 import pathlib
+import warnings
 
 import heliopy
 from heliopy.data import util
@@ -193,7 +194,8 @@ class MMSDownloader(util.Downloader):
             elif value not in ('ancillary', 'hk', 'science',
                                'abs_selections', 'sitl_selections'
                                ):
-                raise ValueError('Invalid value for attribute "' + name + '".')
+                raise ValueError('Invalid value {} for attribute'
+                                 ' "{}".'.format(value, name))
 
             # Unset attributes related to data_type = 'science'
             if 'selections' in value:
@@ -431,7 +433,7 @@ class MMSDownloader(util.Downloader):
         self.set_interval(interval)
 
         try:
-            file = self.get()[0]
+            file = self.download_files()[0]
         except IndexError:
             file = ''
 
@@ -567,11 +569,11 @@ class MMSDownloader(util.Downloader):
         # Return the resulting request
         return r
 
-    def download_files(self, file_names):
+    def download_from_sdc(self, file_names):
         '''
-        Download multiple files. To prevent downloading the same
-        file multiple times and to properly filter by file start
-        time, see the get method.
+        Download multiple files from the SDC. To prevent downloading the
+        same file multiple times and to properly filter by file start time
+        see the download_files method.
 
         Parameters
         ----------
@@ -630,9 +632,9 @@ class MMSDownloader(util.Downloader):
 
             # Download data with progress bar
             try:
-                r = self._session.post(url,
-                                       data={'file': info['file_name']},
-                                       stream=True)
+                r = self._session.get(url,
+                                      params={'file': info['file_name']},
+                                      stream=True)
                 with tqdm.tqdm(total=info['file_size'],
                                unit='B',
                                unit_scale=True,
@@ -670,7 +672,7 @@ class MMSDownloader(util.Downloader):
             Information about each file.
         '''
         self._info_type = 'file_info'
-        response = self.post()
+        response = self.get()
         return response.json()
 
     def file_names(self):
@@ -687,11 +689,33 @@ class MMSDownloader(util.Downloader):
             Names of the requested files.
         '''
         self._info_type = 'file_names'
-        response = self.post()
+        response = self.get()
 
         return response.text.split(',')
 
     def get(self):
+        '''
+        Retrieve information from the SDC.
+
+        Returns
+        -------
+        r : `session.response`
+            Response to the request posted to the SDC.
+        '''
+        # Build the URL sans query
+        url = self.url(query=False)
+
+        # Check on query
+        r = self._session.get(url, params=self.query())
+
+        # Check if everything is ok
+        if not r.ok:
+            r = self.check_response(r)
+
+        # Return the response for the requested URL
+        return r
+
+    def download_files(self):
         '''
         Download files from the SDC. First, search the local file
         system to see if they have already been downloaded.
@@ -711,8 +735,8 @@ class MMSDownloader(util.Downloader):
         #   - file_info() does not want the remote path
         if len(remote_files) > 0:
             remote_files = [file.split('/')[-1] for file in remote_files]
-            downloaded_files = self.download_files(remote_files)
-            local_files.append(*downloaded_files)
+            downloaded_files = self.download_from_sdc(remote_files)
+            local_files.extend(downloaded_files)
 
         return local_files
 
@@ -1920,14 +1944,14 @@ def load_science_files(sc, instr, mode, level, start_date, end_date,
             returned.
     """
 
-    def processing_func(cdf, kwargs):
-        return util.cdf2df(cdf, kwargs)
+    def processing_func(cdf, **kwargs):
+        return util.cdf2df(cdf, **kwargs)
 
     # Download files and sort them into types
     sdc = MMSDownloader(sc, instr, mode, level, optdesc=optdesc,
                         start_date=start_date, end_date=end_date,
                         offline=offline)
-    fnames = sdc.get()
+    fnames = sdc.download_files()
     fgroups = sort_files(fnames)
 
     # Load each file type
@@ -1936,10 +1960,9 @@ def load_science_files(sc, instr, mode, level, start_date, end_date,
         dgroup = []
         for file in fgroup:
             df = util._load_raw_file(pathlib.Path(file), processing_func,
-                                     processing_kwargs={'ignore': ignore,
-                                             'include': include,
-                                             'index_key': index_key
-                                             }
+                                     ignore=ignore,
+                                     include=include,
+                                     index_key=index_key
                                      )
             if df is not None:
                 dgroup.append(df)
@@ -2179,7 +2202,7 @@ def parse_time(times):
     return parts
 
 
-def read_selections(sav_filename):
+def read_eva_fom_structure(sav_filename):
     '''
     Returns a dictionary that mirrors the SITL selections fomstr structure
     that is in the IDL .sav file.
@@ -2191,7 +2214,7 @@ def read_selections(sav_filename):
 
     Returns
     -------
-    d : dict
+    data : dict
         The FOM structure.
     '''
     with warnings.catch_warnings():
@@ -2233,7 +2256,105 @@ def read_selections(sav_filename):
         d['discussion'] = [x for x in fomstr.discussion[0].tolist()]
     if 'NOTE' in fomstr.dtype.names:
         d['note'] = fomstr.note[0]
+
+    # Convert TAI to datetime
+    #   - timestaps are TAI seconds elapsed since 1958-01-01
+    #   - tt2000 are nanoseconds elapsed since 2000-01-01
+    t_1958 = epochs.CDFepoch.compute_tt2000([1958, 1, 1, 0, 0, 0, 0, 0, 0])
+    tepoch  = epochs.CDFepoch()
+    d['datetimestamps'] = tepoch.to_datetime(
+                              np.asarray(d['timestamps']) * int(1e9) +
+                              t_1958
+                              )
+
+    # FOM structure (copy procedure from IDL/SPEDAS/EVA)
+    #   - eva_sitl_load_soca_simple
+    #   - eva_sitl_strct_read
+    #   - mms_convert_from_tai2unix
+    #   - mms_tai2unix
+    if 'fomslope' in d:
+        if d['stop'][d['nsegs']-1] >= d['numcycles']:
+            raise ValueError('Number of segments should be <= # cycles.')
+
+        tstart = []
+        tstop = []
+        t_fom = [d['datetimestamps'][0]]
+        fom = [0]
+        dt_last = d['datetimestamps'][d['numcycles']-1] - \
+                  d['datetimestamps'][d['numcycles']-2]
+
+        # Extract the start and stop times of the FOM values
+        # Create a time series for FOM values
+        for idx in range(d['nsegs']):
+            tstart.append(d['datetimestamps'][d['start'][idx]])
+            if d['stop'][idx] <= d['numcycles']-1:
+                tstop.append(d['datetimestamps'][d['stop'][idx]+1])
+            else:
+                tstop.append(d['datetimestamps'][d['numcycles']-1] + dt_last)
+
+            t_fom.extend([tstart[idx], tstart[idx], tstop[idx], tstop[idx]])
+            fom.extend([0, d['fom'][idx], d['fom'][idx], 0])
+
+        # Append the last time stamp to the time series
+        t_fom.append(d['datetimestamps'][d['numcycles']-1] + dt_last)
+        fom.append(0)
+
+    # BAK structure
+    else:
+        raise NotImplemented('BAK structure has not been implemented')
+        nsegs = len(d['fom'])  # BAK
+
+    # Add to output structure
+    d['fom_tstart'] = tstart
+    d['fom_tstop'] = tstop
+    d['t_fom'] = t_fom
+    d['y_fom'] = fom
+
     return d
+
+
+def read_gls_csv(filename):
+    """
+    Read a ground loop selections (gls) CSV file.
+
+    Parameters
+    ----------
+    filename : str
+        Name of the CSV file to be read
+
+    Returns
+    -------
+    data : dict
+        Data contained in the CSV file
+    """
+
+    keys = ['start_time', 'end_time', 'fom', 'discussion',
+            'fom_tstart', 'fom_tstop', 't_fom', 'y_fom']
+    data = {key: [] for key in keys}
+    with open(filename) as f:
+        reader = csv.reader(f)
+        for row in reader:
+            tstart = dt.datetime.strptime(
+                         row[0], '%Y-%m-%d %H:%M:%S'
+                         )
+            tend = dt.datetime.strptime(
+                       row[1], '%Y-%m-%d %H:%M:%S'
+                       )
+
+            data['start_time'].append(row[0])
+            data['end_time'].append(row[1])
+            data['fom'].append(row[2])
+            data['discussion'].append(','.join(row[3:]))
+            data['fom_tstart'].append(tstart)
+            data['fom_tstop'].append(tend)
+            data['t_fom'].extend([tstart, tstart, tend, tend])
+            data['y_fom'].extend([0, row[2], row[2], 0])
+
+    # Change data types
+    data['fom'] = np.array(data.pop('fom'), dtype='float32')
+    data['y_fom'] = np.array(data.pop('y_fom'), dtype='float32')
+
+    return data
 
 
 def _sdc_parse_form(r):
@@ -2353,7 +2474,7 @@ def sdc_login(username=None, password=None):
     return cookies
 
 
-def sitl_selections(data_type='abs_selections', gls_type='',
+def sitl_selections(data_type='abs_selections', gls_type=None,
                     start_date=None, end_date=None):
     """
     Download SITL selections from the SDC.
@@ -2375,22 +2496,20 @@ def sitl_selections(data_type='abs_selections', gls_type='',
     -------
     local_files : list
         Names of the selection files that were downloaded. Files
-        can be read using mms.read_selections()
+        can be read using mms.read_eva_fom_structure()
     """
 
     if gls_type is not None:
         data_type = '_'.join((data_type, gls_type))
 
     # Setup the API
-    api = MrMMS_SDC_API()
-    api.data_type = data_type
-    api.start_date = start_date
-    api.end_date = end_date
+    sdc = MMSDownloader()
+    sdc.data_type = data_type
+    sdc.start_date = start_date
+    sdc.end_date = end_date
 
     # Download the files
-    file_names = api.file_names()
-    local_files = api.download_files(file_names)
-
+    local_files = sdc.download_files()
     return local_files
 
 
