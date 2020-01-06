@@ -1435,9 +1435,9 @@ def cdf2xr(cdf, index_key, starttime=None, endtime=None, list_keys=None,
             data = cdf.varget(cdf_key, None, tstart, tend)[...]
             if len(data.shape) == 2:
                 data_coords = ['x', 'y', 'z', 'tot']
-                data = xr.DataArray(data, coords=
-                                    [index, data_coords[:data.shape[-1]]],
-                                    dims=['time', cdf_key])
+                data = xr.DataArray(
+                    data, coords=[index, data_coords[:data.shape[-1]]],
+                    dims=['time', cdf_key])
             else:
                 data = xr.DataArray(data, coords=[index], dims=['time'])
 
