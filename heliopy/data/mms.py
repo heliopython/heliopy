@@ -260,27 +260,29 @@ def download_files(probe, instrument, data_rate, starttime, endtime,
 
     dirs = []
     fnames = []
-    daylist = util._daysplitinterval(starttime, endtime)
-    for date, stime, etime in daylist:
-        files = available_files(probe, instrument, starttime, endtime,
-                                data_rate, product_string)
-        for file in files:
-            fname = pathlib.Path(file).stem
-            # Make sure that only the needed files will be loaded
-            # (i.e., in the queried time interval)
-            namestr = [j for i, j in enumerate(fname.split('_'))
-                       if j.startswith(endtime.strftime('%Y%m%d'))]
-            # Select only one 'mec' (metadata) file to avoid redundancy
-            if instrument == 'mec':
-                if 'epht89d' in fname:
-                    fnames.append(fname)
-                    dirs.append('')
-            elif product_string in fname and len(fname) and namestr\
-                    and namestr[0] < endtime.strftime('%Y%m%d%H%M%S'):
+#    daylist = util._daysplitinterval(starttime, endtime)
+#    for date, stime, etime in daylist:
+    files = available_files(probe, instrument, starttime, endtime,
+                            data_rate, product_string)
+    for file in files:
+        fname = pathlib.Path(file).stem
+        # Make sure that only the needed files will be loaded
+        # (i.e., in the queried time interval)
+        namestr = [j for j in fname.split('_')]
+        date_pos = [i for i, x in enumerate(namestr) if x.startswith(endtime.strftime('%Y'))]
+
+        # Select only one 'mec' (metadata) file to avoid redundancy
+        if instrument == 'mec':
+            if 'epht89d' in fname and namestr[5].ljust(14, '0')\
+                                      < endtime.strftime('%Y%m%d%H%M%S'):
                 fnames.append(fname)
                 dirs.append('')
-            else:
-                pass
+        elif product_string in fname and len(fname) and namestr\
+                and namestr[date_pos[0]].ljust(14, '0') < endtime.strftime('%Y%m%d%H%M%S'):
+            fnames.append(fname)
+            dirs.append('')
+        else:
+            pass
 
     extension = '.cdf'
     local_base_dir = mms_dir / probe / instrument / data_rate
