@@ -82,17 +82,8 @@ def available_files(probe, instrument, starttime, endtime, data_rate='',
     _validate_data_rate(data_rate)
 
     start_date = starttime.strftime('%Y-%m-%d')
-    # Selecting burst mode (ensure at least 2 mins to avoid empty files list)
-    if data_rate == 'brst':
-        start_date = (starttime-timedelta(
-            minutes=1)).strftime('%Y-%m-%d-%H-%M')
-        end_date = (endtime+timedelta(
-            minutes=1)).strftime('%Y-%m-%d-%H-%M')
-
-    if starttime.date() == endtime.date():
-        end_date = (endtime.date() + timedelta(days=1)).strftime('%Y-%m-%d')
-    else:
-        end_date = endtime.strftime('%Y-%m-%d')
+    # Add one day to end_date to ensure no empty file list in brst mode
+    end_date = (endtime.date() + timedelta(days=1)).strftime('%Y-%m-%d')
 
     query = {'sc_id': 'mms' + probe, 'instrument_id': instrument}
     if len(data_rate):
@@ -144,8 +135,8 @@ def filter_time(fnames, starttime, endtime):
     files = [files[i] for i in isort]
 
     # End time
-    #   - Any files that start on or before END_DATE can be kept
-    idx = [i for i, t in enumerate(fstart) if t <= endtime]
+    #   - Only files that start before END_DATE can be kept
+    idx = [i for i, t in enumerate(fstart) if t < endtime]
     if len(idx) > 0:
         fstart = [fstart[i] for i in idx]
         files = [files[i] for i in idx]
@@ -266,19 +257,13 @@ def download_files(probe, instrument, data_rate, starttime, endtime,
                             data_rate, product_string)
     for file in files:
         fname = pathlib.Path(file).stem
-        # Make sure that only the needed files will be loaded
-        # (i.e., in the queried time interval)
-        namestr = [j for j in fname.split('_')]
-        date_pos = [i for i, x in enumerate(namestr) if x.startswith(endtime.strftime('%Y'))]
 
         # Select only one 'mec' (metadata) file to avoid redundancy
         if instrument == 'mec':
-            if 'epht89d' in fname and namestr[5].ljust(14, '0')\
-                                      < endtime.strftime('%Y%m%d%H%M%S'):
+            if 'epht89d' in fname:
                 fnames.append(fname)
                 dirs.append('')
-        elif product_string in fname and len(fname) and namestr\
-                and namestr[date_pos[0]].ljust(14, '0') < endtime.strftime('%Y%m%d%H%M%S'):
+        elif product_string in fname and len(fname):
             fnames.append(fname)
             dirs.append('')
         else:
