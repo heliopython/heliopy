@@ -5,5 +5,5 @@ pandas
 requests
 bs4
 sunpy
-spiceypy
+spiceypy!=3.0.0
 tqdm
