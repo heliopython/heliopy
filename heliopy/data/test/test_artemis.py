@@ -12,9 +12,7 @@ probe = 'a'
 
 
 def test_fgm():
-    with pytest.warns(UserWarning,
-                      match='Discarding nonzero nanoseconds in conversion'):
-        df = artemis.fgm(probe, 'l', 'dsl', starttime, endtime)
+    df = artemis.fgm(probe, 'l', 'dsl', starttime, endtime)
     check_data_output(df)
 
     with pytest.raises(ValueError):
