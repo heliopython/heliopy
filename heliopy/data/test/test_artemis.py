@@ -11,6 +11,7 @@ endtime = datetime(2008, 1, 2)
 probe = 'a'
 
 
+@pytest.mark.filterwarnings('ignore:Discarding nonzero nanoseconds')
 def test_fgm():
     df = artemis.fgm(probe, 'l', 'dsl', starttime, endtime)
     check_data_output(df)
