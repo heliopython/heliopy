@@ -301,7 +301,7 @@ Backwards incompatible changes
     dataframe = timeseries.data
 
   For an example of how to use the new object, see
-  :ref:`sphx_glr_auto_examples_plot_timeseries.py`.
+  :ref:`sphx_glr_auto_examples_timeseries_plotting.py`.
 - Data import has had a major overhaul, so that every column in CDF files now
   gets automatically imported and retains its name without being changed by
   HelioPy. This means column names in several data products are now different,
