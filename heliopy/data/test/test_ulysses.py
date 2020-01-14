@@ -4,7 +4,6 @@ import pytest
 from .util import check_data_output
 import heliopy.data.ulysses as ulysses
 
-pytestmark = pytest.mark.skip('Ulysses servers are down')
 pytest.mark.data()
 
 starttime = datetime(1990, 10, 1)
