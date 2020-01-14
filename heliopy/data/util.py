@@ -1264,7 +1264,7 @@ def cdf2xr(cdf, index_key, starttime=None, endtime=None, list_keys=None,
     """
     Converts cdf file of spacecraft timeseries data to an xarray (DataArray or
     Dataset) object. xarray package is used as particle distribution functions
-    are usually multidimensional (3/4D) datasets *f(time, energy, theta, phi).
+    are usually multidimensional (3/4D) datasets *f(time, energy, theta, phi)*.
     See http://xarray.pydata.org/en/stable/index.html for more information.
     Products to be loaded from the file must be passed as their corresponding
     key in the file. If not key is provided, all data from the file is loaded
