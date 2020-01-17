@@ -2261,7 +2261,7 @@ def read_eva_fom_structure(sav_filename):
     #   - timestaps are TAI seconds elapsed since 1958-01-01
     #   - tt2000 are nanoseconds elapsed since 2000-01-01
     t_1958 = epochs.CDFepoch.compute_tt2000([1958, 1, 1, 0, 0, 0, 0, 0, 0])
-    tepoch  = epochs.CDFepoch()
+    tepoch = epochs.CDFepoch()
     d['datetimestamps'] = tepoch.to_datetime(
                               np.asarray(d['timestamps']) * int(1e9) +
                               t_1958
@@ -2281,7 +2281,7 @@ def read_eva_fom_structure(sav_filename):
         t_fom = [d['datetimestamps'][0]]
         fom = [0]
         dt_last = d['datetimestamps'][d['numcycles']-1] - \
-                  d['datetimestamps'][d['numcycles']-2]
+                      d['datetimestamps'][d['numcycles']-2]
 
         # Extract the start and stop times of the FOM values
         # Create a time series for FOM values
