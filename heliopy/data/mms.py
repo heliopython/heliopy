@@ -691,7 +691,10 @@ class MMSDownloader(util.Downloader):
         self._info_type = 'file_names'
         response = self.get()
 
-        return response.text.split(',')
+        if response.text == '':
+            return []
+        else:
+            return response.text.split(',')
 
     def get(self):
         '''
@@ -1062,6 +1065,7 @@ class MMSDownloader(util.Downloader):
                                       self.start_date,
                                       self.end_date
                                       )
+        
         if len(remote_files) > 0:
             remote_files = filter_time(remote_files,
                                        self.start_date,
@@ -1109,20 +1113,23 @@ def burst_data_segments(start_date, end_date, team=False):
     -------
     data : dict
         Dictionary of information about burst data segments
+            =============     ==========
+            Key               Definition
+            =============     ==========
             DATASEGMENTID
-            TAISTARTTIME    - Start time of burst segment in
+            TAISTARTTIME      Start time of burst segment in
                               TAI sec since 1958-01-01
-            TAIENDTIME      - End time of burst segment in
+            TAIENDTIME        End time of burst segment in
                               TAI sec since 1958-01-01
             PARAMETERSETID
-            FOM             - Figure of merit given to the burst segment
+            FOM               Figure of merit given to the burst segment
             ISPENDING
             INPLAYLIST
-            STATUS          - Download status of the segment
+            STATUS            Download status of the segment
             NUMEVALCYCLES
-            SOURCEID        - Username of SITL who selected the segment
-            CREATETIME      - ? as datetime
-            FINISHTIME      - ? as datetime
+            SOURCEID          Username of SITL who selected the segment
+            CREATETIME        ? as datetime
+            FINISHTIME        ? as datetime
             OBS1NUMBUFS
             OBS2NUMBUFS
             OBS3NUMBUFS
@@ -1135,10 +1142,11 @@ def burst_data_segments(start_date, end_date, team=False):
             OBS2REMFILES
             OBS3REMFILES
             OBS4REMFILES
-            DISCUSSION      - Description given to segment by SITL
-            DT              - Duration of burst segment in seconds
-            TSTART          - Start time of burst segment as datetime
-            TEND            - End time of burst segment as datetime
+            DISCUSSION        Description given to segment by SITL
+            DT                Duration of burst segment in seconds
+            TSTART            Start time of burst segment as datetime
+            TEND              End time of burst segment as datetime
+            =============     ==========
     """
 
     # Convert times to TAI since 1958
@@ -1222,26 +1230,27 @@ def construct_file_names(*args, data_type='science', **kwargs):
     '''
     Construct a file name compliant with MMS file name format guidelines.
 
-    MMS file names follow the convention
+    MMS file names follow the convention::
+    
         sc_instr_mode_level[_optdesc]_tstart_vX.Y.Z.cdf
 
     Parameters
     ----------
-        args : dict
-            Arguments to be passed along.
-        data_type : str
-            Type of file names to construct. Options are:
-            science or *_selections. If science, inputs are
-            passed to construct_science_file_names. If
-            *_selections, inputs are passed to
-            construct_selections_file_names.
-        kwargs : dict
-            Keywords to be passed along.
+    \*\*args : dict
+        Arguments to be passed along.
+    data_type : str
+        Type of file names to construct. Options are:
+        `science` or `\*_selections`. If `science`, inputs are
+        passed to `construct_science_file_names``. If
+        `*_selections`, inputs are passed to
+        `construct_selections_file_names`.
+    \*\*kwargs : dict
+        Keywords to be passed along.
 
     Returns
     -------
-        fnames : list
-            File names constructed from inputs.
+    fnames : list
+        File names constructed from inputs.
     '''
 
     if data_type == 'science':
@@ -1908,40 +1917,40 @@ def load_science_files(sc, instr, mode, level, start_date, end_date,
     Download and read data from science data files. Data files that are
     present locally will not be downloaded again.
 
-    Params
-    ------
-        sc : str, list
-            Spacecraft ID.
-        instr : str, list
-            Instrument ID.
-        mode : str, list
-            Data rate mode.
-        level : str, list
-            Data product quality level. Setting level to None, "l2", or "l3"
-            automatically sets site to "public".
-        end_date : str, `datetime.datetime`
-            End time of data interval of interest. If a string, it must be in
-            ISO-8601 format: YYYY-MM-DDThh:mm:ss, and is subsequently
-            converted to a datetime object.
-        ignore : list, optional
-            In case a CDF file has columns that are unused / not required,
-            then the column names can be passed as a list into the function.
-        offline : bool
-            If True, file information will be gathered from the local file
-            system only (i.e. no requests will be posted to the SDC).
-        optdesc : str, list
-            Optional descriptor of the data products.
-        start_date : str, :class:`datetime.datetime`
-            Start time of data interval of interest. If a string, it must be
-            in ISO-8601 format: YYYY-MM-DDThh:mm:ss, and is subsequently
-            converted to a datetime object.
+    Parameters
+    ----------
+    sc : str, list
+        Spacecraft ID.
+    instr : str, list
+        Instrument ID.
+    mode : str, list
+        Data rate mode.
+    level : str, list
+        Data product quality level. Setting level to None, "l2", or "l3"
+        automatically sets site to "public".
+    end_date : str, `datetime.datetime`
+        End time of data interval of interest. If a string, it must be in
+        ISO-8601 format: YYYY-MM-DDThh:mm:ss, and is subsequently
+        converted to a datetime object.
+    ignore : list, optional
+        In case a CDF file has columns that are unused / not required,
+        then the column names can be passed as a list into the function.
+    offline : bool
+        If True, file information will be gathered from the local file
+        system only (i.e. no requests will be posted to the SDC).
+    optdesc : str, list
+        Optional descriptor of the data products.
+    start_date : str, :class:`datetime.datetime`
+        Start time of data interval of interest. If a string, it must be
+        in ISO-8601 format: YYYY-MM-DDThh:mm:ss, and is subsequently
+        converted to a datetime object.
 
-        Returns
-        -------
-        data : :class:`pandas.Dataframe`, list
-            A list of dataframes containing data from the requested files.
-            If only a single file type is request, a single dataframe is
-            returned.
+    Returns
+    -------
+    data : :class:`pandas.Dataframe`, list
+        A list of dataframes containing data from the requested files.
+        If only a single file type is request, a single dataframe is
+        returned.
     """
 
     def processing_func(cdf, **kwargs):
@@ -2026,28 +2035,32 @@ def mission_events(start_date=None, end_date=None,
         information is to be returned.
     source : str
         Source of the mission event. Options include
-            'Timeline', 'Burst', 'BDM', 'SITL'
+        'Timeline', 'Burst', 'BDM', 'SITL'
     event_type : str
         Type of mission event. Options include
-            BDM: sitl_window, evaluate_metadata, science_roi
+        BDM: sitl_window, evaluate_metadata, science_roi
 
     Returns
     -------
     data : dict
         Information about each event.
-            start_time_utc - Start time of event %Y-%m-%dT%H:%M:%S.%f
-            end_time_utc   - End time of event %Y-%m-%dT%H:%M:%S.%f
-            event_type     - Type of event
-            sc_id          - Spacecraft to which the event applies
-            source         - Source of event
-            description    - Description of event
+            ===              ===========
+            Key              Description
+            ===              ===========
+            start_time_utc   Start time of event %Y-%m-%dT%H:%M:%S.%f
+            end_time_utc     End time of event %Y-%m-%dT%H:%M:%S.%f
+            event_type       Type of event
+            sc_id            Spacecraft to which the event applies
+            source           Source of event
+            description      Description of event
             discussion
-            start_orbit    - Orbit on which the event started
-            end_orbit      - Orbit on which the event ended
+            start_orbit      Orbit on which the event started
+            end_orbit        Orbit on which the event ended
             tag
             id
-            tstart         - Start time of event as datetime
-            tend           - end time of event as datetime
+            tstart           Start time of event as datetime
+            tend             end time of event as datetime
+            ===              ===========
     """
     url = 'https://lasp.colorado.edu/' \
           'mms/sdc/public/service/latis/mms_events_view.csv'
@@ -2122,13 +2135,13 @@ def parse_file_name(fname):
     -------
     parts : tuple
         The tuple elements are:
-            [0]: Spacecraft IDs
-            [1]: Instrument IDs
-            [2]: Data rate modes
-            [3]: Data levels
-            [4]: Optional descriptor (empty string if not present)
-            [5]: Start times
-            [6]: File version number
+            * [0]: Spacecraft IDs
+            * [1]: Instrument IDs
+            * [2]: Data rate modes
+            * [3]: Data levels
+            * [4]: Optional descriptor (empty string if not present)
+            * [5]: Start times
+            * [6]: File version number
     """
 
     parts = os.path.basename(fname).split('_')
@@ -2313,42 +2326,55 @@ def read_eva_fom_structure(sav_filename):
     return d
 
 
-def read_gls_csv(filename):
+def read_gls_csv(file_names):
     """
-    Read a ground loop selections (gls) CSV file.
+    Read a ground loop selections (gls) CSV file or files.
 
     Parameters
     ----------
-    filename : str
-        Name of the CSV file to be read
+    file_names : str, list
+        Name of the CSV file(s) to be read
 
     Returns
     -------
     data : dict
         Data contained in the CSV file
     """
-
+    if isinstance(file_names, str):
+        file_names = [file_names]
+    
     keys = ['start_time', 'end_time', 'fom', 'discussion',
             'fom_tstart', 'fom_tstop', 't_fom', 'y_fom']
+    tset = set()
+    nold = 0
     data = {key: [] for key in keys}
-    with open(filename) as f:
-        reader = csv.reader(f)
-        for row in reader:
-            tstart = dt.datetime.strptime(
-                         row[0], '%Y-%m-%d %H:%M:%S'
-                         )
-            tend = dt.datetime.strptime(
-                       row[1], '%Y-%m-%d %H:%M:%S'
-                       )
+    for file in file_names:
+        with open(file) as f:
+            reader = csv.reader(f)
+            for row in reader:
+                tstart = dt.datetime.strptime(
+                             row[0], '%Y-%m-%d %H:%M:%S'
+                             )
+                tend = dt.datetime.strptime(
+                           row[1], '%Y-%m-%d %H:%M:%S'
+                           )
+                
+                # Keep only unique elements
+                tset.add(tstart)
+                nnew = len(tset)
+                if nnew == nold:
+                    continue
+                else:
+                    nold = nnew
 
-            data['start_time'].append(row[0])
-            data['end_time'].append(row[1])
-            data['fom'].append(row[2])
-            data['discussion'].append(','.join(row[3:]))
-            data['fom_tstart'].append(tstart)
-            data['fom_tstop'].append(tend)
-            data['t_fom'].extend([tstart, tstart, tend, tend])
-            data['y_fom'].extend([0, row[2], row[2], 0])
+                data['start_time'].append(row[0])
+                data['end_time'].append(row[1])
+                data['fom'].append(row[2])
+                data['discussion'].append(','.join(row[3:]))
+                data['fom_tstart'].append(tstart)
+                data['fom_tstop'].append(tend)
+                data['t_fom'].extend([tstart, tstart, tend, tend])
+                data['y_fom'].extend([0, row[2], row[2], 0])
 
     # Change data types
     data['fom'] = np.array(data.pop('fom'), dtype='float32')
@@ -2415,14 +2441,14 @@ def sdc_login(username=None, password=None):
     '''
     Log-In to the MMS Science Data Center.
 
-    Parameters:
+    Parameters
     -----------
     username : str
         Account username.
     password : str
         Account password.
 
-    Returns:
+    Returns
     --------
     Cookies : dict
         Session cookies for continued access to the SDC. Can
@@ -2517,8 +2543,9 @@ def sort_files(files):
     """
     Sort MMS file names by data product and time.
 
-    Parameters:
-    files : str, list
+    Parameters
+    ----------
+    files : str, list of str
         Files to be sorted
 
     Returns
