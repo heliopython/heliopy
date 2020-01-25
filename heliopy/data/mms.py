@@ -1065,7 +1065,7 @@ class MMSDownloader(util.Downloader):
                                       self.start_date,
                                       self.end_date
                                       )
-        
+
         if len(remote_files) > 0:
             remote_files = filter_time(remote_files,
                                        self.start_date,
@@ -1113,9 +1113,9 @@ def burst_data_segments(start_date, end_date, team=False):
     -------
     data : dict
         Dictionary of information about burst data segments
-            =============     ==========
+            ==============    ==========================================
             Key               Definition
-            =============     ==========
+            ==============    ==========================================
             DATASEGMENTID
             TAISTARTTIME      Start time of burst segment in
                               TAI sec since 1958-01-01
@@ -1146,7 +1146,7 @@ def burst_data_segments(start_date, end_date, team=False):
             DT                Duration of burst segment in seconds
             TSTART            Start time of burst segment as datetime
             TEND              End time of burst segment as datetime
-            =============     ==========
+            ==============    ==========================================
     """
 
     # Convert times to TAI since 1958
@@ -1231,7 +1231,7 @@ def construct_file_names(*args, data_type='science', **kwargs):
     Construct a file name compliant with MMS file name format guidelines.
 
     MMS file names follow the convention::
-    
+
         sc_instr_mode_level[_optdesc]_tstart_vX.Y.Z.cdf
 
     Parameters
@@ -1419,22 +1419,22 @@ def construct_path(*args, data_type='science', **kwargs):
     Construct a directory structure compliant with MMS path guidelines.
 
     MMS paths follow the convention
-        selections: sitl/type_selections_[gls_type_]
-        brst: sc/instr/mode/level[/optdesc]/<year>/<month>/<day>
-        srvy: sc/instr/mode/level[/optdesc]/<year>/<month>
+        selections: `sitl/type_selections_[gls_type_]`
+        brst: `sc/instr/mode/level[/optdesc]/<year>/<month>/<day>`
+        srvy: `sc/instr/mode/level[/optdesc]/<year>/<month>`
 
     Parameters
     ----------
-        args : dict
-            Arguments to be passed along.
-        data_type : str
-            Type of file names to construct. Options are:
-            science or *_selections. If science, inputs are
-            passed to construct_science_file_names. If
-            *_selections, inputs are passed to
-            construct_selections_file_names.
-        kwargs : dict
-            Keywords to be passed along.
+    \*\*args : dict
+        Arguments to be passed along.
+    data_type : str
+        Type of file names to construct. Options are:
+        science or \*_selections. If science, inputs are
+        passed to construct_science_file_names. If
+        \*_selections, inputs are passed to
+        construct_selections_file_names.
+    \*\*kwargs : dict
+        Keywords to be passed along.
 
     Returns
     -------
@@ -2044,23 +2044,23 @@ def mission_events(start_date=None, end_date=None,
     -------
     data : dict
         Information about each event.
-            ===              ===========
-            Key              Description
-            ===              ===========
-            start_time_utc   Start time of event %Y-%m-%dT%H:%M:%S.%f
-            end_time_utc     End time of event %Y-%m-%dT%H:%M:%S.%f
-            event_type       Type of event
-            sc_id            Spacecraft to which the event applies
-            source           Source of event
-            description      Description of event
-            discussion
-            start_orbit      Orbit on which the event started
-            end_orbit        Orbit on which the event ended
-            tag
-            id
-            tstart           Start time of event as datetime
-            tend             end time of event as datetime
-            ===              ===========
+        ==============   ========================================
+        Key              Description
+        ==============   ========================================
+        start_time_utc   Start time of event %Y-%m-%dT%H:%M:%S.%f
+        end_time_utc     End time of event %Y-%m-%dT%H:%M:%S.%f
+        event_type       Type of event
+        sc_id            Spacecraft to which the event applies
+        source           Source of event
+        description      Description of event
+        discussion
+        start_orbit      Orbit on which the event started
+        end_orbit        Orbit on which the event ended
+        tag
+        id
+        tstart           Start time of event as datetime
+        tend             end time of event as datetime
+        ==============   ========================================
     """
     url = 'https://lasp.colorado.edu/' \
           'mms/sdc/public/service/latis/mms_events_view.csv'
@@ -2135,13 +2135,14 @@ def parse_file_name(fname):
     -------
     parts : tuple
         The tuple elements are:
-            * [0]: Spacecraft IDs
-            * [1]: Instrument IDs
-            * [2]: Data rate modes
-            * [3]: Data levels
-            * [4]: Optional descriptor (empty string if not present)
-            * [5]: Start times
-            * [6]: File version number
+        
+        * [0]: Spacecraft IDs
+        * [1]: Instrument IDs
+        * [2]: Data rate modes
+        * [3]: Data levels
+        * [4]: Optional descriptor (empty string if not present)
+        * [5]: Start times
+        * [6]: File version number
     """
 
     parts = os.path.basename(fname).split('_')
@@ -2294,7 +2295,7 @@ def read_eva_fom_structure(sav_filename):
         t_fom = [d['datetimestamps'][0]]
         fom = [0]
         dt_last = d['datetimestamps'][d['numcycles']-1] - \
-                      d['datetimestamps'][d['numcycles']-2]
+                   d['datetimestamps'][d['numcycles']-2]
 
         # Extract the start and stop times of the FOM values
         # Create a time series for FOM values
@@ -2342,7 +2343,7 @@ def read_gls_csv(file_names):
     """
     if isinstance(file_names, str):
         file_names = [file_names]
-    
+
     keys = ['start_time', 'end_time', 'fom', 'discussion',
             'fom_tstart', 'fom_tstop', 't_fom', 'y_fom']
     tset = set()
@@ -2358,7 +2359,7 @@ def read_gls_csv(file_names):
                 tend = dt.datetime.strptime(
                            row[1], '%Y-%m-%d %H:%M:%S'
                            )
-                
+
                 # Keep only unique elements
                 tset.add(tstart)
                 nnew = len(tset)
