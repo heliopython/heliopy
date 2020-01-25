@@ -881,15 +881,14 @@ class MMSDownloader(util.Downloader):
     def parse_file_name(self, filename):
         '''
         Parse an official MMS file name. MMS file names are formatted as
-            sc_instr_mode_level[_optdesc]_tstart_vX.Y.Z.cdf
-        where
-            sc:       spacecraft id
-            instr:    instrument id
-            mode:     data rate mode
-            level:    data level
-            optdesc:  optional filename descriptor
-            tstart:   start time of file
-            vX.Y.Z:   file version, with X, Y, and Z version numbers
+        `sc_instr_mode_level[_optdesc]_tstart_vX.Y.Z.cdf` where
+        * sc:       spacecraft id
+        * instr:    instrument id
+        * mode:     data rate mode
+        * level:    data level
+        * optdesc:  optional filename descriptor
+        * tstart:   start time of file
+        * vX.Y.Z:   file version, with X, Y, and Z version numbers
 
         Parameters
         ----------
@@ -900,9 +899,9 @@ class MMSDownloader(util.Downloader):
         -------
         parts : tuple
             A tuples ordered as
-                (sc, instr, mode, level, optdesc, tstart, version)
+            `(sc, instr, mode, level, optdesc, tstart, version)`
             If opdesc is not present in the file name, the output will
-            contain the empty string ('').
+            contain the empty string (`''`).
         '''
         parts = os.path.basename(filename).split('_')
 
@@ -2009,9 +2008,10 @@ def mission_events(start_date=None, end_date=None,
                    sc=None,
                    source=None, event_type=None):
     """
-    Download MMS mission events. See the filters on the webpage
+    Download MMS mission events. See the filters on `the webpage`_
     for more ideas.
-        https://lasp.colorado.edu/mms/sdc/public/about/events/#/
+
+    .. _the webpage: https://lasp.colorado.edu/mms/sdc/public/about/events/#/
 
     NOTE: some sources, such as 'burst_segment', return a format
           that is not yet parsed properly.
@@ -2135,7 +2135,7 @@ def parse_file_name(fname):
     -------
     parts : tuple
         The tuple elements are:
-        
+
         * [0]: Spacecraft IDs
         * [1]: Instrument IDs
         * [2]: Data rate modes
@@ -2294,8 +2294,8 @@ def read_eva_fom_structure(sav_filename):
         tstop = []
         t_fom = [d['datetimestamps'][0]]
         fom = [0]
-        dt_last = d['datetimestamps'][d['numcycles']-1] - \
-                   d['datetimestamps'][d['numcycles']-2]
+        dt_last = (d['datetimestamps'][d['numcycles']-1] -
+                   d['datetimestamps'][d['numcycles']-2])
 
         # Extract the start and stop times of the FOM values
         # Create a time series for FOM values
