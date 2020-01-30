@@ -766,7 +766,7 @@ def cdf2df(cdf, index_key, starttime=None, endtime=None,  list_keys=None,
         Data frame with read in data.
     """
     # Get the time index as DatetimeIndex
-    index_full = get_index(cdf, index_key)
+    index_full = get_index(cdf, index_key, dtimeindex=dtimeindex)
 
     # Check if required time interval is in cdf file
     # and define required start and end time to extract from current CDF file
