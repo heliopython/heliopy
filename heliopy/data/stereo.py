@@ -282,7 +282,7 @@ def het(starttime, endtime, spacecraft, timeres):
                             'minute': min1})
             dt = t1-t0
         else:
-            dt = timedelta(seconds=30)
+            dt = timedelta(seconds=60)
         
         thisdata['Time'] = t0+dt/2
         thisdata = thisdata.set_index('Time')
@@ -290,16 +290,6 @@ def het(starttime, endtime, spacecraft, timeres):
 #        if timeres != "1m":
 #            thisdata = thisdata.drop(["Year1", "Month1", "day1", "hour1minute1"], axis=1)
         return thisdata
-
-    def convert_datetime(year, month, day0list, day1list, len_):
-        datetime_index = []
-        base_date = datetime(year, month, 1, 0, 0, 0)
-        for x in range(0, len_):
-            time0delta = timedelta(days=day0list[x]-1)
-            time1delta = timedelta(days=day1list[x]-1)
-            time_delta = (time0delta+time1delta)/2
-            datetime_index.append(base_date + time_delta)
-        return datetime_index
 
     return util.process(dirs, fnames, extension, local_base_dir,
                         remote_base_url, download_func, processing_func,
