@@ -290,7 +290,6 @@ def het(starttime, endtime, spacecraft, timeres):
 #            thisdata = thisdata.drop(["Year1", "Month1", "day1", "hour1minute1"], axis=1)
         return thisdata
 
-
     return util.process(dirs, fnames, extension, local_base_dir,
                         remote_base_url, download_func, processing_func,
                         starttime, endtime, units=units)
