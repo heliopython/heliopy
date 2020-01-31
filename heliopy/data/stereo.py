@@ -256,8 +256,8 @@ def het(starttime, endtime, spacecraft, timeres):
         datetime_index = []
         base_date = datetime(year, month, 1, 0, 0, 0)
         for x in range(0, len_):
-            time0delta = timedelta(days=day0list[x])
-            time1delta = timedelta(days=day1list[x])
+            time0delta = timedelta(days=day0list[x]-1)
+            time1delta = timedelta(days=day1list[x]-1)
             time_delta = (time0delta+time1delta)/2
             datetime_index.append(base_date + time_delta)
         return datetime_index
@@ -265,3 +265,5 @@ def het(starttime, endtime, spacecraft, timeres):
     return util.process(dirs, fnames, extension, local_base_dir,
                         remote_base_url, download_func, processing_func,
                         starttime, endtime, units=units)
+
+
