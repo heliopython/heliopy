@@ -216,7 +216,9 @@ def het(starttime, endtime, spacecraft, timeres):
                         ('p_600_1000_unc', u.dimensionless_unscaled)])
              
     extension = "."+timeres
-    fnames = [sc_ident[0]+dt.strftime("eH%y%b") for dt in rrule(MONTHLY, dtstart=starttime, until=endtime)]
+    # Create monthly filenames
+    sttime = datetime(starttime.year, starttime.month, 1)
+    fnames = [sc_ident[0]+dt.strftime("eH%y%b") for dt in rrule(MONTHLY, dtstart=sttime, until=endtime)]
     dirs = [local_base_dir]*len(fnames)
     
     def download_func(remote_base_url, local_base_dir,
