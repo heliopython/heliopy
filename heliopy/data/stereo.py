@@ -133,6 +133,8 @@ ste_l1.__doc__ = _docstring('STA_L1_STE',
 
 
 
+
+
 def het(starttime, endtime, spacecraft, timeres):
     """
     Import data from STEREO HET web Interface.
@@ -187,8 +189,34 @@ def het(starttime, endtime, spacecraft, timeres):
             "p_355_405", "p_355_405_unc",
             "p_400_600", "p_400_600_unc",
             "p_600_1000", "p_600_1000_unc"]
-    
-    units = OrderedDict([('e_07_14', (u.cm**2*u.s*u.sr*u.MeV)**-1), 
+
+    names_1m = ["Verse",
+             "Year0", "Month0", "day0", "hour0minute0", 
+            "e_07_14", "e_07_14_unc",
+            "e_14_28", "e_14_28_unc",
+            "e_28_40", "e_28_40_unc",
+            "p_136_151", "p_136_151_unc",
+            "p_149_171", "p_149_171_unc",
+            "p_170_193", "p_170_193_unc",
+            "p_208_238", "p_208_238_unc",
+            "p_238_264", "p_238_264_unc",
+            "p_263_297", "p_263_297_unc",
+            "p_295_334", "p_295_334_unc",
+            "p_334_358", "p_334_358_unc",
+            "p_355_405", "p_355_405_unc",
+            "p_400_600", "p_400_600_unc",
+            "p_600_1000", "p_600_1000_unc"]
+
+    units = OrderedDict([('Verse', u.dimensionless_unscaled),
+                        ('Year0', u.dimensionless_unscaled),
+                        ('Month0', u.dimensionless_unscaled),
+                        ('day0', u.dimensionless_unscaled),
+                        ('hour0minute0', u.dimensionless_unscaled),
+                        ('Year1', u.dimensionless_unscaled),
+                        ('Month1', u.dimensionless_unscaled),
+                        ('day1', u.dimensionless_unscaled),
+                        ('hour1minute1', u.dimensionless_unscaled),
+                        ('e_07_14', (u.cm**2*u.s*u.sr*u.MeV)**-1), 
                         ('e_07_14_unc', u.dimensionless_unscaled), 
                         ('e_14_28', (u.cm**2*u.s*u.sr*u.MeV)**-1), 
                         ('e_14_28_unc', u.dimensionless_unscaled), 
@@ -237,21 +265,34 @@ def het(starttime, endtime, spacecraft, timeres):
         endline = [i for i,l in enumerate(lines) if l=="#End\n"][0]
         file.seek(0)
         
-        thisdata = pd.read_table(file, names=names, delim_whitespace=True, header=endline)
-        year = thisdata['Year0'][0]
-        month = datetime.strptime(thisdata['Month0'][0], '%b').month
-        day_list = list(thisdata['day0'])
-        hour0, min0 = divmod(thisdata['hour0minute0'], 100)
-        hour1, min1 = divmod(thisdata['hour1minute1'], 100)
+        if timeres != "1m":
+            thisdata = pd.read_table(file, names=names, delim_whitespace=True, header=endline)
+        else:
+            thisdata = pd.read_table(file, names=names_1m, delim_whitespace=True, header=endline)
+
         # Get minutes at the midpoint of the bin
-        day0list = [d+h/24. +m/1440. for (d, h, m) in zip(thisdata['day0'], hour0, min0)]
-        day1list = [d+h/24. +m/1440. for (d, h, m) in zip(thisdata['day1'], hour1, min1)]
-        len_ = len(thisdata)
-        time_index = convert_datetime(year, month, day0list, day1list, len_)
-        thisdata['Time'] = pd.to_datetime(time_index)
+        hour0, min0 = divmod(thisdata['hour0minute0'].values, 100)
+        t0 = pd.to_datetime({'year': thisdata['Year0'].values,
+                       'month': thisdata['Month0'].apply(lambda x: datetime.strptime(x, '%b').month).values,
+                       'day': thisdata['day0'].values,
+                        'hour': hour0,
+                        'minute': min0})
+        if timeres !="1m":
+            hour1, min1 = divmod(thisdata['hour1minute1'].values, 100)
+            t1 = pd.to_datetime({'year': thisdata['Year1'].values,
+                           'month': thisdata['Month1'].apply(lambda x: datetime.strptime(x, '%b').month).values,
+                           'day': thisdata['day1'].values,
+                            'hour': hour1,
+                            'minute': min1})
+            dt = t1-t0
+        else:
+            dt = timedelta(seconds=30)
+        
+        thisdata['Time'] = t0+dt/2
         thisdata = thisdata.set_index('Time')
-        thisdata = thisdata.drop(["Verse", "Year0", "Month0", "day0", "hour0minute0", 
-                                 "Year1", "Month1", "day1", "hour1minute1"], axis=1)
+#        thisdata = thisdata.drop(["Verse", "Year0", "Month0", "day0", "hour0minute0"], axis=1)
+#        if timeres != "1m":
+#            thisdata = thisdata.drop(["Year1", "Month1", "day1", "hour1minute1"], axis=1)
         return thisdata
 
     def convert_datetime(year, month, day0list, day1list, len_):
