@@ -82,14 +82,10 @@ def available_files(probe, instrument, starttime, endtime, data_rate='',
     _validate_data_rate(data_rate)
 
     start_date = starttime.strftime('%Y-%m-%d')
-    if starttime.date() == endtime.date():
-        end_date = (endtime.date() + timedelta(days=1)).strftime('%Y-%m-%d')
-    else:
-        end_date = endtime.strftime('%Y-%m-%d')
+    # Add one day to end_date to ensure no empty file list in brst mode
+    end_date = (endtime.date() + timedelta(days=1)).strftime('%Y-%m-%d')
 
-    query = {}
-    query['sc_id'] = 'mms' + probe
-    query['instrument_id'] = instrument
+    query = {'sc_id': 'mms' + probe, 'instrument_id': instrument}
     if len(data_rate):
         query['data_rate_mode'] = data_rate
     if len(product_string):
@@ -139,8 +135,8 @@ def filter_time(fnames, starttime, endtime):
     files = [files[i] for i in isort]
 
     # End time
-    #   - Any files that start on or before END_DATE can be kept
-    idx = [i for i, t in enumerate(fstart) if t <= endtime]
+    # - Only files that start before END_DATE can be kept
+    idx = [i for i, t in enumerate(fstart) if t < endtime]
     if len(idx) > 0:
         fstart = [fstart[i] for i in idx]
         files = [files[i] for i in idx]
@@ -218,7 +214,8 @@ def parse_filename(fnames):
 
 
 def download_files(probe, instrument, data_rate, starttime, endtime,
-                   verbose=True, product_string='', warn_missing_units=True):
+                   product_list=None, verbose=True, product_string='',
+                   warn_missing_units=True):
     """
     Download MMS files.
 
@@ -254,15 +251,22 @@ def download_files(probe, instrument, data_rate, starttime, endtime,
 
     dirs = []
     fnames = []
-    daylist = util._daysplitinterval(starttime, endtime)
-    for date, stime, etime in daylist:
-        files = available_files(probe, instrument, starttime, endtime,
-                                data_rate, product_string)
-        for file in files:
-            fname = pathlib.Path(file).stem
-            if product_string in fname and len(fname):
+    # daylist = util._daysplitinterval(starttime, endtime)
+    # for date, stime, etime in daylist:
+    files = available_files(probe, instrument, starttime, endtime,
+                            data_rate, product_string)
+    for file in files:
+        fname = pathlib.Path(file).stem
+        # Select only one 'mec' (metadata) file to avoid redundancy
+        if instrument == 'mec':
+            if 'epht89d' in fname:
                 fnames.append(fname)
                 dirs.append('')
+        elif product_string in fname and len(fname):
+            fnames.append(fname)
+            dirs.append('')
+        else:
+            pass
 
     extension = '.cdf'
     local_base_dir = mms_dir / probe / instrument / data_rate
@@ -279,7 +283,7 @@ def download_files(probe, instrument, data_rate, starttime, endtime,
                     fd.write(chunk)
 
     def processing_func(cdf):
-        return util.cdf2df(cdf, index_key='Epoch')
+        return util.cdf2df(cdf, 'Epoch', starttime, endtime, product_list)
 
     return util.process(dirs, fnames, extension, local_base_dir,
                         remote_base_url, download_func, processing_func,
@@ -308,40 +312,43 @@ data : :class:`~sunpy.timeseries.TimeSeries`
     Imported data.
 """.format(product)
 
-
-def fpi_dis_moms(probe, mode, starttime, endtime):
+def fpi_dis_moms(probe, mode, starttime, endtime, product_list=None):
     return download_files(probe, 'fpi', mode, starttime, endtime,
-                          product_string='dis-moms')
+                          product_string='dis-moms',
+                          product_list=product_list)
 
-
+Z
 fpi_dis_moms.__doc__ = _fpi_docstring('ion distribution moment')
 
 
-def fpi_des_moms(probe, mode, starttime, endtime):
+def fpi_des_moms(probe, mode, starttime, endtime, product_list=None):
     return download_files(probe, 'fpi', mode, starttime, endtime,
-                          product_string='des-moms')
+                          product_string='des-moms',
+                          product_list=product_list)
 
 
 fpi_des_moms.__doc__ = _fpi_docstring('electron distribution moment')
 
 
-def fpi_dis_dist(probe, mode, starttime, endtime):
+def fpi_dis_dist(probe, mode, starttime, endtime, product_list=None):
     return download_files(probe, 'fpi', mode, starttime, endtime,
-                          product_string='dis-dist', warn_missing_units=False)
+                          product_string='dis-dist', warn_missing_units=False,
+                          product_list=product_list)
 
 
 fpi_dis_dist.__doc__ = _fpi_docstring('ion distribution function')
 
 
-def fpi_des_dist(probe, mode, starttime, endtime):
+def fpi_des_dist(probe, mode, starttime, endtime, product_list=None):
     return download_files(probe, 'fpi', mode, starttime, endtime,
-                          product_string='des-dist', warn_missing_units=False)
+                          product_string='des-dist', warn_missing_units=False,
+                          product_list=product_list)
 
 
 fpi_des_dist.__doc__ = _fpi_docstring('electron distribution function')
 
 
-def fgm(probe, mode, starttime, endtime):
+def fgm(probe, mode, starttime, endtime, product_list=None):
     """
     Import fgm survey mode magnetic field data.
 
@@ -361,4 +368,5 @@ def fgm(probe, mode, starttime, endtime):
     data : :class:`~sunpy.timeseries.TimeSeries`
         Imported data.
     """
-    return download_files(probe, 'fgm', mode, starttime, endtime)
+    return download_files(probe, 'fgm', mode, starttime, endtime,
+                          product_list=product_list)

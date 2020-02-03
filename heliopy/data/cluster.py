@@ -36,7 +36,7 @@ cda_time_fmt = '%Y-%m-%dT%H:%M:%SZ'
 
 
 def _load(probe, starttime, endtime, instrument, product_id,
-          try_download):
+          try_download, product_list=None):
     dirs = []
     fnames = []
     download_info = []
@@ -75,7 +75,7 @@ def _load(probe, starttime, endtime, instrument, product_id,
             if 'CDF_EPOCH' in file.varget(key, expand=True).values():
                 index_key = key
                 break
-        return util.cdf2df(file, index_key)
+        return util.cdf2df(file, index_key, starttime, endtime, product_list)
 
     return util.process(dirs, fnames, extension, local_base_dir,
                         remote_base_url, download_func, processing_func,
@@ -129,6 +129,7 @@ def _download(probe, starttime, endtime, instrument, product_id):
         # Extract tar.gz file
         tar = tarfile.open(local_file)
         tar.extractall(local_dir)
+        tar.close()
         # Delete tar.gz file
         os.remove(local_file)
         # The CSA timpstamps the downloaded file by when it is downloaded,
