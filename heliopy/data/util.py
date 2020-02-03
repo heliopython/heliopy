@@ -774,7 +774,7 @@ def cdf2df(cdf, index_key, starttime=None, endtime=None,  list_keys=None,
                     endtime.minute, endtime.second]
 
         # Reload index with appropriate start and end times
-        index = get_index(cdf, index_key, tstart, tend)
+        index = get_index(cdf, index_key, tstart, tend, dtimeindex=dtimeindex)
         ind = np.intersect1d(index_full, index, return_indices=True)[1]
 
     else:
@@ -966,7 +966,7 @@ def _get_remote_fname(remote_url, fname_regex):
     fname_regex : str
         Must include extension.
 
-    Retruns
+    Retrunsdtimeindex
     -------
     fname : str
         Filename that matches including extension.
