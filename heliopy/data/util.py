@@ -714,7 +714,8 @@ def pitchdist_cdf2df(cdf, distkeys, energykey, timekey, anglelabels):
     return data
 
 
-def cdf2df(cdf, index_key, dtimeindex=True, badvalues=None, ignore=None):
+def cdf2df(cdf, index_key, starttime=None, endtime=None,  list_keys=None,
+           dtimeindex=True, badvalues=None, ignore=None):
     """
     Converts a cdf file to a pandas dataframe.
 
@@ -743,79 +744,253 @@ def cdf2df(cdf, index_key, dtimeindex=True, badvalues=None, ignore=None):
     df : :class:`pandas.DataFrame`
         Data frame with read in data.
     """
-    # Extract index values
-    try:
-        index_ = cdf.varget(index_key)[...][:, 0]
-    except IndexError:
-        index_ = cdf.varget(index_key)[...]
-    try:
-        utc_comp = cdflib.cdfepoch.breakdown(index_, to_np=True)
-        if utc_comp.shape[1] == 9:
-            millis = utc_comp[:, 6] * (10**3)
-            micros = utc_comp[:, 8] * (10**2)
-            nanos = utc_comp[:, 7]
-            utc_comp[:, 6] = millis + micros + nanos
-            utc_comp = np.delete(utc_comp, np.s_[-2:], axis=1)
-        try:
-            index = np.asarray([dt.datetime(*x) for x in utc_comp])
-        except ValueError:
-            utc_comp[:, 6] -= micros
-            index = np.asarray([dt.datetime(*x) for x in utc_comp])
-    except Exception:
-        index = index_
-    if dtimeindex:
-        index = pd.DatetimeIndex(index, name='Time')
+    # Get the time index as DatetimeIndex
+    index_full = get_index(cdf, index_key, dtimeindex=dtimeindex)
+
+    # Check if required time interval is in cdf file
+    # and define required start and end time to extract from current CDF file
+    if starttime and endtime:
+
+        if not starttime or starttime < index_full[0] \
+                or starttime > index_full[-1]:
+            tstart = [index_full[0].year, index_full[0].month,
+                      index_full[0].day, index_full[0].hour,
+                      index_full[0].minute, index_full[0].second,
+                      int(str(index_full[0].microsecond).zfill(6)[:-3]),
+                      int(str(index_full[0].microsecond).zfill(6)[3:])]
+        else:
+            tstart = [starttime.year, starttime.month, starttime.day,
+                      starttime.hour, starttime.minute, starttime.second]
+
+        if not endtime or endtime < index_full[0] or endtime > index_full[-1]\
+                or starttime > endtime:
+            tend = [index_full[-1].year, index_full[-1].month,
+                    index_full[-1].day, index_full[-1].hour,
+                    index_full[-1].minute, index_full[-1].second,
+                    int(str(index_full[-1].microsecond).zfill(6)[:-3]),
+                    int(str(index_full[-1].microsecond).zfill(6)[3:])]
+        else:
+            tend = [endtime.year, endtime.month, endtime.day, endtime.hour,
+                    endtime.minute, endtime.second]
+
+        # Reload index with appropriate start and end times
+        index = get_index(cdf, index_key, tstart, tend)
+        ind = np.intersect1d(index_full, index, return_indices=True)[1]
+
+    else:
+        index = index_full
+        ind = np.intersect1d(index_full, index, return_indices=True)[1]
+        tstart = None
+        tend = None
+
+    # If none of the required data in current CDF file, move on to the next one
+    if len(index) == 0:
+        return
+
     df = pd.DataFrame(index=index)
-    npoints = cdf.varget(index_key).shape[0]
+    npoints = cdf.varget(index_key, None, tstart, tend).shape[0]
 
-    var_list = []
-    for attr in list(cdf.cdf_info().keys()):
-        if 'variable' in attr.lower():
-            if len(cdf.cdf_info()[attr]) > 0:
-                var_list += [attr]
+    if not list_keys:
+        var_list = []
+        for attr in list(cdf.cdf_info().keys()):
+            if 'variable' in attr.lower():
+                if len(cdf.cdf_info()[attr]) > 0:
+                    var_list += [attr]
 
-    keys = {}
-    for attr in var_list:
-        for cdf_key in cdf.cdf_info()[attr]:
-            if ignore:
-                if cdf_key in ignore:
-                    continue
-            if cdf_key == 'Epoch':
-                keys[cdf_key] = 'Time'
+        keys = {}
+        for attr in var_list:
+            for cdf_key in cdf.cdf_info()[attr]:
+                if ignore:
+                    if cdf_key in ignore:
+                        continue
+                if cdf_key == 'Epoch':
+                    keys[cdf_key] = 'Time'
+                else:
+                    keys[cdf_key] = cdf_key
+        # Remove index key, as we have already used it to create the index
+        keys.pop(index_key)
+        # Remove keys for data that doesn't have the right shape to load in CDF
+        for cdf_key in keys.copy():
+            if type(cdf.varget(cdf_key, None)) is np.ndarray:
+                try:
+                    key_shape = cdf.varget(cdf_key, None, tstart, tend).shape
+                    if len(key_shape) == 0 or key_shape[0] != npoints:
+                        keys.pop(cdf_key)
+                except:
+                    key_shape = cdf.varget(cdf_key)[ind].shape
+                    if len(key_shape) == 0 or key_shape[0] != npoints:
+                        keys.pop(cdf_key)
             else:
-                keys[cdf_key] = cdf_key
-    # Remove index key, as we have already used it to create the index
-    keys.pop(index_key)
-    # Remove keys for data that doesn't have the right shape to load in CDF
-    for cdf_key in keys.copy():
-        if type(cdf.varget(cdf_key)) is np.ndarray:
-            key_shape = cdf.varget(cdf_key).shape
-            if len(key_shape) == 0 or key_shape[0] != npoints:
                 keys.pop(cdf_key)
-        else:
-            keys.pop(cdf_key)
 
-    # Loop through each key and put data into the dataframe
-    for cdf_key in keys:
-        df_key = keys[cdf_key]
-        if isinstance(df_key, list):
-            for i, subkey in enumerate(df_key):
-                df[subkey] = cdf.varget(cdf_key)[...][:, i]
-        else:
+        # Loop through each key and put data into the dataframe
+        for cdf_key in keys:
+            df_key = keys[cdf_key]
+            if isinstance(df_key, list):
+                for i, subkey in enumerate(df_key):
+                    try:
+                        df[subkey] = cdf.varget(cdf_key, None, tstart,
+                                                tend)[...][:, i]
+                    except:
+                        df[subkey] = cdf.varget(cdf_key)[ind][:, i]
+            else:
+                # If ndims is 1, we just have a single column of data
+                # If ndims is 2, have multiple columns of data under same key
+                key_shape = cdf.varget(cdf_key).shape
+                ndims = len(key_shape)
+                if ndims == 1:
+                    try:
+                        df[df_key] = cdf.varget(cdf_key, None, tstart, tend)
+                    except:
+                        df[df_key] = cdf.varget(cdf_key)[ind]
+                elif ndims == 2:
+                    for i in range(key_shape[1]):
+                        try:
+                            df[df_key + '_' + str(i)] =\
+                                cdf.varget(cdf_key, None, tstart,
+                                           tend)[...][:, i]
+                        except:
+                            df[df_key + '_' + str(i)] =\
+                                cdf.varget(cdf_key)[ind][:, i]
+
+    elif list_keys and len(list_keys) == 1:
+        for cdf_key in list_keys.values():
             # If ndims is 1, we just have a single column of data
             # If ndims is 2, have multiple columns of data under same key
             key_shape = cdf.varget(cdf_key).shape
             ndims = len(key_shape)
+
             if ndims == 1:
-                df[df_key] = cdf.varget(cdf_key)[...]
+                try:
+                    df[cdf_key] = cdf.varget(cdf_key,
+                                             None, tstart, tend)[...]
+                except:
+                    df[cdf_key] = cdf.varget(cdf_key)[ind]
+
             elif ndims == 2:
                 for i in range(key_shape[1]):
-                    df[df_key + '_' + str(i)] = cdf.varget(cdf_key)[...][:, i]
+                    try:
+                        df[cdf_key + '_' + str(i)] =\
+                            cdf.varget(cdf_key, None, tstart, tend)[...][:, i]
+                    except:
+                        df[cdf_key + '_' + str(i)] =\
+                            cdf.varget(cdf_key)[ind][:, i]
+    else:
+        message = (f"Multidimensional data is not supported"
+                   f" by pandas.DataFrame"
+                   f"\nIf you want to load, e.g., "
+                   f"particle distribution functions,"
+                   f" please use xarrays by setting want_xr=True")
+        warnings.warn(message, Warning)
 
     # Replace bad values with nans
     if badvalues is not None:
         df = df.replace(badvalues, np.nan)
     return df
+
+#
+# def cdf2df(cdf, index_key, dtimeindex=True, badvalues=None, ignore=None):
+#     """
+#     Converts a cdf file to a pandas dataframe.
+#
+#     Note that this only works for 1 dimensional data, other data such as
+#     distribution functions or pitch angles will not work properly.
+#
+#     Parameters
+#     ----------
+#     cdf : cdf
+#         Opened CDF file.
+#     index_key : string
+#         The CDF key to use as the index in the output DataFrame.
+#     dtimeindex : bool, optional
+#         If ``True``, the DataFrame index is parsed as a datetime.
+#         Default is ``True``.
+#     badvalues : dict, list, optional
+#         A dictionary that maps the new DataFrame column keys to a list of bad
+#         values to replace with nans. Alternatively a list of numbers which are
+#         replaced with nans in all columns.
+#     ignore : list, optional
+#         In case a CDF file has columns that are unused / not required, then
+#         the column names can be passed as a list into the function.
+#
+#     Returns
+#     -------
+#     df : :class:`pandas.DataFrame`
+#         Data frame with read in data.
+#     """
+#     # Extract index values
+#     try:
+#         index_ = cdf.varget(index_key)[...][:, 0]
+#     except IndexError:
+#         index_ = cdf.varget(index_key)[...]
+#     try:
+#         utc_comp = cdflib.cdfepoch.breakdown(index_, to_np=True)
+#         if utc_comp.shape[1] == 9:
+#             millis = utc_comp[:, 6] * (10**3)
+#             micros = utc_comp[:, 8] * (10**2)
+#             nanos = utc_comp[:, 7]
+#             utc_comp[:, 6] = millis + micros + nanos
+#             utc_comp = np.delete(utc_comp, np.s_[-2:], axis=1)
+#         try:
+#             index = np.asarray([dt.datetime(*x) for x in utc_comp])
+#         except ValueError:
+#             utc_comp[:, 6] -= micros
+#             index = np.asarray([dt.datetime(*x) for x in utc_comp])
+#     except Exception:
+#         index = index_
+#     if dtimeindex:
+#         index = pd.DatetimeIndex(index, name='Time')
+#     df = pd.DataFrame(index=index)
+#     npoints = cdf.varget(index_key).shape[0]
+#
+#     var_list = []
+#     for attr in list(cdf.cdf_info().keys()):
+#         if 'variable' in attr.lower():
+#             if len(cdf.cdf_info()[attr]) > 0:
+#                 var_list += [attr]
+#
+#     keys = {}
+#     for attr in var_list:
+#         for cdf_key in cdf.cdf_info()[attr]:
+#             if ignore:
+#                 if cdf_key in ignore:
+#                     continue
+#             if cdf_key == 'Epoch':
+#                 keys[cdf_key] = 'Time'
+#             else:
+#                 keys[cdf_key] = cdf_key
+#     # Remove index key, as we have already used it to create the index
+#     keys.pop(index_key)
+#     # Remove keys for data that doesn't have the right shape to load in CDF
+#     for cdf_key in keys.copy():
+#         if type(cdf.varget(cdf_key)) is np.ndarray:
+#             key_shape = cdf.varget(cdf_key).shape
+#             if len(key_shape) == 0 or key_shape[0] != npoints:
+#                 keys.pop(cdf_key)
+#         else:
+#             keys.pop(cdf_key)
+#
+#     # Loop through each key and put data into the dataframe
+#     for cdf_key in keys:
+#         df_key = keys[cdf_key]
+#         if isinstance(df_key, list):
+#             for i, subkey in enumerate(df_key):
+#                 df[subkey] = cdf.varget(cdf_key)[...][:, i]
+#         else:
+#             # If ndims is 1, we just have a single column of data
+#             # If ndims is 2, have multiple columns of data under same key
+#             key_shape = cdf.varget(cdf_key).shape
+#             ndims = len(key_shape)
+#             if ndims == 1:
+#                 df[df_key] = cdf.varget(cdf_key)[...]
+#             elif ndims == 2:
+#                 for i in range(key_shape[1]):
+#                     df[df_key + '_' + str(i)] = cdf.varget(cdf_key)[...][:, i]
+#
+#     # Replace bad values with nans
+#     if badvalues is not None:
+#         df = df.replace(badvalues, np.nan)
+#     return df
 
 
 class RemoteFileNotPresentError(RuntimeError):
@@ -1165,3 +1340,30 @@ def dtime2doy(dt):
         Day of year
     """
     return int(dt.strftime('%j'))
+
+
+def get_index(cdf, index_key, t_start=None, t_end=None, dtimeindex=True):
+    # Extract index values
+    try:
+        index_ = cdf.varget(index_key, None, t_start, t_end)[...][:, 0]
+    except IndexError:
+        index_ = cdf.varget(index_key, None, t_start, t_end)[...]
+    try:
+        utc_comp = cdflib.cdfepoch.breakdown(index_, to_np=True)
+        if utc_comp.shape[1] == 9:
+            millis = utc_comp[:, 6] * (10**3)
+            micros = utc_comp[:, 8] * (10**2)
+            nanos = utc_comp[:, 7]
+            utc_comp[:, 6] = millis + micros + nanos
+            utc_comp = np.delete(utc_comp, np.s_[-2:], axis=1)
+        try:
+            index = np.asarray([dt.datetime(*x) for x in utc_comp])
+        except ValueError:
+            utc_comp[:, 6] -= micros
+            index = np.asarray([dt.datetime(*x) for x in utc_comp])
+    except Exception:
+        index = index_
+    if dtimeindex:
+        index = pd.DatetimeIndex(index, name='Time')
+
+    return index
