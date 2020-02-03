@@ -22,7 +22,6 @@ before_install:
 script:
 - pytest heliopy/ --cov=heliopy/ -v --durations=5 --pep8 -n auto
 - python setup.py sdist
-after_success:
 - pip install codecov
 - codecov
 deploy:

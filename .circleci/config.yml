@@ -14,6 +14,10 @@ doc-test: &doc-test
   command: make doctest
   working_directory: doc
 
+doc-changeog: &doc-changelog
+  name: Merge changelog
+  command: python -m towncrier --yes
+
 doc-run: &doc-build
   name: Build documentation
   command: make html SPHINXOPTS='-W -q'
@@ -27,6 +31,7 @@ jobs:
     steps:
       - checkout
       - run: *deps-install
+      - run: *doc-changelog
       - run: *doc-test
       - run: *doc-build
       - store_artifacts:
@@ -37,4 +42,4 @@ jobs:
 
 notify:
   webhooks:
-    - url: https://giles.cadair.com/circleci
+    - url: https://giles.cadair.dev/circleci

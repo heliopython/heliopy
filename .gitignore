@@ -10,8 +10,10 @@ doc/source/api
 doc/source/gen_modules
 
 heliopy.egg-info*
+pip-wheel-metadata/*
 *.DS_Store*
 build/*
 dist/*
+pip-wheel-metadata/*
 
 env

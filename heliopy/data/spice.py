@@ -52,12 +52,15 @@ def _stereo_kernels(probe, type):
     if not isinstance(probe, str):
         raise TypeError('argument not of type \'str\'')
     if probe == 'ahead' or probe == 'behind':
-        request = requests.get(
-            'https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/{}/{}/'.format(
-                type, probe), timeout=5)
-        return ['https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/{}/{}/{}'.format(
-                type, probe, S.split('"')[1])
-                for S in request.text.split('href') if '.bsp' in S]
+        try:
+            request = requests.get(
+                'https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/{}/{}/'.format(
+                    type, probe), timeout=5)
+            return ['https://sohowww.nascom.nasa.gov/solarsoft/stereo/gen/data/spice/{}/{}/{}'.format(
+                    type, probe, S.split('"')[1])
+                    for S in request.text.split('href') if '.bsp' in S]
+        except requests.exceptions.ConnectionError:
+            return []
     else:
         raise ValueError('argument should be either \'ahead\' or \'behind\'')
 
@@ -91,6 +94,34 @@ spacecraft_kernels = [_Kernel('Helios 1', 'helios1',
                               ''),
                       _Kernel('STEREO-B', 'stereo_b',
                               _stereo_kernels('behind', 'depm'),
+                              ''),
+                      _Kernel('SOHO', 'soho',
+                              ['https://sohowww.nascom.nasa.gov/sdb/soho/gen/spice/soho_1995.bsp',
+                               'https://sohowww.nascom.nasa.gov/sdb/soho/gen/spice/soho_1996.bsp',
+                               'https://sohowww.nascom.nasa.gov/sdb/soho/gen/spice/soho_1997.bsp',
+                               'https://sohowww.nascom.nasa.gov/sdb/soho/gen/spice/soho_1998a.bsp',
+                               'https://sohowww.nascom.nasa.gov/sdb/soho/gen/spice/soho_1998b.bsp',
+                               'https://sohowww.nascom.nasa.gov/sdb/soho/gen/spice/soho_1999.bsp',
+                               'https://sohowww.nascom.nasa.gov/sdb/soho/gen/spice/soho_2000.bsp',
+                               'https://sohowww.nascom.nasa.gov/sdb/soho/gen/spice/soho_2001.bsp',
+                               'https://sohowww.nascom.nasa.gov/sdb/soho/gen/spice/soho_2002.bsp',
+                               'https://sohowww.nascom.nasa.gov/sdb/soho/gen/spice/soho_2003.bsp',
+                               'https://sohowww.nascom.nasa.gov/sdb/soho/gen/spice/soho_2004.bsp',
+                               'https://sohowww.nascom.nasa.gov/sdb/soho/gen/spice/soho_2005.bsp',
+                               'https://sohowww.nascom.nasa.gov/sdb/soho/gen/spice/soho_2006.bsp',
+                               'https://sohowww.nascom.nasa.gov/sdb/soho/gen/spice/soho_2007.bsp',
+                               'https://sohowww.nascom.nasa.gov/sdb/soho/gen/spice/soho_2008.bsp',
+                               'https://sohowww.nascom.nasa.gov/sdb/soho/gen/spice/soho_2009.bsp',
+                               'https://sohowww.nascom.nasa.gov/sdb/soho/gen/spice/soho_2010.bsp',
+                               'https://sohowww.nascom.nasa.gov/sdb/soho/gen/spice/soho_2011.bsp',
+                               'https://sohowww.nascom.nasa.gov/sdb/soho/gen/spice/soho_2012.bsp',
+                               'https://sohowww.nascom.nasa.gov/sdb/soho/gen/spice/soho_2013.bsp',
+                               'https://sohowww.nascom.nasa.gov/sdb/soho/gen/spice/soho_2014.bsp',
+                               'https://sohowww.nascom.nasa.gov/sdb/soho/gen/spice/soho_2015.bsp',
+                               'https://sohowww.nascom.nasa.gov/sdb/soho/gen/spice/soho_2016.bsp',
+                               'https://sohowww.nascom.nasa.gov/sdb/soho/gen/spice/soho_2017.bsp',
+                               'https://sohowww.nascom.nasa.gov/sdb/soho/gen/spice/soho_2018.bsp',
+                               'https://sohowww.nascom.nasa.gov/sdb/soho/gen/spice/soho_2019.bsp', ],
                               ''),
                       _Kernel('Ulysses', 'ulysses',
                               ['https://naif.jpl.nasa.gov/pub/naif/ULYSSES/kernels/spk/ulysses_1990_2009_2050.bsp',

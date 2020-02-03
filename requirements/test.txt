@@ -2,7 +2,7 @@
 
 pytest
 pytest-cov
+pytest-timeout
 pytest-pep8
 pytest-xdist
-spiceypy
 tables

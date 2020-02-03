@@ -21,6 +21,7 @@ own sub-module:
    messenger
    mms
    omni
+   psp
    ulysses
    wind
 
@@ -72,4 +73,4 @@ The TimeSeries object is capable of storing the data in a DataFrame, and also
 stores the units that are associated with each data column.
 
 An example on how to use TimeSeries data and astropy units is also available
-in :ref:`sphx_glr_auto_examples_plot_timeseries.py`.
+in :ref:`sphx_glr_auto_examples_timeseries_plotting.py`.

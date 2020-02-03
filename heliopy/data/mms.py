@@ -7,7 +7,6 @@ is at https://lasp.colorado.edu/mms/sdc/public/.
 """
 import os
 import pathlib
-from collections import OrderedDict
 import requests
 from tqdm.auto import tqdm
 from datetime import datetime, timedelta
@@ -33,7 +32,7 @@ def _validate_instrument(instrument):
 
 
 def _validate_probe(probe):
-    allowed_probes = [str(i+1) for i in range(4)]
+    allowed_probes = [str(i + 1) for i in range(4)]
     probe = str(probe)
     if probe not in allowed_probes:
         raise ValueError(
@@ -159,9 +158,9 @@ def filter_time(fnames, starttime, endtime):
     idx = [i for i, t in enumerate(fstart) if t >= starttime]
 
     if (len(idx) == 0) & (fstart[-1].date() == starttime.date()):
-        idx = [len(fstart)-1]
+        idx = [len(fstart) - 1]
     elif (len(idx) != 0) & ((idx[0] != 0) & (fstart[idx[0]] != starttime)):
-        idx.insert(0, idx[0]-1)
+        idx.insert(0, idx[0] - 1)
 
     if len(idx) > 0:
         fstart = [fstart[i] for i in idx]
@@ -271,13 +270,13 @@ def download_files(probe, instrument, data_rate, starttime, endtime,
 
     def download_func(remote_base_url, local_base_dir,
                       directory, fname, remote_fname, extension):
-            url = remote_base_url + '?file=' + fname + extension
-            local_fname = os.path.join(local_base_dir, fname + extension)
-            with requests.get(url, stream=True) as request:
-                with open(local_fname, 'wb') as fd:
-                    for chunk in tqdm(
-                            request.iter_content(chunk_size=128)):
-                        fd.write(chunk)
+        url = remote_base_url + '?file=' + fname + extension
+        local_fname = os.path.join(local_base_dir, fname + extension)
+        with requests.get(url, stream=True) as request:
+            with open(local_fname, 'wb') as fd:
+                for chunk in tqdm(
+                        request.iter_content(chunk_size=128)):
+                    fd.write(chunk)
 
     def processing_func(cdf):
         return util.cdf2df(cdf, index_key='Epoch')
