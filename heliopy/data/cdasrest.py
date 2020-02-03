@@ -99,7 +99,7 @@ class CDASDwonloader(util.Downloader):
         etime = self._interval_end(interval)
         return get_data(self.identifier, stime, etime)
 
-    def load_local_file(self, interval):
+    def load_local_file(self, interval, product_list=None):
         local_path = self.local_path(interval)
         cdf = util._load_cdf(local_path)
         return util.cdf2df(cdf, index_key='Epoch',

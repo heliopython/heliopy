@@ -317,7 +317,7 @@ def fpi_dis_moms(probe, mode, starttime, endtime, product_list=None):
                           product_string='dis-moms',
                           product_list=product_list)
 
-Z
+
 fpi_dis_moms.__doc__ = _fpi_docstring('ion distribution moment')
 
 
