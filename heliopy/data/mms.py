@@ -312,6 +312,7 @@ data : :class:`~sunpy.timeseries.TimeSeries`
     Imported data.
 """.format(product)
 
+
 def fpi_dis_moms(probe, mode, starttime, endtime, product_list=None):
     return download_files(probe, 'fpi', mode, starttime, endtime,
                           product_string='dis-moms',
