@@ -714,7 +714,8 @@ def pitchdist_cdf2df(cdf, distkeys, energykey, timekey, anglelabels):
     return data
 
 
-def cdf2df(cdf, index_key, dtimeindex=True, badvalues=None, ignore=None):
+def cdf2df(cdf, index_key, dtimeindex=True, badvalues=None,
+           ignore=None, include=None):
     """
     Converts a cdf file to a pandas dataframe.
 
@@ -737,12 +738,24 @@ def cdf2df(cdf, index_key, dtimeindex=True, badvalues=None, ignore=None):
     ignore : list, optional
         In case a CDF file has columns that are unused / not required, then
         the column names can be passed as a list into the function.
+    include : str, list, optional
+        If only specific columns of a CDF file are desired, then the column
+        names can be passed as a list into the function. Should not be used
+        with ``ignore``.
 
     Returns
     -------
     df : :class:`pandas.DataFrame`
         Data frame with read in data.
     """
+    if include is not None:
+        if ignore is not None:
+            raise ValueError('ignore and include are incompatible keywords')
+        if isinstance(include, str):
+            include = [include]
+        if index_key not in include:
+            include.append(index_key)
+
     # Extract index values
     try:
         index_ = cdf.varget(index_key)[...][:, 0]
@@ -779,6 +792,9 @@ def cdf2df(cdf, index_key, dtimeindex=True, badvalues=None, ignore=None):
         for cdf_key in cdf.cdf_info()[attr]:
             if ignore:
                 if cdf_key in ignore:
+                    continue
+            elif include:
+                if cdf_key not in include:
                     continue
             if cdf_key == 'Epoch':
                 keys[cdf_key] = 'Time'
