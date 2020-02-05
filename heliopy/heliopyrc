@@ -13,4 +13,4 @@ download_dir = ~/heliopy/data
 use_hdf = False
 
 ; Cluster user cookie
-cluster_cookie = None
+cluster_cookie = none
