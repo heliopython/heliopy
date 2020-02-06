@@ -190,15 +190,12 @@ def cdf_dict(unit_string):
                         ('Re (1min)', u.earthRad),
                         ('Re (1hr)', u.earthRad),
                         ('Degrees', u.deg),
-<<<<<<< HEAD
                          ('Deg', u.deg),
-=======
                         ('deg_K', u.K),
                         ('ionic charge', u.electron),
                         ('earth radii', u.earthRad),
                         ('Re', u.earthRad),
                         ('Degrees', u.deg),
->>>>>>> f810f3dbdba5eaa6b80d40de4e228d15e3a29e61
                         ('degrees', u.deg),
                         ('Deg', u.deg),
                         ('deg (from fits)', u.deg),
@@ -244,7 +241,6 @@ def cdf_dict(unit_string):
                          ('Na', u.dimensionless_unscaled),
                          ('cnts', u.dimensionless_unscaled),
                          ('cnts/sec', u.dimensionless_unscaled),
-                         1 / (u.cm**2 * u.sr * u.eV * u.s)),
                         ('1/(cm**2-s-sr-MeV)', (u.cm**2*u.s*u.sr*u.MeV)**-1),
                          # Note: the MeV/nuc is not consistent unit for astropy
                          ('MeV/nuc', u.MeV), 

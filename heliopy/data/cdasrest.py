@@ -64,7 +64,6 @@ def _docstring_stereo(identifier, letter, description):
                description=description)
     return ds
 
-<<<<<<< HEAD
 def _day_intervals(starttime, endtime):
     interval = stime.TimeRange(starttime, endtime)
     daylist = interval.get_dates()
