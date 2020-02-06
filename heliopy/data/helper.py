@@ -190,7 +190,15 @@ def cdf_dict(unit_string):
                         ('Re (1min)', u.earthRad),
                         ('Re (1hr)', u.earthRad),
                         ('Degrees', u.deg),
+<<<<<<< HEAD
                          ('Deg', u.deg),
+=======
+                        ('deg_K', u.K),
+                        ('ionic charge', u.electron),
+                        ('earth radii', u.earthRad),
+                        ('Re', u.earthRad),
+                        ('Degrees', u.deg),
+>>>>>>> f810f3dbdba5eaa6b80d40de4e228d15e3a29e61
                         ('degrees', u.deg),
                         ('Deg', u.deg),
                         ('deg (from fits)', u.deg),
