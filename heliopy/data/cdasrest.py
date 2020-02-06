@@ -40,6 +40,7 @@ def _docstring(identifier, letter, description):
                description=description)
     return ds
 
+
 def _docstring_stereo(identifier, letter, description):
     ds = r"""
     {description} data.
