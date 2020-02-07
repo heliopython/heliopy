@@ -167,7 +167,7 @@ def het_l1(starttime, endtime, spacecraft, timeres):
     identifier = _identifier_select(spacecraft)
     sc_ident = sc_identifiers[identifier]
         
-    local_base_dir = stereo_dir / identifier / (identifier+"_L1_HET") / timedirs[timeres]
+    local_base_dir = stereo_het_l2_dir / identifier / (identifier+"_L1_HET") / timedirs[timeres]
     remote_base_url = het_url + "/" + sc_ident + "/" + timedirs[timeres]
 
     names = ["Verse",
