@@ -1,7 +1,5 @@
 """
 Methods for importing data from the IMP spacecraft.
-
-All data is publically available at https://cdaweb.gsfc.nasa.gov/pub/data/imp/
 """
 from collections import OrderedDict
 from datetime import datetime

@@ -1,8 +1,5 @@
 """
 Methods for importing data from the OMNI.
-
-All data is publically available at
-https://cdaweb.gsfc.nasa.gov/pub/data/omni.
 """
 from collections import OrderedDict
 from datetime import datetime, timedelta

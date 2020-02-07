@@ -1,8 +1,5 @@
 """
 Methods for importing data from the THEMIS/ARTEMIS spacecraft.
-
-All data is publically available at
-http://themis.ssl.berkeley.edu/data/themis/.
 """
 import pathlib as path
 

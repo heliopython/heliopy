@@ -6,7 +6,6 @@ This is essentially a library of SPICE kernels that are available online, so
 users don't have go go hunting for them. If you know a kernel is out of date,
 and HelioPy should be using a newer kernel please let us know at
 https://github.com/heliopython/heliopy/issues.
-
 """
 import os
 import warnings
