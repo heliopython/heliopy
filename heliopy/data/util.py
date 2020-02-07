@@ -757,10 +757,14 @@ def cdf2df(cdf, index_key, dtimeindex=True, badvalues=None,
             include.append(index_key)
 
     # Extract index values
+    index = cdf.varget(index_key)
     try:
-        index = cdf.varget(index_key)[...][:, 0]
+        # If there are multiple indexes, take the first one
+        # TODO: this is just plain wrong, there should be a way to get all
+        # the indexes out
+        index = index[...][:, 0]
     except IndexError:
-        index = cdf.varget(index_key)[...]
+        pass
 
     if dtimeindex:
         index = cdflib.epochs.CDFepoch.breakdown(index, to_np=True)
