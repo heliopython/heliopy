@@ -780,7 +780,7 @@ def cdf2df(cdf, index_key, dtimeindex=True, badvalues=None,
             pass
         index = pd.DatetimeIndex(pd.to_datetime(index_df), name='Time')
     df = pd.DataFrame(index=index)
-    npoints = cdf.varget(index_key).shape[0]
+    npoints = df.shape[0]
 
     var_list = []
     for attr in list(cdf.cdf_info().keys()):
@@ -804,30 +804,33 @@ def cdf2df(cdf, index_key, dtimeindex=True, badvalues=None,
     # Remove index key, as we have already used it to create the index
     keys.pop(index_key)
     # Remove keys for data that doesn't have the right shape to load in CDF
-    for cdf_key in keys.copy():
-        if type(cdf.varget(cdf_key)) is np.ndarray:
-            key_shape = cdf.varget(cdf_key).shape
+    # Mapping of keys to variable data
+    vars = {cdf_key: cdf.varget(cdf_key) for cdf_key in keys.copy()}
+    for cdf_key in keys:
+        var = vars[cdf_key]
+        if type(var) is np.ndarray:
+            key_shape = var.shape
             if len(key_shape) == 0 or key_shape[0] != npoints:
-                keys.pop(cdf_key)
+                vars.pop(cdf_key)
         else:
-            keys.pop(cdf_key)
+            vars.pop(cdf_key)
 
     # Loop through each key and put data into the dataframe
-    for cdf_key in keys:
+    for cdf_key in vars:
         df_key = keys[cdf_key]
         if isinstance(df_key, list):
             for i, subkey in enumerate(df_key):
-                df[subkey] = cdf.varget(cdf_key)[...][:, i]
+                df[subkey] = vars[cdf_key][...][:, i]
         else:
             # If ndims is 1, we just have a single column of data
             # If ndims is 2, have multiple columns of data under same key
-            key_shape = cdf.varget(cdf_key).shape
+            key_shape = vars[cdf_key].shape
             ndims = len(key_shape)
             if ndims == 1:
-                df[df_key] = cdf.varget(cdf_key)[...]
+                df[df_key] = vars[cdf_key][...]
             elif ndims == 2:
                 for i in range(key_shape[1]):
-                    df[df_key + '_' + str(i)] = cdf.varget(cdf_key)[...][:, i]
+                    df[df_key + '_' + str(i)] = vars[cdf_key][...][:, i]
 
     # Replace bad values with nans
     if badvalues is not None:
