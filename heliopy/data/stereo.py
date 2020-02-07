@@ -5,7 +5,7 @@ All data is publically available at ftp://spdf.gsfc.nasa.gov/pub/data/stereo/.
 The STEREO spacecraft homepage can be found at https://stereo.gsfc.nasa.gov/.
 """
 from collections import OrderedDict
-import pathlib as path
+import pathlib
 from datetime import datetime, timedelta
 from dateutil.rrule import rrule, MONTHLY
 
@@ -16,8 +16,8 @@ from heliopy import config
 from heliopy.data import cdasrest
 from heliopy.data import util
 
-data_dir = path.Path(config['download_dir'])
-stereo_dir = data_dir / 'stereo'
+data_dir = pathlib.Path(config['download_dir'])
+stereo_het_l2_dir = data_dir / 'stereo'
 
 het_url = 'http://www.srl.caltech.edu/STEREO/DATA/HET/'
 
@@ -162,9 +162,10 @@ def het(starttime, endtime, spacecraft, timeres):
     
     sc_identifiers = {"STA": "Ahead",
                         "STB": "Behind"}
-    sc_ident = sc_identifiers[_identifier_select(spacecraft)]
+    identifier = _identifier_select(spacecraft)
+    sc_ident = sc_identifiers[identifier]
         
-    local_base_dir = stereo_dir / sc_ident / timedirs[timeres]
+    local_base_dir = stereo_dir / identifier / (identifier+"_L1_HET") / timedirs[timeres]
     remote_base_url = het_url + "/" + sc_ident + "/" + timedirs[timeres]
 
     names = ["Verse",
