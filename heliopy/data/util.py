@@ -795,7 +795,7 @@ def cdf2df(cdf, index_key, dtimeindex=True, badvalues=None,
 
     keys = {}
     for attr in var_list:
-        for cdf_key in cdf.cdf_info()[attr]:
+        for cdf_key in cdf_info[attr]:
             if ignore:
                 if cdf_key in ignore:
                     continue
