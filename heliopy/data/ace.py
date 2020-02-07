@@ -1,7 +1,6 @@
 """
 Methods for importing data from the ACE spacecraft.
 
-All data is publically available at ftp://spdf.gsfc.nasa.gov/pub/data/ace/.
 The ACE spacecraft homepage can be found at http://www.srl.caltech.edu/ACE/.
 """
 from heliopy.data import cdasrest

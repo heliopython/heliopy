@@ -1,7 +1,5 @@
 """
 Methods for importing data from the Ulysses spacecraft.
-
-All data is publically available at http://ufa.esac.esa.int/ufa/
 """
 from collections import OrderedDict
 from datetime import datetime, timedelta

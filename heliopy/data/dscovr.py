@@ -1,8 +1,5 @@
 """
 Methods for importing data from the DSCOVR.
-
-All data is publically available at
-ftp://spdf.gsfc.nasa.gov/pub/data/dscovr/.
 """
 import pathlib as path
 

@@ -1,8 +1,7 @@
 """
 Methods for importing data from the four MMS spacecraft.
 
-All data is publically available at
-https://lasp.colorado.edu/mms/sdc/public/data/, and the MMS science data centre
+The MMS science data centre
 is at https://lasp.colorado.edu/mms/sdc/public/.
 """
 import os
