@@ -288,9 +288,9 @@ def het_l1(starttime, endtime, spacecraft, timeres):
         
         thisdata['Time'] = t0+dt/2
         thisdata = thisdata.set_index('Time')
-#        thisdata = thisdata.drop(["Verse", "Year0", "Month0", "day0", "hour0minute0"], axis=1)
-#        if timeres != "1m":
-#            thisdata = thisdata.drop(["Year1", "Month1", "day1", "hour1minute1"], axis=1)
+        thisdata = thisdata.drop(["Verse", "Year0", "Month0", "day0", "hour0minute0"], axis=1)
+        if timeres != "1m":
+            thisdata = thisdata.drop(["Year1", "Month1", "day1", "hour1minute1"], axis=1)
         return thisdata
 
     return util.process(dirs, fnames, extension, local_base_dir,
