@@ -38,17 +38,18 @@ def _identifier_select(spacecraft):
         raise ValueError("Invalid spacecraft, must be sta or stb")
 
 
-def _stereo(starttime, endtime, dataset, identifier, units=None,
+def _stereo(starttime, endtime, spacecraft, identifier, units=None,
             warn_missing_units=True):
     """
     Generic method for downloading STEREO data.
     """
+
+    directory = pathlib.Path("stereo", _identifier_select(spacecraft))
     badvalues = 1e-31
-    return cdasrest._process_cdas(starttime, endtime, identifier, dataset,
-                                  stereo_dir,
-                                  units=units,
-                                  badvalues=badvalues,
-                                  warn_missing_units=warn_missing_units)
+    return cdasrest.CDASDwonloader('ac', identifier, directory,
+                                   badvalues=badvalues,
+                                   warn_missing_units=warn_missing_units,
+                                   units=units)
 
 
 # Actual download functions start here
@@ -56,7 +57,7 @@ def mag_l1_rtn(starttime, endtime, spacecraft):
     identifier = _identifier_select(spacecraft)+'_L1_MAG_RTN'
 
     units = OrderedDict([('Q_FLAG', u.dimensionless_unscaled)])
-    return _stereo(starttime, endtime, spacecraft, identifier, units=units)
+    return _stereo(starttime, endtime, spacecraft, identifier, units=units).load(starttime, endtime)
 
 
 mag_l1_rtn.__doc__ = _docstring('STA_L1_MAG_RTN',
@@ -67,7 +68,7 @@ def magplasma_l2(starttime, endtime, spacecraft):
     identifier = _identifier_select(spacecraft)+'_L2_MAGPLASMA_1M'
 
     units = OrderedDict([('Q_FLAG', u.dimensionless_unscaled)])
-    return _stereo(starttime, endtime, spacecraft, identifier, units=units)
+    return _stereo(starttime, endtime, spacecraft, identifier, units=units).load(starttime, endtime)
 
 
 mag_l1_rtn.__doc__ = _docstring('STA_L2_MAGPLASMA_1M', 'STEREO IMPACT/MAG Magnetic Field and PLASTIC Solar Wind Plasma Data')
@@ -77,7 +78,7 @@ def magplasma_l2(starttime, endtime, spacecraft):
     identifier = _identifier_select(spacecraft)+'_L2_MAGPLASMA_1M'
 
     units = OrderedDict([('Q_FLAG', u.dimensionless_unscaled)])
-    return _stereo(starttime, endtime, spacecraft, identifier, units=units)
+    return _stereo(starttime, endtime, spacecraft, identifier, units=units).load(starttime, endtime)
 
 
 magplasma_l2.__doc__ = _docstring('STA_L2_MAGPLASMA_1M', 'STEREO IMPACT/MAG Magnetic Field and PLASTIC Solar Wind Plasma Data')
@@ -87,7 +88,7 @@ def let_l1(starttime, endtime, spacecraft):
     identifier = _identifier_select(spacecraft)+'_L1_LET'
 
     units = OrderedDict([('Q_FLAG', u.dimensionless_unscaled)])
-    return _stereo(starttime, endtime, spacecraft, identifier, units=units)
+    return _stereo(starttime, endtime, spacecraft, identifier, units=units).load(starttime, endtime)
 
 
 let_l1.__doc__ = _docstring('STA_L1_LET',
@@ -100,7 +101,7 @@ def sept_l1(starttime, endtime, spacecraft):
     units = OrderedDict([('Q_FLAG', u.dimensionless_unscaled),
                          ('Heater_NS', u.deg_C),
                          ('Heater_E', u.deg_C)])
-    sept = _stereo(starttime, endtime, spacecraft, identifier, units=units)
+    sept = _stereo(starttime, endtime, spacecraft, identifier, units=units).load(starttime, endtime)
     sept.data['Epoch_NS'] = util.epoch_to_datetime(sept.data['Epoch_NS'].values)
     sept.data['Epoch_E'] = util.epoch_to_datetime(sept.data['Epoch_E'].values)
 
@@ -114,7 +115,7 @@ def sit_l1(starttime, endtime, spacecraft):
     identifier = _identifier_select(spacecraft)+'_L1_SIT'
 
     units = OrderedDict([('Q_FLAG', u.dimensionless_unscaled)])
-    return _stereo(starttime, endtime, spacecraft, identifier, units=units)
+    return _stereo(starttime, endtime, spacecraft, identifier, units=units).load(starttime, endtime)
 
 
 sit_l1.__doc__ = _docstring('STA_L1_SIT',
@@ -125,7 +126,7 @@ def ste_l1(starttime, endtime, spacecraft):
     identifier = _identifier_select(spacecraft)+'_L1_STE'
 
     units = OrderedDict([('Q_FLAG', u.dimensionless_unscaled)])
-    return _stereo(starttime, endtime, spacecraft, identifier, units=units)
+    return _stereo(starttime, endtime, spacecraft, identifier, units=units).load(starttime, endtime)
 
 
 ste_l1.__doc__ = _docstring('STA_L1_STE',
