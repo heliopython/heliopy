@@ -835,7 +835,7 @@ def cdf2df(cdf, index_key, dtimeindex=True, badvalues=None,
                 df[df_key] = vars[cdf_key][...]
             elif ndims == 2:
                 for i in range(key_shape[1]):
-                    df[df_key + '_' + str(i)] = vars[cdf_key][...][:, i]
+                    df[f'{df_key}_{i}'] = vars[cdf_key][...][:, i]
 
     # Replace bad values with nans
     if badvalues is not None:
