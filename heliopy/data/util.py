@@ -764,16 +764,21 @@ def cdf2df(cdf, index_key, dtimeindex=True, badvalues=None,
 
     if dtimeindex:
         index = cdflib.epochs.CDFepoch.breakdown(index_, to_np=True)
-        index = pd.DataFrame({'year': index[:, 0],
-                              'month': index[:, 1],
-                              'day': index[:, 2],
-                              'hour': index[:, 3],
-                              'minute': index[:, 4],
-                              'second': index[:, 5],
-                              'ms': index[:, 6],
-                              'us': index[:, 7],
-                              'ns': index[:, 8]})
-        index = pd.DatetimeIndex(pd.to_datetime(index), name='Time')
+        index_df = pd.DataFrame({'year': index[:, 0],
+                                 'month': index[:, 1],
+                                 'day': index[:, 2],
+                                 'hour': index[:, 3],
+                                 'minute': index[:, 4],
+                                 'second': index[:, 5],
+                                 'ms': index[:, 6],
+                                 })
+        # Not all CDFs store pass milliseconds
+        try:
+            index_df['us'] = index[:, 7]
+            index_df['ns'] = index[:, 8]
+        except IndexError:
+            pass
+        index = pd.DatetimeIndex(pd.to_datetime(index_df), name='Time')
     df = pd.DataFrame(index=index)
     npoints = cdf.varget(index_key).shape[0]
 
