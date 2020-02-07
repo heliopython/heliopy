@@ -758,12 +758,12 @@ def cdf2df(cdf, index_key, dtimeindex=True, badvalues=None,
 
     # Extract index values
     try:
-        index_ = cdf.varget(index_key)[...][:, 0]
+        index = cdf.varget(index_key)[...][:, 0]
     except IndexError:
-        index_ = cdf.varget(index_key)[...]
+        index = cdf.varget(index_key)[...]
 
     if dtimeindex:
-        index = cdflib.epochs.CDFepoch.breakdown(index_, to_np=True)
+        index = cdflib.epochs.CDFepoch.breakdown(index, to_np=True)
         index_df = pd.DataFrame({'year': index[:, 0],
                                  'month': index[:, 1],
                                  'day': index[:, 2],
