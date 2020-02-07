@@ -783,9 +783,10 @@ def cdf2df(cdf, index_key, dtimeindex=True, badvalues=None,
     npoints = df.shape[0]
 
     var_list = []
-    for attr in list(cdf.cdf_info().keys()):
+    cdf_info = cdf.cdf_info()
+    for attr in list(cdf_info.keys()):
         if 'variable' in attr.lower():
-            if len(cdf.cdf_info()[attr]) > 0:
+            if len(cdf_info[attr]) > 0:
                 var_list += [attr]
 
     keys = {}
