@@ -761,23 +761,19 @@ def cdf2df(cdf, index_key, dtimeindex=True, badvalues=None,
         index_ = cdf.varget(index_key)[...][:, 0]
     except IndexError:
         index_ = cdf.varget(index_key)[...]
-    try:
-        utc_comp = cdflib.cdfepoch.breakdown(index_, to_np=True)
-        if utc_comp.shape[1] == 9:
-            millis = utc_comp[:, 6] * (10**3)
-            micros = utc_comp[:, 8] * (10**2)
-            nanos = utc_comp[:, 7]
-            utc_comp[:, 6] = millis + micros + nanos
-            utc_comp = np.delete(utc_comp, np.s_[-2:], axis=1)
-        try:
-            index = np.asarray([dt.datetime(*x) for x in utc_comp])
-        except ValueError:
-            utc_comp[:, 6] -= micros
-            index = np.asarray([dt.datetime(*x) for x in utc_comp])
-    except Exception:
-        index = index_
+
     if dtimeindex:
-        index = pd.DatetimeIndex(index, name='Time')
+        index = cdflib.epochs.CDFepoch.breakdown(index_, to_np=True)
+        index = pd.DataFrame({'year': index[:, 0],
+                              'month': index[:, 1],
+                              'day': index[:, 2],
+                              'hour': index[:, 3],
+                              'minute': index[:, 4],
+                              'second': index[:, 5],
+                              'ms': index[:, 6],
+                              'us': index[:, 7],
+                              'ns': index[:, 8]})
+        index = pd.DatetimeIndex(pd.to_datetime(index), name='Time')
     df = pd.DataFrame(index=index)
     npoints = cdf.varget(index_key).shape[0]
 
