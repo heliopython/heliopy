@@ -780,7 +780,7 @@ def cdf2df(cdf, index_key, dtimeindex=True, badvalues=None,
             pass
         index = pd.DatetimeIndex(pd.to_datetime(index_df), name='Time')
     df = pd.DataFrame(index=index)
-    npoints = cdf.varget(index_key).shape[0]
+    npoints = df.shape[0]
 
     var_list = []
     for attr in list(cdf.cdf_info().keys()):
