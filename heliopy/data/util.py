@@ -826,7 +826,10 @@ def cdf2df(cdf, index_key, dtimeindex=True, badvalues=None,
     for cdf_key in vars:
         df_key = keys[cdf_key]
         # Get fill value for this key
-        fillval = cdf.varattsget(cdf_key)['FILLVAL']
+        try:
+            fillval = cdf.varattsget(cdf_key)['FILLVAL']
+        except KeyError:
+            fillval = np.nan
 
         if isinstance(df_key, list):
             for i, subkey in enumerate(df_key):
