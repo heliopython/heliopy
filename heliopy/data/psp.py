@@ -27,13 +27,11 @@ class _PSPDownloader(util.Downloader):
     def load_local_file(self, interval):
         local_path = self.local_path(interval)
         cdf = util._load_cdf(local_path)
-        return util.cdf2df(
-            cdf, index_key=self.epoch_label, badvalues=self.badvalues)
+        return util.cdf2df(cdf, index_key=self.epoch_label)
 
 
 # SWEAP classes/methods
 class _SWEAPDownloader(_PSPDownloader):
-    badvalues = [-1e31]
     units = {'u/e': u.dimensionless_unscaled}
     # Fill in some missing units
     for i in range(3):
@@ -81,7 +79,7 @@ def sweap_spc_l3(starttime, endtime):
 
 # FIELDS classes/methods
 class _FIELDSDownloader(_PSPDownloader):
-    badvalues = None
+    pass
 
 
 class _FIELDSmag_RTN_1min_Downloader(_FIELDSDownloader):

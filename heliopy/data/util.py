@@ -545,7 +545,7 @@ def cdf_units(cdf_, manual_units=None, length=None):
                 val = []
                 val.append(key)
                 for x in range(0, ncols[1]):
-                    field = key + "{}".format('_' + str(x))
+                    field = f'{key}_{x}'
                     val.append(field)
                 key_dict[key] = val
 
@@ -732,9 +732,7 @@ def cdf2df(cdf, index_key, dtimeindex=True, badvalues=None,
         If ``True``, the DataFrame index is parsed as a datetime.
         Default is ``True``.
     badvalues : dict, list, optional
-        A dictionary that maps the new DataFrame column keys to a list of bad
-        values to replace with nans. Alternatively a list of numbers which are
-        replaced with nans in all columns.
+        Deprecated.
     ignore : list, optional
         In case a CDF file has columns that are unused / not required, then
         the column names can be passed as a list into the function.
@@ -748,6 +746,10 @@ def cdf2df(cdf, index_key, dtimeindex=True, badvalues=None,
     df : :class:`pandas.DataFrame`
         Data frame with read in data.
     """
+    if badvalues is not None:
+        warnings.warn('The badvalues argument is decprecated, as bad values '
+                      'are now automatically recognised using the FILLVAL CDF '
+                      'attribute.', DeprecationWarning)
     if include is not None:
         if ignore is not None:
             raise ValueError('ignore and include are incompatible keywords')
@@ -823,23 +825,32 @@ def cdf2df(cdf, index_key, dtimeindex=True, badvalues=None,
     # Loop through each key and put data into the dataframe
     for cdf_key in vars:
         df_key = keys[cdf_key]
+        # Get fill value for this key
+        try:
+            fillval = cdf.varattsget(cdf_key)['FILLVAL']
+        except KeyError:
+            fillval = np.nan
+
         if isinstance(df_key, list):
             for i, subkey in enumerate(df_key):
-                df[subkey] = vars[cdf_key][...][:, i]
+                data = vars[cdf_key][...][:, i].astype(float)
+                data[data == fillval] = np.nan
+                df[subkey] = data
         else:
             # If ndims is 1, we just have a single column of data
             # If ndims is 2, have multiple columns of data under same key
             key_shape = vars[cdf_key].shape
             ndims = len(key_shape)
             if ndims == 1:
-                df[df_key] = vars[cdf_key][...]
+                data = vars[cdf_key][...].astype(float)
+                data[data == fillval] = np.nan
+                df[df_key] = data
             elif ndims == 2:
                 for i in range(key_shape[1]):
-                    df[f'{df_key}_{i}'] = vars[cdf_key][...][:, i]
+                    data = vars[cdf_key][...][:, i].astype(float)
+                    data[data == fillval] = np.nan
+                    df[df_key + '_' + str(i)] = data
 
-    # Replace bad values with nans
-    if badvalues is not None:
-        df = df.replace(badvalues, np.nan)
     return df
 
 
