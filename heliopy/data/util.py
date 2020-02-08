@@ -757,10 +757,14 @@ def cdf2df(cdf, index_key, dtimeindex=True, badvalues=None,
             include.append(index_key)
 
     # Extract index values
+    index = cdf.varget(index_key)
     try:
-        index = cdf.varget(index_key)[...][:, 0]
+        # If there are multiple indexes, take the first one
+        # TODO: this is just plain wrong, there should be a way to get all
+        # the indexes out
+        index = index[...][:, 0]
     except IndexError:
-        index = cdf.varget(index_key)[...]
+        pass
 
     if dtimeindex:
         index = cdflib.epochs.CDFepoch.breakdown(index, to_np=True)
@@ -783,14 +787,15 @@ def cdf2df(cdf, index_key, dtimeindex=True, badvalues=None,
     npoints = df.shape[0]
 
     var_list = []
-    for attr in list(cdf.cdf_info().keys()):
+    cdf_info = cdf.cdf_info()
+    for attr in list(cdf_info.keys()):
         if 'variable' in attr.lower():
-            if len(cdf.cdf_info()[attr]) > 0:
+            if len(cdf_info[attr]) > 0:
                 var_list += [attr]
 
     keys = {}
     for attr in var_list:
-        for cdf_key in cdf.cdf_info()[attr]:
+        for cdf_key in cdf_info[attr]:
             if ignore:
                 if cdf_key in ignore:
                     continue
@@ -830,7 +835,7 @@ def cdf2df(cdf, index_key, dtimeindex=True, badvalues=None,
                 df[df_key] = vars[cdf_key][...]
             elif ndims == 2:
                 for i in range(key_shape[1]):
-                    df[df_key + '_' + str(i)] = vars[cdf_key][...][:, i]
+                    df[f'{df_key}_{i}'] = vars[cdf_key][...][:, i]
 
     # Replace bad values with nans
     if badvalues is not None:
