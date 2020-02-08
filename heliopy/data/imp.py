@@ -139,13 +139,12 @@ def merged(probe, starttime, endtime):
     return dl.load(starttime, endtime)
 
 
-def _imp8(starttime, endtime, identifier, units=None, badvalues=None,
+def _imp8(starttime, endtime, identifier, units=None,
           warn_missing_units=True):
     """
     Generic method for downloading IMP8 data.
     """
     dl = cdasrest.CDASDwonloader('imp8', identifier, 'imp', units=units,
-                                 badvalues=badvalues,
                                  warn_missing_units=warn_missing_units)
     return dl.load(starttime, endtime)
 
