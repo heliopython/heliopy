@@ -15,6 +15,7 @@ def test_mfi_h0():
     check_data_output(df)
 
 
+@pytest.mark.timeout(360)
 def test_mfi_h2():
     df = wind.mfi_h2(starttime, endtime)
     check_data_output(df)
