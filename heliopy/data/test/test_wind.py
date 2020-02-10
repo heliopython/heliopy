@@ -35,11 +35,13 @@ def test_swe_h1():
     check_data_output(df)
 
 
+@pytest.mark.timeout(360)
 def test_swe_h3():
     df = wind.swe_h3(starttime, endtime)
     check_data_output(df)
 
 
+@pytest.mark.timeout(360)
 def test_threedp_elpd():
     df = wind.threedp_elpd(starttime, endtime)
     check_data_output(df)
