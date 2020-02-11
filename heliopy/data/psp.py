@@ -103,6 +103,14 @@ class _FIELDSmag_RTN_Downloader(_FIELDSDownloader):
         # Split into 4 hourly intervals
         for interval in daily:
             intervals += interval.split(4)
+        # Remove intervals from the beginning
+        for interval in intervals[:4].copy():
+            if starttime > interval.end:
+                intervals.pop(0)
+        # Remove intervals from the end
+        for interval in intervals[-4:].copy():
+            if endtime < interval.start:
+                intervals.pop(-1)
         return intervals
 
     def local_dir(self, interval):
