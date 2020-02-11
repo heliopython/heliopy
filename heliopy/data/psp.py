@@ -94,9 +94,45 @@ class _FIELDSmag_RTN_1min_Downloader(_FIELDSDownloader):
         return f'psp_fld_l2_mag_rtn_1min_{datestr}_v01.cdf'
 
 
+class _FIELDSmag_RTN_Downloader(_FIELDSDownloader):
+    epoch_label = 'epoch_mag_RTN'
+
+    def intervals(self, starttime, endtime):
+        daily = self.intervals_daily(starttime, endtime)
+        intervals = []
+        # Split into 4 hourly intervals
+        for interval in daily:
+            intervals += interval.split(4)
+        # Remove intervals from the beginning
+        for interval in intervals[:4].copy():
+            if starttime > interval.end:
+                intervals.pop(0)
+        # Remove intervals from the end
+        for interval in intervals[-4:].copy():
+            if endtime < interval.start:
+                intervals.pop(-1)
+        return intervals
+
+    def local_dir(self, interval):
+        year = interval.start.strftime('%Y')
+        return pathlib.Path('psp') / 'fields' / 'l2' / 'mag_rtn' / year
+
+    def fname(self, interval):
+        datestr = interval.start.strftime('%Y%m%d%H')
+        return f'psp_fld_l2_mag_rtn_{datestr}_v01.cdf'
+
+
 def fields_mag_rtn_1min(starttime, endtime):
     """
     1 minute averaged magnetic field data.
     """
     dl = _FIELDSmag_RTN_1min_Downloader()
+    return dl.load(starttime, endtime)
+
+
+def fields_mag_rtn(starttime, endtime):
+    """
+    Full resolution magnetic field data.
+    """
+    dl = _FIELDSmag_RTN_Downloader()
     return dl.load(starttime, endtime)
