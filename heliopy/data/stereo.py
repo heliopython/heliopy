@@ -207,7 +207,10 @@ def het_l1(starttime, endtime, spacecraft, timeres):
             "p_400_600", "p_400_600_unc",
             "p_600_1000", "p_600_1000_unc"]
 
-    units = OrderedDict([('Verse', u.dimensionless_unscaled),
+    units = OrderedDict([('Time', u.ms),
+                         ('Epoch0', u.ms),
+                         ('Epoch1', u.ms),
+                         ('Verse', u.dimensionless_unscaled),
                         ('Year0', u.dimensionless_unscaled),
                         ('Month0', u.dimensionless_unscaled),
                         ('day0', u.dimensionless_unscaled),
@@ -289,10 +292,13 @@ def het_l1(starttime, endtime, spacecraft, timeres):
             dt = timedelta(seconds=60)
         
         thisdata['Time'] = t0+dt/2
-        thisdata = thisdata.set_index('Time')
-        thisdata = thisdata.drop(["Verse", "Year0", "Month0", "day0", "hour0minute0"], axis=1)
+        thisdata['Epoch0'] = t0
         if timeres != "1m":
+            thisdata['Epoch1'] = t1
             thisdata = thisdata.drop(["Year1", "Month1", "day1", "hour1minute1"], axis=1)
+
+        thisdata = thisdata.drop(["Verse", "Year0", "Month0", "day0", "hour0minute0"], axis=1)
+        thisdata = thisdata.set_index('Time')
         return thisdata
 
     return util.process(dirs, fnames, extension, local_base_dir,
