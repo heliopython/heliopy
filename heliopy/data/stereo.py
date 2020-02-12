@@ -1,8 +1,12 @@
 """
 Methods for importing data from the STEREO spacecraft.
 
-All data is publically available at ftp://spdf.gsfc.nasa.gov/pub/data/stereo/.
+Most data is publically available at https://cdaweb.gsfc.nasa.gov/index.html/.
+
 The STEREO spacecraft homepage can be found at https://stereo.gsfc.nasa.gov/.
+
+The particle instrument data is available at http://www.srl.caltech.edu/STEREO/
+Please refer to the documentation of the data found there.
 """
 from collections import OrderedDict
 import pathlib
