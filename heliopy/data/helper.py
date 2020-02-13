@@ -231,8 +231,8 @@ def cdf_dict(unit_string):
                          ('Na', u.dimensionless_unscaled),
                          ('cnts', u.dimensionless_unscaled),
                          ('cnts/sec', u.dimensionless_unscaled),
-                        ('Counts/hour', u.dimensionless_unscaled),
-                        ('Counts/256sec', u.dimensionless_unscaled)])
+                         ('Counts/hour', u.dimensionless_unscaled),
+                         ('Counts/256sec', u.dimensionless_unscaled)]) 
     try:
         return units[unit_string]
     except KeyError:
