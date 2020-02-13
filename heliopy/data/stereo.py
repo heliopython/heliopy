@@ -362,7 +362,7 @@ def sept_l2(starttime, endtime, spacecraft, species, view, timeres):
     speciesident = "ele" if species=="e" else "ion"
         
     local_base_dir = stereo_sept_l2_dir / identifier / (identifier+"_L2_SEPT")
-    remote_base_url = sept_l2_url + "/" 
+    remote_base_url = sept_l2_url
 
     if species == 'e':
         names = ['Julian', 'Year', 'Doy',
