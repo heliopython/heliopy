@@ -96,7 +96,11 @@ def let_l1(starttime, endtime, spacecraft):
 
 
 let_l1.__doc__ = _docstring('STA_L1_LET',
-                            'STEREO IMPACT/LET Level 1 Data')
+                            """STEREO IMPACT/LET Level 1 Data
+
+    Note that the energies are given in units MeV/n and the 
+    intensities in units (1/(cm^2 s sr MeV/nuc)). The astropy
+    units cannot consistently give a unit per nucleon""")
 
 
 def sept_l1(starttime, endtime, spacecraft):
@@ -123,7 +127,11 @@ def sit_l1(starttime, endtime, spacecraft):
 
 
 sit_l1.__doc__ = _docstring('STA_L1_SIT',
-                            'STEREO IMPACT/SIT Level 1 Data')
+                            """STEREO IMPACT/SIT Level 1 Data
+
+    Note that the energies are given in units MeV/n and the 
+    intensities in units (1/(cm^2 s sr MeV/nuc)). The astropy
+    units cannot consistently give a unit per nucleon""")
 
 
 def ste_l1(starttime, endtime, spacecraft):
