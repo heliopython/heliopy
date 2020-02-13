@@ -7,6 +7,8 @@ The STEREO spacecraft homepage can be found at https://stereo.gsfc.nasa.gov/.
 
 The particle instrument data is available at http://www.srl.caltech.edu/STEREO/
 Please refer to the documentation of the data found there.
+
+In particular read the instrument and data notes and caveats!
 """
 from collections import OrderedDict
 import pathlib
