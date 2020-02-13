@@ -62,7 +62,8 @@ def _stereo(starttime, endtime, spacecraft, identifier, units=None,
 def mag_l1_rtn(starttime, endtime, spacecraft):
     identifier = _identifier_select(spacecraft)+'_L1_MAG_RTN'
 
-    units = OrderedDict([('Q_FLAG', u.dimensionless_unscaled)])
+    units = OrderedDict([('Q_FLAG', u.dimensionless_unscaled),
+                        ('MAGFLAGUC', u.dimensionless_unscaled)])
     return _stereo(starttime, endtime, spacecraft, identifier, units=units).load(starttime, endtime)
 
 
