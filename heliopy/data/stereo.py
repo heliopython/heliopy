@@ -136,16 +136,6 @@ sit_l1.__doc__ = _docstring('STA_L1_SIT',
     units cannot consistently give a unit per nucleon""")
 
 
-def ste_l1(starttime, endtime, spacecraft):
-    identifier = _identifier_select(spacecraft)+'_L1_STE'
-
-    units = OrderedDict([('Q_FLAG', u.dimensionless_unscaled)])
-    return _stereo(starttime, endtime, spacecraft, identifier, units=units).load(starttime, endtime)
-
-
-ste_l1.__doc__ = _docstring('STA_L1_STE',
-                            'STEREO IMPACT/STE Level 1 Data')
-
 # +
 def het_l1(starttime, endtime, spacecraft, timeres):
     """
