@@ -1,6 +1,7 @@
 """
 Methods for importing data from the ACE spacecraft.
 
+All data is publically available at ftp://spdf.gsfc.nasa.gov/pub/data/ace/.
 The ACE spacecraft homepage can be found at http://www.srl.caltech.edu/ACE/.
 """
 from heliopy.data import cdasrest
@@ -14,7 +15,9 @@ def _ace(starttime, endtime, identifier, warn_missing_units=True):
     """
     Generic method for downloading ACE data.
     """
+    badvalues = 1e-31
     return cdasrest.CDASDwonloader('ac', identifier, 'ace',
+                                   badvalues=badvalues,
                                    warn_missing_units=warn_missing_units)
 
 
@@ -131,7 +134,8 @@ swi_h6.__doc__ = _docstring('AC_H6_SWI', '12-minute protons')
 
 def epm_h1(starttime, endtime):
     identifier = 'AC_H1_EPM'
-    return _ace(starttime, endtime, identifier)
+    return _ace(starttime, endtime, identifier).load(
+        starttime, endtime)
 
 
 epm_h1.__doc__ = _docstring('AC_H1_EPM', '5-minute Solar Energetic Particles')
@@ -139,7 +143,8 @@ epm_h1.__doc__ = _docstring('AC_H1_EPM', '5-minute Solar Energetic Particles')
 
 def epm_h2(starttime, endtime):
     identifier = 'AC_H2_EPM'
-    return _ace(starttime, endtime, identifier)
+    return _ace(starttime, endtime, identifier).load(
+        starttime, endtime)
 
 
 epm_h2.__doc__ = _docstring('AC_H2_EPM', '1-hour Solar Energetic Particles')
@@ -147,7 +152,8 @@ epm_h2.__doc__ = _docstring('AC_H2_EPM', '1-hour Solar Energetic Particles')
 
 def epm_h3(starttime, endtime):
     identifier = 'AC_H3_EPM'
-    return _ace(starttime, endtime, identifier)
+    return _ace(starttime, endtime, identifier).load(
+        starttime, endtime)
 
 
 epm_h3.__doc__ = _docstring('AC_H3_EPM', '12-second Solar Energetic Particles')
@@ -155,7 +161,8 @@ epm_h3.__doc__ = _docstring('AC_H3_EPM', '12-second Solar Energetic Particles')
 
 def sis_h1(starttime, endtime):
     identifier = 'AC_H1_SIS'
-    return _ace(starttime, endtime, identifier)
+    return _ace(starttime, endtime, identifier).load(
+        starttime, endtime)
 
 
 sis_h1.__doc__ = _docstring('AC_H1_SIS', '256-sec solar isotopes')
@@ -163,7 +170,8 @@ sis_h1.__doc__ = _docstring('AC_H1_SIS', '256-sec solar isotopes')
 
 def sis_h2(starttime, endtime):
     identifier = 'AC_H2_SIS'
-    return _ace(starttime, endtime, identifier)
+    return _ace(starttime, endtime, identifier).load(
+        starttime, endtime)
 
 
 sis_h2.__doc__ = _docstring('AC_H2_SIS', '1-hour solar isotopes')

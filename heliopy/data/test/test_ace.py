@@ -71,3 +71,28 @@ def test_swi_h3():
 def test_swi_h6():
     df = ace.swi_h6(starttime, endtime)
     check_data_output(df)
+
+
+def test_epm_h1():
+    df = ace.epm_h1(starttime, endtime)
+    check_data_output(df)
+
+
+def test_epm_h2():
+    df = ace.epm_h2(starttime, endtime)
+    check_data_output(df)
+
+
+def test_epm_h3():
+    df = ace.epm_h3(starttime, endtime)
+    check_data_output(df)
+
+
+def test_sis_h1():
+    df = ace.mfi_h1(starttime, endtime)
+    check_data_output(df)
+
+
+def test_sis_h2():
+    df = ace.mfi_h2(starttime, endtime)
+    check_data_output(df)
