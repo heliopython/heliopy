@@ -28,8 +28,10 @@ stereo_het_l2_dir = data_dir / 'stereo'
 
 het_url = 'http://www.srl.caltech.edu/STEREO/DATA/HET/'
 
+
 def _docstring(identifier, extra):
     return cdasrest._docstring_stereo(identifier, 'S', extra)
+
 
 def _identifier_select(spacecraft):
     """
@@ -169,6 +171,7 @@ def het_l1(starttime, endtime, spacecraft, timeres):
     
     sc_identifiers = {"STA": "Ahead",
                         "STB": "Behind"}
+
     identifier = _identifier_select(spacecraft)
     sc_ident = sc_identifiers[identifier]
         

@@ -595,6 +595,7 @@ def cdf_units(cdf_, manual_units=None, length=None):
     if manual_units:
         units.update(manual_units)
     logger.info(f'Extracted following units: {units}')
+
     return units
 
 
@@ -775,7 +776,7 @@ def cdf2df(cdf, index_key, dtimeindex=True, badvalues=None,
         if 'Epoch_NS' in cdf_vars:
             index_key = 'Epoch_NS'
     index = cdf.varget(index_key)
-    
+
     try:
         # If there are multiple indexes, take the first one
         # TODO: this is just plain wrong, there should be a way to get all
