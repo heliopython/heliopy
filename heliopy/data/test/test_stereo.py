@@ -34,8 +34,8 @@ def test_sit_l1():
     check_data_output(df)
 
 
-def test_ste_l1():
-    df = stereo.ste_l1(starttime, endtime)
+def test_het_l1():
+    df = stereo.het_l1(starttime, endtime)
     check_data_output(df)
 
 
