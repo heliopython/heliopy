@@ -1,0 +1,3 @@
+Bad values in CDF files are now automatically detected and set to NaN values.
+As a result the ``badvalues`` argument to :func:`heliopy.data.util.cdf2df` is
+now deprecated.
