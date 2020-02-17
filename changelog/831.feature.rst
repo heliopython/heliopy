@@ -1,0 +1,2 @@
+`heliopy.spice.Trajectory.generate_positions` now accpets times as anything that
+can be parsed by `astropy.time.Time`.
