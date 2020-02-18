@@ -1,3 +1,27 @@
+Heliopy 0.10.0 (2020-02-18)
+===========================
+
+Features
+--------
+
+- Added PSP SWEAP level 2 data to :mod:`heliopy.data.psp`. (`#828 <https://github.com/heliopython/heliopy/pull/828>`__)
+- Added PSP FIELDS high resolution data import to :mod:`heliopy.data.psp`. (`#842 <https://github.com/heliopython/heliopy/pull/842>`__)
+- `heliopy.spice.Trajectory.generate_positions` now accepts times as anything that
+  can be parsed by `astropy.time.Time`. (`#831 <https://github.com/heliopython/heliopy/pull/831>`__)
+- Added a ``include`` argument to :func:`heliopy.data.util.cdf2df`, to allow
+  loading a subset of variables in a CDF file. (`#841 <https://github.com/heliopython/heliopy/pull/841>`__)
+- Improved time performance of loading CDF files. (`#844 <https://github.com/heliopython/heliopy/pull/844>`__, `#845 <https://github.com/heliopython/heliopy/pull/845>`__, `#847 <https://github.com/heliopython/heliopy/pull/847>`__)
+- Bad values in CDF files are now automatically detected and set to NaN values.
+  As a result the ``badvalues`` argument to :func:`heliopy.data.util.cdf2df` is
+  now deprecated. (`#848 <https://github.com/heliopython/heliopy/pull/848>`__)
+
+
+Improved Documentation
+----------------------
+
+- Cleaned up the docstrings of :mod:`heliopy.data`. (`#846 <https://github.com/heliopython/heliopy/pull/846>`__)
+
+
 Heliopy 0.9.0 (2019-11-13)
 ==========================
 
