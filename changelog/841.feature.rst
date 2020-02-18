@@ -1,2 +1,0 @@
-Added a ``include`` argument to :func:`heliopy.data.util.cdf2df`, to allow
-loading a subset of variables in a CDF file.
