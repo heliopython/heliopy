@@ -1,19 +1,20 @@
 Creating a release
 ==================
 
-1. Fetch the latest copy of the upstream repository
+1. Fetch the latest copy of the upstream repository, and merge it into your
+   local master branch:
 
 .. code-block:: bash
 
+  git fetch upstream
   git checkout master
+  git merge upstream/master
 
-2. Run
+2. Clean out any old builds or files using
 
 .. code-block:: bash
 
   git clean -xfd
-
-to clean out any old builds
 
 3. Tag the current version using the github releases page:
    https://github.com/heliopython/heliopy/releases
@@ -41,4 +42,6 @@ to clean out any old builds
 See https://packaging.python.org/tutorials/distributing-packages/#packaging-your-project
 for more information.
 
-7. Update conda package at https://github.com/conda-forge/heliopy-feedstock
+7. Update the conda package at https://github.com/conda-forge/heliopy-feedstock
+   A PR should be opened automatically, and you just have to merge it if all the
+   tests pass.
