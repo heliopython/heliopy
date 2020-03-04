@@ -1,7 +1,4 @@
 """
-Sunspot
--------
-
 Methods for automatically downloading sunspot number data.
 
 For more info about the sunspot number data, visit

@@ -1095,21 +1095,19 @@ def _docstring(identifier, extra):
     return cdasrest._docstring(identifier, 'M', extra)
 
 
-def _helios(starttime, endtime, identifier, units=None, badvalues=None,
+def _helios(starttime, endtime, identifier, units=None,
             warn_missing_units=True):
     """
     Generic method for downloading Helios data from CDAWeb.
     """
     dl = cdasrest.CDASDwonloader('helios', identifier, 'helios', units=units,
-                                 badvalues=badvalues,
                                  warn_missing_units=warn_missing_units)
     return dl.load(starttime, endtime)
 
 
 def merged(probe, starttime, endtime):
     identifier = f'HELIOS{probe}_40SEC_MAG-PLASMA'
-    badvalues = [-1e31]
-    return _helios(starttime, endtime, identifier, badvalues=badvalues,
+    return _helios(starttime, endtime, identifier,
                    warn_missing_units=False)
 
 

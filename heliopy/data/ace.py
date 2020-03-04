@@ -1,7 +1,6 @@
 """
 Methods for importing data from the ACE spacecraft.
 
-All data is publically available at ftp://spdf.gsfc.nasa.gov/pub/data/ace/.
 The ACE spacecraft homepage can be found at http://www.srl.caltech.edu/ACE/.
 """
 from heliopy.data import cdasrest
@@ -15,9 +14,7 @@ def _ace(starttime, endtime, identifier, warn_missing_units=True):
     """
     Generic method for downloading ACE data.
     """
-    badvalues = 1e-31
     return cdasrest.CDASDwonloader('ac', identifier, 'ace',
-                                   badvalues=badvalues,
                                    warn_missing_units=warn_missing_units)
 
 

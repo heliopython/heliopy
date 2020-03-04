@@ -161,6 +161,7 @@ def cdf_dict(unit_string):
                         ('8=IMP8', u.dimensionless_unscaled),
                         (' index value', u.dimensionless_unscaled),
                         (' none', u.dimensionless_unscaled),
+                        ('Samples/cycle', u.dimensionless_unscaled),
                         ('microW m^-2', u.mW * u.m**-2),
                         ('years', u.yr),
                         ('(2038=Yr0)', u.yr),

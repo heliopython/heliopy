@@ -1,8 +1,5 @@
 """
 Methods for importing data from the Cassini spacecraft.
-
-All data is publically available at
-http://pds-atmospheres.nmsu.edu/data_and_services/atmospheres_data/Cassini/Cassini.html
 """
 import datetime
 import os

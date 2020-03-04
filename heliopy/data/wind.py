@@ -1,8 +1,5 @@
 """
 Methods for importing data from the WIND spacecraft.
-All data is publically available at ftp://spdf.gsfc.nasa.gov/pub/data/wind.
-See https://wind.nasa.gov/data_sources.php for more information on different
-data products.
 """
 import astropy.units as u
 from heliopy.data import cdasrest
@@ -12,13 +9,12 @@ def _docstring(identifier, description):
     return cdasrest._docstring(identifier, 'W', description)
 
 
-def _wind(starttime, endtime, identifier, badvalues=None, units=None,
+def _wind(starttime, endtime, identifier, units=None,
           intervals='monthly'):
     """
     Generic method for downloading ACE data.
     """
-    dl = cdasrest.CDASDwonloader('wi', identifier, 'wind', badvalues=badvalues,
-                                 units=units)
+    dl = cdasrest.CDASDwonloader('wi', identifier, 'wind', units=units)
     # Override intervals
     if intervals == 'daily':
         dl.intervals = dl.intervals_daily
@@ -30,10 +26,8 @@ def _wind(starttime, endtime, identifier, badvalues=None, units=None,
 # Actual download functions start here
 def swe_h1(starttime, endtime):
     identifier = 'WI_H1_SWE'
-    badvalues = 99999.9
     units = {'ChisQ_DOF_nonlin': u.dimensionless_unscaled}
-    return _wind(starttime, endtime, identifier,
-                 badvalues=badvalues, units=units)
+    return _wind(starttime, endtime, identifier, units=units)
 
 
 swe_h1.__doc__ = _docstring(
@@ -79,9 +73,8 @@ threedp_e0_emfits.__doc__ = _docstring(
 
 
 def swe_h3(starttime, endtime):
-    badvalues = -9.99999985e+30
     identifier = 'WI_H3_SWE'
-    return _wind(starttime, endtime, identifier, badvalues=badvalues)
+    return _wind(starttime, endtime, identifier)
 
 
 swe_h3.__doc__ = _docstring(
