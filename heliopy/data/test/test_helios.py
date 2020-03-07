@@ -5,9 +5,11 @@ import urllib
 
 import pytest
 
-from .util import check_data_output
+from .util import check_data_output, website_working
 
 helios = pytest.importorskip('heliopy.data.helios')
+pytest.mark.skipif(
+    not website_working('http://helios-data.ssl.berkeley.edu/data/'))
 pytest.mark.data()
 
 probe = '1'
@@ -50,7 +52,7 @@ def test_distribution_funcs():
     local_dir = local_dir / 'helios1' / 'dist' / '1974' / '346'
     local_dir.mkdir(parents=True, exist_ok=True)
     remote_file = ('http://helios-data.ssl.berkeley.edu/data/E1_experiment'
-                   '/helios_original/helios_1/1974/346/'
+                   '/E1_original_data/helios_1/1974/346/'
                    'h1y74d346h03m27s21_hdm.1')
     local_fname, _ = urllib.request.urlretrieve(
         remote_file, './h1y74d346h03m27s21_hdm.1')
