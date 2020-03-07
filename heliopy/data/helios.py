@@ -933,7 +933,8 @@ class _4hzDownloader(util.Downloader):
     def download(self, interval):
         remote_dir = ('E2_experiment/'
                       'Data_Cologne_Nov2016_bestdata/'
-                      'HR/helios{}'.format(self.probe))
+                      'HR%20-%20High%20Resolution%204Hz%20Data/'
+                      f'helios{self.probe}')
         remote_url = f'{remote_base_url}/{remote_dir}'
 
         local_fname = self.fname(interval)
