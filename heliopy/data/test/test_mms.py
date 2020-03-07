@@ -31,6 +31,8 @@ def test_fpi_des_moms(probe):
     check_data_output(df)
 
 
+# These tests take a *long* time to run, so comment them out
+"""
 @pytest.mark.parametrize("probe", probes)
 def test_fpi_dis_dist(probe):
     df = mms.fpi_dis_dist(probe, 'fast', starttime, endtime)
@@ -41,6 +43,7 @@ def test_fpi_dis_dist(probe):
 def test_fpi_des_dist(probe):
     df = mms.fpi_des_dist(probe, 'fast', starttime, endtime)
     check_data_output(df)
+"""
 
 
 def test_narrow_interval():
