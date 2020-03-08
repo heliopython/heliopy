@@ -833,8 +833,8 @@ def cdf2df(cdf, index_key, dtimeindex=True, badvalues=None,
 
         if isinstance(df_key, list):
             for i, subkey in enumerate(df_key):
-                data = vars[cdf_key][...][:, i].astype(float)
-                data[data == fillval] = np.nan
+                data = vars[cdf_key][...][:, i]
+                data = _fillval_nan(data, fillval)
                 df[subkey] = data
         else:
             # If ndims is 1, we just have a single column of data
@@ -842,16 +842,25 @@ def cdf2df(cdf, index_key, dtimeindex=True, badvalues=None,
             key_shape = vars[cdf_key].shape
             ndims = len(key_shape)
             if ndims == 1:
-                data = vars[cdf_key][...].astype(float)
-                data[data == fillval] = np.nan
+                data = vars[cdf_key][...]
+                data = _fillval_nan(data, fillval)
                 df[df_key] = data
             elif ndims == 2:
                 for i in range(key_shape[1]):
-                    data = vars[cdf_key][...][:, i].astype(float)
-                    data[data == fillval] = np.nan
-                    df[df_key + '_' + str(i)] = data
+                    data = vars[cdf_key][...][:, i]
+                    data = _fillval_nan(data, fillval)
+                    df[f'{df_key}_{i}'] = data
 
     return df
+
+
+def _fillval_nan(data, fillval):
+    try:
+        data[data == fillval] = np.nan
+    except ValueError:
+        # This happens if we try and assign a NaN to an int type
+        pass
+    return data
 
 
 class RemoteFileNotPresentError(RuntimeError):
