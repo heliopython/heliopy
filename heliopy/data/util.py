@@ -1540,6 +1540,11 @@ def xr_timefilter(data, starttime, endtime):
             'No data available between {} and {}'.format(starttime, endtime))
 
     if isinstance(data, list) and 'time' in data[0].dims:
+        # Make sure that the dataarrays indices do not overlap
+        for i in np.arange(len(data) - 1):
+            data[i] = data[i].sel(
+                time=slice(data[i].time[0], data[i + 1].time[0]))
+
         # Concatenate the list along time
         data = xr.concat(data, dim='time')
 
