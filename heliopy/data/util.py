@@ -1400,13 +1400,31 @@ def cdf2xr(cdf, index_key, starttime=None, endtime=None, list_keys=None,
     elif list_keys and len(list_keys) == 1:
         for cdf_key in list_keys.values():
             data = cdf.varget(cdf_key, None, tstart, tend)[...]
-            if len(data.shape) == 2:
+
+            if len(data.shape) == 0:
+                raise ValueError('Loaded data is empty')
+
+            elif len(data.shape) == 1:
+                # Assumes time series
+                data = xr.DataArray(data, coords=[index], dims=['time'])
+
+            elif len(data.shape) == 2 and data.shape[1] <= 4:
+                # Assumes 2D data with cartesian vector components
                 data_coords = ['x', 'y', 'z', 'tot']
                 data = xr.DataArray(
-                    data, coords=[index, data_coords[:data.shape[-1]]],
+                    data, coords=[index, data_coords[:data.shape[1]]],
+                    dims=['time', cdf_key])
+
+            elif len(data.shape) == 2 and data.shape[1] > 4:
+                # 2D data with undetermined components
+                data_coords = np.arange(data.shape[1])
+                data = xr.DataArray(
+                    data, coords=[index, data_coords[:data.shape[1]]],
                     dims=['time', cdf_key])
             else:
-                data = xr.DataArray(data, coords=[index], dims=['time'])
+                raise ValueError('More than 2D data '
+                                 '(e.g., distribution functions) require'
+                                 ' more than one CDF key')
 
             data.name = cdf_key
 
