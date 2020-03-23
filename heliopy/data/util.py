@@ -1438,9 +1438,9 @@ def cdf2xr(cdf, index_key, starttime=None, endtime=None, list_keys=None,
             coords.append(cdf.varget(list_keys[key], None, tstart, tend)[...])
             dims.append(list_keys[key])
 
-            # If energy is 2D, just take first dimension
-            # (energies are assumed constant)
-            if key == 'energy' and len(coords[i].shape) == 2:
+            # If key is 2D, just take first dimension
+            # (all coords are assumed constant)
+            if len(coords[i].shape) == 2:
                 coords[i] = coords[i][0, :]
 
         data = coords[0]
