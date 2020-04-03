@@ -17,7 +17,7 @@ before_install:
 - conda create --yes -n testenv python=$PYTHON_VERSION
 - source activate testenv
 - conda install --yes hdf5
-- pip install .[test] $PIPPRE
+- pip install .[test,data,spice] $PIPPRE
 - export CLUSTERCOOKIE=2F1B4760251B51783700055F1A037271685A64680A1450722A465D302F0947606504526F370C40752A0640633228546C2A015F2F28075E
 script:
 - pytest heliopy/ --cov=heliopy/ -v --durations=5 --pep8 -n auto
