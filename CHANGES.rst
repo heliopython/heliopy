@@ -1,3 +1,13 @@
+Heliopy 0.10.1 (2020-04-03)
+===========================
+
+Bug Fixes
+---------
+
+- Updated the url for downloading Helios 4Hz magnetic field data. (`#856 <https://github.com/heliopython/heliopy/pull/856>`__)
+- Avoid converting all CDF data to floating point data, to save significant memory when loading a CDF file. (`#858 <https://github.com/heliopython/heliopy/pull/858>`__)
+
+
 Heliopy 0.10.0 (2020-02-20)
 ===========================
 
