@@ -1,19 +1,44 @@
 """
-Methods for importing data from the DSCOVR.
+Methods for importing data from DSCOVR.
 """
-import pathlib as path
-
+import pathlib
 from heliopy.data import util
-from heliopy import config
 
-data_dir = path.Path(config['download_dir'])
-dscovr_dir = data_dir / 'dscovr'
-dscovr_url = 'https://spdf.gsfc.nasa.gov/pub/data/dscovr/'
+spdf_url = 'https://spdf.gsfc.nasa.gov/pub/data/'
+
+
+class _MagDownloader(util.Downloader):
+    def intervals(self, starttime, endtime):
+        return self.intervals_daily(starttime, endtime)
+
+    def fname(self, interval):
+        datestr = interval.start.strftime('%Y%m%d')
+        return f"dscovr_h0_mag_{datestr}_v01.cdf"
+
+    def local_dir(self, interval):
+        return (pathlib.Path('dscovr') / 'h0' / 'mag' /
+                interval.start.strftime('%Y'))
+
+    def download(self, interval):
+        filename = self.fname(interval)
+        local_dir = self.local_path(interval).parent
+        remote_base_url = spdf_url + str(self.local_dir(interval))
+        print(filename)
+        print(remote_base_url)
+        util._download_remote(remote_base_url, filename, local_dir)
+
+    def load_local_file(self, interval):
+        # Read in data
+        cdf = util._load_cdf(self.local_path(interval),)
+        df = util.cdf2df(cdf, 'Epoch1', ignore=['Time1_PB5'])
+        df.index.name = 'Time'
+        return df
 
 
 def mag_h0(starttime, endtime):
     """
-    Imports  magnetic field data from DSCOVR Spacecraft.
+    Import magnetic field data from DSCOVR Spacecraft.
+
     Parameters
     ----------
         starttime : datetime
@@ -24,35 +49,4 @@ def mag_h0(starttime, endtime):
     -------
         data : :class:`~sunpy.timeseries.TimeSeries`
     """
-
-    dirs = []
-    fnames = []
-    extension = '.cdf'
-    ignore = ['Time1_PB5']
-    daylist = util._daysplitinterval(starttime, endtime)
-    for day in daylist:
-        date = day[0]
-        filename = "dscovr_h0_mag_{}{:02}{:02}_v01".format(
-            date.year, date.month, date.day)
-        fnames.append(filename)
-        this_relative_dir = 'h0/mag/' + str(date.year)
-        dirs.append(this_relative_dir)
-
-    local_base_dir = dscovr_dir
-    remote_base_url = dscovr_url
-
-    def download_func(remote_base_url, local_base_dir,
-                      directory, fname, remote_fname, extension):
-        remote_url = remote_base_url + str(directory)
-        util.load(fname + extension,
-                  local_base_dir / directory,
-                  remote_url)
-
-    def processing_func(cdf):
-        df = util.cdf2df(cdf, 'Epoch1', ignore=ignore)
-        df.index.name = 'Time'
-        return df
-
-    return util.process(dirs, fnames, extension, local_base_dir,
-                        remote_base_url, download_func, processing_func,
-                        starttime, endtime)
+    return _MagDownloader().load(starttime, endtime)
