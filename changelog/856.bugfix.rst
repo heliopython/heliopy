@@ -1,1 +1,0 @@
-Updated the url for downloading Helios 4Hz magnetic field data.
