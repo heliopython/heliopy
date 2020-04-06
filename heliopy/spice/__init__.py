@@ -27,6 +27,7 @@ import os
 
 import numpy as np
 import spiceypy
+from spiceypy.utils import support_types as spiceytypes
 import astropy.time as time
 import astropy.units as u
 import astropy.coordinates as astrocoords
@@ -75,6 +76,50 @@ def furnish(fname):
         spiceypy.furnsh(f)
 
 
+class Body:
+    """
+    A generic class for a single body.
+
+    Parameters
+    ----------
+    body : `int` or `str`
+        Either the body ID code or the body name.
+    """
+    def __init__(self, body):
+        if isinstance(body, int):
+            self.id = body
+        elif isinstance(body, str):
+            self.name = body
+        else:
+            raise ValueError('body must be an int or str')
+
+    @property
+    def id(self):
+        """Body id code."""
+        return self._id
+
+    @id.setter
+    def id(self, id):
+        self._id = id
+        try:
+            self._name = spiceypy.bodc2n(id)
+        except spiceytypes.SpiceyError:
+            raise ValueError(f'id "{id}" not known by SPICE')
+
+    @property
+    def name(self):
+        """Body name."""
+        return self._name
+
+    @name.setter
+    def name(self, name):
+        self._name = name
+        try:
+            self._id = spiceypy.bodn2c(name)
+        except spiceytypes.SpiceyError:
+            raise ValueError(f'Body name "{name}" not known by SPICE')
+
+
 class Trajectory:
     """
     A generic class for the trajectory of a single body.
@@ -100,7 +145,7 @@ class Trajectory:
     """
     def __init__(self, target):
         _setup_spice()
-        self._target = target
+        self._target = Body(target)
         self._generated = False
 
     def generate_positions(self, times, observing_body, frame):
@@ -129,7 +174,7 @@ class Trajectory:
 
         # Do the calculation
         pos_vel, lightTimes = spiceypy.spkezr(
-            self.target, spice_times, frame, light_travel_correction,
+            self.target.name, spice_times, frame, light_travel_correction,
             observing_body)
 
         positions = np.array(pos_vel)[:, :3] * u.km
@@ -145,12 +190,12 @@ class Trajectory:
         self._vy = velocities[:, 1]
         self._vz = velocities[:, 2]
         self._generated = True
-        self._observing_body = observing_body
+        self._observing_body = Body(observing_body)
 
     @property
     def observing_body(self):
         '''
-        Observing body. The position vectors are all specified relative to
+        Observing `Body`. The position vectors are all specified relative to
         this body.
         '''
         return self._observing_body
@@ -261,7 +306,7 @@ class Trajectory:
     @property
     def target(self):
         '''
-        The body whose coordinates are being calculated.
+        The `Body` whose coordinates are being calculated.
         '''
         return self._target
 
