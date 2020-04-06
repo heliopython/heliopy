@@ -2,8 +2,8 @@ from datetime import datetime
 import pytest
 from .util import check_data_output
 
-pytest.mark.data()
 cassini = pytest.importorskip("heliopy.data.cassini")
+pytestmark = pytest.mark.data
 
 
 @pytest.mark.skip("Cassini tests do not work on CI")

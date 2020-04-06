@@ -4,7 +4,7 @@ import pytest
 from .util import check_data_output
 
 wind = pytest.importorskip('heliopy.data.wind')
-pytest.mark.data()
+pytestmark = pytest.mark.data
 
 starttime = datetime(2010, 1, 1, 0, 0, 0)
 endtime = datetime(2010, 1, 1, 23, 59, 59)

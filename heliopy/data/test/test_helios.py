@@ -10,7 +10,7 @@ from .util import check_data_output, website_working
 helios = pytest.importorskip('heliopy.data.helios')
 pytest.mark.skipif(
     not website_working('http://helios-data.ssl.berkeley.edu/data/'))
-pytest.mark.data()
+pytestmark = pytest.mark.data
 
 probe = '1'
 

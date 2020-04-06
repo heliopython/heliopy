@@ -4,7 +4,7 @@ import pytest
 from .util import check_data_output
 
 ace = pytest.importorskip('heliopy.data.ace')
-pytest.mark.data()
+pytestmark = pytest.mark.data
 
 starttime = datetime(2010, 1, 1, 0, 0, 0)
 endtime = datetime(2010, 1, 2, 0, 0, 0)

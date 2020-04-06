@@ -4,7 +4,7 @@ import pytest
 from .util import check_data_output
 import heliopy.data.ulysses as ulysses
 
-pytest.mark.data()
+pytestmark = pytest.mark.data
 
 starttime = datetime(1990, 12, 30)
 endtime = datetime(1991, 1, 1)

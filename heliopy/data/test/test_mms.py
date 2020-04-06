@@ -5,7 +5,7 @@ from .util import check_data_output
 
 
 mms = pytest.importorskip('heliopy.data.mms')
-pytest.mark.data()
+pytestmark = pytest.mark.data
 
 
 starttime = datetime(2016, 1, 2, 0, 0, 0)
