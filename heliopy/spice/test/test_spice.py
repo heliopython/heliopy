@@ -70,3 +70,14 @@ def test_invalid_body_creation():
     with pytest.raises(ValueError,
                        match="body must be an int or str"):
         body = spice.Body(1.0)
+
+
+def test_body_eq():
+    assert spice.Body('Sun') == spice.Body(10)
+    assert spice.Body(1) != spice.Body(10)
+
+
+def test_body_repr():
+    assert 'Sun' in spice.Body('Sun').__repr__()
+    assert '10' in spice.Body('Sun').__repr__()
+
