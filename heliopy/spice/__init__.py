@@ -78,7 +78,7 @@ def furnish(fname):
 
 class Body:
     """
-    A generic class for a single body.
+    A class for a single body.
 
     Parameters
     ----------
@@ -92,6 +92,12 @@ class Body:
             self.name = body
         else:
             raise ValueError('body must be an int or str')
+
+    def __repr__(self):
+        return f'{super().__repr__()}, name={self.name}, id={self.id}'
+
+    def __eq__(self, other):
+        return isinstance(other, Body) and other.id == self.id
 
     @property
     def id(self):
