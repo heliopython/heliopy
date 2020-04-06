@@ -21,10 +21,8 @@ supported.
 import os
 import pathlib
 
-
 from heliopy import config
 import heliopy.data.helper as helper
-import heliopy.data.spice as dataspice
 
 import numpy as np
 import spiceypy
@@ -373,14 +371,12 @@ for spice_frame in spice_astropy_frame_mapping:
 
 
 # This has to be at the end of the file
-def _setup_spice():
+def setup_spice():
     '''
-    Function to download some common files that spice needs to do orbit
-    calculations.
+    Function to download and load some common files that spice needs to do
+    orbit calculations.
     '''
+    import heliopy.data.spice as dataspice
     for kernel in dataspice.generic_kernels:
         k = dataspice.get_kernel(kernel.short_name)
         furnish(k)
-
-
-_setup_spice()

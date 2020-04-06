@@ -8,6 +8,8 @@ import pytest
 import heliopy.spice as spice
 import heliopy.data.spice as spicedata
 
+spice.setup_spice()
+
 
 @pytest.fixture
 def solo_trajectory():
