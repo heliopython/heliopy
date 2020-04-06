@@ -5,9 +5,10 @@ matrix:
   include:
   - env: PYTHON_VERSION=3.6
   - env: PYTHON_VERSION=3.7
-  - env: PYTHON_VERSION=3.7 PIPPRE=--pre
+  - env: PYTHON_VERSION=3.8 PIPPRE=--pre
+  - env: PYTHON_VERSION=3.8 REMOTE_DATA='-m data'
   allow_failures:
-  - env: PYTHON_VERSION=3.7 PIPPRE=--pre
+  - env: PYTHON_VERSION=3.8 PIPPRE=--pre
 before_install:
 - wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
 - chmod +x miniconda.sh
@@ -20,15 +21,7 @@ before_install:
 - pip install .[test,data,spice] $PIPPRE
 - export CLUSTERCOOKIE=2F1B4760251B51783700055F1A037271685A64680A1450722A465D302F0947606504526F370C40752A0640633228546C2A015F2F28075E
 script:
-- pytest heliopy/ --cov=heliopy/ -v --durations=5 --pep8 -n auto
+- pytest heliopy/ --cov=heliopy/ -v --durations=5 --pep8 -n auto $REMOTE_DATA
 - python setup.py sdist
 - pip install codecov
 - codecov
-deploy:
-  provider: pypi
-  user: dstansby
-  password:
-    secure: dyxmaVJZsmBkESiiJiYjI/dAHLoe226TjHGR+GoPYwo7aIt6Be94NFM02Or4AD/6m1xVCR9nrc1vDl7zlgBLKnf48+7/jcf9FZ72CpfKajeLooiN4IagkmandF22FbEtYqHmvL/EYrSiPoxQYOPH6zKBwLzpdKQyk65ou0UwwMztRq5FG1KU/cel7D6aIs8kpZrFWZtk3tryoFQlD5w4NSERl1FR2/2b+acB3TSFOiDA6fp0l+F/sOTgoouk2DEaAHp0pSGh9EmFWsJflvLRisUcfPro17/aTv6UvZGD4QOScC+OI8h3GZqIRy1ELekFK1t2jv4DV+7DZ5oMJGpMKcC/6qpB8WUm02q2tSchT5VwX/fez14M1jb1rlbqHPvsKe8oQdhoGoayr66zji9BEd/sjFq7i1p0XpQZLnOoyKsQrtv3hbqPYgZres4Z51T9oKZLk2LGWb9kMbCWNDYdit9SpV5SVQTLcdx2oG6r3rLgK8BDliA+qKKPjmIHQWRh8yIcz/ZZ7F7D+X/ubfxZBRoQbqarjAF31Rdyma69++7LZnTBpQSA/mWgiWN4qXgrpY9alg66tD8TKPuPPf2g9Tq38iF/MyxOVWtEEz2ztRdPlYVh8n0WkFWn46Gm2ZYTH0YrR90VqKK1dsZwoQWPeL5h2s0cAQ/TSVrX9cCWSS4=
-  on:
-    tags: true
-  distributions: sdist
