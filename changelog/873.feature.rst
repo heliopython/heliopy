@@ -1,0 +1,2 @@
+Added the ``abcorr`` argument to `heliopy.spice.Trajectory.generate_positions()`
+to allow optional aberration correction. By default this is set to no correction.
