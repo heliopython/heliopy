@@ -154,7 +154,8 @@ class Trajectory:
         self._target = Body(target)
         self._generated = False
 
-    def generate_positions(self, times, observing_body, frame):
+    def generate_positions(self, times, observing_body, frame,
+                           abcorr=None):
         """
         Generate positions from a spice kernel.
 
@@ -171,16 +172,21 @@ class Trajectory:
             The coordinate system to return the positions in. See
             https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/frames.html
             for a list of frames.
+        abcorr : str, optional
+            By default no aberration correciton is performed.
+            See the documentaiton at
+            https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkezr_c.html
+            for allowable values and their effects.
         """
         times = time.Time(times)
         # Spice needs a funny set of times
         fmt = '%Y %b %d, %H:%M:%S'
         spice_times = [spiceypy.str2et(time.strftime(fmt)) for time in times]
-        light_travel_correction = 'None'
+        abcorr = str(abcorr)
 
         # Do the calculation
         pos_vel, lightTimes = spiceypy.spkezr(
-            self.target.name, spice_times, frame, light_travel_correction,
+            self.target.name, spice_times, frame, abcorr,
             observing_body)
 
         positions = np.array(pos_vel)[:, :3] * u.km
