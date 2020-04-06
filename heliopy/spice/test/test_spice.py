@@ -44,3 +44,29 @@ def test_coords(solo_trajectory, times):
     solo_trajectory.generate_positions(times, 'Sun', 'ECLIPJ2000')
     with pytest.raises(ValueError):
         solo_trajectory.coords
+
+
+def test_body_creation():
+    # Test creating by name
+    body = spice.Body('Sun')
+    assert body.name == 'Sun'
+    assert body.id == 10
+
+    # Test creating by ID
+    body = spice.Body(10)
+    assert body.name == 'SUN'
+    assert body.id == 10
+
+
+def test_invalid_body_creation():
+    with pytest.raises(ValueError,
+                       match='Body name "Not a body" not known by SPICE'):
+        body = spice.Body('Not a body')
+
+    with pytest.raises(ValueError,
+                       match='id "104857" not known by SPICE'):
+        body = spice.Body(104857)
+
+    with pytest.raises(ValueError,
+                       match="body must be an int or str"):
+        body = spice.Body(1.0)
