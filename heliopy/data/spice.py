@@ -190,7 +190,7 @@ def get_kernel(name):
         local_loc = os.path.join(spice_dir, fname)
         locs.append(local_loc)
         if not os.path.exists(spice_dir):
-            os.makedirs(spice_dir)
+            os.makedirs(spice_dir, exist_ok=True)
         if not os.path.exists(local_loc):
             print('Downloading {}'.format(url))
             try:
