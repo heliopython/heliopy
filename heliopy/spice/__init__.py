@@ -80,8 +80,10 @@ class Body:
     """
     A generic class for a single body.
 
-    Either the body *name* can be specified as a string,
-    or the body *id* as an int.
+    Parameters
+    ----------
+    body : `int` or `str`
+        Either the body ID code or the body name.
     """
     def __init__(self, body):
         if isinstance(body, int):
