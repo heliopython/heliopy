@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+import datetime
 
 from astropy.time import Time
 from astropy.utils.exceptions import ErfaWarning
@@ -18,8 +18,8 @@ def solo_trajectory():
 
 @pytest.fixture
 def times():
-    starttime = datetime(2020, 3, 1)
-    return [starttime + n * timedelta(days=1) for n in range(1000)]
+    starttime = datetime.datetime(2020, 3, 1)
+    return [starttime + n * datetime.timedelta(days=1) for n in range(1000)]
 
 
 def test_spice(solo_trajectory, times):
@@ -81,3 +81,17 @@ def test_body_repr():
     assert 'Sun' in spice.Body('Sun').__repr__()
     assert '10' in spice.Body('Sun').__repr__()
 
+
+def test_kernel():
+    kernel = spicedata.get_kernel('solo_2020')[0]
+    solo = spice.Body('solar orbiter')
+    assert len(kernel.bodies) == 1
+    assert kernel.bodies[0] == solo
+
+    print(kernel.coverage(solo))
+    assert kernel.coverage(solo) == [
+        datetime.datetime(2020, 2, 6, 23, 58, 50, 815077,
+                          tzinfo=datetime.timezone.utc),
+        datetime.datetime(2030, 9, 2, 15, 11, 59, 512212,
+                          tzinfo=datetime.timezone.utc)
+    ]
