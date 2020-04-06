@@ -4,7 +4,7 @@ import pytest
 from .util import check_data_output
 
 artemis = pytest.importorskip('heliopy.data.artemis')
-pytest.mark.data()
+pytestmark = pytest.mark.data
 
 starttime = datetime(2008, 1, 1)
 endtime = datetime(2008, 1, 2)

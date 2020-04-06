@@ -5,8 +5,7 @@ from heliopy.data import psp
 
 from .util import check_data_output
 
-pytest.mark.data()
-
+pytestmark = pytest.mark.data
 
 starttime = datetime(2018, 12, 19)
 endtime = datetime(2018, 12, 19, 1)

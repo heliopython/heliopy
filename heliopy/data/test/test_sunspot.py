@@ -1,4 +1,7 @@
+import pytest
 import heliopy.data.sunspot as sunspot
+
+pytestmark = pytest.mark.data
 
 
 def test_daily():
