@@ -1027,7 +1027,7 @@ def _download_remote(remote_url, filename, local_dir):
     remote_url = remote_url + '/' + filename
     with requests.head(remote_url,allow_redirects=True) as r:
         if r.status_code != requests.codes.ok:
-            raise NoDataError           
+            raise NoDataError
     print(f'Downloading {remote_url} to {dl_path}')
     fname, _ = urlreq.urlretrieve(remote_url,
                                   filename=str(dl_path),
