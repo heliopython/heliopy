@@ -18,34 +18,19 @@ supported.
 .. _SPICE: https://naif.jpl.nasa.gov/naif/toolkit.html
 .. _spiceypy: https://spiceypy.readthedocs.io/en/master/
 """
+import os
+import pathlib
 
 from heliopy import config
 import heliopy.data.helper as helper
-import heliopy.data.spice as dataspice
-
-import os
 
 import numpy as np
 import spiceypy
+from spiceypy.utils import support_types as spiceytypes
 import astropy.time as time
 import astropy.units as u
 import astropy.coordinates as astrocoords
 import sunpy.coordinates as suncoords
-
-_SPICE_SETUP = False
-
-
-def _setup_spice():
-    '''
-    Method to download some common files that spice needs to do orbit
-    calculations.
-    '''
-    global _SPICE_SETUP
-    if not _SPICE_SETUP:
-        for kernel in dataspice.generic_kernels:
-            loc = dataspice.get_kernel(kernel.short_name)
-            spiceypy.furnsh(loc)
-        _SPICE_SETUP = True
 
 
 spice_astropy_frame_mapping = {
@@ -54,14 +39,14 @@ spice_astropy_frame_mapping = {
 }
 
 
-def furnish(fname):
+def furnish(kernel):
     """
     Furnish SPICE with a kernel.
 
     Parameters
     ----------
-    fname : str or list
-        Filename of a spice kernel to load, or list of filenames to load.
+    fname : `SPKKernel` or list of `SPKKernel`
+        SPICE kernel(s) to load.
 
     See also
     --------
@@ -69,15 +54,98 @@ def furnish(fname):
                                     kernels based on spacecraft name.
 
     """
-    if isinstance(fname, str):
-        fname = [fname]
-    for f in fname:
-        spiceypy.furnsh(f)
+    if isinstance(kernel, SPKKernel):
+        kernel = [kernel]
+    for k in kernel:
+        spiceypy.furnsh(k._fname_str)
+
+
+class SPKKernel:
+    """
+    A class for a single .spk kernel.
+
+    See also
+    --------
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/spk.html
+    """
+    def __init__(self, fname):
+        self._fname = fname
+
+    @property
+    def fname(self):
+        """Path to kernel file."""
+        return pathlib.Path(self._fname)
+
+    @property
+    def _fname_str(self):
+        return str(self.fname)
+
+    @property
+    def bodies(self):
+        """List of the bodies stored within the kernel."""
+        ids = [int(i) for i in spiceypy.spkobj(self._fname_str)]
+        return [Body(i) for i in ids]
+
+    def coverage(self, body):
+        """The coverage window for a specified `Body`."""
+        coverage = [t for t in spiceypy.spkcov(self._fname_str, body.id)]
+        coverage = [spiceypy.et2datetime(t) for t in coverage]
+        return coverage
+
+
+class Body:
+    """
+    A class for a single body.
+
+    Parameters
+    ----------
+    body : `int` or `str`
+        Either the body ID code or the body name.
+    """
+    def __init__(self, body):
+        if isinstance(body, int):
+            self.id = body
+        elif isinstance(body, str):
+            self.name = body
+        else:
+            raise ValueError('body must be an int or str')
+
+    def __repr__(self):
+        return f'{super().__repr__()}, name={self.name}, id={self.id}'
+
+    def __eq__(self, other):
+        return isinstance(other, Body) and other.id == self.id
+
+    @property
+    def id(self):
+        """Body id code."""
+        return self._id
+
+    @id.setter
+    def id(self, id):
+        self._id = id
+        try:
+            self._name = spiceypy.bodc2n(id)
+        except spiceytypes.SpiceyError:
+            raise ValueError(f'id "{id}" not known by SPICE')
+
+    @property
+    def name(self):
+        """Body name."""
+        return self._name
+
+    @name.setter
+    def name(self, name):
+        self._name = name
+        try:
+            self._id = spiceypy.bodn2c(name)
+        except spiceytypes.SpiceyError:
+            raise ValueError(f'Body name "{name}" not known by SPICE')
 
 
 class Trajectory:
     """
-    A generic class for the trajectory of a single body.
+    A class for the trajectory of a single body.
 
     Objects are initially created using only the body. To perform
     the actual trajectory calculation run :meth:`generate_positions`.
@@ -99,11 +167,11 @@ class Trajectory:
     furnish : for loading in local spice kernels.
     """
     def __init__(self, target):
-        _setup_spice()
-        self._target = target
+        self._target = Body(target)
         self._generated = False
 
-    def generate_positions(self, times, observing_body, frame):
+    def generate_positions(self, times, observing_body, frame,
+                           abcorr=None):
         """
         Generate positions from a spice kernel.
 
@@ -120,16 +188,21 @@ class Trajectory:
             The coordinate system to return the positions in. See
             https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/frames.html
             for a list of frames.
+        abcorr : str, optional
+            By default no aberration correciton is performed.
+            See the documentaiton at
+            https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkezr_c.html
+            for allowable values and their effects.
         """
         times = time.Time(times)
         # Spice needs a funny set of times
         fmt = '%Y %b %d, %H:%M:%S'
         spice_times = [spiceypy.str2et(time.strftime(fmt)) for time in times]
-        light_travel_correction = 'None'
+        abcorr = str(abcorr)
 
         # Do the calculation
         pos_vel, lightTimes = spiceypy.spkezr(
-            self.target, spice_times, frame, light_travel_correction,
+            self.target.name, spice_times, frame, abcorr,
             observing_body)
 
         positions = np.array(pos_vel)[:, :3] * u.km
@@ -145,12 +218,12 @@ class Trajectory:
         self._vy = velocities[:, 1]
         self._vz = velocities[:, 2]
         self._generated = True
-        self._observing_body = observing_body
+        self._observing_body = Body(observing_body)
 
     @property
     def observing_body(self):
         '''
-        Observing body. The position vectors are all specified relative to
+        Observing `Body`. The position vectors are all specified relative to
         this body.
         '''
         return self._observing_body
@@ -261,7 +334,7 @@ class Trajectory:
     @property
     def target(self):
         '''
-        The body whose coordinates are being calculated.
+        The `Body` whose coordinates are being calculated.
         '''
         return self._target
 
@@ -295,3 +368,15 @@ for spice_frame in spice_astropy_frame_mapping:
     _astropy_frame = spice_astropy_frame_mapping[spice_frame]
     Trajectory.coords.__doc__ += \
         f'\n   {spice_frame}, :class:`{_astropy_frame.__name__}`'
+
+
+# This has to be at the end of the file
+def setup_spice():
+    '''
+    Function to download and load some common files that spice needs to do
+    orbit calculations.
+    '''
+    import heliopy.data.spice as dataspice
+    for kernel in dataspice.generic_kernels:
+        k = dataspice.get_kernel(kernel.short_name)
+        furnish(k)

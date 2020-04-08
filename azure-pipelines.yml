@@ -26,7 +26,7 @@ steps:
 
 - script: |
     python -m pip install --upgrade pip
-    pip install -r requirements/test.txt
+    pip install .[test,data,spice]
     pip install pytest-azurepipelines
   displayName: 'Install dependencies'
 

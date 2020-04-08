@@ -1,1 +1,0 @@
-Avoid converting all CDF data to floating point data, to save significant memory when loading a CDF file.

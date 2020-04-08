@@ -1,8 +1,9 @@
 from datetime import datetime
 import pytest
 from .util import check_data_output
-pytest.mark.data()
+
 messenger = pytest.importorskip('heliopy.data.messenger')
+pytestmark = pytest.mark.data
 
 
 def test_mag():

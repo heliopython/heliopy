@@ -1,3 +1,42 @@
+Heliopy 0.11.0
+==============
+
+Changes to `heliopy.spice`
+--------------------------
+
+This release contains several breaking changes to `heliopy.spice` and
+`heliopy.data.spice`, made to accommodate new high level objects to interact
+with SPICE. The following new objects have been added:
+
+- `~heliopy.spice.SPKKernel`, to hold a single SPICE SPK kernel. This comes
+  with helper methods to find the bodies stored within a kernel, and the time
+  coverage of a given body within a kernel.
+- `~heliopy.spice.Body`, to hold a single body (e.g. a planet, a spacecraft).
+  This contains helper methods to easily convert between body names and body
+  ids.
+
+In addition, `heliopy.spice` no longer automatically loads commonly needed
+files on import. This means if you want to use `heliopy.spice`, it is highly
+recommended to run `heliopy.spice.setup_spice()` first.
+
+The existing code has been changed to use the new classes, with the following
+breaking changes:
+
+- `heliopy.data.spice.get_kernel` now returns a list of `~heliopy.spice.SPKKernel`.
+  To get the file name of a kernel as before do ``kernel.fname``.
+- `heliopy.spice.furnish` must how take a `~heliopy.spice.SPKKernel` (or list of).
+  To create a kernel object from a filename do ``SPKKernel(fname)``.
+
+Heliopy 0.10.1 (2020-04-03)
+===========================
+
+Bug Fixes
+---------
+
+- Updated the url for downloading Helios 4Hz magnetic field data. (`#856 <https://github.com/heliopython/heliopy/pull/856>`__)
+- Avoid converting all CDF data to floating point data, to save significant memory when loading a CDF file. (`#858 <https://github.com/heliopython/heliopy/pull/858>`__)
+
+
 Heliopy 0.10.0 (2020-02-20)
 ===========================
 

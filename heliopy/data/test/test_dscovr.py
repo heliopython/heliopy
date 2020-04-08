@@ -4,7 +4,7 @@ import pytest
 from .util import check_data_output
 
 dscovr = pytest.importorskip('heliopy.data.dscovr')
-pytest.mark.data()
+pytestmark = pytest.mark.data
 
 starttime = datetime(2015, 6, 8, 0, 0, 0)
 endtime = datetime(2015, 6, 9, 0, 0, 0)

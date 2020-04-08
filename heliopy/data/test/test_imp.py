@@ -5,7 +5,7 @@ import pytest
 from .util import check_data_output
 
 imp = pytest.importorskip('heliopy.data.imp')
-pytest.mark.data()
+pytestmark = pytest.mark.data
 
 starttime = datetime(1976, 1, 1, 0, 0, 0)
 endtime = datetime(1976, 1, 2, 0, 0, 0)

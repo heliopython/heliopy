@@ -15,6 +15,7 @@ import urllib.error
 import requests
 
 from heliopy import config
+from heliopy import spice
 import heliopy.data.util as util
 
 data_dir = config['download_dir']
@@ -179,28 +180,28 @@ def get_kernel(name):
 
     Returns
     -------
-    list
-        List of the locations of kernels that have been downloaded.
+    list of `~heliopy.spice.Kernel`
+        List of loaded kernels.
     """
     if name not in kernel_dict:
         raise ValueError(
             'Provided name {} not in list of available names: {}'.format(
                 name, kernel_dict.keys()))
     kernel = kernel_dict[name]
-    locs = []
+    kernels = []
     for url in kernel.urls:
         fname = url[url.rfind("/") + 1:]
         local_loc = os.path.join(spice_dir, fname)
-        locs.append(local_loc)
         if not os.path.exists(spice_dir):
-            os.makedirs(spice_dir)
+            os.makedirs(spice_dir, exist_ok=True)
         if not os.path.exists(local_loc):
             print('Downloading {}'.format(url))
             try:
                 urlretrieve(url, local_loc, reporthook=util._reporthook)
             except urllib.error.HTTPError as err:
                 warnings.warn('Failed to download {}'.format(url))
-    return locs
+        kernels.append(spice.SPKKernel(local_loc))
+    return kernels
 
 
 # End of main code, now create tables for spice kernels

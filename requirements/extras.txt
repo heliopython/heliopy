@@ -1,9 +1,0 @@
--r base.txt
-
-cdflib!=0.3.5,!=0.3.14, !=0.3.15, !=0.3.16
-pandas
-requests
-bs4
-sunpy
-spiceypy!=3.0.0
-tqdm

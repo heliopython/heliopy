@@ -4,7 +4,7 @@ import pytest
 from .util import check_data_output
 
 omni = pytest.importorskip('heliopy.data.omni')
-pytest.mark.data()
+pytestmark = pytest.mark.data
 
 
 starttime = datetime(1970, 1, 1, 0, 0, 0)
