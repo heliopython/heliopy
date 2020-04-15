@@ -7,6 +7,13 @@ import pathlib
 import pandas as pd
 import calendar
 import astropy.units as u
+import pvl
+import shutil
+import zipfile
+from glob import glob
+import numpy as np
+import csv
+from struct import unpack, calcsize
 
 from collections import OrderedDict
 from heliopy.data import util
@@ -203,6 +210,164 @@ def mag_hires(starttime, endtime, try_download=True):
         df = pd.read_csv(f, names=['Time', 'Bx', 'By', 'Bz'],
                          delim_whitespace=True,
                          parse_dates=[0], index_col=0)
+        return df
+
+    return util.process(dirs, fnames, extension, local_base_dir,
+                        remote_base_url, download_func, processing_func,
+                        starttime, endtime, units=units,
+                        try_download=try_download)
+
+
+def caps_dateparser(stringlist):
+    return [datetime.datetime.strptime(item,"%Y-%jT%H:%M:%S.%f") for item in stringlist]
+
+def caps_els(starttime, endtime, try_download=True):
+    """
+    Import Cassini Plasma Spectrometer Electron Spectrometer.
+
+    See https://pds-ppi.igpp.ucla.edu/search/view/?id=pds://PPI/CO-E_J_S_SW-CAPS-3-CALIBRATED-V1.0
+    for more information.
+
+    Cassini Plasma Spectrometer Electron Spectrometer data at the highest time
+    resolution available covering the periods
+    1999-004 (4 Jan) to 1999-021 (21 Jan), 
+    1999-232 (20 Aug) to 1999-257 (14 Sep), 
+    2000-190 (8 Jul) to 2000-309 (4 Nov), 
+    2001-120 (30 Apr)to 2004-135 (14 May), 
+    at Earth from 1999-229 (17 Aug) to 1999-231 (19 Aug), 
+    at Jupiter from 2000-310 (4 Nov) to 2001-119 (29 Apr), 
+    at Saturn over the interval 2004-136 (15 May) to 2012-154 (02 Jun).
+
+    Parameters
+    ----------
+    starttime : datetime
+        Interval start time.
+    endtime : datetime
+        Interval end time.
+
+    Returns
+    -------
+    data : :class:`~sunpy.timeseries.TimeSeries`
+        Requested data
+    """
+    remote_base_url = ('https://pds-ppi.igpp.ucla.edu/ditdos/download?id='
+                       'pds://PPI/CO-E_J_S_SW-CAPS-3-CALIBRATED-V1.0/DATA/CALIBRATED')
+    dirs = []
+    fnames = []
+    extension = ''
+    units = OrderedDict([])
+    local_base_dir = cassini_dir / 'caps' / 'els'
+
+    for [day, _, _] in util._daysplitinterval(starttime, endtime):
+        year = day.year
+        if calendar.isleap(year):
+            monthstr = leapmonth2str[day.month]
+        else:
+            monthstr = month2str[day.month]
+            
+        doy = day.strftime('%j')
+        for x in ['00','06','12','18']:
+            dirs.append(pathlib.Path(str(year)) / doy)
+            fnames.append('ELS_' + str(year) + doy + x + '_V01')    
+    def download_func(remote_base_url, local_base_dir,
+                      directory, fname, remote_fname, extension):
+        url = remote_base_url + '/' + str(directory)
+        util._download_remote(url, fname + extension,
+                              local_base_dir / directory)
+
+    def processing_func(f):
+        oldfilename_path = pathlib.Path(str(f.name))
+        zip_path = pathlib.Path(str(f.name)+".zip")     
+        f.close()
+        shutil.copy(oldfilename_path.__str__(),zip_path.__str__())
+        
+        extractdir_path = oldfilename_path.parents[0] / "temp"
+        zipfile.ZipFile(zip_path.__str__()).extractall(extractdir_path.__str__())
+        formatfilepath = sorted(extractdir_path.rglob("*.FMT"))[0]
+        labelfilepath = sorted(extractdir_path.rglob("*.LBL"))[0]
+        datafilepath = sorted(extractdir_path.rglob("*.DAT"))[0]
+
+        datatype_dict = {"DATE":"21s",'LSB_UNSIGNED_INTEGER':'B','LSB_UNSIGNED_INTEGER':'I','PC_REAL':'f'}
+
+
+        fmt_i = '<' #start little endian
+        fmt_o = ''
+        column_headers=[]
+        columncounter = 0
+        for item in pvl.load(formatfilepath.__str__()).items():
+            if item[1]['NAME'] == 'DEAD_TIME_METHOD' and item[1]['BYTES'] == 1 and item[1]['DATA_TYPE'] == 'LSB_UNSIGNED_INTEGER':
+                fmt_i += 'B'
+                fmt_o += '%u\t'
+                column_headers.append(item[1]['NAME'])
+                continue
+            elif item[1]['NAME'] == 'TELEMETRY' and item[1]['BYTES'] == 2 and item[1]['DATA_TYPE'] == 'LSB_UNSIGNED_INTEGER':
+                fmt_i += 'H'
+                fmt_o += '%u\t'
+                column_headers.append(item[1]['NAME'])
+                continue
+            elif 'ITEMS' in item[1].keys():
+                fmt_i += datatype_dict[item[1]['DATA_TYPE']]*item[1]['ITEMS']   
+                fmt_o += '%f\t'*item[1]['ITEMS']
+
+                column_countertemp = [item[1]['NAME']+'_'+str(x) for x in np.arange(1,item[1]['ITEMS']+1,1)]
+                column_headers += column_countertemp
+                continue
+            else:        
+                fmt_i += datatype_dict[item[1]['DATA_TYPE']]
+                
+                if datatype_dict[item[1]['DATA_TYPE']] == 'f':
+                    fmt_o += '%f\t'
+                    column_headers.append(item[1]['NAME'])
+                elif item[1]['DATA_TYPE'] == 'DATE':  
+                    fmt_o += '%s\t'
+                    column_headers.append("Time")
+                continue
+
+        fmt_o += '\n'
+        fmtsz = calcsize(fmt_i)
+
+        #Checks the size dervied from format file against the label file
+        if fmtsz != pvl.load(labelfilepath.__str__())['TABLE']['ROW_BYTES']:
+            raise ValueError("Format file disagrees with label file")
+        
+        temptextfile_path = pathlib.Path(str(f.name) + '.txt')
+        #Read the Binary data into a temp .txt file
+        datainputfile = open(datafilepath.__str__(),'rb')
+        textoutputfile = open(temptextfile_path.__str__(),'w')
+        while True:
+            entry = datainputfile.read(fmtsz) # read file
+            if not entry:
+                break # EOF yields null string, exit loop
+            data = unpack(fmt_i,entry) # unpack the record using the defined input format
+            textoutputfile.write(fmt_o%data) # write to output file using the defined output format
+        datainputfile.close() # close input file
+        textoutputfile.close() # close output file
+
+        
+        #Writes to a .csv
+        csvoutputfile = oldfilename_path.__str__()+'.csv'
+        filein = open(temptextfile_path.__str__(), "r")
+        in_txt = csv.reader(filein, delimiter = '\t')
+        
+        with open(csvoutputfile , 'w',newline='') as fileout:
+            out_csv = csv.writer(fileout, delimiter = '\t')
+            out_csv.writerow(column_headers) 
+            for line in in_txt:
+                newline = [line[0][2:-1]] + line[1:]
+                out_csv.writerow(newline)        
+        filein.close()
+        
+        
+        #Tidying up        
+        temptextfile_path.unlink()
+        #oldfilename_path.unlink()
+        zip_path.unlink()
+        shutil.rmtree(extractdir_path)
+        
+        df = pd.read_csv(csvoutputfile, header=0,
+                         delim_whitespace=True,
+                         parse_dates=[0], index_col=0,
+                         date_parser=caps_dateparser)        
         return df
 
     return util.process(dirs, fnames, extension, local_base_dir,
