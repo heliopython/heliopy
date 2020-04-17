@@ -1396,7 +1396,6 @@ def cdf2xr(cdf, index_key, starttime=None, endtime=None, list_keys=None,
                 data[df_key] = data_temp
 
     # If only one cdf key, put associated data in xarray.DataArray
-    # (assumes 1D or 2D data)
     elif list_keys and len(list_keys) == 1:
         for cdf_key in list_keys.values():
             data = cdf.varget(cdf_key, None, tstart, tend)[...]
@@ -1421,10 +1420,19 @@ def cdf2xr(cdf, index_key, starttime=None, endtime=None, list_keys=None,
                 data = xr.DataArray(
                     data, coords=[index, data_coords[:data.shape[1]]],
                     dims=['time', cdf_key])
+
+            elif len(data.shape) == 3 and data.shape[1] <= 4:
+                # Assumes 3D data with cartesian vector components
+                # (e.g., pressure or temperature tensor)
+                data_coords1 = ['x1', 'y1', 'z1']
+                data_coords2 = ['x2', 'y2', 'z2']
+                data = xr.DataArray(
+                    data, coords=[index, data_coords1,
+                                  data_coords2],
+                    dims=['time', cdf_key+'1', cdf_key+'2'])
+
             else:
-                raise ValueError('More than 2D data '
-                                 '(e.g., distribution functions) require'
-                                 ' more than one CDF key')
+                raise ValueError('Data type not recognized')
 
             data.name = cdf_key
 
