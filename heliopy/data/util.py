@@ -1591,6 +1591,17 @@ def get_index(cdf, index_key, t_start=None, t_end=None, dtimeindex=True):
         index_ = cdf.varget(index_key, None, t_start, t_end)[...][:, 0]
     except IndexError:
         index_ = cdf.varget(index_key, None, t_start, t_end)[...]
+    except ValueError:
+        keys = get_cdf_keys(cdf)
+        index_key = [x for x in list(keys) if 'epoch' in x or 'Epoch' in x][0]
+        try:
+            index_ = cdf.varget(index_key, None, t_start, t_end)[...][:, 0]
+        except IndexError:
+            index_ = cdf.varget(index_key, None, t_start, t_end)[...]
+
+        message = (f"'{index_key}' has been automatically selected as"
+                   f" the time index in the present CDF")
+        warnings.warn(message)
     try:
         utc_comp = cdflib.cdfepoch.breakdown(index_, to_np=True)
         if utc_comp.shape[1] == 9:
@@ -1610,3 +1621,19 @@ def get_index(cdf, index_key, t_start=None, t_end=None, dtimeindex=True):
         index = pd.DatetimeIndex(index, name='Time')
 
     return index
+
+
+def get_cdf_keys(cdf):
+
+    var_list = []
+    for attr in list(cdf.cdf_info().keys()):
+        if 'variable' in attr.lower():
+            if len(cdf.cdf_info()[attr]) > 0:
+                var_list += [attr]
+
+    keys = {}
+    for attr in var_list:
+        for cdf_key in cdf.cdf_info()[attr]:
+            keys[cdf_key] = cdf_key
+
+    return keys
