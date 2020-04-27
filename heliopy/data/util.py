@@ -1593,7 +1593,8 @@ def get_index(cdf, index_key, t_start=None, t_end=None, dtimeindex=True):
         index_ = cdf.varget(index_key, None, t_start, t_end)[...]
     except ValueError:
         keys = get_cdf_keys(cdf)
-        index_key = [x for x in list(keys) if 'epoch' in x or 'Epoch' in x][0]
+        index_key = [x for x in list(keys) if index_key.casefold()
+                     in x.casefold()][0]
         try:
             index_ = cdf.varget(index_key, None, t_start, t_end)[...][:, 0]
         except IndexError:
