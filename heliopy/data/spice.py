@@ -79,7 +79,7 @@ generic_kernels = [_Kernel('Leap Second Kernel', 'lsk',
 
 spacecraft_kernels = [_Kernel('Cassini', 'cassini',
                               ['https://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/spk/171215R_SCPSEops_97288_17258.bsp',
-                                 'https://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/spk/aareadme.txt']),
+                               'https://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/spk/aareadme.txt']),
                       _Kernel('Helios 1', 'helios1',
                               ['https://naif.jpl.nasa.gov/pub/naif/HELIOS/kernels/spk/100528R_helios1_74345_81272.bsp',
                                'https://naif.jpl.nasa.gov/pub/naif/HELIOS/kernels/spk/160707AP_helios1_81272_86074.bsp'

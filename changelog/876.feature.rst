@@ -1,0 +1,1 @@
+Added the Cassini cruise phase SPICE kernel to `heliopy.data.spice`.
