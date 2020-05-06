@@ -34,9 +34,8 @@ def test_spice(solo_trajectory, times):
 
 
 def test_coords(solo_trajectory, times):
+    spice.setup_spice()
     # Smoke test that coords work
-
-    # Catch ErfaWarnings for dates long in the future
     solo_trajectory.generate_positions(times, 'Sun', 'J2000')
     solo_trajectory.coords
 
