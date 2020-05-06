@@ -13,7 +13,7 @@ spice.setup_spice()
 
 @pytest.fixture
 def solo_trajectory():
-    orbiter_kernel = spicedata.get_kernel('solo_2020')
+    orbiter_kernel = spicedata.get_kernel('solo')
     spice.furnish(orbiter_kernel)
     return spice.Trajectory('Solar Orbiter')
 
@@ -85,15 +85,14 @@ def test_body_repr():
 
 
 def test_kernel():
-    kernel = spicedata.get_kernel('solo_2020')[0]
+    kernel = spicedata.get_kernel('solo')[0]
     solo = spice.Body('solar orbiter')
     assert len(kernel.bodies) == 1
     assert kernel.bodies[0] == solo
 
-    print(kernel.coverage(solo))
     assert kernel.coverage(solo) == [
-        datetime.datetime(2020, 2, 6, 23, 58, 50, 815077,
+        datetime.datetime(2020, 2, 10, 4, 55, 49, 670002,
                           tzinfo=datetime.timezone.utc),
-        datetime.datetime(2030, 9, 2, 15, 11, 59, 512212,
+        datetime.datetime(2030, 11, 18, 19, 7, 39, 363433,
                           tzinfo=datetime.timezone.utc)
     ]
