@@ -137,8 +137,8 @@ spacecraft_kernels = [_Kernel('Cassini', 'cassini',
 
 
 predicted_kernels = [
-    _Kernel('Solar Orbiter 2020', 'solo_2020',
-            'https://issues.cosmos.esa.int/solarorbiterwiki/download/attachments/7274724/solo_ANC_soc-orbit_20200207-20300902_V01.bsp'
+    _Kernel('Solar Orbiter', 'solo',
+            'ftp://spiftp.esac.esa.int/data/SPICE/SOLAR-ORBITER/kernels/spk/solo_ANC_soc-orbit_20200210-20301118_L006_V1_00018_V01.bsp'
             ),
     _Kernel('Parker Solar Probe', 'psp_pred',
             ['https://sppgway.jhuapl.edu/MOC/ephemeris//spp_nom_20180812_20250831_v035_RO2.bsp']

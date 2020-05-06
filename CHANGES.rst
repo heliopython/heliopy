@@ -27,6 +27,11 @@ breaking changes:
 - `heliopy.spice.furnish` must how take a `~heliopy.spice.SPKKernel` (or list of).
   To create a kernel object from a filename do ``SPKKernel(fname)``.
 
+Other changes
+-------------
+- Updated the Solar Orbiter spice kernel link in `heliopy.data.spice`.
+- Added the Cassini cruise phase kernel to `heliopy.data.spice`.
+
 Heliopy 0.10.1 (2020-04-03)
 ===========================
 
