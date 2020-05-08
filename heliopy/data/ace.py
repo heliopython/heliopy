@@ -127,3 +127,50 @@ def swi_h6(starttime, endtime):
 
 
 swi_h6.__doc__ = _docstring('AC_H6_SWI', '12-minute protons')
+
+
+def epm_h1(starttime, endtime):
+    identifier = 'AC_H1_EPM'
+    return _ace(starttime, endtime, identifier).load(
+        starttime, endtime)
+
+
+epm_h1.__doc__ = _docstring('AC_H1_EPM', '5-minute Solar Energetic Particles')
+
+
+def epm_h2(starttime, endtime):
+    identifier = 'AC_H2_EPM'
+    dl = _ace(starttime, endtime, identifier)
+    dl.intervals = cdasrest._year_intervals
+    return dl.load(starttime, endtime)
+
+
+epm_h2.__doc__ = _docstring('AC_H2_EPM', '1-hour Solar Energetic Particles')
+
+
+def epm_h3(starttime, endtime):
+    identifier = 'AC_H3_EPM'
+    return _ace(starttime, endtime, identifier).load(
+        starttime, endtime)
+
+
+epm_h3.__doc__ = _docstring('AC_H3_EPM', '12-second Solar Energetic Particles')
+
+
+def sis_h1(starttime, endtime):
+    identifier = 'AC_H1_SIS'
+    return _ace(starttime, endtime, identifier).load(
+        starttime, endtime)
+
+
+sis_h1.__doc__ = _docstring('AC_H1_SIS', '256-sec solar isotopes')
+
+
+def sis_h2(starttime, endtime):
+    identifier = 'AC_H2_SIS'
+    dl = _ace(starttime, endtime, identifier)
+    dl.intervals = cdasrest._year_intervals
+    return dl.load(starttime, endtime)
+
+
+sis_h2.__doc__ = _docstring('AC_H2_SIS', '1-hour solar isotopes')

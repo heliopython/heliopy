@@ -25,7 +25,8 @@ def test_swi_h4():
 
 @pytest.mark.parametrize('f', [ace.swi_h5, ace.mfi_h1, ace.mfi_h2, ace.mfi_h3,
                                ace.swe_h0, ace.swe_h2, ace.swi_h2, ace.swi_h3,
-                               ace.swi_h6, ace.mfi_h0])
+                               ace.swi_h6, ace.mfi_h0, ace.epm_h1, ace.epm_h2,
+                               ace.epm_h3, ace.sis_h1, ace.sis_h2])
 def test_ace(f):
     df = f(starttime, endtime)
     check_data_output(df)
