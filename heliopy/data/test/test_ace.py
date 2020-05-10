@@ -10,11 +10,6 @@ starttime = datetime(2010, 1, 1, 0, 0, 0)
 endtime = datetime(2010, 1, 2, 0, 0, 0)
 
 
-def test_mfi_h0():
-    df = ace.mfi_h0(starttime, endtime)
-    check_data_output(df)
-
-
 def test_swi_h3b():
     df = ace.swi_h3b(datetime(2013, 1, 1), datetime(2013, 1, 1, 12))
     check_data_output(df)
@@ -28,46 +23,10 @@ def test_swi_h4():
 '''
 
 
-def test_swi_h5():
-    df = ace.swi_h5(starttime, endtime)
-    check_data_output(df)
-
-
-def test_mfi_h1():
-    df = ace.mfi_h1(starttime, endtime)
-    check_data_output(df)
-
-
-def test_mfi_h2():
-    df = ace.mfi_h2(starttime, endtime)
-    check_data_output(df)
-
-
-def test_mfi_h3():
-    df = ace.mfi_h3(starttime, endtime)
-    check_data_output(df)
-
-
-def test_swe_h0():
-    df = ace.swe_h0(starttime, endtime)
-    check_data_output(df)
-
-
-def test_swe_h2():
-    df = ace.swe_h2(starttime, endtime)
-    check_data_output(df)
-
-
-def test_swi_h2():
-    df = ace.swi_h2(starttime, endtime)
-    check_data_output(df)
-
-
-def test_swi_h3():
-    df = ace.swi_h3(starttime, endtime)
-    check_data_output(df)
-
-
-def test_swi_h6():
-    df = ace.swi_h6(starttime, endtime)
+@pytest.mark.parametrize('f', [ace.swi_h5, ace.mfi_h1, ace.mfi_h2, ace.mfi_h3,
+                               ace.swe_h0, ace.swe_h2, ace.swi_h2, ace.swi_h3,
+                               ace.swi_h6, ace.mfi_h0, ace.epm_h1, ace.epm_h2,
+                               ace.epm_h3, ace.sis_h1, ace.sis_h2])
+def test_ace(f):
+    df = f(starttime, endtime)
     check_data_output(df)
