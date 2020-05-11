@@ -2,9 +2,9 @@ build:
   image: latest
 
 python:
-  version: 3.7
-  install:
-    - method: pip
-      path: .
-      extra_requirements:
-       - docs
+   version: 3.7
+   install:
+      - method: pip
+        path: .
+        extra_requirements:
+           - docs
