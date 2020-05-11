@@ -1,7 +1,0 @@
-:mod:`heliopy.spice` now contains the :class:`~heliopy.spice.Body` object, which
-allows for easy access of both a body name and id code, validating that either a name
-or id code are valid on creation.
-
-:class:`~heliopy.spice.Trajctory` now stores the ``.target`` and ``.observing``
-body atributes as :class:`~heliopy.spice.Body` objects. To get the name or id,
-use ``.id`` or ``.name``.

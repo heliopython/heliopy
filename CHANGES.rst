@@ -1,3 +1,6 @@
+Heliopy 0.10.1+74.gad62be8.dirty (2020-05-11)
+=============================================
+
 Heliopy 0.11.0
 ==============
 
@@ -27,10 +30,21 @@ breaking changes:
 - `heliopy.spice.furnish` must how take a `~heliopy.spice.SPKKernel` (or list of).
   To create a kernel object from a filename do ``SPKKernel(fname)``.
 
-Other changes
--------------
-- Updated the Solar Orbiter spice kernel link in `heliopy.data.spice`.
-- Added the Cassini cruise phase kernel to `heliopy.data.spice`.
+  Features
+  --------
+  - :mod:`heliopy.spice` now contains the :class:`~heliopy.spice.Body` object, which
+    allows for easy access of both a body name and id code, validating that either a name
+    or id code are valid on creation.
+
+    :class:`~heliopy.spice.Trajctory` now stores the ``.target`` and ``.observing``
+    body atributes as :class:`~heliopy.spice.Body` objects. To get the name or id,
+    use ``.id`` or ``.name``. (`#868 <https://github.com/heliopython/heliopy/pull/868>`__)
+  - Added the ``abcorr`` argument to `heliopy.spice.Trajectory.generate_positions()`
+    to allow optional aberration correction. By default this is set to no correction. (`#873 <https://github.com/heliopython/heliopy/pull/873>`__)
+  - Added the Cassini SPICE kernel to `heliopy.data.spice`. (`#876 <https://github.com/heliopython/heliopy/pull/876>`__)
+  - Updated the Solar Orbiter SPICE kernel to the latest release in `heliopy.data.spice`. (`#879 <https://github.com/heliopython/heliopy/pull/879>`__)
+  - Added several new solar energetic particle proudcts to `heliopy.data.ace`. (`#882 <https://github.com/heliopython/heliopy/pull/882>`__)
+
 
 Heliopy 0.10.1 (2020-04-03)
 ===========================

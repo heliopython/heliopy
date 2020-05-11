@@ -1,1 +1,0 @@
-Updated the Solar Orbiter SPICE kernel to the latest release in `heliopy.data.spice`.
