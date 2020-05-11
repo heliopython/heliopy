@@ -162,6 +162,7 @@ def cdf_dict(unit_string):
                         (' index value', u.dimensionless_unscaled),
                         (' none', u.dimensionless_unscaled),
                         ('Samples/cycle', u.dimensionless_unscaled),
+                        (('[fraction]'), u.dimensionless_unscaled),
                         ('microW m^-2', u.mW * u.m**-2),
                         ('years', u.yr),
                         ('(2038=Yr0)', u.yr),
@@ -208,7 +209,17 @@ def cdf_dict(unit_string):
                         ('milliseconds', u.ms),
                         ('ionic charge', ionic_charge),
                         ('#/cm2-ster-eV-sec',
-                         1 / (u.cm**2 * u.sr * u.eV * u.s))])
+                         1 / (u.cm**2 * u.sr * u.eV * u.s)),
+                        ('1/(cm2 Sr sec MeV/nucleon)',
+                         1 / (u.cm**2 * u.sr * u.s * u.MeV)),
+                        ('1/(cm**2-s-sr-MeV)',
+                         1 / (u.cm**2 * u.s * u.sr * u.MeV)),
+                        ('1/(cm**2-s-sr-MeV/nuc.)',
+                         1 / (u.cm**2 * u.s * u.sr * u.MeV)),
+                        ('1/(cm**2-s-sr)', 1 / (u.cm**2 * u.s * u.sr)),
+                        ('Counts/256sec', 1 / (256 * u.s)),
+                        ('Counts/hour', 1 / u.hr),
+                         ])
     try:
         return units[unit_string]
     except KeyError:

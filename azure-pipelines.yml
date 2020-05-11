@@ -31,7 +31,7 @@ steps:
   displayName: 'Install dependencies'
 
 - script: |
-    pytest heliopy/ --cov=heliopy/ -v --durations=5  -n auto
+    pytest heliopy/ --cov=heliopy/ -v --durations=5
   displayName: 'Run tests'
 
 - script: |
