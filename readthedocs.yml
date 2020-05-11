@@ -5,6 +5,7 @@ python:
   version: 3.7
   setup_py_install: true
   install:
-    - requirements: docs/requirements.txt
     - method: pip
       path: .
+      extra_requirements:
+        - docs
