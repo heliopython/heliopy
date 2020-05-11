@@ -1,1 +1,0 @@
-Added the Cassini SPICE kernel to `heliopy.data.spice`.
