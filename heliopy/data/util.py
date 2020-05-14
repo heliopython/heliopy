@@ -320,7 +320,7 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
         else a Pandas DataFrame.
 
     processing_kwargs : dict, optional
-        Extra keyword arguments to be passed to the processing funciton.
+        Extra keyword arguments to be passed to the processing function.
 
     download_info : list, optional
         A list with the same length as *fnames*, which contains extra info

@@ -4,13 +4,14 @@ Methods for importing data from the Cassini spacecraft.
 import datetime
 import os
 import pathlib
+
+import h5py
 import pandas as pd
 import calendar
 import astropy.units as u
 import pvl
 import shutil
 import zipfile
-from glob import glob
 import numpy as np
 import csv
 from struct import unpack, calcsize
@@ -218,25 +219,12 @@ def mag_hires(starttime, endtime, try_download=True):
                         try_download=try_download)
 
 
-def caps_dateparser(stringlist):
-    return [datetime.datetime.strptime(item,"%Y-%jT%H:%M:%S.%f") for item in stringlist]
-
-def caps_els(starttime, endtime, try_download=True):
+def caps_els(starttime, endtime, detector, try_download=True):
     """
     Import Cassini Plasma Spectrometer Electron Spectrometer.
 
     See https://pds-ppi.igpp.ucla.edu/search/view/?id=pds://PPI/CO-E_J_S_SW-CAPS-3-CALIBRATED-V1.0
     for more information.
-
-    Cassini Plasma Spectrometer Electron Spectrometer data at the highest time
-    resolution available covering the periods
-    1999-004 (4 Jan) to 1999-021 (21 Jan), 
-    1999-232 (20 Aug) to 1999-257 (14 Sep), 
-    2000-190 (8 Jul) to 2000-309 (4 Nov), 
-    2001-120 (30 Apr)to 2004-135 (14 May), 
-    at Earth from 1999-229 (17 Aug) to 1999-231 (19 Aug), 
-    at Jupiter from 2000-310 (4 Nov) to 2001-119 (29 Apr), 
-    at Saturn over the interval 2004-136 (15 May) to 2012-154 (02 Jun).
 
     Parameters
     ----------
@@ -244,11 +232,14 @@ def caps_els(starttime, endtime, try_download=True):
         Interval start time.
     endtime : datetime
         Interval end time.
+    detector : int
+        Each CAPS sensor has multiple detectors, this returns data for one of them
 
     Returns
     -------
     data : :class:`~sunpy.timeseries.TimeSeries`
         Requested data
+
     """
     remote_base_url = ('https://pds-ppi.igpp.ucla.edu/ditdos/download?id='
                        'pds://PPI/CO-E_J_S_SW-CAPS-3-CALIBRATED-V1.0/DATA/CALIBRATED')
@@ -256,19 +247,24 @@ def caps_els(starttime, endtime, try_download=True):
     fnames = []
     extension = ''
     units = OrderedDict([])
+    for i in range(63):
+        units[i] = u.ct / u.s
+
     local_base_dir = cassini_dir / 'caps' / 'els'
 
     for [day, _, _] in util._daysplitinterval(starttime, endtime):
         year = day.year
-        if calendar.isleap(year):
-            monthstr = leapmonth2str[day.month]
-        else:
-            monthstr = month2str[day.month]
-            
+
         doy = day.strftime('%j')
-        for x in ['00','06','12','18']:
+        dirs.append(pathlib.Path(str(year)) / doy)
+        fnames.append('ELS_V01.FMT')
+        for x in ['00', '06', '12', '18']:
+            # TODO adds all data for a day, rather than selecting correct times
             dirs.append(pathlib.Path(str(year)) / doy)
-            fnames.append('ELS_' + str(year) + doy + x + '_V01')    
+            dirs.append(pathlib.Path(str(year)) / doy)
+            fnames.append('ELS_' + str(year) + doy + x + '_V01.LBL')
+            fnames.append('ELS_' + str(year) + doy + x + '_V01.DAT')
+
     def download_func(remote_base_url, local_base_dir,
                       directory, fname, remote_fname, extension):
         url = remote_base_url + '/' + str(directory)
@@ -276,101 +272,113 @@ def caps_els(starttime, endtime, try_download=True):
                               local_base_dir / directory)
 
     def processing_func(f):
-        oldfilename_path = pathlib.Path(str(f.name))
-        zip_path = pathlib.Path(str(f.name)+".zip")     
-        f.close()
-        shutil.copy(oldfilename_path.__str__(),zip_path.__str__())
-        
-        extractdir_path = oldfilename_path.parents[0] / "temp"
-        zipfile.ZipFile(zip_path.__str__()).extractall(extractdir_path.__str__())
-        formatfilepath = sorted(extractdir_path.rglob("*.FMT"))[0]
-        labelfilepath = sorted(extractdir_path.rglob("*.LBL"))[0]
-        datafilepath = sorted(extractdir_path.rglob("*.DAT"))[0]
 
-        datatype_dict = {"DATE":"21s",'LSB_UNSIGNED_INTEGER':'B','LSB_UNSIGNED_INTEGER':'I','PC_REAL':'f'}
+        if f.name.rsplit(".")[1] == "FMT" or f.name.rsplit(".")[1] == "LBL":
+            return None
+        temppath = pathlib.Path(f.name)
+        formatfilepath = temppath.parents[0] / "ELS_V01.FMT"
+        labelfilepath = temppath.with_suffix(".LBL")
+        datafilepath = temppath.with_suffix(".DAT")
+        hdffilepath = temppath.with_suffix(".hdf")
 
+        create_caps_hdf5_file(datafilepath, labelfilepath, formatfilepath)
+        df = make_caps_df(hdffilepath, detector)
 
-        fmt_i = '<' #start little endian
-        fmt_o = ''
-        column_headers=[]
-        columncounter = 0
-        for item in pvl.load(formatfilepath.__str__()).items():
-            if item[1]['NAME'] == 'DEAD_TIME_METHOD' and item[1]['BYTES'] == 1 and item[1]['DATA_TYPE'] == 'LSB_UNSIGNED_INTEGER':
-                fmt_i += 'B'
-                fmt_o += '%u\t'
-                column_headers.append(item[1]['NAME'])
-                continue
-            elif item[1]['NAME'] == 'TELEMETRY' and item[1]['BYTES'] == 2 and item[1]['DATA_TYPE'] == 'LSB_UNSIGNED_INTEGER':
-                fmt_i += 'H'
-                fmt_o += '%u\t'
-                column_headers.append(item[1]['NAME'])
-                continue
-            elif 'ITEMS' in item[1].keys():
-                fmt_i += datatype_dict[item[1]['DATA_TYPE']]*item[1]['ITEMS']   
-                fmt_o += '%f\t'*item[1]['ITEMS']
-
-                column_countertemp = [item[1]['NAME']+'_'+str(x) for x in np.arange(1,item[1]['ITEMS']+1,1)]
-                column_headers += column_countertemp
-                continue
-            else:        
-                fmt_i += datatype_dict[item[1]['DATA_TYPE']]
-                
-                if datatype_dict[item[1]['DATA_TYPE']] == 'f':
-                    fmt_o += '%f\t'
-                    column_headers.append(item[1]['NAME'])
-                elif item[1]['DATA_TYPE'] == 'DATE':  
-                    fmt_o += '%s\t'
-                    column_headers.append("Time")
-                continue
-
-        fmt_o += '\n'
-        fmtsz = calcsize(fmt_i)
-
-        #Checks the size dervied from format file against the label file
-        if fmtsz != pvl.load(labelfilepath.__str__())['TABLE']['ROW_BYTES']:
-            raise ValueError("Format file disagrees with label file")
-        
-        temptextfile_path = pathlib.Path(str(f.name) + '.txt')
-        #Read the Binary data into a temp .txt file
-        datainputfile = open(datafilepath.__str__(),'rb')
-        textoutputfile = open(temptextfile_path.__str__(),'w')
-        while True:
-            entry = datainputfile.read(fmtsz) # read file
-            if not entry:
-                break # EOF yields null string, exit loop
-            data = unpack(fmt_i,entry) # unpack the record using the defined input format
-            textoutputfile.write(fmt_o%data) # write to output file using the defined output format
-        datainputfile.close() # close input file
-        textoutputfile.close() # close output file
-
-        
-        #Writes to a .csv
-        csvoutputfile = oldfilename_path.__str__()+'.csv'
-        filein = open(temptextfile_path.__str__(), "r")
-        in_txt = csv.reader(filein, delimiter = '\t')
-        
-        with open(csvoutputfile , 'w',newline='') as fileout:
-            out_csv = csv.writer(fileout, delimiter = '\t')
-            out_csv.writerow(column_headers) 
-            for line in in_txt:
-                newline = [line[0][2:-1]] + line[1:]
-                out_csv.writerow(newline)        
-        filein.close()
-        
-        
-        #Tidying up        
-        temptextfile_path.unlink()
-        #oldfilename_path.unlink()
-        zip_path.unlink()
-        shutil.rmtree(extractdir_path)
-        
-        df = pd.read_csv(csvoutputfile, header=0,
-                         delim_whitespace=True,
-                         parse_dates=[0], index_col=0,
-                         date_parser=caps_dateparser)        
         return df
 
     return util.process(dirs, fnames, extension, local_base_dir,
                         remote_base_url, download_func, processing_func,
                         starttime, endtime, units=units,
                         try_download=try_download)
+
+
+def create_caps_hdf5_file(datafilepath, labelfilepath, formatfilepath):
+    """
+    Creates hdf5 given a .DAT, .LBL and .FMT file
+    """
+
+    # This bit finds where the format of the data is stored
+    dataformatlocation = pvl.load(formatfilepath.__str__())
+    labelinputfile = open(formatfilepath.__str__(), 'r')
+
+    # This creates a dictionary containing the structure of the data, based on RJW comments in files
+    datastructure = {}
+    for row in labelinputfile:
+        if row[:6] == "/* RJW":
+            templist = row.rstrip()[7:-2].split(",")
+            newdataitem = [x.lstrip().rstrip() for x in templist]
+            datastructure[newdataitem[0]] = newdataitem[1:]
+
+    # Fix Cassini CAPS shapes
+    if "ELS" in pvl.load(labelfilepath.__str__())['STANDARD_DATA_PRODUCT_ID']:
+        datastructure["DATA"] = ['f', '3', '63', '8', '1']
+        datastructure["J2000_TO_RTP"] = ['f', '2', '3', '3']
+        datastructure["SC_TO_J2000"] = ['f', '2', '3', '3']
+    if "IBS" in pvl.load(labelfilepath.__str__())['STANDARD_DATA_PRODUCT_ID']:
+        datastructure["DATA"] = ['f', '3', '255', '3', '1']
+        datastructure["J2000_TO_RTP"] = ['f', '2', '3', '3']
+        datastructure["SC_TO_J2000"] = ['f', '2', '3', '3']
+
+    recordbytes = pvl.load(labelfilepath.__str__())['RECORD_BYTES']
+    numberofrows = pvl.load(labelfilepath.__str__())['TABLE']['ROWS']
+    datainputfile = open(datafilepath.__str__(), 'rb')
+
+    # Opens a HDF5 file and writes attributes contain in
+    f = h5py.File(datafilepath.with_suffix(".hdf"), 'w')
+    for item in pvl.load(labelfilepath.__str__()).items():
+        if item[0] in ['TABLE', 'COLUMN', 'CONTAINER']:
+            continue
+        if isinstance(item[1], int):
+            f.attrs[item[0]] = item[1]
+        else:
+            f.attrs[item[0]] = str(item[1])
+
+    for itemcounter, item in enumerate(dataformatlocation.items()):
+        if isinstance(item[1], pvl.PVLObject):
+            if item[0] == "CONTAINER":
+                tempname = item[1]['NAME'].rsplit("_", 1)[0]
+            else:
+                tempname = item[1]['NAME']
+            dataitem = datastructure[tempname]
+            dataformat = dataitem[0]
+            datadim = int(dataitem[1])
+            datashape = []
+            for i in range(datadim):
+                datashape.append(int(dataitem[2 + i]))
+
+            numofnum = np.prod(datashape)
+            datainputfile.seek(item[1]['START_BYTE'] - 1, 0)
+            tempshape = [numberofrows] + datashape
+
+            # Characters/Strings annoying to deal with, use separate bit
+            if dataformat == "c":
+                temp = []
+                for i in range(numberofrows):
+                    numofbytes = calcsize(numofnum * dataformat)
+                    entry = datainputfile.read(numofbytes)
+                    temp.append(unpack("<" + (str(numofnum) + "s"), entry)[0])
+                    datainputfile.seek(recordbytes - numofbytes, 1)
+                f.create_dataset(tempname, data=temp)
+            else:
+                temparray = np.zeros(tempshape)
+                for i in range(numberofrows):
+                    numofbytes = calcsize(numofnum * dataformat)
+                    entry = datainputfile.read(numofbytes)
+                    temp = unpack("<" + (numofnum * dataformat), entry)
+                    temparray[i] = np.array(temp).reshape(datashape)
+                    # print(temp,len(temp))
+                    datainputfile.seek(recordbytes - numofbytes, 1)
+                f.create_dataset(tempname, data=temparray)
+    f.close()
+
+
+def make_caps_df(hdffilepath: object, anode: int) -> object:
+    """
+    Creates a dataframe for a single CAPS anode/fan
+
+    """
+    hdf5file = h5py.File(hdffilepath, 'r')
+    df = pd.DataFrame(np.flip(np.array(hdf5file['DATA'][:, :, anode, 0]), axis=1))
+    df['Time'] = [datetime.datetime.strptime(item.decode("ASCII"), "%Y-%jT%H:%M:%S.%f") for item in hdf5file['UTC']]
+    hdf5file.close()
+    return df
