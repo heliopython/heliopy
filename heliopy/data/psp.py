@@ -93,12 +93,14 @@ class _FIELDSmag_RTN_1min_Downloader(_FIELDSDownloader):
         datestr = interval.start.strftime('%Y%m%d')
         return f'psp_fld_l2_mag_rtn_1min_{datestr}_v01.cdf'
 
+
 class _FIELDSmag_RTN_4_Per_Cycle_Downloader(_FIELDSDownloader):
     epoch_label = 'epoch_mag_RTN_4_Sa_per_Cyc'
 
     def local_dir(self, interval):
         year = interval.start.strftime('%Y')
-        return pathlib.Path('psp') / 'fields' / 'l2' / 'mag_rtn_4_per_cycle' / year
+        return (pathlib.Path('psp') / 'fields' / 'l2' /
+                'mag_rtn_4_per_cycle' / year)
 
     def fname(self, interval):
         datestr = interval.start.strftime('%Y%m%d')
@@ -140,12 +142,14 @@ def fields_mag_rtn_1min(starttime, endtime):
     dl = _FIELDSmag_RTN_1min_Downloader()
     return dl.load(starttime, endtime)
 
+
 def fields_mag_rtn_4_per_cycle(starttime, endtime):
     """
     4 Samples per spacecraft clock cycle
     """
     dl = _FIELDSmag_RTN_4_Per_Cycle_Downloader()
     return dl.load(starttime, endtime)
+
 
 def fields_mag_rtn(starttime, endtime):
     """
