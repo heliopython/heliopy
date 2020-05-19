@@ -1,0 +1,1 @@
+Fixed Solar Orbiter kernel download in `heliopy.data.spice`.
