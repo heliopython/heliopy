@@ -15,7 +15,6 @@ import urllib.error
 import requests
 
 from heliopy import config
-from heliopy import spice
 import heliopy.data.util as util
 
 data_dir = config['download_dir']
@@ -183,6 +182,8 @@ def get_kernel(name):
     list of `~heliopy.spice.Kernel`
         List of loaded kernels.
     """
+    from heliopy import spice
+
     if name not in kernel_dict:
         raise ValueError(
             'Provided name {} not in list of available names: {}'.format(

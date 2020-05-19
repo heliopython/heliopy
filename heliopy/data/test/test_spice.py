@@ -1,6 +1,6 @@
 import os
 import pytest
-spice = pytest.importorskip("heliopy.data.spice")
+from heliopy.data import spice
 
 
 @pytest.mark.data
