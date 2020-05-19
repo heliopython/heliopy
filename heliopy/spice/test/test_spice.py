@@ -8,8 +8,6 @@ import pytest
 import heliopy.spice as spice
 import heliopy.data.spice as spicedata
 
-spice.setup_spice()
-
 
 @pytest.fixture
 def solo_trajectory():
@@ -34,7 +32,6 @@ def test_spice(solo_trajectory, times):
 
 
 def test_coords(solo_trajectory, times):
-    spice.setup_spice()
     # Smoke test that coords work
     solo_trajectory.generate_positions(times, 'Sun', 'J2000')
     solo_trajectory.coords
