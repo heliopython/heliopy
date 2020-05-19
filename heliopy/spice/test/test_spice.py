@@ -92,6 +92,6 @@ def test_kernel():
     assert kernel.coverage(solo) == [
         datetime.datetime(2020, 2, 10, 4, 55, 49, 670002,
                           tzinfo=datetime.timezone.utc),
-        datetime.datetime(2030, 11, 18, 19, 7, 39, 363433,
+        datetime.datetime(2030, 11, 20, 10, 54, 51, 644258,
                           tzinfo=datetime.timezone.utc)
     ]
