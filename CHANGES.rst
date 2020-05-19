@@ -1,3 +1,25 @@
+Heliopy 0.11.0+34.g17e4d6e (2020-05-19)
+=======================================
+
+Features
+--------
+
+- Added `heliopy.data.psp.fields_mag_rtn_4_per_cycle`. (`#896 <https://github.com/heliopython/heliopy/pull/896>`__)
+
+
+Bug Fixes
+---------
+
+- Fixed Solar Orbiter kernel download in `heliopy.data.spice`. (`#898 <https://github.com/heliopython/heliopy/pull/898>`__)
+- ``heliopy.spice.setup_spice`` no longer needs to be manually run to setup common spice files. (`#899 <https://github.com/heliopython/heliopy/pull/899>`__)
+
+
+Improved Documentation
+----------------------
+
+- Fixed the documentation build on readthedocs. (`#894 <https://github.com/heliopython/heliopy/pull/894>`__)
+
+
 Heliopy 0.11.0 (2020-05-11)
 ===========================
 
