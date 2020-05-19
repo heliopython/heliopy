@@ -11,3 +11,4 @@ python:
       extra_requirements:
         - data
         - docs
+        - spice
