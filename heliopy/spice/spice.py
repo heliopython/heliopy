@@ -1,8 +1,4 @@
-import os
 import pathlib
-
-from heliopy import config
-import heliopy.data.helper as helper
 
 import numpy as np
 import spiceypy
