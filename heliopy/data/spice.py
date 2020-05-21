@@ -15,7 +15,6 @@ import urllib.error
 import requests
 
 from heliopy import config
-from heliopy import spice
 import heliopy.data.util as util
 
 data_dir = config['download_dir']
@@ -138,7 +137,7 @@ spacecraft_kernels = [_Kernel('Cassini', 'cassini',
 
 predicted_kernels = [
     _Kernel('Solar Orbiter', 'solo',
-            'https://repos.cosmos.esa.int/socci/projects/SPICE_KERNELS/repos/solar-orbiter/raw/kernels/spk/solo_ANC_soc-orbit_20200210-20301118_L006_V1_00018_V01.bsp'
+            'https://repos.cosmos.esa.int/socci/projects/SPICE_KERNELS/repos/solar-orbiter/raw/kernels/spk/solo_ANC_soc-orbit_20200210-20301120_L014_V1_00022_V01.bsp'
             ),
     _Kernel('Parker Solar Probe', 'psp_pred',
             ['https://sppgway.jhuapl.edu/MOC/ephemeris//spp_nom_20180812_20250831_v035_RO2.bsp']
@@ -183,6 +182,8 @@ def get_kernel(name):
     list of `~heliopy.spice.Kernel`
         List of loaded kernels.
     """
+    from heliopy import spice
+
     if name not in kernel_dict:
         raise ValueError(
             'Provided name {} not in list of available names: {}'.format(

@@ -14,6 +14,7 @@ endtime = datetime(2018, 12, 19, 1)
 @pytest.mark.parametrize('func', [psp.sweap_spc_l2,
                                   psp.sweap_spc_l3,
                                   psp.fields_mag_rtn_1min,
+                                  psp.fields_mag_rtn_4_per_cycle,
                                   psp.fields_mag_rtn])
 def test_psp(func):
     df = func(starttime, endtime)

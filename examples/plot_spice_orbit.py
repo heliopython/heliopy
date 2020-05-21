@@ -16,10 +16,6 @@ import astropy.units as u
 import numpy as np
 
 ###############################################################################
-# Setup SPICE. This will download and load commonly needed files
-spice.setup_spice()
-
-###############################################################################
 # Load the solar orbiter spice kernel. HelioPy will automatically fetch the
 # latest kernel
 kernels = spicedata.get_kernel('psp')
