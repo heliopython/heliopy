@@ -248,18 +248,23 @@ def caps_els(starttime, endtime, detector, try_download=True):
 
     local_base_dir = cassini_dir / 'caps' / 'els'
 
-    for [day, _, _] in util._daysplitinterval(starttime, endtime):
+    for [day, stime, etime] in util._daysplitinterval(starttime, endtime):
         year = day.year
-
         doy = day.strftime('%j')
         dirs.append(pathlib.Path(str(year)) / doy)
         fnames.append('ELS_V01.FMT')
-        for x in ['00', '06', '12', '18']:
-            # TODO adds all data for a day, rather than selecting correct times
+        timeslist = ['00', '06', '12', '18', '24']
+        for counter in range(4):
+            if counter * 6 <= stime.hour < int(timeslist[counter + 1]):
+                startcounter = counter
+            if counter * 6 <= etime.hour < int(timeslist[counter + 1]):
+                endcounter = counter
+        hoursneeded = timeslist[startcounter:endcounter + 1]
+        for currenthour in hoursneeded:
             dirs.append(pathlib.Path(str(year)) / doy)
             dirs.append(pathlib.Path(str(year)) / doy)
-            fnames.append('ELS_' + str(year) + doy + x + '_V01.LBL')
-            fnames.append('ELS_' + str(year) + doy + x + '_V01.DAT')
+            fnames.append('ELS_' + str(year) + doy + currenthour + '_V01.LBL')
+            fnames.append('ELS_' + str(year) + doy + currenthour + '_V01.DAT')
 
     def download_func(remote_base_url, local_base_dir,
                       directory, fname, remote_fname, extension):
