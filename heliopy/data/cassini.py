@@ -4,16 +4,12 @@ Methods for importing data from the Cassini spacecraft.
 import datetime
 import os
 import pathlib
-
 import h5py
 import pandas as pd
 import calendar
 import astropy.units as u
 import pvl
-import shutil
-import zipfile
 import numpy as np
-import csv
 from struct import unpack, calcsize
 
 from collections import OrderedDict
@@ -93,7 +89,7 @@ class _mag1minDownloader(util.Downloader):
         local_dir = self.local_path(interval).parent
         local_dir.mkdir(parents=True, exist_ok=True)
         year = interval.start.strftime('%Y')
-        base_url = ('http://pds-ppi.igpp.ucla.edu/ditdos/download?'
+        base_url = ('https://pds-ppi.igpp.ucla.edu/ditdos/download?'
                     'id=pds://PPI/CO-E_SW_J_S-MAG-4-SUMM-1MINAVG-V2.0/DATA')
         url = '{}/{}'.format(base_url, year)
         util._download_remote(url,
@@ -173,7 +169,7 @@ def mag_hires(starttime, endtime, try_download=True):
     data : :class:`~sunpy.timeseries.TimeSeries`
         Requested data
     """
-    remote_base_url = ('http://pds-ppi.igpp.ucla.edu/ditdos/download?id='
+    remote_base_url = ('https://pds-ppi.igpp.ucla.edu/ditdos/download?id='
                        'pds://PPI/CO-E_SW_J_S-MAG-3-RDR-FULL-RES-V2.0/DATA')
     dirs = []
     fnames = []
