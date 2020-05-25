@@ -10,7 +10,9 @@ import calendar
 import astropy.units as u
 import pvl
 import numpy as np
+import datetime as dt
 from struct import unpack, calcsize
+import sunpy
 
 from collections import OrderedDict
 from heliopy.data import util
@@ -215,82 +217,98 @@ def mag_hires(starttime, endtime, try_download=True):
                         try_download=try_download)
 
 
-def caps_els(starttime, endtime, detector, try_download=True):
-    """
-    Import Cassini Plasma Spectrometer Electron Spectrometer.
+class _capsDownloader(util.Downloader):
+    base_url = ('https://pds-ppi.igpp.ucla.edu/ditdos/download?id='
+                'pds://PPI/CO-E_J_S_SW-CAPS-3-CALIBRATED-V1.0/DATA/CALIBRATED')
 
-    See https://pds-ppi.igpp.ucla.edu/search/view/?id=pds://PPI/CO-E_J_S_SW-CAPS-3-CALIBRATED-V1.0
-    for more information.
+    def intervals(self, starttime, endtime):
+        return self.intervals_sixhourly(starttime, endtime)
 
-    Parameters
-    ----------
-    starttime : datetime
-        Interval start time.
-    endtime : datetime
-        Interval end time.
-    detector : int
-        Each CAPS sensor has multiple detectors, this returns data for one of them
+    def fname(self, interval):
+        year = interval.start.strftime('%Y')
+        doy = interval.start.strftime('%j')
+        hour = interval.start.strftime('%H')
+        return f'{self.sensor.upper()}_{year}{doy}{hour}_V01'
 
-    Returns
-    -------
-    data : :class:`~sunpy.timeseries.TimeSeries`
-        Requested data
+    def local_dir(self, interval):
+        year = interval.start.strftime('%Y')
+        doy = interval.start.strftime('%j')
+        return (pathlib.Path('cassini') / 'caps' / self.sensor /
+                year / doy)
 
-    """
-    remote_base_url = ('https://pds-ppi.igpp.ucla.edu/ditdos/download?id='
-                       'pds://PPI/CO-E_J_S_SW-CAPS-3-CALIBRATED-V1.0/DATA/CALIBRATED')
-    dirs = []
-    fnames = []
-    extension = ''
+    def intervals_sixhourly(self, starttime, endtime):
+        startdatetime = dt.datetime.combine(starttime.date(), dt.time(starttime.hour - (starttime.hour % 6)))
+        enddatetime = dt.datetime.combine(endtime.date(), dt.time(endtime.hour - (endtime.hour % 6)))
+        intervallist = sunpy.time.TimeRange(startdatetime, enddatetime).window(6 * u.hour, window=6 * u.hour)
+        return intervallist
+
+    def download(self, interval):
+        local_dir = self.local_path(interval).parent
+        local_dir.mkdir(parents=True, exist_ok=True)
+        year = interval.start.strftime('%Y')
+        doy = interval.start.strftime('%j')
+        url = '{}/{}/{}'.format(self.base_url, year, doy)
+        util._download_remote(url, self.fname(interval) + '.DAT', local_dir)
+        util._download_remote(url, self.fname(interval) + '.LBL', local_dir)
+        util._download_remote(url, self.sensor.upper() + "_V01.FMT", local_dir)
+        create_caps_hdf5_file(local_dir / (self.fname(interval) + '.DAT'),
+                              local_dir / (self.fname(interval) + '.LBL'),
+                              local_dir / (self.sensor.upper() + "_V01.FMT"))
+
+    def load_local_file(self, interval):
+        hdf_path = data_dir / self.local_dir(interval) / (self.fname(interval) + '.hdf')
+        return self.load_local_caps_hdf_file(hdf_path)
+
+    def load_local_hdf_file(self, hdf_path):
+        return self.load_local_caps_hdf_file(hdf_path)
+
+
+class _elsDownloader(_capsDownloader):
     units = OrderedDict([])
     for i in range(63):
         units[i] = u.ct / u.s
 
-    local_base_dir = cassini_dir / 'caps' / 'els'
+    def __init__(self, sensor, anode):
+        self.sensor = sensor
+        self.anode = anode
 
-    for [day, stime, etime] in util._daysplitinterval(starttime, endtime):
-        year = day.year
-        doy = day.strftime('%j')
-        dirs.append(pathlib.Path(str(year)) / doy)
-        fnames.append('ELS_V01.FMT')
-        timeslist = ['00', '06', '12', '18', '24']
-        for counter in range(4):
-            if counter * 6 <= stime.hour < int(timeslist[counter + 1]):
-                startcounter = counter
-            if counter * 6 <= etime.hour < int(timeslist[counter + 1]):
-                endcounter = counter
-        hoursneeded = timeslist[startcounter:endcounter + 1]
-        for currenthour in hoursneeded:
-            dirs.append(pathlib.Path(str(year)) / doy)
-            dirs.append(pathlib.Path(str(year)) / doy)
-            fnames.append('ELS_' + str(year) + doy + currenthour + '_V01.LBL')
-            fnames.append('ELS_' + str(year) + doy + currenthour + '_V01.DAT')
-
-    def download_func(remote_base_url, local_base_dir,
-                      directory, fname, remote_fname, extension):
-        url = remote_base_url + '/' + str(directory)
-        util._download_remote(url, fname + extension,
-                              local_base_dir / directory)
-
-    def processing_func(f):
-
-        if f.name.rsplit(".")[1] == "FMT" or f.name.rsplit(".")[1] == "LBL":
-            return None
-        temppath = pathlib.Path(f.name)
-        formatfilepath = temppath.parents[0] / "ELS_V01.FMT"
-        labelfilepath = temppath.with_suffix(".LBL")
-        datafilepath = temppath.with_suffix(".DAT")
-        hdffilepath = temppath.with_suffix(".hdf")
-
-        create_caps_hdf5_file(datafilepath, labelfilepath, formatfilepath)
-        df = make_caps_df(hdffilepath, detector)
-
+    def load_local_caps_hdf_file(self, hdf_path):
+        hdf5file = h5py.File(hdf_path, 'r')
+        df = pd.DataFrame(np.flip(np.array(hdf5file['DATA'][:, :, self.anode, 0]), axis=1))
+        df['Time'] = [datetime.datetime.strptime(item.decode("ASCII"), "%Y-%jT%H:%M:%S.%f") for item in hdf5file['UTC']]
+        hdf5file.close()
         return df
 
-    return util.process(dirs, fnames, extension, local_base_dir,
-                        remote_base_url, download_func, processing_func,
-                        starttime, endtime, units=units,
-                        try_download=try_download)
+
+def caps_els(starttime, endtime, anode):
+    """
+       Import 1 minute magnetic field from Cassini.
+
+       See http://pds-ppi.igpp.ucla.edu/search/view/?f=yes&id=pds://PPI/CO-E_SW_J_S-MAG-4-SUMM-1MINAVG-V1.0
+       for more information.
+
+       Cassini Orbiter Magnetometer Calibrated MAG data in 1 minute averages
+       available covering the period 1999-08-16 (DOY 228) to 2016-12-31 (DOY 366).
+       The data are provided in RTN coordinates throughout the mission, with
+       Earth, Jupiter, and Saturn centered coordinates for the respective
+       flybys of those planets.
+
+       Parameters
+       ----------
+       starttime : datetime
+           Interval start time.
+       endtime : datetime
+           Interval end time.
+       anode : int
+           Requested CAPS ELS. Must be in 0-7 range
+
+       Returns
+       -------
+       data : :class:`~sunpy.timeseries.TimeSeries`
+           Requested data
+       """
+    dl = _elsDownloader("els", anode)
+    return dl.load(starttime, endtime)
 
 
 def create_caps_hdf5_file(datafilepath, labelfilepath, formatfilepath):
@@ -371,15 +389,3 @@ def create_caps_hdf5_file(datafilepath, labelfilepath, formatfilepath):
                     datainputfile.seek(recordbytes - numofbytes, 1)
                 f.create_dataset(tempname, data=temparray)
     f.close()
-
-
-def make_caps_df(hdffilepath: object, anode: int) -> object:
-    """
-    Creates a dataframe for a single CAPS anode/fan
-
-    """
-    hdf5file = h5py.File(hdffilepath, 'r')
-    df = pd.DataFrame(np.flip(np.array(hdf5file['DATA'][:, :, anode, 0]), axis=1))
-    df['Time'] = [datetime.datetime.strptime(item.decode("ASCII"), "%Y-%jT%H:%M:%S.%f") for item in hdf5file['UTC']]
-    hdf5file.close()
-    return df

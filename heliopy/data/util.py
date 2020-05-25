@@ -72,7 +72,7 @@ class Downloader(abc.ABC):
 
             # Try to load HDF file
             if hdf_path.exists():
-                data.append(pd.read_hdf(hdf_path))
+                data.append(self.load_local_hdf_file(hdf_path))
                 # Store the local path if loading data was successful
                 local_path_successful = local_path
                 continue
@@ -213,6 +213,21 @@ class Downloader(abc.ABC):
         data : pandas.DataFrame
         """
         pass
+
+    def load_local_hdf_file(self, hdf_path):
+        """
+        Load local HDF file from a given path
+
+        Parameters
+        ----------
+        hdf_path : pathlib.Path
+
+        Returns
+        -------
+        df : pandas.DataFrame
+        """
+        df = pd.read_hdf(hdf_path)
+        return df
 
     @staticmethod
     def intervals_yearly(starttime, endtime):
