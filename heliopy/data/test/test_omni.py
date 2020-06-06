@@ -1,16 +1,15 @@
 from datetime import datetime
 import pytest
 
+from heliopy.data import omni
 from .util import check_data_output
 
-omni = pytest.importorskip('heliopy.data.omni')
 pytestmark = pytest.mark.data
+starttime = datetime(2000, 1, 1, 0, 0, 0)
+endtime = datetime(2000, 1, 2, 0, 0, 0)
 
 
-starttime = datetime(1970, 1, 1, 0, 0, 0)
-endtime = datetime(1970, 1, 2, 0, 0, 0)
-
-
-def test_low():
-    df = omni.low(starttime, endtime)
+@pytest.mark.parametrize('f', [omni.h0_mrg1hr])
+def test_omni(f):
+    df = f(starttime, endtime)
     check_data_output(df)
