@@ -498,7 +498,7 @@ def units_attach(data, units, warn_missing_units=True):
             units[column_name] = u.dimensionless_unscaled
             missing_names.append(column_name)
 
-    if warn_missing_units:
+    if warn_missing_units and len(missing_names):
         missing_names = '[' + ", ".join(missing_names) + ']'
         message = (f"{missing_names} columns have missing units."
                    f"\n{missing_msg}")
