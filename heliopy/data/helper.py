@@ -163,39 +163,52 @@ def cdf_dict(unit_string):
                         (' none', u.dimensionless_unscaled),
                         ('Samples/cycle', u.dimensionless_unscaled),
                         (('[fraction]'), u.dimensionless_unscaled),
+                        ('DD-MMM-YYYY_hr:mm', u.dimensionless_unscaled),
+                        ('(6=No,1=All,-1=n/a)', u.dimensionless_unscaled),
+
                         ('microW m^-2', u.mW * u.m**-2),
+
                         ('years', u.yr),
                         ('(2038=Yr0)', u.yr),
                         ('days', u.d),
+
                         ('#/cc', u.cm**-3),
                         ('#/cm^3', u.cm**-3),
                         ('cm^{-3}', u.cm**-3),
                         ('particles cm^-3', u.cm**-3),
                         ('n/cc (from moments)', u.cm**-3),
                         ('n/cc (from fits)', u.cm**-3),
+                        ('Per cc', u.cm**-3),
                         ('#/cm3', u.cm**-3),
+
                         ('km/sec', u.km / u.s),
                         ('km/sec (from fits)', u.km / u.s),
                         ('km/sec (from moments)', u.km / u.s),
+                        ('Km/s', u.km / u.s),
+
                         ('km (>200)', u.km),
                         ('ionic charge', u.dimensionless_unscaled),
                         ('u/e', u.dimensionless_unscaled),
                         ('Volts', u.V),
+
                         ('earth radii', u.earthRad),
                         ('Re', u.earthRad),
                         ('Earth Radii', u.earthRad),
                         ('Re (1min)', u.earthRad),
                         ('Re (1hr)', u.earthRad),
+
                         ('Degrees', u.deg),
                         ('degrees', u.deg),
                         ('Deg', u.deg),
                         ('deg (from fits)', u.deg),
                         ('deg (from moments)', u.deg),
                         ('deg (>200)', u.deg),
+
                         ('Deg K', u.K),
                         ('#/{cc*(cm/s)^3}', (u.cm**3 * (u.cm / u.s)**3)**-1),
                         ('sec', u.s),
                         ('Samples/s', 1 / u.s),
+
                         ('seconds', u.s),
                         ('nT GSE', u.nT),
                         ('nT GSM', u.nT),
@@ -205,8 +218,10 @@ def cdf_dict(unit_string):
                         ('nT (3sec)', u.nT),
                         ('nT (1hr)', u.nT),
                         ('nT (>200)', u.nT),
+
                         ('msec', u.ms),
                         ('milliseconds', u.ms),
+
                         ('ionic charge', ionic_charge),
                         ('#/cm2-ster-eV-sec',
                          1 / (u.cm**2 * u.sr * u.eV * u.s)),
@@ -216,7 +231,11 @@ def cdf_dict(unit_string):
                          1 / (u.cm**2 * u.s * u.sr * u.MeV)),
                         ('1/(cm**2-s-sr-MeV/nuc.)',
                          1 / (u.cm**2 * u.s * u.sr * u.MeV)),
+
                         ('1/(cm**2-s-sr)', 1 / (u.cm**2 * u.s * u.sr)),
+                        ('1/(SQcm-ster-s)', 1 / (u.cm**2 * u.s * u.sr)),
+                        ('1/(SQcm-ster-s)..', 1 / (u.cm**2 * u.s * u.sr)),
+
                         ('Counts/256sec', 1 / (256 * u.s)),
                         ('Counts/hour', 1 / u.hr),
                          ])
