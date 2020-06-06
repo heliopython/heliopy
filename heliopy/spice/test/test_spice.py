@@ -81,14 +81,14 @@ def test_body_repr():
 
 
 def test_kernel():
-    kernel = spicedata.get_kernel('solo')[0]
-    solo = spice.Body('solar orbiter')
+    kernel = spicedata.get_kernel('helios1')[0]
+    solo = spice.Body('helios 1')
     assert len(kernel.bodies) == 1
     assert kernel.bodies[0] == solo
 
     assert kernel.coverage(solo) == [
-        datetime.datetime(2020, 2, 10, 4, 55, 49, 670002,
+        datetime.datetime(1974, 12, 10, 23, 50, 1, 662,
                           tzinfo=datetime.timezone.utc),
-        datetime.datetime(2030, 11, 20, 10, 54, 51, 644258,
+        datetime.datetime(1981, 9, 30, 1, 29, 54, 1651,
                           tzinfo=datetime.timezone.utc)
     ]
