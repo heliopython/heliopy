@@ -104,6 +104,7 @@ class Downloader(abc.ABC):
             if not hasattr(self, 'units'):
                 self.units = None
             self.units = cdf_units(cdf, manual_units=self.units)
+        # Warn by default on missing units
         if not hasattr(self, 'warn_missing_units'):
             self.warn_missing_units = True
         return units_attach(
@@ -524,30 +525,23 @@ def cdf_units(cdf_, manual_units=None, length=None):
     units = coll.OrderedDict()
 
     # Get the list of all variables
-    var_list = []
-    # To figure out whether rVariable or zVariable needs to be taken
-    for attr in list(cdf_.cdf_info().keys()):
-        if 'variable' in attr.lower():
-            if len(cdf_.cdf_info()[attr]) > 0:
-                var_list += [attr]
-
+    var_list = _get_cdf_vars(cdf_)
     logger.info(f'Found the following variables in CDF: {var_list}')
     # Get a mapping from each key to any sub-keys
     key_dict = {}
     # Extract the list of valid keys in the zVar or rVar
-    for attr in var_list:
-        for key in cdf_.cdf_info()[attr]:
-            y = np.array(cdf_.varget(key))
-            ncols = y.shape
-            if len(ncols) == 1:
-                key_dict[key] = key
-            if len(ncols) > 1:
-                val = []
-                val.append(key)
-                for x in range(0, ncols[1]):
-                    field = f'{key}_{x}'
-                    val.append(field)
-                key_dict[key] = val
+    for key in var_list:
+        y = np.array(cdf_.varget(key))
+        ncols = y.shape
+        if len(ncols) == 1:
+            key_dict[key] = key
+        if len(ncols) > 1:
+            val = []
+            val.append(key)
+            for x in range(0, ncols[1]):
+                field = f'{key}_{x}'
+                val.append(field)
+            key_dict[key] = val
 
     logger.info(f'Getting units for {key_dict}')
     # Assigning units to the keys
@@ -788,26 +782,20 @@ def cdf2df(cdf, index_key, dtimeindex=True, badvalues=None,
     df = pd.DataFrame(index=index)
     npoints = df.shape[0]
 
-    var_list = []
-    cdf_info = cdf.cdf_info()
-    for attr in list(cdf_info.keys()):
-        if 'variable' in attr.lower():
-            if len(cdf_info[attr]) > 0:
-                var_list += [attr]
-
+    var_list = _get_cdf_vars(cdf)
     keys = {}
-    for attr in var_list:
-        for cdf_key in cdf_info[attr]:
-            if ignore:
-                if cdf_key in ignore:
-                    continue
-            elif include:
-                if cdf_key not in include:
-                    continue
-            if cdf_key == 'Epoch':
-                keys[cdf_key] = 'Time'
-            else:
-                keys[cdf_key] = cdf_key
+    # Get mapping from each attr to sub-variables
+    for cdf_key in var_list:
+        if ignore:
+            if cdf_key in ignore:
+                continue
+        elif include:
+            if cdf_key not in include:
+                continue
+        if cdf_key == 'Epoch':
+            keys[cdf_key] = 'Time'
+        else:
+            keys[cdf_key] = cdf_key
     # Remove index key, as we have already used it to create the index
     keys.pop(index_key)
     # Remove keys for data that doesn't have the right shape to load in CDF
@@ -852,6 +840,18 @@ def cdf2df(cdf, index_key, dtimeindex=True, badvalues=None,
                     df[f'{df_key}_{i}'] = data
 
     return df
+
+
+def _get_cdf_vars(cdf):
+    # Get list of all the variables in an open CDF file
+    var_list = []
+    cdf_info = cdf.cdf_info()
+    for attr in list(cdf_info.keys()):
+        if 'variable' in attr.lower() and len(cdf_info[attr]) > 0:
+            for var in cdf_info[attr]:
+                var_list += [var]
+
+    return var_list
 
 
 def _fillval_nan(data, fillval):
