@@ -19,12 +19,15 @@ def _omni(starttime, endtime, identifier, intervals='monthly',
     # Override intervals
     if intervals == 'daily':
         dl.intervals = dl.intervals_daily
-    else:
+    elif intervals == 'monthly':
         dl.intervals = dl.intervals_monthly
+    elif intervals == 'yearly':
+        dl.intervals = dl.intervals_yearly
     return dl.load(starttime, endtime)
 
 
 # Actual download functions start here
 def h0_mrg1hr(starttime, endtime):
     identifier = 'OMNI2_H0_MRG1HR'
-    return _omni(starttime, endtime, identifier, warn_missing_units=False)
+    return _omni(starttime, endtime, identifier, warn_missing_units=False,
+                 intervals='yearly')
