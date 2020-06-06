@@ -1,14 +1,6 @@
 """
 Methods for importing data from the OMNI.
 """
-from collections import OrderedDict
-from datetime import datetime, timedelta
-import pathlib
-
-import astropy.units as u
-import numpy as np
-import pandas as pd
-
 from heliopy.data import cdasrest
 from heliopy.data import util
 
