@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 from datetime import datetime
 
 starttime = datetime(1970, 1, 1)
-endtime = datetime(1970, 2, 30)
+endtime = datetime(1970, 2, 28)
 
 omni_data = omni.h0_mrg1hr(starttime, endtime)
 
