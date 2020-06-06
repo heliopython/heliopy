@@ -11,14 +11,14 @@ import heliopy.data.spice as spicedata
 
 @pytest.fixture
 def solo_trajectory():
-    orbiter_kernel = spicedata.get_kernel('solo')
+    orbiter_kernel = spicedata.get_kernel('helios1')
     spice.furnish(orbiter_kernel)
-    return spice.Trajectory('Solar Orbiter')
+    return spice.Trajectory('Helios 1')
 
 
 @pytest.fixture
 def times():
-    starttime = datetime.datetime(2020, 3, 1)
+    starttime = datetime.datetime(1975, 3, 1)
     return [starttime + n * datetime.timedelta(days=1) for n in range(1000)]
 
 
