@@ -12,6 +12,12 @@ def test_kernel_download(kernel):
                 pytest.skip("FTP doesn't work on travis")
     if 'AZURE' in os.environ and 'psp' in kernel:
         pytest.skip("PSP kernels don't work on Azure")
+
+    # Test download
     with pytest.warns(None) as record:
-        spice.get_kernel(kernel)
+        kernel = spice.get_kernel(kernel)[0]
     assert len(record) == 0
+
+    # Check that kernel is valid
+    if kernel.fname.suffix == '.spk':
+        kernel.bodies
