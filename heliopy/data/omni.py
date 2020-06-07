@@ -31,3 +31,30 @@ def h0_mrg1hr(starttime, endtime):
     identifier = 'OMNI2_H0_MRG1HR'
     return _omni(starttime, endtime, identifier, warn_missing_units=False,
                  intervals='yearly')
+
+
+h0_mrg1hr.__doc__ = _docstring(
+    'OMNI2_H0_MRG1HR', 'Hourly averaged definitive multi-spacecraft '
+                       'interplanetary parameters.')
+
+
+def hro2_1min(starttime, endtime):
+    identifier = 'OMNI_HRO2_1MIN'
+    return _omni(starttime, endtime, identifier, warn_missing_units=False,
+                 intervals='monthly')
+
+
+hro2_1min.__doc__ = _docstring(
+    'OMNI_HRO2_1MIN', '1 minute averaged definitive multi-spacecraft '
+                      'interplanetary parameters.')
+
+
+def hro2_5min(starttime, endtime):
+    identifier = 'OMNI_HRO2_5MIN'
+    return _omni(starttime, endtime, identifier, warn_missing_units=False,
+                 intervals='monthly')
+
+
+hro2_1min.__doc__ = _docstring(
+    'OMNI_HRO2_5MIN', '5 minute averaged definitive multi-spacecraft '
+                      'interplanetary parameters.')
