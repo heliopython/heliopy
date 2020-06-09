@@ -9,7 +9,7 @@ starttime = datetime(2000, 1, 1, 0, 0, 0)
 endtime = datetime(2000, 1, 2, 0, 0, 0)
 
 
-@pytest.mark.parametrize('f', [omni.h0_mrg1hr])
+@pytest.mark.parametrize('f', [omni.h0_mrg1hr, omni.hro2_1min, omni.hro2_5min])
 def test_omni(f):
     df = f(starttime, endtime)
     check_data_output(df)
