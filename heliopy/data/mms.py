@@ -23,7 +23,7 @@ dl_url = mms_url + '/files/api/v1/download/science'
 
 def _validate_instrument(instrument):
     allowed_instruments = ['afg', 'aspoc', 'dfg', 'dsp', 'edi',
-                           'edp', 'fgm', 'fpi', 'fields', 'scm', 'sdp', ]
+                           'edp', 'fgm', 'fpi', 'fields', 'scm', 'sdp', 'mec']
     if instrument not in allowed_instruments:
         raise ValueError(
             'Instrument {} not in list of allowed instruments: {}'.format(
