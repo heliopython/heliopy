@@ -1,3 +1,23 @@
+Heliopy 0.12.0 (2020-06-22)
+===========================
+
+Features
+--------
+
+- Added `heliopy.data.psp.fields_mag_rtn_4_per_cycle` download function. (`#896 <https://github.com/heliopython/heliopy/pull/896>`__)
+- Added 1 minute and 5 minute OMNI data products to `heliopy.data.omni`. (`#907 <https://github.com/heliopython/heliopy/pull/907>`__)
+- Added ``'mec'`` to the list of allowed instruments in `heliopy.data.mms`. (`#908 <https://github.com/heliopython/heliopy/pull/908>`__)
+
+
+Backwards Incompatible Changes
+------------------------------
+
+- The OMNI data download functions have been updated to use CDAWeb as their source.
+  This means that the ``heliopy.data.omni.low`` function has been removed, and
+  replaced by `heliopy.data.omni.h0_mrg1hr`. This is the same 1 hour data product,
+  but some of the variable names will have changed. (`#904 <https://github.com/heliopython/heliopy/pull/904>`__)
+
+
 Heliopy 0.11.1 (2020-05-19)
 ===========================
 
@@ -63,7 +83,7 @@ Features
   to allow optional aberration correction. By default this is set to no correction. (`#873 <https://github.com/heliopython/heliopy/pull/873>`__)
 - Added the Cassini SPICE kernel to `heliopy.data.spice`. (`#876 <https://github.com/heliopython/heliopy/pull/876>`__)
 - Updated the Solar Orbiter SPICE kernel to the latest release in `heliopy.data.spice`. (`#879 <https://github.com/heliopython/heliopy/pull/879>`__)
-- Added several new solar energetic particle proudcts to `heliopy.data.ace`. (`#882 <https://github.com/heliopython/heliopy/pull/882>`__)
+- Added several new solar energetic particle products to `heliopy.data.ace`. (`#882 <https://github.com/heliopython/heliopy/pull/882>`__)
 
 
 Heliopy 0.10.1 (2020-04-03)
