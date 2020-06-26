@@ -7,11 +7,15 @@ import astropy.time as time
 import astropy.units as u
 import astropy.coordinates as astrocoords
 import sunpy.coordinates as suncoords
+import sunpy.sun.constants
 
 
+# Mapping from SPICE frame name to (frame, frame kwargs)
 spice_astropy_frame_mapping = {
-    'J2000': astrocoords.ICRS,
-    'IAU_SUN': suncoords.HeliographicCarrington,
+    'J2000': (astrocoords.ICRS, {}),
+    'IAU_SUN': (suncoords.HeliographicCarrington,
+                {'observer': suncoords.HeliographicStonyhurst(
+                    0 * u.deg, 0 * u.deg, sunpy.sun.constants.radius)}),
 }
 
 
@@ -256,11 +260,15 @@ class Trajectory:
                              f'known coordinate frames implemented in astropy '
                              f'or sunpy ({spice_astropy_frame_mapping})')
 
-        frame = spice_astropy_frame_mapping[self._frame]
-        return astrocoords.SkyCoord(
+        frame = spice_astropy_frame_mapping[self._frame][0]
+        kwargs = spice_astropy_frame_mapping[self._frame][1]
+        coords = astrocoords.SkyCoord(
             self.x, self.y, self.z,
             frame=frame, representation_type='cartesian',
-            obstime=self.times)
+            obstime=self.times,
+            **kwargs)
+        coords.representation_type = frame().default_representation
+        return coords
 
     @property
     def vx(self):
@@ -341,6 +349,6 @@ The following frames are supported:
 '''
 
 for spice_frame in spice_astropy_frame_mapping:
-    _astropy_frame = spice_astropy_frame_mapping[spice_frame]
+    _astropy_frame = spice_astropy_frame_mapping[spice_frame][0]
     Trajectory.coords.__doc__ += \
         f'\n   {spice_frame}, :class:`{_astropy_frame.__name__}`'

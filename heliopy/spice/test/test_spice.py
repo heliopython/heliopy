@@ -1,9 +1,14 @@
 import datetime
 
 from astropy.time import Time
+import astropy.units as u
 from astropy.utils.exceptions import ErfaWarning
+from astropy.coordinates import Latitude
 import numpy as np
+import sunpy.coordinates.sun
+
 import pytest
+
 
 import heliopy.spice as spice
 import heliopy.data.spice as spicedata
@@ -92,3 +97,18 @@ def test_kernel():
         datetime.datetime(1981, 9, 30, 1, 29, 54, 1651,
                           tzinfo=datetime.timezone.utc)
     ]
+
+
+def test_spice_sunpy_equivalence():
+    # Check that SPICE coordinates and the sunpy coordinates we associate
+    # with those coordinates are the same
+    t = ['1992-12-21']
+    b0 = Latitude(sunpy.coordinates.sun.B0(t))
+    l0 = sunpy.coordinates.sun.L0(t, light_travel_time_correction=False)
+
+    earth = spice.Trajectory('Earth')
+    earth.generate_positions(t, 'Sun', 'IAU_SUN')
+
+    rtol = 1e-6
+    assert u.allclose(earth.coords.lon, l0, rtol=rtol)
+    assert u.allclose(earth.coords.lat, b0, rtol=rtol)
