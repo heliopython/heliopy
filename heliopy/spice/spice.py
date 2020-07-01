@@ -6,12 +6,18 @@ from spiceypy.utils import support_types as spiceytypes
 import astropy.time as time
 import astropy.units as u
 import astropy.coordinates as astrocoords
+
+import sunpy
 import sunpy.coordinates as suncoords
+import sunpy.sun.constants
 
 
+# Mapping from SPICE frame name to (frame, frame kwargs)
 spice_astropy_frame_mapping = {
-    'J2000': astrocoords.ICRS,
-    'IAU_SUN': suncoords.HeliographicCarrington,
+    'J2000': (astrocoords.ICRS, {}),
+    'IAU_SUN': (suncoords.HeliographicCarrington,
+                {'observer': suncoords.HeliographicStonyhurst(
+                    0 * u.deg, 0 * u.deg, sunpy.sun.constants.radius)}),
 }
 
 
@@ -174,11 +180,11 @@ class Trajectory:
         # Spice needs a funny set of times
         fmt = '%Y %b %d, %H:%M:%S'
         spice_times = [spiceypy.str2et(time.strftime(fmt)) for time in times]
-        abcorr = str(abcorr)
+        self._abcorr = str(abcorr)
 
         # Do the calculation
         pos_vel, lightTimes = spiceypy.spkezr(
-            self.target.name, spice_times, frame, abcorr,
+            self.target.name, spice_times, frame, self._abcorr,
             observing_body)
 
         positions = np.array(pos_vel)[:, :3] * u.km
@@ -255,12 +261,31 @@ class Trajectory:
             raise ValueError(f'Current frame "{self._frame}" not in list of '
                              f'known coordinate frames implemented in astropy '
                              f'or sunpy ({spice_astropy_frame_mapping})')
+        if self._abcorr.lower() != 'none':
+            raise NotImplementedError(
+                'Can only convert to astropy coordinates if the aberration '
+                'correction is set to "none" '
+                f'(currently set to {self._abcorr})')
 
-        frame = spice_astropy_frame_mapping[self._frame]
-        return astrocoords.SkyCoord(
+        frame = spice_astropy_frame_mapping[self._frame][0]
+
+        # Error if sunpy < 2 due to changes in Heliographic coordinates then
+        if (frame == suncoords.HeliographicCarrington and
+                int(sunpy.__version__[0]) < 2):
+            raise NotImplementedError(
+                'Converting to Carrington coordinates only works for '
+                f'sunpy versions >= 2.0 (found sunpy {sunpy.__version__} '
+                'installed)'
+            )
+
+        kwargs = spice_astropy_frame_mapping[self._frame][1]
+        coords = astrocoords.SkyCoord(
             self.x, self.y, self.z,
             frame=frame, representation_type='cartesian',
-            obstime=self.times)
+            obstime=self.times,
+            **kwargs)
+        coords.representation_type = frame().default_representation
+        return coords
 
     @property
     def vx(self):
@@ -341,6 +366,6 @@ The following frames are supported:
 '''
 
 for spice_frame in spice_astropy_frame_mapping:
-    _astropy_frame = spice_astropy_frame_mapping[spice_frame]
+    _astropy_frame = spice_astropy_frame_mapping[spice_frame][0]
     Trajectory.coords.__doc__ += \
         f'\n   {spice_frame}, :class:`{_astropy_frame.__name__}`'
