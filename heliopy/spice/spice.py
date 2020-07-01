@@ -178,11 +178,11 @@ class Trajectory:
         # Spice needs a funny set of times
         fmt = '%Y %b %d, %H:%M:%S'
         spice_times = [spiceypy.str2et(time.strftime(fmt)) for time in times]
-        abcorr = str(abcorr)
+        self._abcorr = str(abcorr)
 
         # Do the calculation
         pos_vel, lightTimes = spiceypy.spkezr(
-            self.target.name, spice_times, frame, abcorr,
+            self.target.name, spice_times, frame, self._abcorr,
             observing_body)
 
         positions = np.array(pos_vel)[:, :3] * u.km
@@ -259,6 +259,11 @@ class Trajectory:
             raise ValueError(f'Current frame "{self._frame}" not in list of '
                              f'known coordinate frames implemented in astropy '
                              f'or sunpy ({spice_astropy_frame_mapping})')
+        if self._abcorr.lower() != 'none':
+            raise NotImplementedError(
+                'Can only convert to astropy coordinates if the aberration '
+                'correction is set to "none" '
+                f'(currently set to {self._abcorr})')
 
         frame = spice_astropy_frame_mapping[self._frame][0]
         kwargs = spice_astropy_frame_mapping[self._frame][1]

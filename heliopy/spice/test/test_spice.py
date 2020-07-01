@@ -112,3 +112,11 @@ def test_spice_sunpy_equivalence():
     rtol = 1e-6
     assert u.allclose(earth.coords.lon, l0, rtol=rtol)
     assert u.allclose(earth.coords.lat, b0, rtol=rtol)
+
+
+def test_coord_err():
+    t = ['1992-12-21']
+    earth = spice.Trajectory('Earth')
+    earth.generate_positions(t, 'Sun', 'IAU_SUN', abcorr='LT')
+    with pytest.raises(NotImplementedError):
+        earth.coords
