@@ -145,7 +145,7 @@ def get_cdas_url(starttime, endtime, vars, dataset, timeout=10):
 
         if not len(var_info):
             raise util.NoDataError(
-                f'No {dataset} data available for date {date}')
+                f'No {dataset} data available for {starttime} - {endtime}')
 
         vars = [v['Name'] for v in var_info['VariableDescription']]
 

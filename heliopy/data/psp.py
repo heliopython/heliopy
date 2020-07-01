@@ -157,3 +157,21 @@ def fields_mag_rtn(starttime, endtime):
     """
     dl = _FIELDSmag_RTN_Downloader()
     return dl.load(starttime, endtime)
+
+
+class _merged_Downloader(_PSPDownloader):
+    def local_dir(self, interval):
+        year = interval.start.strftime('%Y')
+        return pathlib.Path('psp') / 'coho1hr_magplasma' / 'cdf' / year
+
+    def fname(self, interval):
+        datestr = interval.start.strftime('%Y%m')
+        return f'psp_coho1hr_merged_mag_plasma_{datestr}01_v01.cdf'
+
+
+def merged_mag_plasma(starttime, endtime):
+    """
+    Merged hourly magnetic field, plasma, proton fluxes and ephermis data.
+    """
+    dl = _merged_Downloader()
+    return dl.load(starttime, endtime)

@@ -1029,6 +1029,7 @@ def _download_remote(remote_url, filename, local_dir):
     dl_path = path.Path(local_dir) / filename
     remote_url = _fix_url(remote_url)
     remote_url = remote_url + '/' + filename
+    logger.info(f'Looking for {remote_url}')
     with requests.head(remote_url) as r:
         if r.status_code != requests.codes.ok:
             raise NoDataError
