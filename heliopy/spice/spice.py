@@ -6,6 +6,8 @@ from spiceypy.utils import support_types as spiceytypes
 import astropy.time as time
 import astropy.units as u
 import astropy.coordinates as astrocoords
+
+import sunpy
 import sunpy.coordinates as suncoords
 import sunpy.sun.constants
 
@@ -266,6 +268,16 @@ class Trajectory:
                 f'(currently set to {self._abcorr})')
 
         frame = spice_astropy_frame_mapping[self._frame][0]
+
+        # Error if sunpy < 2 due to changes in Heliographic coordinates then
+        if (frame == suncoords.HeliographicCarrington and
+                int(sunpy.__version__[0]) < 2):
+            raise NotImplementedError(
+                'Converting to Carrington coordinates only works for '
+                f'sunpy versions >= 2.0 (found sunpy {sunpy.__version__} '
+                'installed)'
+            )
+
         kwargs = spice_astropy_frame_mapping[self._frame][1]
         coords = astrocoords.SkyCoord(
             self.x, self.y, self.z,
