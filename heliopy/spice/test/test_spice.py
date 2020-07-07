@@ -37,10 +37,6 @@ def test_spice(solo_trajectory, times):
 
 
 def test_coords(solo_trajectory, times):
-    # Smoke test that coords work
-    solo_trajectory.generate_positions(times, 'Sun', 'J2000')
-    solo_trajectory.coords
-
     solo_trajectory.generate_positions(times, 'Sun', 'IAU_SUN')
     solo_trajectory.coords
 

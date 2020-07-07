@@ -14,7 +14,6 @@ import sunpy.sun.constants
 
 # Mapping from SPICE frame name to (frame, frame kwargs)
 spice_astropy_frame_mapping = {
-    'J2000': (astrocoords.ICRS, {}),
     'IAU_SUN': (suncoords.HeliographicCarrington,
                 {'observer': suncoords.HeliographicStonyhurst(
                     0 * u.deg, 0 * u.deg, sunpy.sun.constants.radius)}),
