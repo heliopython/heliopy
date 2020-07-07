@@ -268,14 +268,10 @@ class Trajectory:
 
         frame = spice_astropy_frame_mapping[self._frame][0]
 
-        # Error if sunpy < 2 due to changes in Heliographic coordinates then
+        # Override kwargs for sunpy < 2
         if (frame == suncoords.HeliographicCarrington and
                 int(sunpy.__version__[0]) < 2):
-            raise NotImplementedError(
-                'Converting to Carrington coordinates only works for '
-                f'sunpy versions >= 2.0 (found sunpy {sunpy.__version__} '
-                'installed)'
-            )
+            kwargs = {}
 
         kwargs = spice_astropy_frame_mapping[self._frame][1]
         coords = astrocoords.SkyCoord(
