@@ -366,6 +366,8 @@ for spice_frame in spice_astropy_frame_mapping:
         f'\n   {spice_frame}, :class:`{_astropy_frame.__name__}`'
 
 Trajectory.coords.__doc__ += '''
+
 If you need the coordinates in another frame, generate them using the 'IAU_SUN'
 frame and then use `~astropy.coordinates.SkyCoord.transform_to()` to transform
-them into the desired coordinate frame.'''
+them into the desired coordinate frame.
+'''
