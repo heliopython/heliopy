@@ -72,7 +72,7 @@ class Downloader(abc.ABC):
 
             # Try to load HDF file
             if hdf_path.exists():
-                data.append(pd.read_hdf(hdf_path))
+                data.append(self.load_local_hdf_file(hdf_path))
                 # Store the local path if loading data was successful
                 local_path_successful = local_path
                 continue
@@ -215,6 +215,21 @@ class Downloader(abc.ABC):
         """
         pass
 
+    def load_local_hdf_file(self, hdf_path):
+        """
+        Load local HDF file from a given path
+
+        Parameters
+        ----------
+        hdf_path : pathlib.Path
+
+        Returns
+        -------
+        df : pandas.DataFrame
+        """
+        df = pd.read_hdf(hdf_path)
+        return df
+
     @staticmethod
     def intervals_yearly(starttime, endtime):
         """
@@ -321,7 +336,7 @@ def process(dirs, fnames, extension, local_base_dir, remote_base_url,
         else a Pandas DataFrame.
 
     processing_kwargs : dict, optional
-        Extra keyword arguments to be passed to the processing funciton.
+        Extra keyword arguments to be passed to the processing function.
 
     download_info : list, optional
         A list with the same length as *fnames*, which contains extra info
