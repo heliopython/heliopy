@@ -282,16 +282,17 @@ class _elsDownloader(_capsDownloader):
 
 def caps_els(starttime, endtime, anode):
     """
-       Import 1 minute magnetic field from Cassini.
+       Import calibrated electron data from Cassini CAPS ELS.
 
-       See http://pds-ppi.igpp.ucla.edu/search/view/?f=yes&id=pds://PPI/CO-E_SW_J_S-MAG-4-SUMM-1MINAVG-V1.0
+       See https://pds-ppi.igpp.ucla.edu/search/view/?id=pds://PPI/CO-E_J_S_SW-CAPS-3-CALIBRATED-V1.0
        for more information.
 
-       Cassini Orbiter Magnetometer Calibrated MAG data in 1 minute averages
-       available covering the period 1999-08-16 (DOY 228) to 2016-12-31 (DOY 366).
-       The data are provided in RTN coordinates throughout the mission, with
-       Earth, Jupiter, and Saturn centered coordinates for the respective
-       flybys of those planets.
+       Cassini Orbiter Cassini Plasma Spectrometer (CAPS) Electron Spectrometer (ELS)
+       calibrated data covering the solar wind over the intervals 1999-004 (4 Jan) to
+       1999-021 (21 Jan), 1999-232 (20 Aug) to 1999-257 (14 Sep), 2000-190 (8 Jul) to 2000-309 (4 Nov),
+       and 2001-120 (30 Apr)to 2004-135 (14 May), at Earth from 1999-229 (17 Aug) to 1999-231 (19 Aug),
+       at Jupiter from 2000-310 (4 Nov) to 2001-119 (29 Apr), and at Saturn over the interval 2004-136 (15 May)
+       to 2012-154 (02 Jun).
 
        Parameters
        ----------
@@ -313,7 +314,7 @@ def caps_els(starttime, endtime, anode):
 
 def create_caps_hdf5_file(datafilepath, labelfilepath, formatfilepath):
     """
-    Creates hdf5 given a .DAT, .LBL and .FMT file
+    Creates a hdf5 file given a .DAT, .LBL and .FMT file
     """
 
     # This bit finds where the format of the data is stored
