@@ -37,10 +37,6 @@ def test_spice(solo_trajectory, times):
 
 
 def test_coords(solo_trajectory, times):
-    # Smoke test that coords work
-    solo_trajectory.generate_positions(times, 'Sun', 'J2000')
-    solo_trajectory.coords
-
     solo_trajectory.generate_positions(times, 'Sun', 'IAU_SUN')
     solo_trajectory.coords
 
@@ -99,6 +95,10 @@ def test_kernel():
     ]
 
 
+# Global atol and rtol for comparing coordinates
+_tols = {'atol': 1e-6 * u.deg, 'rtol': 0}
+
+
 def test_spice_sunpy_equivalence():
     # Check that SPICE coordinates and the sunpy coordinates we associate
     # with those coordinates are the same
@@ -109,9 +109,8 @@ def test_spice_sunpy_equivalence():
     earth = spice.Trajectory('Earth')
     earth.generate_positions(t, 'Sun', 'IAU_SUN')
 
-    rtol = 1e-6
-    assert u.allclose(earth.coords.lon, l0, rtol=rtol)
-    assert u.allclose(earth.coords.lat, b0, rtol=rtol)
+    assert u.allclose(earth.coords.lon, l0, **_tols)
+    assert u.allclose(earth.coords.lat, b0, **_tols)
 
 
 def test_coord_err():

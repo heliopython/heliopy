@@ -14,7 +14,6 @@ import sunpy.sun.constants
 
 # Mapping from SPICE frame name to (frame, frame kwargs)
 spice_astropy_frame_mapping = {
-    'J2000': (astrocoords.ICRS, {}),
     'IAU_SUN': (suncoords.HeliographicCarrington,
                 {'observer': suncoords.HeliographicStonyhurst(
                     0 * u.deg, 0 * u.deg, sunpy.sun.constants.radius)}),
@@ -269,14 +268,10 @@ class Trajectory:
 
         frame = spice_astropy_frame_mapping[self._frame][0]
 
-        # Error if sunpy < 2 due to changes in Heliographic coordinates then
+        # Override kwargs for sunpy < 2
         if (frame == suncoords.HeliographicCarrington and
                 int(sunpy.__version__[0]) < 2):
-            raise NotImplementedError(
-                'Converting to Carrington coordinates only works for '
-                f'sunpy versions >= 2.0 (found sunpy {sunpy.__version__} '
-                'installed)'
-            )
+            kwargs = {}
 
         kwargs = spice_astropy_frame_mapping[self._frame][1]
         coords = astrocoords.SkyCoord(
@@ -369,3 +364,10 @@ for spice_frame in spice_astropy_frame_mapping:
     _astropy_frame = spice_astropy_frame_mapping[spice_frame][0]
     Trajectory.coords.__doc__ += \
         f'\n   {spice_frame}, :class:`{_astropy_frame.__name__}`'
+
+Trajectory.coords.__doc__ += '''
+
+If you need the coordinates in another frame, generate them using the 'IAU_SUN'
+frame and then use `~astropy.coordinates.SkyCoord.transform_to()` to transform
+them into the desired coordinate frame.
+'''
