@@ -4,6 +4,7 @@ Methods for importing data from Solar Orbiter.
 import urllib
 import urllib.parse
 import pathlib
+import warnings
 
 import requests
 from heliopy.data import util
@@ -23,6 +24,10 @@ class _SoloDownloader(util.Downloader):
         self.level = level
         if self.level[:2] == 'LL':
             self.product_type = 'LOW_LATENCY'
+            url = ("https://www.cosmos.esa.int/web/solar-orbiter/"
+                   "access-to-solar-orbiter-low-latency-data")
+            warnings.warn('Low latency data is not suitable for publication. '
+                          f'See {url} for more information.')
 
         helper._check_in_list(['MAG'], instrument=instrument)
         self.instrument = instrument
