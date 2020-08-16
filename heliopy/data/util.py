@@ -932,41 +932,6 @@ def load(filename, local_dir, remote_url,
         return None
 
 
-def _get_remote_fname(remote_url, fname_regex):
-    '''
-    Return a remote filename that matches a regular expression.
-
-    Parameters
-    ----------
-    remote_url : str
-        FTP directory
-    fname_regex : str
-        Must include extension.
-
-    Retruns
-    -------
-    fname : str
-        Filename that matches including extension.
-    '''
-    remote_url = _fix_url(remote_url)
-    # Split remote url into a server name and directory
-    # Strip ftp:// from front of url
-    remote_ftp = remote_url[6:]
-    for i, c in enumerate(remote_ftp):
-        if c == '/':
-            server = remote_ftp[:i]
-            server_dir = remote_ftp[i:]
-            break
-    # Login to remote server
-    with ftplib.FTP(server) as ftp:
-        ftp.login()
-        ftp.cwd(server_dir)
-        # Loop through and find files
-        for (f, _) in ftp.mlsd():
-            if re.match(fname_regex, f):
-                return f
-
-
 def _load_cdf(file_path):
     '''
     A function to handle loading cdflib, and printing a nice error if things
@@ -1009,19 +974,6 @@ def _reporthook(blocknum, blocksize, totalsize):
     # Total size is unknown
     else:
         sys.stderr.write("\rRead %d" % (readsofar,))
-
-
-def _download_remote_unknown_version(
-    remote_base_url, local_base_dir, directory,
-        fname, remote_fname, extension):
-    """
-    Generic donwload code that can be used by data methods to download
-    data where the version is unknown and specified in regex.
-    """
-    remote_url_dir = remote_base_url + str(directory)
-    fname = _get_remote_fname(remote_url_dir, fname)
-    local_dir = local_base_dir / directory
-    _download_remote(remote_url_dir, fname, local_dir)
 
 
 def _download_remote(remote_url, filename, local_dir):
