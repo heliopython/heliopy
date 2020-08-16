@@ -555,14 +555,7 @@ def cdf_units(cdf_, manual_units=None, length=None):
         # Try to get a unit string from the CDF file
         try:
             unit_str = cdf_.varattsget(key)['UNITS']
-        # Fallback on user provided units
-        except KeyError:
-            if manual_units and key in manual_units:
-                temp_unit = manual_units[key]
-            else:
-                continue
-
-        if temp_unit is None:
+            # Try and convert to an astropy unit
             try:
                 temp_unit = u.Unit(unit_str)
             except (TypeError, ValueError):
@@ -576,6 +569,12 @@ def cdf_units(cdf_, manual_units=None, length=None):
                                f" key '{key}' are unknown")
                     warnings.warn(message)
                     continue
+        # Fallback on user provided units
+        except KeyError:
+            if manual_units and key in manual_units:
+                temp_unit = manual_units[key]
+            else:
+                temp_unit = u.dimensionless_unscaled
 
         if isinstance(val, list):
             for v in val:
