@@ -15,7 +15,7 @@ from sunpy import time
 class _SoloDownloader(util.Downloader):
     base_url = 'http://soar.esac.esa.int/soar-sl-tap/data?'
 
-    def __init__(self, instrument, level):
+    def __init__(self, descriptor, level):
         """
         Parameters
         ----------
@@ -29,8 +29,8 @@ class _SoloDownloader(util.Downloader):
             warnings.warn('Low latency data is not suitable for publication. '
                           f'See {url} for more information.')
 
-        helper._check_in_list(['MAG'], instrument=instrument)
-        self.instrument = instrument
+        helper._check_in_list(['MAG'], descriptor=descriptor)
+        self.descriptor = descriptor
 
     def intervals(self, starttime, endtime):
         base_url = ('http://soar.esac.esa.int/soar-sl-tap/tap/'
@@ -45,7 +45,7 @@ class _SoloDownloader(util.Downloader):
         query = {}
         query['SELECT'] = '*'
         query['FROM'] = 'v_data_item'
-        query['WHERE'] = (f"instrument='{self.instrument}'+AND+"
+        query['WHERE'] = (f"descriptor='{self.descriptor}'+AND+"
                           f"level='{self.level}'+AND+"
                           f"begin_time<='{end_time}'+AND+"
                           f"end_time>='{begin_time}'")
@@ -59,6 +59,7 @@ class _SoloDownloader(util.Downloader):
         url = base_url + request_str
         # Get request info
         r = requests.get(url)
+        # TODO: intelligently detect and error on a bad descriptor
 
         # Do some list/dict wrangling
         names = [m['name'] for m in r.json()['metadata']]
@@ -96,22 +97,22 @@ class _SoloDownloader(util.Downloader):
 
     def local_dir(self, interval):
         # TODO: work out how to be more granular than just solar orbiter
-        return pathlib.Path('solar_orbiter') / self.instrument / self.level
+        return pathlib.Path('solar_orbiter') / self.descriptor / self.level
 
     def fname(self, interval):
         return f'{self._file_id(interval)}.cdf'
 
 
-def download(starttime, endtime, instrument, level):
+def download(starttime, endtime, descriptor, level):
     """
     starttime
     endtime
-    instrument : str
+    descriptor : str
         One of ``['MAG']``.
     level : str
         One of ``['LL02']``.
     """
-    instrument = instrument.upper()
+    descriptor = descriptor.upper()
     level = level.upper()
-    dl = _SoloDownloader(instrument, level)
+    dl = _SoloDownloader(descriptor, level)
     return dl.load(starttime, endtime)
