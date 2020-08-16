@@ -24,12 +24,7 @@ class _SoloDownloader(util.Downloader):
         self.level = level
         if self.level[:2] == 'LL':
             self.product_type = 'LOW_LATENCY'
-            url = ("https://www.cosmos.esa.int/web/solar-orbiter/"
-                   "access-to-solar-orbiter-low-latency-data")
-            warnings.warn('Low latency data is not suitable for publication. '
-                          f'See {url} for more information.')
 
-        helper._check_in_list(['MAG'], descriptor=descriptor)
         self.descriptor = descriptor
 
     def intervals(self, starttime, endtime):
@@ -72,6 +67,13 @@ class _SoloDownloader(util.Downloader):
         intervals = []
         for start, end in zip(info['begin_time'], info['end_time']):
             intervals.append(time.TimeRange(start, end))
+
+        if len(intervals) == 0:
+            raise RuntimeError(f'No data files found for '
+                               f'descriptor={self.descriptor}, '
+                               f'start_time={begin_time}, '
+                               f'end_time={end_time}.')
+
         self.file_ids = {interval.start.isot: id for interval, id in
                          zip(intervals, info['data_item_id'])}
         # TODO: log the number of intervals found here
@@ -105,8 +107,8 @@ class _SoloDownloader(util.Downloader):
 
 def download(starttime, endtime, descriptor, level):
     """
-    starttime
-    endtime
+    starttime :
+    endtime :
     descriptor : str
         One of ``['MAG']``.
     level : str
@@ -115,4 +117,10 @@ def download(starttime, endtime, descriptor, level):
     descriptor = descriptor.upper()
     level = level.upper()
     dl = _SoloDownloader(descriptor, level)
-    return dl.load(starttime, endtime)
+    ret = dl.load(starttime, endtime)
+    if level == 'LL02':
+        url = ("https://www.cosmos.esa.int/web/solar-orbiter/"
+               "access-to-solar-orbiter-low-latency-data")
+        warnings.warn('Low latency data is not suitable for publication. '
+                      f'See {url} for more information.')
+    return ret
