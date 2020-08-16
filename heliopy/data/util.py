@@ -13,15 +13,14 @@ import pathlib as path
 import requests
 import re
 import shutil
-import sys
 import urllib.error as urlerror
-import urllib.request as urlreq
 import astropy.units as u
 import sunpy.time
 import sunpy.timeseries as ts
 import warnings
 import collections as coll
 import cdflib
+import parfive
 
 import numpy as np
 import pandas as pd
@@ -971,21 +970,6 @@ def _load_local(file_path, filetype=None):
         return f
 
 
-def _reporthook(blocknum, blocksize, totalsize):
-    readsofar = blocknum * blocksize
-    if totalsize > 0:
-        percent = min(100, readsofar * 1e2 / totalsize)
-        s = "\r%5.1f%% %*d / %d" % (
-            percent, len(str(totalsize)), readsofar, totalsize)
-        sys.stderr.write(s)
-        # Near the end
-        if readsofar >= totalsize:
-            sys.stderr.write("\n")
-    # Total size is unknown
-    else:
-        sys.stderr.write("\rRead %d" % (readsofar,))
-
-
 def _download_remote(remote_url, filename, local_dir):
     dl_path = path.Path(local_dir) / filename
     remote_url = _fix_url(remote_url)
@@ -1004,10 +988,9 @@ def _download_url(url, local_path):
                 f'{url} returned bad status code {r.status_code}')
     # TODO change this print statement to a logging statement
     print(f'Downloading {url} to {local_path}')
-    fname, _ = urlreq.urlretrieve(url,
-                                  filename=str(local_path),
-                                  reporthook=_reporthook)
-    print('\n')
+    dl = parfive.Downloader()
+    dl.enqueue_file(url, filename=local_path)
+    dl.download()
 
 
 def _load_remote(remote_url, filename, local_dir, filetype):

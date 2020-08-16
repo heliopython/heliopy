@@ -206,7 +206,7 @@ def get_kernel(name):
         if not os.path.exists(local_loc):
             print('Downloading {}'.format(url))
             try:
-                urlretrieve(url, local_loc, reporthook=util._reporthook)
+                util._download_url(url, local_loc)
             except urllib.error.HTTPError as err:
                 warnings.warn('Failed to download {}'.format(url))
         kernels.append(spice.Kernel(local_loc))
