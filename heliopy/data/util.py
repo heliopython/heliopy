@@ -1029,13 +1029,22 @@ def _download_remote(remote_url, filename, local_dir):
     dl_path = path.Path(local_dir) / filename
     remote_url = _fix_url(remote_url)
     remote_url = remote_url + '/' + filename
-    logger.info(f'Looking for {remote_url}')
-    with requests.head(remote_url) as r:
+    _download_url(remote_url, dl_path)
+
+
+def _download_url(url, local_path):
+    """
+    Download *url* to *local_path*.
+    """
+    logger.info(f'Looking for {url}')
+    with requests.head(url) as r:
         if r.status_code != requests.codes.ok:
-            raise NoDataError
-    print(f'Downloading {remote_url} to {dl_path}')
-    fname, _ = urlreq.urlretrieve(remote_url,
-                                  filename=str(dl_path),
+            raise NoDataError(
+                f'{url} returned bad status code {r.status_code}')
+    # TODO change this print statement to a logging statement
+    print(f'Downloading {url} to {local_path}')
+    fname, _ = urlreq.urlretrieve(url,
+                                  filename=str(local_path),
                                   reporthook=_reporthook)
     print('\n')
 
