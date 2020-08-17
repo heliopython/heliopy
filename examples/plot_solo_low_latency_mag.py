@@ -1,3 +1,13 @@
+"""
+Solar Orbiter low latency data
+==============================
+
+Downloading and plotting low latency data from Solar Orbiter.
+Note that this data is not suitible for publication.
+"""
+
+###############################################################################
+# Import the required modules
 from datetime import datetime
 import warnings
 
@@ -8,15 +18,22 @@ import numpy as np
 
 from heliopy.data.solo import download
 
+###############################################################################
+# Download some magnetic field data
+
 # TODO: data file on the 3rd isn't working
-data = download(datetime(2020, 7, 10), datetime(2020, 8, 20), 'MAG', 'LL02')
+data = download(datetime(2020, 7, 10), datetime(2020, 8, 2), 'MAG', 'LL02')
 print(data.columns)
 
+###############################################################################
+# Calculate the magnetic field mangitude
 modB = np.sqrt(data.quantity('B_RTN_0')**2 +
                data.quantity('B_RTN_1')**2 +
                data.quantity('B_RTN_2')**2)
 data = data.add_column('modB', modB)
 
+###############################################################################
+# Plot the data
 fig, axs = plt.subplots(nrows=2, sharex=True)
 
 ax = axs[0]
