@@ -10,7 +10,6 @@ https://github.com/heliopython/heliopy/issues.
 import os
 import warnings
 
-from urllib.request import urlretrieve
 import urllib.error
 import requests
 
