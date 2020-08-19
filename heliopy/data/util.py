@@ -982,10 +982,13 @@ def _download_url(url, local_path):
     Download *url* to *local_path*.
     """
     logger.info(f'Looking for {url}')
-    with requests.head(url) as r:
-        if r.status_code != requests.codes.ok:
-            raise NoDataError(
-                f'{url} returned bad status code {r.status_code}')
+    try:
+        with requests.head(url) as r:
+            if r.status_code != requests.codes.ok:
+                raise NoDataError(
+                    f'{url} returned bad status code {r.status_code}')
+    except requests.exceptions.ConnectionError as err:
+        raise NoDataError(f'Could not connect to {url}') from err
     # TODO change this print statement to a logging statement
     print(f'Downloading {url} to {local_path}')
     dl = parfive.Downloader()
