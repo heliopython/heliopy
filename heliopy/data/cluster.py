@@ -14,7 +14,6 @@ from datetime import datetime, time
 import os
 import pathlib as path
 import tarfile
-import urllib.request as urlreq
 
 from heliopy import config
 from heliopy.data import util
@@ -119,13 +118,9 @@ def _download(probe, starttime, endtime, instrument, product_id):
         local_fname = 'C' + probe + '_' + product_id + '__' +\
             year + month + day + '.cdf'
         local_file = local_dir / local_fname
-        print(request_url)
         # Download data
         util._checkdir(local_dir)
-        urlreq.urlretrieve(request_url,
-                           filename=local_file,
-                           reporthook=util._reporthook)
-        print('\n')
+        util._download_url(request_url, local_file)
         # Extract tar.gz file
         tar = tarfile.open(local_file)
         tar.extractall(local_dir)
