@@ -5,7 +5,6 @@ from datetime import date, time, datetime, timedelta
 import os
 import pathlib
 import urllib.error
-from urllib.error import URLError
 from collections import OrderedDict
 import warnings
 
@@ -1040,7 +1039,7 @@ class _NessDownloader(util.Downloader):
             util._download_remote(remote_url,
                                   self.fname(interval),
                                   self.local_path(interval).parent)
-        except URLError:
+        except  urllib.error.URLError:
             raise util.NoDataError
 
     def load_local_file(self, interval):

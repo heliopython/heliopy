@@ -11,6 +11,7 @@ import sunpy
 import sunpy.coordinates as suncoords
 import sunpy.sun.constants
 
+__all__ = ['furnish', 'SPKKernel', 'Body', 'Trajectory']
 
 # Mapping from SPICE frame name to (frame, frame kwargs)
 spice_astropy_frame_mapping = {

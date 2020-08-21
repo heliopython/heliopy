@@ -1,7 +1,6 @@
 """
 Methods for importing data from the STEREO spacecraft.
 """
-import astropy.units as u
 from heliopy.data import cdasrest
 
 
