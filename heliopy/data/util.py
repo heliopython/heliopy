@@ -985,10 +985,10 @@ def _download_url(url, local_path):
     try:
         with requests.head(url) as r:
             if r.status_code != requests.codes.ok:
-                raise NoDataError(
+                raise RemoteFileNotPresentError(
                     f'{url} returned bad status code {r.status_code}')
     except requests.exceptions.ConnectionError as err:
-        raise NoDataError(f'Could not connect to {url}') from err
+        raise RemoteFileNotPresentError(f'Could not connect to {url}') from err
     # TODO change this print statement to a logging statement
     print(f'Downloading {url} to {local_path}')
     dl = parfive.Downloader()
