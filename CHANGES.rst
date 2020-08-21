@@ -102,22 +102,22 @@ Heliopy 0.10.0 (2020-02-20)
 Features
 --------
 
-- Added PSP SWEAP level 2 data to :mod:`heliopy.data.psp`. (`#828 <https://github.com/heliopython/heliopy/pull/828>`__)
-- Added PSP FIELDS high resolution data import to :mod:`heliopy.data.psp`. (`#842 <https://github.com/heliopython/heliopy/pull/842>`__)
+- Added PSP SWEAP level 2 data to `heliopy.data.psp`. (`#828 <https://github.com/heliopython/heliopy/pull/828>`__)
+- Added PSP FIELDS high resolution data import to `heliopy.data.psp`. (`#842 <https://github.com/heliopython/heliopy/pull/842>`__)
 - `heliopy.spice.Trajectory.generate_positions` now accepts times as anything that
   can be parsed by `astropy.time.Time`. (`#831 <https://github.com/heliopython/heliopy/pull/831>`__)
-- Added a ``include`` argument to :func:`heliopy.data.util.cdf2df`, to allow
+- Added a ``include`` argument to `heliopy.data.util.cdf2df`, to allow
   loading a subset of variables in a CDF file. (`#841 <https://github.com/heliopython/heliopy/pull/841>`__)
 - Improved time performance of loading CDF files. (`#844 <https://github.com/heliopython/heliopy/pull/844>`__, `#845 <https://github.com/heliopython/heliopy/pull/845>`__, `#847 <https://github.com/heliopython/heliopy/pull/847>`__)
 - Bad values in CDF files are now automatically detected and set to NaN values.
-  As a result the ``badvalues`` argument to :func:`heliopy.data.util.cdf2df` is
+  As a result the ``badvalues`` argument to `heliopy.data.util.cdf2df` is
   now deprecated. (`#848 <https://github.com/heliopython/heliopy/pull/848>`__)
 
 
 Improved Documentation
 ----------------------
 
-- Cleaned up the docstrings of :mod:`heliopy.data`. (`#846 <https://github.com/heliopython/heliopy/pull/846>`__)
+- Cleaned up the docstrings of `heliopy.data`. (`#846 <https://github.com/heliopython/heliopy/pull/846>`__)
 
 
 Heliopy 0.9.0 (2019-11-13)
@@ -126,10 +126,10 @@ Heliopy 0.9.0 (2019-11-13)
 Features
 --------
 
-- A new module :mod:`heliopy.models` has been added to contain
+- A new module `heliopy.models` has been added to contain
   heliospheric concepts, the first one of which is
   :class:`heliopy.models.ParkerSpiral`. (`#768 <https://github.com/heliopython/heliopy/pull/768>`__)
-- All functions in :mod:`heliopy.data.wind` now download data in monthly
+- All functions in `heliopy.data.wind` now download data in monthly
   (as opposed to daily) intervals. You may need to delete existing data to
   correctly load complete datasets. (`#772 <https://github.com/heliopython/heliopy/pull/772>`__)
 - :class:`heliopy.spice.Trajectory` objects now have the
@@ -141,8 +141,8 @@ Features
   have direct mappings to Sunpy/Astropy coordinate systems, but it is possible
   to generate coordinates in either of these systems and then transform them
   post-hoc to another Sunpy/Astropy coordinate system. (`#776 <https://github.com/heliopython/heliopy/pull/776>`__)
-- :func:`heliopy.data.wind.swe_h3()` has been added. (`#800 <https://github.com/heliopython/heliopy/pull/800>`__)
-- :func:`heliopy.data.wind.threedp_elpd()` has been added. (`#802 <https://github.com/heliopython/heliopy/pull/802>`__)
+- `heliopy.data.wind.swe_h3()` has been added. (`#800 <https://github.com/heliopython/heliopy/pull/800>`__)
+- `heliopy.data.wind.threedp_elpd()` has been added. (`#802 <https://github.com/heliopython/heliopy/pull/802>`__)
 - The new `heliopy.data.psp` module contains methods to automatically download
   and load Parker Solar Probe data. Currently SWEAP SPC L3 data and FIELDS MAG
   fluxgate data are available. (`#822 <https://github.com/heliopython/heliopy/pull/822>`__)
@@ -154,20 +154,20 @@ Backwards Incompatible Changes
 - A handful of data download functions have migrated to using the CDAS restful
   service, and have therefore had their call signatures changed. In particular
   the following functions have lost their ``try_download`` keyword argument:
-  :func:`heliopy.data.ulysses.swics_heavy_ions` (`#747 <https://github.com/heliopython/heliopy/pull/747>`__),
-  :func:`heliopy.data.ulysses.swics_abundances` (`#747 <https://github.com/heliopython/heliopy/pull/747>`__),
-  :func:`heliopy.data.ulysses.fgm_hires` (`#748 <https://github.com/heliopython/heliopy/pull/748>`__),
-  :func:`heliopy.data.ulysses.swoops_ions` (`#761 <https://github.com/heliopython/heliopy/pull/761>`__),
-  :func:`heliopy.data.omni.low` (`#765 <https://github.com/heliopython/heliopy/pull/765>`__),
-  :func:`heliopy.data.imp.merged` (`#771 <https://github.com/heliopython/heliopy/pull/771>`__)
+  `heliopy.data.ulysses.swics_heavy_ions` (`#747 <https://github.com/heliopython/heliopy/pull/747>`__),
+  `heliopy.data.ulysses.swics_abundances` (`#747 <https://github.com/heliopython/heliopy/pull/747>`__),
+  `heliopy.data.ulysses.fgm_hires` (`#748 <https://github.com/heliopython/heliopy/pull/748>`__),
+  `heliopy.data.ulysses.swoops_ions` (`#761 <https://github.com/heliopython/heliopy/pull/761>`__),
+  `heliopy.data.omni.low` (`#765 <https://github.com/heliopython/heliopy/pull/765>`__),
+  `heliopy.data.imp.merged` (`#771 <https://github.com/heliopython/heliopy/pull/771>`__)
 - The times stored in the ``time`` property of :class:`heliopy.spice.Trajectory`
   are now always parsed by `astropy.time.Time` before being stored, and are
   always returned as a `~astropy.time.Time` object, no matter what format they
   were supplied in. (`#794 <https://github.com/heliopython/heliopy/pull/794>`__)
-- The `heliopy.coordinates` module has been removed completely. This only ever
+- The ``heliopy.coordinates`` module has been removed completely. This only ever
   contained two coordinate frames and a single transformation, both of which are
-  implemented in :mod:`sunpy.coordinates` now. (`#820 <https://github.com/heliopython/heliopy/pull/820>`__)
-- :mod:`heliopy.data.cassini` data download methods have been updated to use the newly released V2
+  implemented in `sunpy.coordinates` now. (`#820 <https://github.com/heliopython/heliopy/pull/820>`__)
+- `heliopy.data.cassini` data download methods have been updated to use the newly released V2
   Cassini MAG data. You may need to delete old data to be able to download the
   newer data.
 
@@ -186,13 +186,13 @@ Heliopy 0.8.2 (2019-10-21)
 Features
 --------
 
-- Added the SOHO SPICE kernels to :mod:`heliopy.data.spice`. (`#777 <https://github.com/heliopython/heliopy/pull/777>`__)
+- Added the SOHO SPICE kernels to `heliopy.data.spice`. (`#777 <https://github.com/heliopython/heliopy/pull/777>`__)
 
 
 Bug Fixes
 ---------
 
-- :mod:`heliopy.data.spice` can now be imported without internet access. If this
+- `heliopy.data.spice` can now be imported without internet access. If this
   is the case determining the names of STEREO kernels (which requires internet)
   will not be possible. (`#782 <https://github.com/heliopython/heliopy/pull/782>`__)
 - Fixed loading Ulysses data when at least some of it isn't available. (`#795 <https://github.com/heliopython/heliopy/pull/795>`__)
@@ -204,7 +204,7 @@ HelioPy 0.8.1 (2019-08-14)
 Bug Fixes
 ---------
 
-- Fix :func:`heliopy.data.helios.mag_4hz` data downloading (`#741 <https://github.com/heliopython/heliopy/pull/741>`__)
+- Fix `heliopy.data.helios.mag_4hz` data downloading (`#741 <https://github.com/heliopython/heliopy/pull/741>`__)
 - Switch IMP downloading from FTP site to HTTPS site, since anonymous FTP access
   to NASA servers no longer works. (`#749 <https://github.com/heliopython/heliopy/pull/749>`__)
 
@@ -215,17 +215,17 @@ HelioPy 0.8.0 (2019-06-24)
 Features
 --------
 
-- :func:`heliopy.data.cdasrest.get_cdas_url` and :func:`heliopy.data.cdasrest.get_data`
+- `heliopy.data.cdasrest.get_cdas_url` and `heliopy.data.cdasrest.get_data`
   have been generalised, and can now be used to download data in an arbitrary
   interval instead of just a single day. (`#714 <https://github.com/heliopython/heliopy/pull/714>`__)
-- :mod:`heliopy.data.ace` functions that download low cadence data (e.g. composition
+- `heliopy.data.ace` functions that download low cadence data (e.g. composition
   data) now download yearly instead of daily files, speeding up data download. (`#715 <https://github.com/heliopython/heliopy/pull/715>`__)
 
 
 Backwards Incompatible Changes
 ------------------------------
 
-- :func:`heliopy.data.cdasrest.get_cdas_url` and :func:`heliopy.data.cdasrest.get_data`
+- `heliopy.data.cdasrest.get_cdas_url` and `heliopy.data.cdasrest.get_data`
   now take ``starttime`` and ``endtime`` arguments instead of just a ``date``
   argument, and their signatures have changed to reflect this. (`#714 <https://github.com/heliopython/heliopy/pull/714>`__)
 
@@ -246,10 +246,10 @@ New features
 ------------
 
 - Added a graph showing the available coordinate transformations to
-  :mod:`heliopy.coordinates`
-- Added STEREO-B kernels to :mod:`heliopy.data.spice`
+  ``heliopy.coordinates``
+- Added STEREO-B kernels to `heliopy.data.spice`
 - Added automatic spice kernel detection for the STEREO spacecraft to
-  :mod:`heliopy.data.spice`
+  `heliopy.data.spice`
 - Switched the download progress bar from ``wget`` based to ``tqdm`` based,
   which should work better in notebooks.
 
@@ -257,13 +257,13 @@ Bug fixes
 ---------
 
 - Fixed a bug where not all MMS files were downloaded for a large query.
-- Correctly removed bad values in :mod:`heliopy.data.omni`.
+- Correctly removed bad values in `heliopy.data.omni`.
 
 Removed features
 ----------------
 
-- The deprecated :func:`heliopy.data.wind.swe_h3` and
-  :func:`heliopy.data.wind.threedp_sfpd` have been removed.
+- The deprecated `heliopy.data.wind.swe_h3` and
+  `heliopy.data.wind.threedp_sfpd` have been removed.
 
 
 Version 0.6.7
@@ -272,7 +272,7 @@ Version 0.6.7
 Deprecations
 ------------
 
-- :func:`heliopy.data.wind.swe_h3` and :func:`heliopy.data.wind.threedp_sfpd`
+- `heliopy.data.wind.swe_h3` and `heliopy.data.wind.threedp_sfpd`
   are deprecated and will be removed in version 0.7.0. This is because they
   currently use pandas MultiIndex structures, which are not the recommended
   way to store 2-or-more dimensional data. In the future they are likely to be
@@ -294,17 +294,17 @@ Version 0.6.5
 Bug fixes
 ---------
 
-- :func:`heliopy.data.spice.get_kernel` now raises a warning instead of an
+- `heliopy.data.spice.get_kernel` now raises a warning instead of an
   error if a kernel can't be downloaded.
-- :func:`heliopy.data.helios.merged` now filters out bad values and converts
+- `heliopy.data.helios.merged` now filters out bad values and converts
   them to NaNs.
-- :mod:`heliopy.spice` now only loads core SPICE kernels once, instead of every
+- `heliopy.spice` now only loads core SPICE kernels once, instead of every
   time the module is imported.
 
 Backwards incompatible changes
 ------------------------------
 
-- :func:`heliopy.data.spice.get_kernel` now prints a warning instead of
+- `heliopy.data.spice.get_kernel` now prints a warning instead of
   raising an error if a kernel cannot be downloaded.
 
 Version 0.6.4
@@ -315,35 +315,35 @@ New features
 
 - Added the ability for :class:`heliopy.spice.Trajectory` objects to compute
   and return the body velocity.
-- Available spice kernels in :mod:`heliopy.data.spice` are now split into
+- Available spice kernels in `heliopy.data.spice` are now split into
   kernels that have been reconstructed (ie. actual trajectories) and
   predicted trajectories.
 - The predicted Bepi Columbo spice kernel has been added to
-  :mod:`heliopy.data.spice`
-- The :func:`heliopy.data.ace.swi_h3b` function has been added.
-- :func:`heliopy.data.cdasrest.get_variables` and
-  :func:`heliopy.data.cdasrest.get_data` now have a ``timeout`` keyword
+  `heliopy.data.spice`
+- The `heliopy.data.ace.swi_h3b` function has been added.
+- `heliopy.data.cdasrest.get_variables` and
+  `heliopy.data.cdasrest.get_data` now have a ``timeout`` keyword
   argument, allowing manual specification of the timeout when fetching data
   from a server.
-- Importing :mod:`heliopy.spice` now automatically loads common heliospheric
+- Importing `heliopy.spice` now automatically loads common heliospheric
   coordinate systems.
 
 Backwards incompatible changes
 ------------------------------
 
-- Kernels available in :mod:`heliopy.data.spice` have been cleaned up,
+- Kernels available in `heliopy.data.spice` have been cleaned up,
   meaning some are now not available or have been moved to the predicted
   section.
 - A handful of data download functions have migrated to using the CDAS restful
   service, and have therefore had their call signatures changed. In particular:
-  - :func:`heliopy.data.messenger.mag_rtn` has lost its ``try_download`` kwarg
-  - :func:`heliopy.data.helios.merged` has lost its ``try_download`` kwarg
+  - `heliopy.data.messenger.mag_rtn` has lost its ``try_download`` kwarg
+  - `heliopy.data.helios.merged` has lost its ``try_download`` kwarg
 
 The following IMP download functions, which only ever worked for IMP8 have
 been renamed:
 
-- `mitplasma_h0` has been renamed :func:`~heliopy.data.imp.i8_mitplasma`
-- `mag320ms` has been renamed :func:`~heliopy.data.imp.i8_mag320ms`
+- ``mitplasma_h0`` has been renamed `~heliopy.data.imp.i8_mitplasma`
+- ``mag320ms`` has been renamed `~heliopy.data.imp.i8_mag320ms`
 
 Version 0.6.3
 =============
@@ -351,10 +351,10 @@ Version 0.6.3
 New features
 ------------
 
-- Added Parker Solar Probe spice kernels to :mod:`heliopy.data.spice`.
+- Added Parker Solar Probe spice kernels to `heliopy.data.spice`.
 - Added a generic functions to download MMS data. Available files can be
-  queried using :meth:`heliopy.data.mms.available_files`, and files can be
-  downloaded using :meth:`heliopy.data.mms.download_files`
+  queried using `heliopy.data.mms.available_files`, and files can be
+  downloaded using `heliopy.data.mms.download_files`
 
 Bug fixes
 ---------
@@ -364,8 +364,8 @@ Bug fixes
 Backwards incompatible changes
 ------------------------------
 
-- :meth:`heliopy.data.mms.fgm_survey` has been removed in favour of the more
-  general :meth:`heliopy.data.mms.fgm`. To download survey mode FGM data use
+- `heliopy.data.mms.fgm_survey` has been removed in favour of the more
+  general `heliopy.data.mms.fgm`. To download survey mode FGM data use
   the new method and set the ``mode`` keyword argument to ``srvy``.
 
 Version 0.6.2
@@ -374,20 +374,20 @@ Version 0.6.2
 New features
 ------------
 
-- Added :meth:`heliopy.data.mms.fpi_des_moms` function. :issue:`601`
-- Added :meth:`heliopy.data.wind.threedp_e0_emfits` function. :issue:`606`
+- Added `heliopy.data.mms.fpi_des_moms` function. :issue:`601`
+- Added `heliopy.data.wind.threedp_e0_emfits` function. :issue:`606`
 
 Bug fixes
 ---------
 
-- Fixed :meth:`heliopy.data.mms.fgm_survey` data loading. :issue:`601`
+- Fixed `heliopy.data.mms.fgm_survey` data loading. :issue:`601`
 
 Version 0.6.1
 =============
 
 New features
 ------------
-- The :mod:`heliopy.data.ace` module now contains all the magnetic field and
+- The `heliopy.data.ace` module now contains all the magnetic field and
   particle data produces produced by ACE. :issue:`577`, :issue:`578`
 - STEREO-A spice kernels have been added. :issue:`585`
 
@@ -395,7 +395,7 @@ New features
 Bug fixes
 ---------
 - The accidentally removed Ulysses spice kernel has returned. :issue:`582`
-- :func:`heliopy.data.helper.cdfpeek` has been updated to work with cdflib, and now
+- `heliopy.data.helper.cdfpeek` has been updated to work with cdflib, and now
   prints all CDF file information.
 
 Version 0.6.0
@@ -407,16 +407,16 @@ New features
 ------------
 - HelioPy has been integrated with SunPy TimeSeries and AstroPy Units. All of
   the HelioPy modules now return physical units with data.
-- Added a new :func:`.data.util.cdf_units` function that can extract the UNIT
+- Added a new `.data.util.cdf_units` function that can extract the UNIT
   attribute from CDF files.
 - Low resolution OMNI data import has been added in
-  :func:`.data.omni.low` function.
+  `.data.omni.low` function.
 - Magnetic Field data from DSCOVR Spacecraft
-  can now be imported using the :func:`.data.dscovr.mag_h0` function.
+  can now be imported using the `.data.dscovr.mag_h0` function.
 
 Backwards incompatible changes
 ------------------------------
-- Methods in :mod:`heliopy.data` no longer returns a Pandas DataFrame, but
+- Methods in `heliopy.data` no longer returns a Pandas DataFrame, but
   now return a SunPy timeseries object. To get the underlying data, you can
   still do::
 
@@ -429,14 +429,14 @@ Backwards incompatible changes
   HelioPy. This means column names in several data products are now different,
   to reflect their original name in the CDF files instead of a custom name
   that was previously assigned by HelioPy.
-- :func:`.data.helios.merged`, :func:`.data.helios.mag_4hz`,
-  :func:`.data.helios.corefit` and :func:`.data.helios.mag_ness` no longer take
-  a `verbose` keyword argument. :issue:`467`
+- `.data.helios.merged`, `.data.helios.mag_4hz`,
+  `.data.helios.corefit` and `.data.helios.mag_ness` no longer take
+  a ``verbose`` keyword argument. :issue:`467`
 
 
 Fixed bugs
 ----------
-- :func:`.data.imp.merged` no longer imports redundant columns.
+- `.data.imp.merged` no longer imports redundant columns.
 
 Version 0.5.3
 =============
@@ -461,7 +461,7 @@ New features
 Fixed bugs
 ----------
 
-- The new data version number of :meth:`.data.mms.fpi_dis_moms` has been
+- The new data version number of `heliopy.data.mms.fpi_dis_moms` has been
   updated.
 
 
@@ -475,15 +475,15 @@ New features
 
 Backwards incompatible changes
 ------------------------------
-- The list of kernels available for automatic download in :mod:`.data.spice`
+- The list of kernels available for automatic download in `heliopy.data.spice`
   has been updated, and some names changed. :issue:`408`
 
 Fixed bugs
 ----------
-- :meth:`.spice.Trajectory.generate_positions` can now generate
+- `.spice.Trajectory.generate_positions` can now generate
   positions at a resolution of one second instead of one day. :issue:`405`
 - A duplicate "z gsm" column header in the data returned by
-  :meth:`.data.imp.mag15s` has been corrected. :issue:`396`
+  `.data.imp.mag15s` has been corrected. :issue:`396`
 
 Version 0.5.0
 =============
@@ -491,32 +491,32 @@ Version 0.5.0
 New features
 ------------
 
-- :meth:`heliopy.data.sunspot` added an additional functionality to import
+- `heliopy.data.sunspot` added an additional functionality to import
   sunspot data in three different timeframes - daily, monthly and yearly.
-- The inventory of spice kernels in :mod:`heliopy.data.spice` now includes
+- The inventory of spice kernels in `heliopy.data.spice` now includes
   "Helios 1 Reconstructed", "Helios 1 Predicted", "Juno Reconstructed",
   "Juno Predicted" and "Helios 2" kernels.
-- :meth:`heliopy.spice.furnish` now accepts a list of filenames as well as
+- `heliopy.spice.furnish` now accepts a list of filenames as well as
   individual filenames.
 - A lot of new functions for downloading ACE data have been added to
-  :mod:`heliopy.data.ace`.
+  `heliopy.data.ace`.
 
 Backwards incompatible changes
 ------------------------------
 
-- :meth:`heliopy.data.spice.get_kernel` now returns a list of filenames instead
+- `heliopy.data.spice.get_kernel` now returns a list of filenames instead
   of a single filename string.
-- Most of the functions that were in :mod:`heliopy.data.helper` have been
-  moved to :mod:`heliopy.data.util`. The ones the remain in
-  :mod:`heliopy.data.helper` are useful for users, and the ones in
-  :mod:`heliopy.data.util` are used internally as utility functions for
+- Most of the functions that were in `heliopy.data.helper` have been
+  moved to `heliopy.data.util`. The ones the remain in
+  `heliopy.data.helper` are useful for users, and the ones in
+  `heliopy.data.util` are used internally as utility functions for
   data import.
 
 Removed features
 ----------------
 
-- :meth:`heliopy.data.helios.trajectory` has been removed. To get Helios
-  trajectory data use the :mod:`heliopy.spice` and :mod:`heliopy.data.spice`
+- ``heliopy.data.helios.trajectory`` has been removed. To get Helios
+  trajectory data use the `heliopy.spice` and `heliopy.data.spice`
   modules.
 
 Version 0.4
@@ -525,16 +525,16 @@ Version 0.4
 New features
 ------------
 
-- :meth:`~heliopy.data.ulysses.swics_abundances` and
-  :meth:`~heliopy.data.ulysses.swics_heavy_ions`
+- `~heliopy.data.ulysses.swics_abundances` and
+  `~heliopy.data.ulysses.swics_heavy_ions`
   methods added for loading SWICS data from the Ulysses mission.
-- :meth:`~heliopy.data.helper.cdfpeek` method added for peeking inside
+- `~heliopy.data.helper.cdfpeek` method added for peeking inside
   CDF files.
 
 Backwards incompatible changes
 ------------------------------
 
-- :meth:`heliopy.spice.Trajectory.generate_positions` now takes a list of
+- `heliopy.spice.Trajectory.generate_positions` now takes a list of
   dates/times at which to generate orbital positions, instead of a start time,
   stop time, and number of steps. The old behaviour can be recovered by
   manually generating an evenly spaced list of times.
@@ -548,15 +548,15 @@ New features
 HelioPy now contiains code for working with SPICE kernels. See the following
 modules for more information:
 
-- :mod:`heliopy.data.spice` module for downloading spice kernels
-- :mod:`heliopy.spice` module for automatically processing spice kernels
+- `heliopy.data.spice` module for downloading spice kernels
+- `heliopy.spice` module for automatically processing spice kernels
 
 Removed features
 ----------------
 
-- The :mod:`heliopy.plasma` module has been removed
+- The ``heliopy.plasma`` module has been removed
   (see http://www.plasmapy.org/ for the recommended alternative)
-- :mod:`heliopy.plot` code removed
+- ``heliopy.plot`` code removed
 
 Version 0.2
 ===========
@@ -565,9 +565,9 @@ New features
 ------------
 
 - Convert examples gallery to automatically generate plots
-- Added :meth:`HelioPy.data.helper.listdata` method for easily viewing the
+- Added `heliopy.data.helper.listdata` method for easily viewing the
   amount of data HelioPy is storing locally.
-- Added :meth:`heliopy.data.wind.threedp_sfpd` method for importing
+- Added `heliopy.data.wind.threedp_sfpd` method for importing
   WIND 3DP sfpd data.
 
 Version 0.1.3
@@ -577,5 +577,5 @@ Fixed bugs
 ----------
 
 - Correctly report download percentage when downloading files.
-- Fix issue where :meth:`heliopy.data.helios.corefit` made duplicate .hdf
+- Fix issue where `heliopy.data.helios.corefit` made duplicate .hdf
   files on days where no data is available.

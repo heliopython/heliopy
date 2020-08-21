@@ -27,14 +27,14 @@ def _docstring(identifier, letter, description):
 
     Parameters
     ----------
-    starttime : datetime
+    starttime : datetime.datetime
         Interval start time.
-    endtime : datetime
+    endtime : datetime.datetime
         Interval end time.
 
     Returns
     -------
-    data : :class:`~sunpy.timeseries.TimeSeries`
+    data : `~sunpy.timeseries.GenericTimeSeries`
     """.format(identifier=identifier,
                letter=letter,
                description=description)
@@ -112,9 +112,9 @@ def get_variables(dataset, timeout=10):
 
     Parameters
     ----------
-    dataset : string
+    dataset : str
         Dataset identifier.
-    timeout : float, optional
+    timeout : float
         Timeout on the CDAweb remote requests, in seconds. Defaults to 10s.
 
     Returns
@@ -166,16 +166,16 @@ def get_data(dataset, starttime, endtime, vars=None, timeout=100):
 
     Parameters
     ----------
-    dataset : string
+    dataset : str
         Dataset identifier.
     starttime : datetime.datetime
         Beginning of interval.
     endtime : datetime.datetime
         End of interval.
-    vars : list of str, optional
-        Variables to download. If ``None``, all variables for the given
-        dataset will be downloaded.
-    timeout : float, optional
+    vars : None, list
+        List of `str` of variables to download. If `None`, all variables for
+        the given dataset will be downloaded.
+    timeout : float
         Timeout on the CDAweb remote requests, in seconds. Defaults to 10s.
 
     Returns

@@ -61,7 +61,8 @@ intersphinx_mapping = {
     'numpy': ('https://docs.scipy.org/doc/numpy', None),
     'scipy': ('https://docs.scipy.org/doc/scipy/reference/', None),
     'pandas': ('https://pandas.pydata.org/pandas-docs/stable/', None),
-    'astropy': ('http://docs.astropy.org/en/stable', None)}
+    'astropy': ('http://docs.astropy.org/en/stable', None),
+    'sunpy': ('https://docs.sunpy.org/en/stable', None)}
 
 
 sphinx_gallery_conf = {

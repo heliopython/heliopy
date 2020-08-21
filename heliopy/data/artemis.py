@@ -28,22 +28,22 @@ def fgm(probe, rate, coords, starttime, endtime):
 
     Parameters
     ----------
-        probe : string
+        probe : str
             Alowed values are [a, b, c, d, e].
-        rate : string
+        rate : str
             Date rate to return. Allowed values are [e, h, l, s].
-        coords : string
+        coords : str
             Magnetic field co-ordinate system. Allowed values are
             [dsl, gse, gsm, ssl]. NOTE: Add link to co-ordinate system
             descriptions.
-        starttime : datetime
+        starttime : datetime.datetime
             Interval start time.
-        endtime : datetime
+        endtime : datetime.datetime
             Interval end time.
 
     Returns
     -------
-        data : :class:`~sunpy.timeseries.TimeSeries`
+        data : :class:`~sunpy.timeseries.GenericTimeSeries`
     """
     valid_rates = ['e', 'h', 'l', 's']
     valid_coords = ['dsl', 'gse', 'gsm', 'ssl']

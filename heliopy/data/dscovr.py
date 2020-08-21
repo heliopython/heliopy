@@ -41,12 +41,12 @@ def mag_h0(starttime, endtime):
 
     Parameters
     ----------
-        starttime : datetime
+        starttime : datetime.datetime
             Interval start time.
-        endtime : datetime
+        endtime : datetime.datetime
             Interval end time.
     Returns
     -------
-        data : :class:`~sunpy.timeseries.TimeSeries`
+        data : :class:`~sunpy.timeseries.GenericTimeSeries`
     """
     return _MagDownloader().load(starttime, endtime)

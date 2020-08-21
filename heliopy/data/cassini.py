@@ -122,17 +122,17 @@ def mag_1min(starttime, endtime, coords):
 
     Parameters
     ----------
-    starttime : datetime
+    starttime : datetime.datetime
         Interval start time.
-    endtime : datetime
+    endtime : datetime.datetime
         Interval end time.
-    coords : strings
+    coords : str
         Requested coordinate system. Must be one of
         ``['KRTP', 'KSM', 'KSO', 'RTN']``
 
     Returns
     -------
-    data : :class:`~sunpy.timeseries.TimeSeries`
+    data : :class:`~sunpy.timeseries.GenericTimeSeries`
         Requested data
     """
     dl = _mag1minDownloader(coords)
@@ -155,14 +155,14 @@ def mag_hires(starttime, endtime, try_download=True):
 
     Parameters
     ----------
-    starttime : datetime
+    starttime : datetime.datetime
         Interval start time.
-    endtime : datetime
+    endtime : datetime.datetime
         Interval end time.
 
     Returns
     -------
-    data : :class:`~sunpy.timeseries.TimeSeries`
+    data : :class:`~sunpy.timeseries.GenericTimeSeries`
         Requested data
     """
     remote_base_url = ('http://pds-ppi.igpp.ucla.edu/ditdos/download?id='

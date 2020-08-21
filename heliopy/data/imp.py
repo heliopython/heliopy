@@ -123,16 +123,16 @@ def merged(probe, starttime, endtime):
 
     Parameters
     ----------
-    probe : string
+    probe : str
         Probe number.
-    starttime : datetime
+    starttime : datetime.datetime
         Start of interval.
-    endtime : datetime
+    endtime : datetime.datetime
         End of interval.
 
     Returns
     -------
-    data : :class:`~sunpy.timeseries.TimeSeries`
+    data : :class:`~sunpy.timeseries.GenericTimeSeries`
         Requested data.
     """
     dl = _MergedDownloader(probe)
