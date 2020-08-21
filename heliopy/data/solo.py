@@ -107,12 +107,14 @@ class _SoloDownloader(util.Downloader):
 
 def download(starttime, endtime, descriptor, level):
     """
-    starttime :
-    endtime :
+    starttime : datetime.datetime
+    endtime : datetime.datetime
     descriptor : str
-        One of ``['MAG']``.
+        Data descriptor. Valid descriptors can be found by going to
+        https://soar.esac.esa.int/soar/#search, running a search, and
+        reading the descriptor from the "Descriptor" column.
     level : str
-        One of ``['LL02']``.
+        One of ``['LL02']``. Currently only low latency data is supported.
     """
     descriptor = descriptor.upper()
     level = level.upper()
