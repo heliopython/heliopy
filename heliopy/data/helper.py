@@ -232,6 +232,8 @@ def cdf_dict(unit_string):
                          1 / (u.cm**2 * u.s * u.sr * u.MeV)),
                         ('1/(cm**2-s-sr-MeV/nuc.)',
                          1 / (u.cm**2 * u.s * u.sr * u.MeV)),
+                        ('1/(cm^2 sec ster MeV)',
+                         1 / (u.cm**2 * u.s * u.sr * u.MeV)),
 
                         ('1/(cm**2-s-sr)', 1 / (u.cm**2 * u.s * u.sr)),
                         ('1/(SQcm-ster-s)', 1 / (u.cm**2 * u.s * u.sr)),
