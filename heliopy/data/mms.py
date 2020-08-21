@@ -68,7 +68,7 @@ def available_files(probe, instrument, starttime, endtime, data_rate='',
         Start time.
     endtime : ~datetime.datetime
         End time.
-    data_rate : str, optional
+    data_rate : str
         Data rate. Must be in ``['slow', 'fast', 'brst', 'srvy']``
 
     Returns
@@ -234,12 +234,12 @@ def download_files(probe, instrument, data_rate, starttime, endtime,
         Start time.
     endtime : ~datetime.datetime
         End time.
-    verbose : bool, optional
+    verbose : bool
         If ``True``, show a progress bar while downloading.
-    product_string : str, optional
+    product_string : str
         If not empty, this string must be in the filename for it to be
         downloaded.
-    warn_missing_units : bool, optional
+    warn_missing_units : bool
         If ``True``, warnings will be shown for each variable that does not
         have associated units.
 
@@ -292,18 +292,18 @@ Import fpi {} data.
 
 Parameters
 ----------
-probe : string
+probe : str
     Probe number, must be 1, 2, 3, or 4
-mode : string
+mode : str
     Data mode, must be 'fast' or 'brst'
-starttime : datetime
+starttime : datetime.datetime
     Interval start time.
-endtime : datetime
+endtime : datetime.datetime
     Interval end time.
 
 Returns
 -------
-data : :class:`~sunpy.timeseries.TimeSeries`
+data : :class:`~sunpy.timeseries.GenericTimeSeries`
     Imported data.
 """.format(product)
 
@@ -346,18 +346,18 @@ def fgm(probe, mode, starttime, endtime):
 
     Parameters
     ----------
-    probe : string
+    probe : str
         Probe number, must be 1, 2, 3, or 4
     mode : str
         Data rate.
-    starttime : datetime
+    starttime : datetime.datetime
         Interval start time.
-    endtime : datetime
+    endtime : datetime.datetime
         Interval end time.
 
     Returns
     -------
-    data : :class:`~sunpy.timeseries.TimeSeries`
+    data : :class:`~sunpy.timeseries.GenericTimeSeries`
         Imported data.
     """
     return download_files(probe, 'fgm', mode, starttime, endtime)

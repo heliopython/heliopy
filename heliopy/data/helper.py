@@ -67,9 +67,8 @@ def listdata(probes=None):
 
     Parameters
     ----------
-    probes : List of strings, optional
-        Probe names
-
+    probes : list
+        Probe names as a list of strings.
     """
     data_dir = config['download_dir']
     if probes is None:

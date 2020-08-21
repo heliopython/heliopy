@@ -52,7 +52,7 @@ def _loaddistfile(probe, year, doy, hour, minute, second):
 
     Parameters
     ----------
-    probe : int, string
+    probe : int, str
         Helios probe to import data from. Must be 1 or 2.
     year : int
         Year
@@ -69,7 +69,7 @@ def _loaddistfile(probe, year, doy, hour, minute, second):
     -------
     f : file
         Opened distribution function file
-    filename : string
+    filename : str
         Filename of opened file
     """
     probe = _check_probe(probe)
@@ -120,16 +120,16 @@ def integrated_dists(probe, starttime, endtime, verbose=False):
     ----------
     probe : int
         Helios probe to import data from. Must be 1 or 2.
-    starttime : datetime
+    starttime : datetime.datetime
         Start of interval
-    endtime : datetime
+    endtime : datetime.datetime
         End of interval
-    verbose : bool, optional
+    verbose : bool
         If ``True``, print information whilst loading. Default is ``False``.
 
     Returns
     -------
-    distinfo : Series
+    distinfo : pandas.Series
         Infromation stored in the top of distribution function files.
     """
     extensions = ['hdm.0', 'hdm.1', 'ndm.0', 'ndm.1']
@@ -204,7 +204,7 @@ def integrated_dists_single(probe, year, doy, hour, minute, second):
 
     Parameters
     ----------
-    probe : int, string
+    probe : int, str
         Helios probe to import data from. Must be 1 or 2.
     year : int
         Year
@@ -219,9 +219,9 @@ def integrated_dists_single(probe, year, doy, hour, minute, second):
 
     Returns
     -------
-    i1a : DataFrame
+    i1a : pandas.DataFrame
         i1a integrated distribution function.
-    i1b : DataFrame
+    i1b : pandas.DataFrame
         i1b integrated distribution function.
     """
     probe = _check_probe(probe)
@@ -252,7 +252,7 @@ def electron_dist_single(probe, year, doy, hour, minute, second,
 
     Parameters
     ----------
-    probe : int, string
+    probe : int, str
         Helios probe to import data from. Must be 1 or 2.
     year : int
         Year
@@ -264,7 +264,7 @@ def electron_dist_single(probe, year, doy, hour, minute, second,
         Minute
     second : int
         Second
-    remove_advect : bool, optional
+    remove_advect : bool
         If ``False``, the distribution is returned in
         the spacecraft frame.
 
@@ -275,7 +275,7 @@ def electron_dist_single(probe, year, doy, hour, minute, second,
 
     Returns
     -------
-    dist : DataFrame
+    dist : pandas.DataFrame
         2D electron distribution function
     """
     probe = _check_probe(probe)
@@ -343,16 +343,16 @@ def distparams(probe, starttime, endtime, verbose=False):
     ----------
     probe : int
         Helios probe to import data from. Must be 1 or 2.
-    starttime : datetime
+    starttime : datetime.datetime
         Start of interval
-    endtime : datetime
+    endtime : datetime.datetime
         End of interval
-    verbose : bool, optional
+    verbose : bool
         If ``True``, print information whilst loading. Default is ``False``.
 
     Returns
     -------
-    distinfo : Series
+    distinfo : pandas.Series
         Infromation stored in the top of distribution function files
     """
     extensions = ['hdm.0', 'hdm.1', 'ndm.0', 'ndm.1']
@@ -408,7 +408,7 @@ def distparams_single(probe, year, doy, hour, minute, second):
 
     Parameters
     ----------
-    probe : int, string
+    probe : int, str
         Helios probe to import data from. Must be 1 or 2.
     year : int
         Year
@@ -423,7 +423,7 @@ def distparams_single(probe, year, doy, hour, minute, second):
 
     Returns
     -------
-    distparams : Series
+    distparams : pandas.Series
         Distribution parameters from top of distribution function file.
     """
     probe = _check_probe(probe)
@@ -546,11 +546,11 @@ def electron_dists(probe, starttime, endtime, remove_advect=False,
     ----------
     probe : int
         Helios probe to import data from. Must be 1 or 2.
-    starttime : datetime
+    starttime : datetime.datetime
         Start of interval
-    endtime : datetime
+    endtime : datetime.datetime
         End of interval
-    remove_advect : bool, optional
+    remove_advect : bool
         If *False*, the distribution is returned in
         the spacecraft frame.
 
@@ -558,12 +558,12 @@ def electron_dists(probe, starttime, endtime, remove_advect=False,
         returned in the solar wind frame, by subtracting the spacecraft
         velocity from the velcoity of each bin. Note this significantly
         slows down reading in the distribution.
-    verbose : bool, optional
+    verbose : bool
         If ``True``, print dates when loading files. Default is ``False``.
 
     Returns
     -------
-    dists : DataFrame
+    dists : pandas.DataFrame
         Electron distribution functions
     """
     extensions = ['hdm.0', 'hdm.1', 'ndm.0', 'ndm.1']
@@ -645,11 +645,11 @@ def ion_dists(probe, starttime, endtime, remove_advect=False, verbose=False):
     ----------
     probe : int
         Helios probe to import data from. Must be 1 or 2.
-    starttime : datetime
+    starttime : datetime.datetime
         Start of interval
-    endtime : datetime
+    endtime : datetime.datetime
         End of interval
-    remove_advect : bool, optional
+    remove_advect : bool
         If *False*, the distribution is returned in
         the spacecraft frame.
 
@@ -657,12 +657,12 @@ def ion_dists(probe, starttime, endtime, remove_advect=False, verbose=False):
         returned in the solar wind frame, by subtracting the spacecraft
         velocity from the velcoity of each bin. Note this significantly
         slows down reading in the distribution.
-    verbose : bool, optional
+    verbose : bool
         If ``True``, print dates when loading files. Default is ``False``.
 
     Returns
     -------
-    distinfo : Series
+    distinfo : pandas.Series
         Infromation stored in the top of distribution function files.
     """
     extensions = ['hdm.0', 'hdm.1', 'ndm.0', 'ndm.1']
@@ -739,7 +739,7 @@ def ion_dist_single(probe, year, doy, hour, minute, second,
 
     Parameters
     ----------
-    probe : int, string
+    probe : int, str
         Helios probe to import data from. Must be 1 or 2.
     year : int
         Year
@@ -751,7 +751,7 @@ def ion_dist_single(probe, year, doy, hour, minute, second,
         Minute.
     second : int
         Second
-    remove_advect : bool, optional
+    remove_advect : bool
         If *False*, the distribution is returned in
         the spacecraft frame.
 
@@ -762,7 +762,7 @@ def ion_dist_single(probe, year, doy, hour, minute, second,
 
     Returns
     -------
-    dist : DataFrame
+    dist : pandas.DataFrame
         3D ion distribution function
     """
     probe = _check_probe(probe)
@@ -894,18 +894,18 @@ def corefit(probe, starttime, endtime):
 
     Parameters
     ----------
-    probe : int, string
+    probe : int, str
         Helios probe to import data from. Must be 1 or 2.
-    starttime : datetime
+    starttime : datetime.datetime
         Interval start time
-    endtime : datetime
+    endtime : datetime.datetime
         Interval end time
-    try_download : bool, optional
+    try_download : bool
         If ``False`` don't try to download data if it is missing locally.
 
     Returns
     -------
-    data : :class:`~sunpy.timeseries.TimeSeries`
+    data : sunpy.timeseries.GenericTimeSeries
         Data set
     """
     dl = _CoreFitDownloader(probe)
@@ -991,18 +991,18 @@ def mag_4hz(probe, starttime, endtime):
 
     Parameters
     ----------
-    probe : int, string
+    probe : int, str
         Helios probe to import data from. Must be 1 or 2.
-    starttime : datetime
+    starttime : datetime.datetime
         Interval start time
-    endtime : datetime
+    endtime : datetime.datetime
         Interval end time
-    try_download : bool, optional
+    try_download : bool
         If ``False`` don't try to download data if it is missing locally.
 
     Returns
     -------
-    data : :class:`~sunpy.timeseries.TimeSeries`
+    data : sunpy.timeseries.GenericTimeSeries
         4Hz magnetic field data set
     """
     dl = _4hzDownloader(probe)
@@ -1074,18 +1074,18 @@ def mag_ness(probe, starttime, endtime):
 
     Parameters
     ----------
-    probe : int, string
+    probe : int, str
         Helios probe to import data from. Must be 1 or 2.
-    starttime : datetime
+    starttime : datetime.datetime
         Interval start time
-    endtime : datetime
+    endtime : datetime.datetime
         Interval end time
-    try_download : bool, optional
+    try_download : bool
         If ``False`` don't try to download data if it is missing locally.
 
     Returns
     -------
-    data : DataFrame
+    data : pandas.DataFrame
         6 second magnetic field data set
     """
     dl = _NessDownloader(probe)

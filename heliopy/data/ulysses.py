@@ -52,14 +52,14 @@ def swics_heavy_ions(starttime, endtime):
 
     Parameters
     ----------
-    starttime : datetime
+    starttime : datetime.datetime
         Start of interval
-    endtime : datetime
+    endtime : datetime.datetime
         End of interval
 
     Returns
     -------
-    data : :class:`~sunpy.timeseries.TimeSeries`
+    data : :class:`~sunpy.timeseries.GenericTimeSeries`
         Requested data
     """
     names = ['year', 'doy', 'hour', 'minute', 'second']
@@ -104,14 +104,14 @@ def swics_abundances(starttime, endtime):
 
     Parameters
     ----------
-    starttime : datetime
+    starttime : datetime.datetime
         Start of interval
-    endtime : datetime
+    endtime : datetime.datetime
         End of interval
 
     Returns
     -------
-    data : :class:`~sunpy.timeseries.TimeSeries`
+    data : :class:`~sunpy.timeseries.GenericTimeSeries`
         Requested data
     """
     names = ['year', 'doy', 'hour', 'minute', 'second',
@@ -215,14 +215,14 @@ def fgm_hires(starttime, endtime):
 
     Parameters
     ----------
-    starttime : datetime
+    starttime : datetime.datetime
         Start of interval
-    endtime : datetime
+    endtime : datetime.datetime
         End of interval
 
     Returns
     -------
-    data : :class:`~sunpy.timeseries.TimeSeries`
+    data : :class:`~sunpy.timeseries.GenericTimeSeries`
         Requested data
     """
     units = OrderedDict([('Bx', u.nT), ('By', u.nT),
@@ -282,14 +282,14 @@ def swoops_ions(starttime, endtime):
 
     Parameters
     ----------
-    starttime : datetime
+    starttime : datetime.datetime
         Start of interval
-    endtime : datetime
+    endtime : datetime.datetime
         End of interval
 
     Returns
     -------
-    data : :class:`~sunpy.timeseries.TimeSeries`
+    data : :class:`~sunpy.timeseries.GenericTimeSeries`
         Requested data
     """
 

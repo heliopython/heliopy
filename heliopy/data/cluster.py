@@ -4,7 +4,7 @@ Methods for importing data from the four Cluster spacecraft.
 To download data you will need to be registered at the cluster science archive
 (http://www.cosmos.esa.int/web/csa/register-now), and have set either the
 environment variable CLUSTERCOOKIE to your cookie, or set your cookie in
-the `heliopyrc` file.
+the :file:`heliopyrc` file.
 
 The data download method is described at
 https://csa.esac.esa.int/csa/aio/html/wget.shtml.
@@ -160,16 +160,16 @@ def fgm(probe, starttime, endtime, try_download=True):
 
     Parameters
     ----------
-        probe : string
+        probe : str
             Probe number. Must be '1', '2', '3', or '4'.
-        starttime : datetime
+        starttime : datetime.datetime
             Interval start.
-        endtime : datetime
+        endtime : datetime.datetime
             Interval end.
 
     Returns
     -------
-        data : :class:`~sunpy.timeseries.TimeSeries`
+        data : sunpy.timeseries.GenericTimeSeries
             Requested data.
     """
     return _load(probe, starttime, endtime, 'fgm', 'CP_FGM_FULL',
@@ -186,18 +186,18 @@ def cis_codif_h1_moms(probe, starttime, endtime, sensitivity='high',
 
     Parameters
     ----------
-    probe : string
+    probe : str
         Probe number. Must be '1', '2', '3', or '4'.
-    starttime : datetime
+    starttime : datetime.datetime
         Interval start.
-    endtime : datetime
+    endtime : datetime.datetime
         Interval end.
-    sensitivity : string, 'high' or 'low', default: 'low'
-        Load high or low sensitivity
+    sensitivity : str
+        Sensitivty, must be , ``'high'`` or ``'low'``.
 
     Returns
     -------
-    data : DataFrame
+    data : sunpy.timeseries.GenericTimeSeries
         Requested data.
     """
     sensitivitydict = {'high': 'HS', 'low': 'LS'}
@@ -216,16 +216,16 @@ def peace_moments(probe, starttime, endtime, try_download=True):
 
     Parameters
     ----------
-        probe : string
+        probe : str
             Probe number. Must be '1', '2', '3', or '4'.
-        starttime : datetime
+        starttime : datetime.datetime
             Interval start.
-        endtime : datetime
+        endtime : datetime.datetime
             Interval end.
 
     Returns
     -------
-        data : DataFrame
+        data : sunpy.timeseries.GenericTimeSeries
             Requested data.
     """
     return _load(probe, starttime, endtime, 'peace', 'CP_PEA_MOMENTS',
@@ -241,16 +241,16 @@ def cis_hia_onboard_moms(probe, starttime, endtime, try_download=True):
 
     Parameters
     ----------
-        probe : string
+        probe : str
             Probe number. Must be '1' or '3'
-        starttime : datetime
+        starttime : datetime.datetime
             Interval start.
-        endtime : datetime
+        endtime : datetime.datetime
             Interval end.
 
     Returns
     -------
-        data : DataFrame
+        data : sunpy.timeseries.GenericTimeSeries
             Requested data.
     """
     if probe == '2' or probe == '4':
