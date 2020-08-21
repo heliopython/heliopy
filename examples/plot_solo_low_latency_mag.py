@@ -3,7 +3,7 @@ Solar Orbiter low latency data
 ==============================
 
 Downloading and plotting low latency data from Solar Orbiter.
-Note that this data is not suitible for publication.
+Note that this data is not suitable for publication.
 """
 
 ###############################################################################
@@ -21,8 +21,7 @@ from heliopy.data.solo import download
 ###############################################################################
 # Download some magnetic field data
 
-# TODO: data file on the 3rd isn't working
-data = download(datetime(2020, 7, 10), datetime(2020, 8, 2), 'MAG', 'LL02')
+data = download(datetime(2020, 7, 10), datetime(2020, 8, 3), 'MAG', 'LL02')
 print(data.columns)
 
 ###############################################################################
