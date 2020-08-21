@@ -22,6 +22,7 @@ own sub-module:
    mms
    omni
    psp
+   stereo
    ulysses
    wind
 
