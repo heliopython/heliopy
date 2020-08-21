@@ -1,3 +1,37 @@
+Heliopy 0.13.0 (2020-08-21)
+===========================
+
+Features
+--------
+
+- Added `heliopy.data.psp.merged_mag_plasma` for merged plasma and magnetic field
+  data from PSP. (`#912 <https://github.com/heliopython/heliopy/pull/912>`__)
+- Added the ability to download Solar Orbiter low latency data in
+  `heliopy.data.solo.download`. (`#919 <https://github.com/heliopython/heliopy/pull/919>`__)
+- Added the `heliopy.data.stereo` module, with `~heliopy.data.stereo.coho1hr_merged`.
+  To request more STEREO data products, please open an issue at
+  https://github.com/heliopython/heliopy/issues. (`#923 <https://github.com/heliopython/heliopy/pull/923>`__)
+
+
+Backwards Incompatible Changes
+------------------------------
+
+- Support for converting from the ``J2000`` coordinate frame to astropy
+  coordinates has been removed in `heliopy.spice.Trajectory.coords`. If you want
+  to convert to astropy coordinates, generate the trajectory in the ``IAU_SUN``
+  coordinate system, get the coords, and then ``.transform_to()`` the desired
+  astropy coordinate frame from there. (`#913 <https://github.com/heliopython/heliopy/pull/913>`__)
+
+
+Bug Fixes
+---------
+
+- The coordinates returned by `heliopy.spice.Trajectory.coords` when the
+  coordinate frame is ``"IAU_SUN"`` have been fixed to properly take into account
+  light travel time. In order to ensure consistency, coordinates can only be
+  created with sunpy versions > 2. (`#911 <https://github.com/heliopython/heliopy/pull/911>`__)
+
+
 Heliopy 0.12.0 (2020-06-22)
 ===========================
 
