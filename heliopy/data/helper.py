@@ -141,6 +141,7 @@ def cdf_dict(unit_string):
     ionic_charge = u.def_unit('Charged State', 1.6021766 * (10**-19) * u.C)
 
     units = OrderedDict([('ratio', u.dimensionless_unscaled),
+                        ('Na', u.dimensionless_unscaled),
                         ('NOTEXIST', u.dimensionless_unscaled),
                         ('Unitless', u.dimensionless_unscaled),
                         ('unitless', u.dimensionless_unscaled),
@@ -206,6 +207,7 @@ def cdf_dict(unit_string):
                         ('deg (>200)', u.deg),
 
                         ('Deg K', u.K),
+                        ('deg_K', u.K),
                         ('#/{cc*(cm/s)^3}', (u.cm**3 * (u.cm / u.s)**3)**-1),
                         ('sec', u.s),
                         ('Samples/s', 1 / u.s),

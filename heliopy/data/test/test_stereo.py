@@ -10,8 +10,9 @@ starttime = datetime(2010, 12, 19)
 endtime = datetime(2010, 12, 20)
 
 
-@pytest.mark.parametrize('func', [stereo.coho1hr_merged])
-@pytest.mark.parametrize('sc', ['A', 'B'])
+@pytest.mark.parametrize('func', [stereo.mag_l1_rtn,
+                                  stereo.magplasma_l2])
+@pytest.mark.parametrize('sc', ['sta', 'stb'])
 def test_psp(func, sc):
     df = func(sc, starttime, endtime)
     check_data_output(df)
