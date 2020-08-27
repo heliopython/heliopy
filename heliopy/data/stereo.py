@@ -1,28 +1,23 @@
 """
 Methods for importing data from the STEREO spacecraft.
 """
+from collections import OrderedDict
+import pathlib
 import astropy.units as u
 from heliopy.data import cdasrest
-
-
-def _check_spacecraft(sc):
-    allowed = ['A', 'B']
-    if sc.upper() not in ['A', 'B']:
-        raise ValueError(f'spacecraft value "{sc}" not in list of '
-                         f'allowed values "{allowed}"')
 
 
 def _docstring(identifier, description):
     ds = f"""
     {description} data.
 
-    See https://cdaweb.sci.gsfc.nasa.gov/misc/NotesS.html#STA_{identifier}
+    See https://cdaweb.sci.gsfc.nasa.gov/misc/NotesS.html#{identifier}
     for more information.
 
     Parameters
     ----------
     spacecraft : str
-        Spacecraft letter, one of ``['A', 'B']``.
+        Spacecraft identifier, one of ``['STA', 'STB']``.
     starttime : datetime
         Interval start time.
     endtime : datetime
@@ -34,30 +29,50 @@ def _docstring(identifier, description):
     """
     return ds
 
+def _identifier_select(sc):
+    """
+    Spacecraft selector for stereo
+    """
+    allowed = ['STA', 'STB']
+    if sc.upper() not in allowed:
+        raise ValueError(f'spacecraft value "{sc}" not in list of '
+                         f'allowed values "{allowed}"')
+    return sc.upper()
 
-def _stereo(starttime, endtime, spacecraft, identifier, units=None,
-            intervals='monthly'):
+
+def _stereo(starttime, endtime, spacecraft, identifier, dataset='ac', units=None,
+            warn_missing_units=True):
     """
     Generic method for downloading STEREO data.
     """
-    _check_spacecraft(spacecraft)
-    dataset = 'st' + spacecraft.lower()
-    identifier = 'ST' + spacecraft.upper() + '_' + identifier
-    dl = cdasrest.CDASDwonloader(dataset, identifier, 'stereo', units=units)
-    # Override intervals
-    if intervals == 'daily':
-        dl.intervals = dl.intervals_daily
-    else:
-        dl.intervals = dl.intervals_monthly
-    return dl.load(starttime, endtime)
+
+    directory = pathlib.Path("stereo", _identifier_select(spacecraft))
+    badvalues = 1e-31
+    return cdasrest.CDASDwonloader(dataset, identifier, directory,
+                                   badvalues=badvalues,
+                                   warn_missing_units=warn_missing_units,
+                                   units=units)
 
 
-# Actual download functions start here
-def coho1hr_merged(spacecraft, starttime, endtime):
-    identifier = 'COHO1HR_MERGED_MAG_PLASMA'
-    return _stereo(starttime, endtime, spacecraft, identifier)
+
+def mag_l1_rtn(starttime, endtime, spacecraft):
+    identifier = _identifier_select(spacecraft)+'_L1_MAG_RTN'
+
+    units = OrderedDict([('Q_FLAG', u.dimensionless_unscaled),
+                        ('MAGFLAGUC', u.dimensionless_unscaled)])
+    return _stereo(starttime, endtime, spacecraft, identifier, units=units).load(starttime, endtime)
 
 
-coho1hr_merged.__doc__ = _docstring(
-    'COHO1HR_MERGED_MAG_PLASMA',
-    'Merged hourly magnetic field, plasma, proton fluxes, and ephermis')
+mag_l1_rtn.__doc__ = _docstring('STA_L1_MAG_RTN',
+                                    'STEREO IMPACT/MAG Magnetic Field Vectors')
+
+
+def magplasma_l2(starttime, endtime, spacecraft):
+    identifier = _identifier_select(spacecraft)+'_L2_MAGPLASMA_1M'
+
+    units = OrderedDict([('Q_FLAG', u.dimensionless_unscaled)])
+    return _stereo(starttime, endtime, spacecraft, identifier, units=units).load(starttime, endtime)
+
+
+magplasma_l2.__doc__ = _docstring('STA_L2_MAGPLASMA_1M', 'STEREO IMPACT/MAG Magnetic Field and PLASTIC Solar Wind Plasma Data')
+
