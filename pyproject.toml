@@ -38,3 +38,6 @@
       directory = "trivial"
       name = "Trivial/Internal Changes"
       showcontent = true
+
+[build-system]
+  requires = ["setuptools", "wheel"]
