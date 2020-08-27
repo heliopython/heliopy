@@ -9,7 +9,7 @@ from heliopy.data import cdasrest
 
 def _docstring(identifier, description):
     ds = f"""
-    {description} data.
+    {description}
 
     See https://cdaweb.sci.gsfc.nasa.gov/misc/NotesS.html#{identifier}
     for more information.
@@ -29,9 +29,10 @@ def _docstring(identifier, description):
     """
     return ds
 
+
 def _identifier_select(sc):
     """
-    Spacecraft selector for stereo
+    Spacecraft selector for STEREO.
     """
     allowed = ['STA', 'STB']
     if sc.upper() not in allowed:
@@ -40,8 +41,8 @@ def _identifier_select(sc):
     return sc.upper()
 
 
-def _stereo(starttime, endtime, spacecraft, identifier, dataset='ac', units=None,
-            warn_missing_units=True):
+def _stereo(starttime, endtime, spacecraft, identifier, dataset='ac',
+            units=None, warn_missing_units=True):
     """
     Generic method for downloading STEREO data.
     """
@@ -54,25 +55,27 @@ def _stereo(starttime, endtime, spacecraft, identifier, dataset='ac', units=None
                                    units=units)
 
 
-
 def mag_l1_rtn(starttime, endtime, spacecraft):
-    identifier = _identifier_select(spacecraft)+'_L1_MAG_RTN'
+    identifier = _identifier_select(spacecraft) + '_L1_MAG_RTN'
 
     units = OrderedDict([('Q_FLAG', u.dimensionless_unscaled),
                         ('MAGFLAGUC', u.dimensionless_unscaled)])
-    return _stereo(starttime, endtime, spacecraft, identifier, units=units).load(starttime, endtime)
+    dl = _stereo(starttime, endtime, spacecraft, identifier, units=units)
+    return dl.load(starttime, endtime)
 
 
 mag_l1_rtn.__doc__ = _docstring('STA_L1_MAG_RTN',
-                                    'STEREO IMPACT/MAG Magnetic Field Vectors')
+                                'STEREO IMPACT/MAG Magnetic Field Vectors.')
 
 
 def magplasma_l2(starttime, endtime, spacecraft):
-    identifier = _identifier_select(spacecraft)+'_L2_MAGPLASMA_1M'
+    identifier = _identifier_select(spacecraft) + '_L2_MAGPLASMA_1M'
 
     units = OrderedDict([('Q_FLAG', u.dimensionless_unscaled)])
-    return _stereo(starttime, endtime, spacecraft, identifier, units=units).load(starttime, endtime)
+    dl = _stereo(starttime, endtime, spacecraft, identifier, units=units)
+    return dl.load(starttime, endtime)
 
 
-magplasma_l2.__doc__ = _docstring('STA_L2_MAGPLASMA_1M', 'STEREO IMPACT/MAG Magnetic Field and PLASTIC Solar Wind Plasma Data')
-
+magplasma_l2.__doc__ = _docstring(
+    'STA_L2_MAGPLASMA_1M',
+    'STEREO IMPACT/MAG Magnetic Field and PLASTIC Solar Wind Plasma Data.')
