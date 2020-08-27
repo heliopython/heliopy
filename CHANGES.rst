@@ -1,3 +1,21 @@
+Heliopy 0.13.1 (2020-08-27)
+===========================
+
+Features
+--------
+
+- Added `~heliopy.data.stereo.mag_l1_rtn` and `~heliopy.data.stereo.magplasma_l2`
+  to `heliopy.data.stereo`. (`#928 <https://github.com/heliopython/heliopy/pull/928>`__)
+- `heliopy.data.stereo` functions now also accept ``'STA'`` or ``'STB'`` as a
+  spacecraft identifier. (`#929 <https://github.com/heliopython/heliopy/pull/929>`__)
+
+
+Bug Fixes
+---------
+
+- Fixed the download URL for functions in `heliopy.data.helios`. (`#927 <https://github.com/heliopython/heliopy/pull/927>`__)
+
+
 Heliopy 0.13.0 (2020-08-21)
 ===========================
 
