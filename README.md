@@ -1,8 +1,6 @@
 ![HelioPy](https://github.com/heliopython/heliopy/raw/master/artwork/logo_rectangle.png "HelioPy")
 
-A python library for heliospheric and planetary Physics.
-The primary goal of HelioPy is to provide a set of tools to download and read
-in data, and to carry out other common data processing tasks.
+heliopy aims to provide a set of generic tools to work with 1D in-situ timeseries measurements of space plasmas.
 
 Full documentation can be found [here](http://docs.heliopy.org/).
 
