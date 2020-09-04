@@ -755,7 +755,16 @@ def cdf2df(cdf, index_key, dtimeindex=True, badvalues=None,
             include.append(index_key)
 
     # Extract index values
+
+    varinfo = cdf.cdf_info()
+    # Check if index_key is in the variables. If not,
+    # try other alternatives (e.g. for STEREO sept)
+    cdf_vars = (varinfo['rVariables']+varinfo['zVariables'])
+    if index_key not in cdf_vars:
+        if 'Epoch_NS' in cdf_vars:
+            index_key = 'Epoch_NS'
     index = cdf.varget(index_key)
+
     try:
         # If there are multiple indexes, take the first one
         # TODO: this is just plain wrong, there should be a way to get all
@@ -799,7 +808,9 @@ def cdf2df(cdf, index_key, dtimeindex=True, badvalues=None,
         else:
             keys[cdf_key] = cdf_key
     # Remove index key, as we have already used it to create the index
-    keys.pop(index_key)
+    # Keep the index key if it wasn't the standard 'Epoch'
+    if index_key == 'Epoch':
+        keys.pop(index_key)
     # Remove keys for data that doesn't have the right shape to load in CDF
     # Mapping of keys to variable data
     vars = {cdf_key: cdf.varget(cdf_key) for cdf_key in keys.copy()}
@@ -867,6 +878,37 @@ def _fillval_nan(data, fillval):
 
 class RemoteFileNotPresentError(RuntimeError):
     pass
+
+def epoch_to_datetime(epoch):
+    """
+    Convert cdf epoch to datetime
+
+    Copied from the cdf2df above to convert non-standard Epoch
+    fields in some cdf files.
+
+    Parameters
+    ----------
+    epoch : array
+        An array of cdfepoch values
+
+    Returns
+    -------
+    dtime : array
+        An array of datetime objects
+    """
+    utc_comp = cdflib.cdfepoch.breakdown(epoch, to_np=True)
+    if utc_comp.shape[1] == 9:
+        millis = utc_comp[:, 6]*(10**3)
+        micros = utc_comp[:, 8]*(10**2)
+        nanos = utc_comp[:, 7]
+        utc_comp[:, 6] = millis + micros + nanos
+        utc_comp = np.delete(utc_comp,  np.s_[-2:], axis=1)
+    try:
+        dtime = np.asarray([dt.datetime(*x) for x in utc_comp])
+    except ValueError:
+        utc_comp[:, 6] -= micros
+        dtime = np.asarray([dt.datetime(*x) for x in utc_comp])
+    return dtime
 
 
 def load(filename, local_dir, remote_url,
