@@ -5,6 +5,7 @@ from collections import OrderedDict
 import pathlib
 import astropy.units as u
 from heliopy.data import cdasrest
+from heliopy.data import util
 
 
 def _docstring(identifier, description):
@@ -92,3 +93,45 @@ def magplasma_l2(spacecraft, starttime, endtime):
 magplasma_l2.__doc__ = _docstring(
     'STA_L2_MAGPLASMA_1M',
     'STEREO IMPACT/MAG Magnetic Field and PLASTIC Solar Wind Plasma Data.')
+
+
+def let_l1(spacecraft, starttime, endtime):
+    units = OrderedDict([('Q_FLAG', u.dimensionless_unscaled)])
+    return _stereo(starttime, endtime, spacecraft, identifier, units=units)
+
+
+let_l1.__doc__ = _docstring('STA_L1_LET',
+                            """STEREO IMPACT/LET Level 1 Data
+
+    Note that the energies are given in units MeV/n and the 
+    intensities in units (1/(cm^2 s sr MeV/nuc)). The astropy
+    units cannot consistently give a unit per nucleon""")
+
+
+def sept_l1(spacecraft, starttime, endtime):
+    units = OrderedDict([('Q_FLAG', u.dimensionless_unscaled),
+                         ('Heater_NS', u.deg_C),
+                         ('Heater_E', u.deg_C)])
+    sept = _stereo(starttime, endtime, spacecraft, 'L1_SEPT', units=units)
+    df = sept.to_dataframe()
+    sept.data['Epoch_NS'] = util.epoch_to_datetime(df['Epoch_NS'].values)
+    sept.data['Epoch_E'] = util.epoch_to_datetime(df['Epoch_E'].values)
+
+    return sept
+
+
+sept_l1.__doc__ = _docstring('STA_L1_SEPT',
+                             'STEREO IMPACT/SEPT Level 1 Data')
+
+
+def sit_l1(spacecraft, starttime, endtime):
+    units = OrderedDict([('Q_FLAG', u.dimensionless_unscaled)])
+    return _stereo(starttime, endtime, spacecraft, 'L1_SIT', units=units)
+
+
+sit_l1.__doc__ = _docstring('STA_L1_SIT',
+                            """STEREO IMPACT/SIT Level 1 Data
+
+    Note that the energies are given in units MeV/n and the 
+    intensities in units (1/(cm^2 s sr MeV/nuc)). The astropy
+    units cannot consistently give a unit per nucleon""")

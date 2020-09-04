@@ -9,7 +9,12 @@ pytestmark = pytest.mark.data
 starttime = datetime(2010, 12, 19)
 endtime = datetime(2010, 12, 19, 23)
 
-funs = [stereo.mag_l1_rtn, stereo.magplasma_l2, stereo.coho1hr_merged]
+funs = [stereo.mag_l1_rtn,
+        stereo.magplasma_l2,
+        stereo.coho1hr_merged,
+        stereo.let_l1,
+        stereo.sept_l1,
+        stereo.sit_l1]
 
 
 @pytest.mark.parametrize('func', funs)

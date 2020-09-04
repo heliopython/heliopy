@@ -166,6 +166,8 @@ def cdf_dict(unit_string):
                         ('DD-MMM-YYYY_hr:mm', u.dimensionless_unscaled),
                         ('(6=No,1=All,-1=n/a)', u.dimensionless_unscaled),
                         ('Ticks', u.dimensionless_unscaled),
+                        ('cnts',  u.dimensionless_unscaled),
+                        ('#',  u.dimensionless_unscaled),
 
                         ('microW m^-2', u.mW * u.m**-2),
 
@@ -225,9 +227,17 @@ def cdf_dict(unit_string):
                         ('msec', u.ms),
                         ('milliseconds', u.ms),
 
+                        ('MeV/nuc', u.MeV),
+
                         ('ionic charge', ionic_charge),
                         ('#/cm2-ster-eV-sec',
                          1 / (u.cm**2 * u.sr * u.eV * u.s)),
+                        ('#/(cm^2*s*sr*Mev/nucleon)',
+                         1 / (u.cm**2 * u.sr * u.MeV * u.s)),
+                        ('#/(cm^2*s*sr*MeV/nuc)',
+                         1 / (u.cm**2 * u.sr * u.MeV * u.s)),
+                        ('#/(cm^2*s*sr*Mev/nuc)',
+                         1 / (u.cm**2 * u.sr * u.MeV * u.s)),
                         ('1/(cm2 Sr sec MeV/nucleon)',
                          1 / (u.cm**2 * u.sr * u.s * u.MeV)),
                         ('1/(cm**2-s-sr-MeV)',
@@ -236,13 +246,18 @@ def cdf_dict(unit_string):
                          1 / (u.cm**2 * u.s * u.sr * u.MeV)),
                         ('1/(cm^2 sec ster MeV)',
                          1 / (u.cm**2 * u.s * u.sr * u.MeV)),
+                        ('cnts/sec/sr/cm^2/MeV',
+                         1 / (u.cm**2 * u.s * u.sr * u.MeV)),
+                        ('particles/(s cm2 sr MeV/n)',
+                         1 / (u.cm**2 * u.s * u.sr * u.MeV)),
 
                         ('1/(cm**2-s-sr)', 1 / (u.cm**2 * u.s * u.sr)),
                         ('1/(SQcm-ster-s)', 1 / (u.cm**2 * u.s * u.sr)),
                         ('1/(SQcm-ster-s)..', 1 / (u.cm**2 * u.s * u.sr)),
 
                         ('Counts/256sec', 1 / (256 * u.s)),
-                        ('Counts/hour', 1 / u.hr),
+                         ('Counts/hour', 1 / u.hr),
+                        ('cnts/sec', 1 / u.s)
                          ])
     try:
         return units[unit_string]
