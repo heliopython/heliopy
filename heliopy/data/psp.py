@@ -2,6 +2,7 @@
 Methods for importing data from Parker Solar Probe.
 """
 import astropy.units as u
+from datetime import datetime
 import pathlib
 import urllib.error
 
@@ -58,7 +59,11 @@ class _SWEAPDownloader(_PSPDownloader):
 
     def fname(self, interval):
         datestr = interval.start.strftime('%Y%m%d')
-        return f'psp_swp_spc_l{self.level}i_{datestr}_v01.cdf'
+        if interval.start < datetime(2019, 12, 17):
+            version = '01'
+        else:
+            version = '02'
+        return f'psp_swp_spc_l{self.level}i_{datestr}_v{version}.cdf'
 
 
 def sweap_spc_l2(starttime, endtime):
