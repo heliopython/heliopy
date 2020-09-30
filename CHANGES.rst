@@ -1,3 +1,19 @@
+Heliopy 0.14.0 (2020-09-30)
+===========================
+
+Features
+--------
+
+- Added the ability to download science quality data to `heliopy.data.solo.download`. (`#934 <https://github.com/heliopython/heliopy/pull/934>`__)
+
+
+Bug Fixes
+---------
+
+- SWEAP functions in `heliopy.data.psp` have been updated to take into account
+  a change in file version number that occurred at the end of 2019. (`#932 <https://github.com/heliopython/heliopy/pull/932>`__)
+
+
 Heliopy 0.13.1 (2020-08-27)
 ===========================
 
