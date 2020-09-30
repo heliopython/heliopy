@@ -8,9 +8,7 @@ Downloading and plotting MAG data from Solar Orbiter.
 ###############################################################################
 # Import the required modules
 from datetime import datetime
-import warnings
 
-import astropy.units as u
 import matplotlib.pyplot as plt
 from matplotlib import dates as mdates
 import numpy as np

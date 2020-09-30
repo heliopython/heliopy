@@ -9,9 +9,7 @@ Note that this data is not suitable for publication.
 ###############################################################################
 # Import the required modules
 from datetime import datetime
-import warnings
 
-import astropy.units as u
 import matplotlib.pyplot as plt
 from matplotlib import dates as mdates
 import numpy as np
