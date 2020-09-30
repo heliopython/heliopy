@@ -20,10 +20,12 @@ class _SoloDownloader(util.Downloader):
         Parameters
         ----------
         """
-        helper._check_in_list(['LL02'], level=level)
+        helper._check_in_list(['LL02', 'L0', 'L1', 'L2'], level=level)
         self.level = level
         if self.level[:2] == 'LL':
             self.product_type = 'LOW_LATENCY'
+        else:
+            self.product_type = 'SCIENCE'
 
         self.descriptor = descriptor
 
@@ -39,7 +41,10 @@ class _SoloDownloader(util.Downloader):
 
         query = {}
         query['SELECT'] = '*'
-        query['FROM'] = 'v_data_item'
+        if self.product_type == 'LOW_LATENCY':
+            query['FROM'] = 'v_ll_data_item'
+        else:
+            query['FROM'] = 'v_sc_data_item'
         query['WHERE'] = (f"descriptor='{self.descriptor}'+AND+"
                           f"level='{self.level}'+AND+"
                           f"begin_time<='{end_time}'+AND+"
