@@ -2,7 +2,7 @@
 Methods for importing data from the STEREO spacecraft.
 """
 from collections import OrderedDict
-import pathlib
+
 import astropy.units as u
 from heliopy.data import cdasrest
 

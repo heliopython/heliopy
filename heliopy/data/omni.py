@@ -2,7 +2,6 @@
 Methods for importing data from the OMNI.
 """
 from heliopy.data import cdasrest
-from heliopy.data import util
 
 
 def _docstring(identifier, description):

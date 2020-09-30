@@ -6,7 +6,6 @@ Utility functions for data downloading.
 import abc
 import datetime as dt
 import dateutil.relativedelta as reldelt
-import ftplib
 import io
 import os
 import logging
