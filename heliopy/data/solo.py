@@ -119,7 +119,8 @@ def download(starttime, endtime, descriptor, level):
         https://soar.esac.esa.int/soar/#search, running a search, and
         reading the descriptor from the "Descriptor" column.
     level : str
-        One of ``['LL02']``. Currently only low latency data is supported.
+        One of ``['L0', 'L1', 'L2', 'LL02']``. ``'LL'`` stands for low latency,
+        other levels are science quality data.
     """
     descriptor = descriptor.upper()
     level = level.upper()
