@@ -203,7 +203,7 @@ def get_kernel(name):
             with open(local_loc, 'wb') as fd:
                 fd.write(r.content)
 
-        kernels.append(spice.SPKKernel(local_loc))
+        kernels.append(spice.Kernel(local_loc))
     return kernels
 
 

@@ -19,5 +19,5 @@ def test_kernel_download(kernel):
     assert len(record) == 0
 
     # Check that kernel is valid
-    if kernel.fname.suffix == '.spk':
+    if isinstance(kernel, spice.SPKKernel):
         kernel.bodies
