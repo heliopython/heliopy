@@ -193,7 +193,7 @@ def get_kernel(name):
     for url in kernel.urls:
         fname = url[url.rfind("/") + 1:]
         local_loc = spice_dir / fname
-        if not local_loc.exists:
+        if not local_loc.exists():
             print('Downloading {}'.format(url))
             r = requests.get(url, allow_redirects=True)
             if r.status_code != requests.codes.ok:
