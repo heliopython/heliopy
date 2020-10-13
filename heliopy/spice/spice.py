@@ -55,9 +55,15 @@ class Kernel:
 class KernelBase:
     """
     Class for a single kernel.
+
+    Notes
+    -----
+    When creating instances of this class, SPICE is automatically furnished
+    with the kernel.
     """
     def __init__(self, fname):
         self._fname = fname
+        spiceypy.furnsh(self._fname_str)
 
     @property
     def fname(self):
@@ -163,10 +169,6 @@ class Trajectory:
     -----
     When an instance of this class is created, a leapseconds kernel and a
     planets kernel are both automatically loaded.
-
-    See also
-    --------
-    furnish : for loading in local spice kernels.
     """
     def __init__(self, target):
         self._target = Body(target)
