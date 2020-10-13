@@ -47,6 +47,7 @@ def test_6sec_ness():
     check_data_output(df)
 
 
+@pytest.mark.xfail()
 def test_distribution_funcs():
     local_dir = pathlib.Path(helios.helios_dir)
     local_dir = local_dir / 'helios1' / 'dist' / '1974' / '346'
