@@ -198,6 +198,8 @@ def get_kernel(name):
             r = requests.get(url, allow_redirects=True, stream=True)
             if r.status_code != requests.codes.ok:
                 warnings.warn('Failed to download {}'.format(url))
+                continue
+
             with open(local_loc, 'wb') as fd:
                 for chunk in r.iter_content(chunk_size=128):
                     fd.write(chunk)
