@@ -19,6 +19,9 @@ spice_astropy_frame_mapping = {
                     0 * u.deg, 0 * u.deg, sunpy.sun.constants.radius)}),
 }
 
+__all__ = ['furnish', 'Kernel', 'KernelBase', 'SPKKernel',
+           'Body', 'Trajectory']
+
 
 def furnish(kernel):
     """
@@ -35,19 +38,23 @@ def furnish(kernel):
                                     kernels based on spacecraft name.
 
     """
-    if isinstance(kernel, SPKKernel):
+    if isinstance(kernel, KernelBase):
         kernel = [kernel]
     for k in kernel:
         spiceypy.furnsh(k._fname_str)
 
 
-class SPKKernel:
-    """
-    A class for a single .spk kernel.
+class Kernel:
+    def __new__(self, fname):
+        if pathlib.Path(fname).suffix == '.bsp':
+            return SPKKernel(fname)
+        else:
+            return KernelBase(fname)
 
-    See also
-    --------
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/spk.html
+
+class KernelBase:
+    """
+    Class for a single kernel.
     """
     def __init__(self, fname):
         self._fname = fname
@@ -60,6 +67,20 @@ class SPKKernel:
     @property
     def _fname_str(self):
         return str(self.fname)
+
+
+class SPKKernel(KernelBase):
+    """
+    A class for a single .spk kernel.
+
+    See also
+    --------
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/spk.html
+    """
+    def __init__(self, fname):
+        super().__init__(fname)
+        # Run bodies() to validate the spice kernel
+        self.bodies
 
     @property
     def bodies(self):
