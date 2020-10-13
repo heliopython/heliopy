@@ -195,14 +195,14 @@ def get_kernel(name):
         local_loc = spice_dir / fname
         if not local_loc.exists:
             print('Downloading {}'.format(url))
-            r = requests.get(url, allow_redirects=True, stream=True)
+            r = requests.get(url, allow_redirects=True)
             if r.status_code != requests.codes.ok:
                 warnings.warn('Failed to download {}'.format(url))
                 continue
 
             with open(local_loc, 'wb') as fd:
-                for chunk in r.iter_content(chunk_size=128):
-                    fd.write(chunk)
+                fd.write(r.content)
+
         kernels.append(spice.SPKKernel(local_loc))
     return kernels
 
