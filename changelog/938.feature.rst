@@ -1,0 +1,2 @@
+All SPICE kernels are now automatically furnished when they are loaded into
+a `~heliopy.spice` object.

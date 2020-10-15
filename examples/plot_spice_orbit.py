@@ -16,11 +16,10 @@ import astropy.units as u
 import numpy as np
 
 ###############################################################################
-# Load the solar orbiter spice kernel. HelioPy will automatically fetch the
-# latest kernel
-kernels = spicedata.get_kernel('psp')
-kernels += spicedata.get_kernel('psp_pred')
-spice.furnish(kernels)
+# Load the solar orbiter spice kernel. heliopy will automatically fetch and
+# load the latest kernel
+spicedata.get_kernel('psp')
+spicedata.get_kernel('psp_pred')
 psp = spice.Trajectory('SPP')
 
 ###############################################################################
