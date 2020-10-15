@@ -8,17 +8,17 @@ and HelioPy should be using a newer kernel please let us know at
 https://github.com/heliopython/heliopy/issues.
 """
 import os
-import pathlib
 import warnings
 
+from urllib.request import urlretrieve
+import urllib.error
 import requests
 
 from heliopy import config
 import heliopy.data.util as util
 
 data_dir = config['download_dir']
-spice_dir = pathlib.Path(data_dir) / 'spice'
-os.makedirs(spice_dir, exist_ok=True)
+spice_dir = os.path.join(data_dir, 'spice')
 
 
 class _Kernel:
@@ -192,17 +192,15 @@ def get_kernel(name):
     kernels = []
     for url in kernel.urls:
         fname = url[url.rfind("/") + 1:]
-        local_loc = spice_dir / fname
-        if not local_loc.exists():
+        local_loc = os.path.join(spice_dir, fname)
+        if not os.path.exists(spice_dir):
+            os.makedirs(spice_dir, exist_ok=True)
+        if not os.path.exists(local_loc):
             print('Downloading {}'.format(url))
-            r = requests.get(url, allow_redirects=True)
-            if r.status_code != requests.codes.ok:
+            try:
+                urlretrieve(url, local_loc, reporthook=util._reporthook)
+            except urllib.error.HTTPError as err:
                 warnings.warn('Failed to download {}'.format(url))
-                continue
-
-            with open(local_loc, 'wb') as fd:
-                fd.write(r.content)
-
         kernels.append(spice.Kernel(local_loc))
     return kernels
 
