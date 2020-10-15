@@ -5,7 +5,6 @@ from heliopy import spice
 from heliopy.data import spice as spicedata
 
 
-@pytest.mark.data
 @pytest.mark.parametrize('kernel', spicedata.kernel_dict)
 def test_kernel_download(kernel):
     if 'TRAVIS' in os.environ:
