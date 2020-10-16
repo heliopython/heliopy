@@ -870,7 +870,8 @@ def _get_cdf_vars(cdf):
 
 def _fillval_nan(data, fillval):
     try:
-        data[data == fillval] = np.nan
+#        data[data == fillval] = np.nan
+        data[np.isclose(data, fillval + np.zeros_like(data))] = np.nan
     except ValueError:
         # This happens if we try and assign a NaN to an int type
         pass
