@@ -75,8 +75,7 @@ coho1hr_merged.__doc__ = _docstring(
 
 
 def mag_l1_rtn(spacecraft, starttime, endtime):
-    units = OrderedDict([('Q_FLAG', u.dimensionless_unscaled),
-                        ('MAGFLAGUC', u.dimensionless_unscaled)])
+    units = OrderedDict([('MAGFLAGUC', u.dimensionless_unscaled)])
     return _stereo(starttime, endtime, spacecraft, 'L1_MAG_RTN', units=units)
 
 
@@ -85,9 +84,8 @@ mag_l1_rtn.__doc__ = _docstring('STA_L1_MAG_RTN',
 
 
 def magplasma_l2(spacecraft, starttime, endtime):
-    units = OrderedDict([('Q_FLAG', u.dimensionless_unscaled)])
     return _stereo(starttime, endtime, spacecraft, 'L2_MAGPLASMA_1M',
-                   units=units, intervals='monthly')
+                   intervals='monthly')
 
 
 magplasma_l2.__doc__ = _docstring(
@@ -96,8 +94,7 @@ magplasma_l2.__doc__ = _docstring(
 
 
 def let_l1(spacecraft, starttime, endtime):
-    units = OrderedDict([('Q_FLAG', u.dimensionless_unscaled)])
-    return _stereo(starttime, endtime, spacecraft, identifier, units=units)
+    return _stereo(starttime, endtime, spacecraft, 'L1_LET')
 
 
 let_l1.__doc__ = _docstring('STA_L1_LET',
@@ -109,8 +106,7 @@ let_l1.__doc__ = _docstring('STA_L1_LET',
 
 
 def sept_l1(spacecraft, starttime, endtime):
-    units = OrderedDict([('Q_FLAG', u.dimensionless_unscaled),
-                         ('Heater_NS', u.deg_C),
+    units = OrderedDict([('Heater_NS', u.deg_C),
                          ('Heater_E', u.deg_C)])
     sept = _stereo(starttime, endtime, spacecraft, 'L1_SEPT', units=units)
     data = sept.to_dataframe()
@@ -125,8 +121,7 @@ sept_l1.__doc__ = _docstring('STA_L1_SEPT',
 
 
 def sit_l1(spacecraft, starttime, endtime):
-    units = OrderedDict([('Q_FLAG', u.dimensionless_unscaled)])
-    return _stereo(starttime, endtime, spacecraft, 'L1_SIT', units=units)
+    return _stereo(starttime, endtime, spacecraft, 'L1_SIT')
 
 
 sit_l1.__doc__ = _docstring('STA_L1_SIT',

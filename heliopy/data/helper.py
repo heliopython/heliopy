@@ -168,7 +168,7 @@ def cdf_dict(unit_string):
                         ('Ticks', u.dimensionless_unscaled),
                         ('cnts',  u.dimensionless_unscaled),
                         ('#',  u.dimensionless_unscaled),
-
+                         ('Q_FLAG', u.dimensionless_unscaled),
                         ('microW m^-2', u.mW * u.m**-2),
 
                         ('years', u.yr),
