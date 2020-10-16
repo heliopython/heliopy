@@ -113,11 +113,11 @@ def sept_l1(spacecraft, starttime, endtime):
                          ('Heater_NS', u.deg_C),
                          ('Heater_E', u.deg_C)])
     sept = _stereo(starttime, endtime, spacecraft, 'L1_SEPT', units=units)
-    df = sept.to_dataframe()
-    sept.data['Epoch_NS'] = util.epoch_to_datetime(df['Epoch_NS'].values)
-    sept.data['Epoch_E'] = util.epoch_to_datetime(df['Epoch_E'].values)
+    data = sept.to_dataframe()
+    data['Epoch_NS'] = util.epoch_to_datetime(data['Epoch_NS'].values)
+    data['Epoch_E'] = util.epoch_to_datetime(data['Epoch_E'].values)
 
-    return sept
+    return util.units_attach(data, sept.units)
 
 
 sept_l1.__doc__ = _docstring('STA_L1_SEPT',
