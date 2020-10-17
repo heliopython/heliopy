@@ -8,6 +8,7 @@ Features
   a `~heliopy.spice` object. (`#938 <https://github.com/heliopython/heliopy/pull/938>`__)
 - The classes in `heliopy.data.spice` have been updated, to allow for different
   types of SPICE files:
+  
   - All kernels are now derived from `KernelBase`.
   - SPK kernels have their own class, `SPKKernel`.
   - Calling `Kernel` will automatically detect and create the appropriate kernel
