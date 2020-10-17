@@ -1,2 +1,0 @@
-When a `SPKKernel` is created, the SPICE kernel is now validated and an error
-raised if the given file is not a valid SPK kernel.

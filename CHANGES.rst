@@ -1,3 +1,28 @@
+Heliopy 0.15.0 (2020-10-17)
+===========================
+
+Features
+--------
+
+- All SPICE kernels are now automatically furnished when they are loaded into
+  a `~heliopy.spice` object. (`#938 <https://github.com/heliopython/heliopy/pull/938>`__)
+- The classes in `heliopy.data.spice` have been updated, to allow for different
+  types of SPICE files:
+  
+  - All kernels are now derived from `KernelBase`.
+  - SPK kernels have their own class, `SPKKernel`.
+  - Calling `Kernel` will automatically detect and create the appropriate kernel
+    class. (`#941 <https://github.com/heliopython/heliopy/pull/941>`__)
+
+
+Bug Fixes
+---------
+
+- When a `SPKKernel` is created, the SPICE kernel is now validated and an error
+  raised if the given file is not a valid SPK kernel. (`#941 <https://github.com/heliopython/heliopy/pull/941>`__)
+- Updated link to the Solar Orbiter SPICE kernel (`#942 <https://github.com/heliopython/heliopy/pull/942>`__)
+
+
 Heliopy 0.14.0 (2020-09-30)
 ===========================
 
