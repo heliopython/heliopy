@@ -5,7 +5,6 @@ import datetime
 import os
 import pathlib
 import pandas as pd
-import calendar
 import astropy.units as u
 
 from collections import OrderedDict
@@ -184,9 +183,9 @@ class _maghiresDownloader(util.Downloader):
             f.close()
             os.remove(f.name)
             raise util.NoDataError()
-        df = pd.read_csv(f, names=['Time', 'Bx', 'By', 'Bz'],
-                         delim_whitespace=True,
-                         parse_dates=[0], index_col=0)
+        data = pd.read_csv(f, names=['Time', 'Bx', 'By', 'Bz'],
+                           delim_whitespace=True,
+                           parse_dates=[0], index_col=0)
         f.close()
         return data
 
