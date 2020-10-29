@@ -139,6 +139,58 @@ def mag_1min(starttime, endtime, coords):
     return dl.load(starttime, endtime)
 
 
+class _maghiresDownloader(util.Downloader):
+    def __init__(self, coords):
+        valid_coords = ['KRTP', 'KSM', 'KSO', 'RTN']
+        if coords not in valid_coords:
+            raise ValueError('coords must be one of {}'.format(valid_coords))
+        self.coords = coords
+
+        self.units = OrderedDict([('Bx', u.nT), ('By', u.nT), ('Bz', u.nT),
+                                  ('coords', u.dimensionless_unscaled)])
+
+    def intervals(self, starttime, endtime):
+        return self.intervals_daily(starttime, endtime)
+
+    def coords(self, interval):
+        if interval.start < datetime.date(2004, 5, 14):
+            return 'RTN'
+        else:
+            return 'KRTP'
+
+    def fname(self, interval):
+        doy = interval.start.strftime('%j')
+        year = interval.start.strftime('%y')
+        coords = self.coords(interval)
+        return f'{year}{doy}_FGM_{coords}.TAB'
+
+    def local_dir(self, interval):
+        return pathlib.Path('cassini') / 'mag' / 'hires'
+
+    def download(self, interval):
+        local_dir = self.local_path(interval).parent
+        local_dir.mkdir(parents=True, exist_ok=True)
+        year = interval.start.strftime('%Y')
+        base_url = ('http://pds-ppi.igpp.ucla.edu/ditdos/download?id='
+                    'pds://PPI/CO-E_SW_J_S-MAG-3-RDR-FULL-RES-V2.0/DATA')
+        url = '{}/{}'.format(base_url, year)
+        util._download_remote(url,
+                              self.fname(interval),
+                              local_dir)
+
+    def load_local_file(self, interval):
+        f = open(self.local_path(interval))
+        if 'error_message' in f.readline():
+            f.close()
+            os.remove(f.name)
+            raise util.NoDataError()
+        df = pd.read_csv(f, names=['Time', 'Bx', 'By', 'Bz'],
+                         delim_whitespace=True,
+                         parse_dates=[0], index_col=0)
+        f.close()
+        return data
+
+
 def mag_hires(starttime, endtime, try_download=True):
     """
     Import high resolution magnetic field from Cassini.
@@ -165,47 +217,5 @@ def mag_hires(starttime, endtime, try_download=True):
     data : :class:`~sunpy.timeseries.GenericTimeSeries`
         Requested data
     """
-    remote_base_url = ('http://pds-ppi.igpp.ucla.edu/ditdos/download?id='
-                       'pds://PPI/CO-E_SW_J_S-MAG-3-RDR-FULL-RES-V2.0/DATA')
-    dirs = []
-    fnames = []
-    extension = '.TAB'
-    units = OrderedDict([('Bx', u.nT), ('By', u.nT), ('Bz', u.nT),
-                         ('coords', u.dimensionless_unscaled)])
-    local_base_dir = cassini_dir / 'mag' / 'hires'
-
-    for [day, _, _] in util._daysplitinterval(starttime, endtime):
-        year = day.year
-        if calendar.isleap(year):
-            monthstr = leapmonth2str[day.month]
-        else:
-            monthstr = month2str[day.month]
-
-        if day < datetime.date(2004, 5, 14):
-            coords = 'RTN'
-        else:
-            coords = 'KRTP'
-        doy = day.strftime('%j')
-        dirs.append(pathlib.Path(str(year)) / monthstr)
-        fnames.append(str(year)[2:] + doy + '_FGM_{}'.format(coords))
-
-    def download_func(remote_base_url, local_base_dir,
-                      directory, fname, remote_fname, extension):
-        url = remote_base_url + '/' + str(directory)
-        util._download_remote(url, fname + extension,
-                              local_base_dir / directory)
-
-    def processing_func(f):
-        if 'error_message' in f.readline():
-            f.close()
-            os.remove(f.name)
-            raise util.NoDataError()
-        df = pd.read_csv(f, names=['Time', 'Bx', 'By', 'Bz'],
-                         delim_whitespace=True,
-                         parse_dates=[0], index_col=0)
-        return df
-
-    return util.process(dirs, fnames, extension, local_base_dir,
-                        remote_base_url, download_func, processing_func,
-                        starttime, endtime, units=units,
-                        try_download=try_download)
+    dl = _maghiresDownloader(coords)
+    return dl.load(starttime, endtime)
