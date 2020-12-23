@@ -4,9 +4,8 @@ deps-run: &deps-install
   command: |
     sudo apt update
     sudo apt install -y graphviz
-    python3 -m venv venv
-    . venv/bin/activate
-    pip install --progress-bar off .[docs,data,spice]
+    sudo pip install pipenv
+    pipenv install --progress-bar off .[docs,data,spice]
 
 doc-test: &doc-test
   name: Run doctets
