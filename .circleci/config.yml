@@ -9,16 +9,16 @@ deps-run: &deps-install
 
 doc-test: &doc-test
   name: Run doctets
-  command: make doctest
+  command: pipenv run make doctest
   working_directory: doc
 
 doc-changeog: &doc-changelog
   name: Merge changelog
-  command: python -m towncrier --yes
+  command: pipenv run towncrier --yes
 
 doc-run: &doc-build
   name: Build documentation
-  command: make html SPHINXOPTS='-W -q'
+  command: pipenv run make html SPHINXOPTS='-W -q'
   working_directory: doc
 
 version: 2
