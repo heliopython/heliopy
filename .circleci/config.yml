@@ -5,7 +5,7 @@ deps-run: &deps-install
     sudo apt update
     sudo apt install -y graphviz
     sudo pip install pipenv
-    pipenv install --progress-bar off .[docs,data,spice]
+    pipenv install .[docs,data,spice]
 
 doc-test: &doc-test
   name: Run doctets
