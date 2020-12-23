@@ -4,22 +4,21 @@ deps-run: &deps-install
   command: |
     sudo apt update
     sudo apt install -y graphviz
-    python3 -m venv venv
-    . venv/bin/activate
-    pip install --progress-bar off .[docs,data,spice]
+    sudo pip install pipenv
+    pipenv install .[docs,data,spice]
 
 doc-test: &doc-test
   name: Run doctets
-  command: make doctest
+  command: pipenv run make doctest
   working_directory: doc
 
 doc-changeog: &doc-changelog
   name: Merge changelog
-  command: python -m towncrier --yes
+  command: pipenv run towncrier --yes
 
 doc-run: &doc-build
   name: Build documentation
-  command: make html SPHINXOPTS='-W -q'
+  command: pipenv run make html SPHINXOPTS='-W -q'
   working_directory: doc
 
 version: 2
