@@ -17,8 +17,11 @@ jobs:
       matrix:
         python-version: ['3.7', '3.8', '3.9']
         include:
-          python-version: '3.8'
-          remote-data: '-m data'
+          - python-version: '3.8'
+            remote-data: '-m data'
+          - python-version: '3.8'
+            runs-on: windows-latest
+
 
     steps:
     - uses: actions/checkout@v2
