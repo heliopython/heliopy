@@ -100,7 +100,9 @@ class _SoloDownloader(util.Downloader):
     def load_local_file(self, interval):
         local_path = self.local_path(interval)
         cdf = util._load_cdf(local_path)
-        return util.cdf2df(cdf, index_key='EPOCH')
+        zvars = cdf.cdf_info()['zVariables']
+        index_key = 'EPOCH' if 'EPOCH' in zvars else 'Epoch'
+        return util.cdf2df(cdf, index_key=index_key)
 
     def local_dir(self, interval):
         # TODO: work out how to be more granular than just solar orbiter
