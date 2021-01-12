@@ -12,15 +12,17 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         python-version: ['3.7', '3.8', '3.9']
+        remote-data: ''
+        os: ubuntu-latest
         include:
           - python-version: '3.8'
             remote-data: '-m data'
           - python-version: '3.8'
-            runs-on: windows-latest
+            os: windows-latest
 
 
     steps:
