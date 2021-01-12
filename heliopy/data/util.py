@@ -824,7 +824,7 @@ def cdf2df(cdf, index_key, dtimeindex=True, badvalues=None,
         df_key = keys[cdf_key]
         # Get fill value for this key
         try:
-            fillval = cdf.varattsget(cdf_key)['FILLVAL']
+            fillval = float(cdf.varattsget(cdf_key)['FILLVAL'])
         except KeyError:
             fillval = np.nan
 
