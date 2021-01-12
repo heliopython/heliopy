@@ -15,11 +15,20 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: ubuntu-20.04
-        python-version: ['3.7', '3.8', '3.9']
 
         include:
-          - os: windows-2019
+          - name: linux py37
+            os: ubuntu-20.04
+            python-version: '3.7'
+          - name: linux py38
+            os: ubuntu-20.04
+            python-version: '3.8'
+          - name: linux py39
+            os: ubuntu-20.04
+            python-version: '3.9'
+
+          - name: windows py38
+            os: windows-2019
             python-version: '3.8'
 
 
