@@ -27,11 +27,14 @@ jobs:
             os: ubuntu-20.04
             python-version: '3.9'
 
+          - name: remote data
+            os: ubuntu-20.04
+            python-version: '3.9'
+            remote-data: '-m data'
+
           - name: windows py38
             os: windows-2019
             python-version: '3.8'
-
-
 
     steps:
     - uses: actions/checkout@v2
@@ -45,7 +48,7 @@ jobs:
         python -m pip install .[test,data,spice]
     - name: Run tests
       run: |
-        pytest heliopy/ --cov=heliopy/ -v --durations=5 --pep8
+        pytest heliopy/ --cov=heliopy/ -v --durations=5 --pep8 ${{ matrix.remote-data }}
     - name: Upload coverage
       uses: codecov/codecov-action@v1
       with:
