@@ -20,10 +20,12 @@ def test_solo_ll(descriptor):
     check_data_output(df)
 
 
-def test_solo_science():
-    starttime = datetime(2020, 6, 2)
-    endtime = datetime(2020, 6, 2, 12)
-    df = solo.download(starttime, endtime, 'MAG-RTN-NORMAL', 'L2')
+@pytest.mark.parametrize('descriptor', (['MAG-RTN-NORMAL',
+                                         'SWA-PAS-GRND-MOM']))
+def test_solo_science(descriptor):
+    starttime = datetime(2020, 9, 1)
+    endtime = datetime(2020, 9, 1, 12)
+    df = solo.download(starttime, endtime, descriptor, 'L2')
     check_data_output(df)
 
 

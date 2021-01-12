@@ -88,7 +88,10 @@ class Downloader(abc.ABC):
                 except NoDataError:
                     continue
 
-            data.append(self.load_local_file(interval))
+            try:
+                data.append(self.load_local_file(interval))
+            except CDFEmptyError:
+                continue
             local_path_successful = local_path
             if use_hdf:
                 data[-1].to_hdf(hdf_path, 'data', mode='w', format='f')
@@ -755,6 +758,10 @@ def cdf2df(cdf, index_key, dtimeindex=True, badvalues=None,
             include.append(index_key)
 
     # Extract index values
+    index_info = cdf.varinq(index_key)
+    if index_info['Last_Rec'] == -1:
+        raise CDFEmptyError('No records present in CDF file')
+
     index = cdf.varget(index_key)
     try:
         # If there are multiple indexes, take the first one
@@ -817,7 +824,7 @@ def cdf2df(cdf, index_key, dtimeindex=True, badvalues=None,
         df_key = keys[cdf_key]
         # Get fill value for this key
         try:
-            fillval = cdf.varattsget(cdf_key)['FILLVAL']
+            fillval = float(cdf.varattsget(cdf_key)['FILLVAL'])
         except KeyError:
             fillval = np.nan
 
@@ -866,6 +873,10 @@ def _fillval_nan(data, fillval):
 
 
 class RemoteFileNotPresentError(RuntimeError):
+    pass
+
+
+class CDFEmptyError(RuntimeError):
     pass
 
 
