@@ -21,8 +21,6 @@ jobs:
 
         include:
           - python-version: '3.8'
-            remote-data: '-m data'
-          - python-version: '3.8'
             os: windows-latest
 
 
@@ -38,7 +36,7 @@ jobs:
         python -m pip install .[test,data,spice]
     - name: Run tests
       run: |
-        pytest heliopy/ --cov=heliopy/ -v --durations=5 --pep8 ${{ matrix.remote-data }}
+        pytest heliopy/ --cov=heliopy/ -v --durations=5 --pep8
     - name: Upload coverage
       uses: codecov/codecov-action@v1
       with:
