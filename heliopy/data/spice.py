@@ -129,9 +129,17 @@ spacecraft_kernels = [_Kernel('Cassini', 'cassini',
                               ['https://naif.jpl.nasa.gov/pub/naif/ULYSSES/kernels/spk/ulysses_1990_2009_2050.bsp',
                                'https://naif.jpl.nasa.gov/pub/naif/ULYSSES/kernels/spk/ulysses_1990_2009_2050.cmt']),
                       _Kernel('Parker Solar Probe', 'psp',
-                              ['https://sppgway.jhuapl.edu/MOC/reconstructed_ephemeris/2018/spp_recon_20180812_20181008_v001.bsp',
-                               'https://sppgway.jhuapl.edu/MOC/reconstructed_ephemeris/2018/spp_recon_20181008_20190120_v001.bsp',
+                              ['https://sppgway.jhuapl.edu/MOC/reconstructed_ephemeris/2020/spp_recon_20201016_20210101_v001.bsp',
+                               'https://sppgway.jhuapl.edu/MOC/reconstructed_ephemeris/2020/spp_recon_20200802_20201016_v001.bsp',
+                               'https://sppgway.jhuapl.edu/MOC/reconstructed_ephemeris/2020/spp_recon_20200705_20200802_v001.bsp',
+                               'https://sppgway.jhuapl.edu/MOC/reconstructed_ephemeris/2020/spp_recon_20200505_20200705_v001.bsp',
+                               'https://sppgway.jhuapl.edu/MOC/reconstructed_ephemeris/2020/spp_recon_20200301_20200505_v001.bsp',
+                               'https://sppgway.jhuapl.edu/MOC/reconstructed_ephemeris/2020/spp_recon_20200101_20200301_v001.bsp',
+                               'https://sppgway.jhuapl.edu/MOC/reconstructed_ephemeris/2019/spp_recon_20190914_20200101_v001.bsp',
+                               'https://sppgway.jhuapl.edu/MOC/reconstructed_ephemeris/2019/spp_recon_20190416_20190914_v001.bsp',
                                'https://sppgway.jhuapl.edu/MOC/reconstructed_ephemeris/2019/spp_recon_20190120_20190416_v001.bsp',
+                               'https://sppgway.jhuapl.edu/MOC/reconstructed_ephemeris/2018/spp_recon_20181008_20190120_v001.bsp',
+                               'https://sppgway.jhuapl.edu/MOC/reconstructed_ephemeris/2018/spp_recon_20180812_20181008_v001.bsp',
                                ])]
 
 
@@ -140,7 +148,7 @@ predicted_kernels = [
             'ftp://spiftp.esac.esa.int/data/SPICE/SOLAR-ORBITER/kernels/spk/solo_ANC_soc-orbit_20200210-20301120_L016_V2_00025_V01.bsp'
             ),
     _Kernel('Parker Solar Probe', 'psp_pred',
-            ['https://sppgway.jhuapl.edu/MOC/ephemeris//spp_nom_20180812_20250831_v035_RO2.bsp']
+            ['https://sppgway.jhuapl.edu/MOC/ephemerides//spp_nom_20180812_20250831_v037_RO4.bsp']
             ),
     _Kernel('STEREO-A', 'stereo_a_pred',
             _stereo_kernels('ahead', 'epm'),
