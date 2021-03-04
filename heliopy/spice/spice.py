@@ -201,7 +201,7 @@ class Trajectory:
         times = time.Time(times)
         # Spice needs a funny set of times
         fmt = '%Y %b %d, %H:%M:%S'
-        spice_times = [spiceypy.str2et(time.strftime(fmt)) for time in times]
+        spice_times = spiceypy.datetime2et(times.datetime)
         self._abcorr = str(abcorr)
 
         # Do the calculation
