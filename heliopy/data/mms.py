@@ -101,7 +101,7 @@ def available_files(probe, instrument, starttime, endtime, data_rate='',
         files = r.text.split(',')
         files = filter_time(files, starttime, endtime)
     else:
-        files = None
+        files = []
     return files
 
 
