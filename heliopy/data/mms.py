@@ -97,8 +97,11 @@ def available_files(probe, instrument, starttime, endtime, data_rate='',
     query['end_date'] = end_date
 
     r = requests.get(query_url, params=query)
-    files = r.text.split(',')
-    files = filter_time(files, starttime, endtime)
+    if r.text:
+        files = r.text.split(',')
+        files = filter_time(files, starttime, endtime)
+    else:
+        files = None
     return files
 
 
