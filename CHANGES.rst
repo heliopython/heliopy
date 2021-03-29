@@ -1,3 +1,25 @@
+HelioPy 0.15.3 (2021-03-29)
+===========================
+
+Features
+--------
+
+- Level 3 data products can now be downloaded using `heliopy.data.solo.download`. (`#966 <https://github.com/heliopython/heliopy/pull/966>`__)
+
+
+Bug Fixes
+---------
+
+- Fixed access to some Solar Orbiter SWA data products in `heliopy.data.solo`. (`#957 <https://github.com/heliopython/heliopy/pull/957>`__)
+
+
+Trivial/Internal Changes
+------------------------
+
+- Updated links to PSP SPICE kernels in `heliopy.data.spice`. (`#961 <https://github.com/heliopython/heliopy/pull/961>`__)
+- Improved performance of `heliopy.spice.Trajectory.generate_positions`. (`#963 <https://github.com/heliopython/heliopy/pull/963>`__)
+
+
 HelioPy 0.15.2 (2020-12-23)
 ===========================
 Bug fixes
