@@ -20,7 +20,7 @@ class _SoloDownloader(util.Downloader):
         Parameters
         ----------
         """
-        helper._check_in_list(['LL02', 'L0', 'L1', 'L2'], level=level)
+        helper._check_in_list(['LL02', 'L0', 'L1', 'L2', 'L3'], level=level)
         self.level = level
         if self.level[:2] == 'LL':
             self.product_type = 'LOW_LATENCY'
