@@ -8,11 +8,6 @@ Data import (:mod:`heliopy.data`)
 Methods for automatically importing data to python. Each spacecraft has its
 own sub-module:
 
-.. toctree::
-   :maxdepth: 1
-
-   mms
-
 Each mission does not have a complete set of data import methods, but the goal
 of HelioPy is to be as complete as possible. If you want to import a data set
 that is not yet supported please open an issue on the bug tracker at
