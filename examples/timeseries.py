@@ -8,12 +8,13 @@ For more information about TimeSeries, http://docs.sunpy.org/en/stable/guide/dat
 For more information about AstroPy Units, http://docs.astropy.org/en/stable/units/
 """
 
-import numpy as np
 import datetime
+from collections import OrderedDict
+
+import astropy.units as u
+import numpy as np
 import pandas as pd
 import sunpy.timeseries as ts
-from collections import OrderedDict
-import astropy.units as u
 
 # The index of the SunPy Timeseries is always datetime
 base = datetime.datetime.today()

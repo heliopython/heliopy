@@ -19,8 +19,8 @@ supported.
 .. _spiceypy: https://spiceypy.readthedocs.io/en/master/
 """
 import heliopy.data.spice as dataspice
-from .spice import *
 
+from .spice import *
 
 for kernel in dataspice.generic_kernels:
     k = dataspice.get_kernel(kernel.short_name)

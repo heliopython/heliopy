@@ -1,21 +1,20 @@
 """
 Methods for importing Helios data.
 """
-from datetime import date, time, datetime, timedelta
 import os
 import pathlib
 import urllib.error
-from urllib.error import URLError
-from collections import OrderedDict
 import warnings
+from collections import OrderedDict
+from datetime import datetime, time, timedelta
+from urllib.error import URLError
 
 import astropy.constants as constants
 import astropy.units as u
 import numpy as np
 import pandas as pd
-
-from bs4 import BeautifulSoup
 import requests
+from bs4 import BeautifulSoup
 
 from heliopy import config
 from heliopy.data import util

@@ -11,8 +11,8 @@ Note that this data is not suitable for publication.
 from datetime import datetime
 
 import matplotlib.pyplot as plt
-from matplotlib import dates as mdates
 import numpy as np
+from matplotlib import dates as mdates
 
 from heliopy.data.solo import download
 

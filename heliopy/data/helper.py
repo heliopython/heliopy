@@ -1,9 +1,9 @@
 """Helper methods for data import."""
 import os
-
-import numpy as np
-import astropy.units as u
 from collections import OrderedDict
+
+import astropy.units as u
+import numpy as np
 
 from heliopy import config
 

@@ -1,8 +1,8 @@
 from datetime import datetime
+
 import pytest
 
 from .util import check_data_output
-
 
 mms = pytest.importorskip('heliopy.data.mms')
 pytestmark = pytest.mark.data

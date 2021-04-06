@@ -6,8 +6,9 @@ Importing and plotting sunspot number data.
 """
 
 
-import heliopy.data.sunspot as sunspot
 import matplotlib.pyplot as plt
+
+import heliopy.data.sunspot as sunspot
 
 ###############################################################################
 fig, ax = plt.subplots()

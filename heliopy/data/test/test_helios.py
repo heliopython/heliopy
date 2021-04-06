@@ -1,7 +1,7 @@
-from datetime import datetime
 import pathlib
 import shutil
 import urllib
+from datetime import datetime
 
 import pytest
 

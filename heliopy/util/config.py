@@ -3,8 +3,9 @@ heliopy configuration utility
 """
 import configparser
 import os
-import heliopy
 from pathlib import Path
+
+import heliopy
 
 
 def get_config_file():

@@ -10,8 +10,8 @@ Downloading and plotting MAG data from Solar Orbiter.
 from datetime import datetime
 
 import matplotlib.pyplot as plt
-from matplotlib import dates as mdates
 import numpy as np
+from matplotlib import dates as mdates
 
 from heliopy.data.solo import download
 

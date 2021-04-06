@@ -8,14 +8,14 @@ and HelioPy should be using a newer kernel please let us know at
 https://github.com/heliopython/heliopy/issues.
 """
 import os
-import warnings
-
-from urllib.request import urlretrieve
 import urllib.error
+import warnings
+from urllib.request import urlretrieve
+
 import requests
 
-from heliopy import config
 import heliopy.data.util as util
+from heliopy import config
 
 data_dir = config['download_dir']
 spice_dir = os.path.join(data_dir, 'spice')

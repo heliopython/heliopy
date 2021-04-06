@@ -6,12 +6,13 @@ is at https://lasp.colorado.edu/mms/sdc/public/.
 """
 import os
 import pathlib
-import requests
-from tqdm.auto import tqdm
 from datetime import datetime, timedelta
 
-from heliopy.data import util
+import requests
+from tqdm.auto import tqdm
+
 from heliopy import config
+from heliopy.data import util
 
 data_dir = pathlib.Path(config['download_dir'])
 mms_dir = data_dir / 'mms'

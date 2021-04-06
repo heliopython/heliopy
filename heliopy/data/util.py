@@ -4,30 +4,31 @@ Utility functions for data downloading.
 **Note**: these methods are liable to change at any time.
 """
 import abc
+import collections as coll
 import datetime as dt
-import dateutil.relativedelta as reldelt
 import io
-import os
 import logging
+import os
 import pathlib as path
-import requests
 import re
 import shutil
 import sys
 import urllib.error as urlerror
 import urllib.request as urlreq
-import astropy.units as u
-import sunpy.time
-import sunpy.timeseries as ts
 import warnings
-import collections as coll
-import cdflib
 
+import astropy.units as u
+import cdflib
+import dateutil.relativedelta as reldelt
 import numpy as np
 import pandas as pd
-import heliopy.data.helper as helper
+import requests
+import sunpy.time
+import sunpy.timeseries as ts
 
+import heliopy.data.helper as helper
 from heliopy import config
+
 use_hdf = config['use_hdf']
 data_dir = path.Path(config['download_dir'])
 logger = logging.getLogger(__name__)
@@ -149,7 +150,6 @@ class Downloader(abc.ABC):
         fnames : list of sunpy.time.TimeRange
             List of intervals
         """
-        pass
 
     def fname(self, interval):
         """
@@ -167,7 +167,6 @@ class Downloader(abc.ABC):
         fname : str
             Filename
         """
-        pass
 
     @abc.abstractmethod
     def local_dir(self, interval):
@@ -184,7 +183,6 @@ class Downloader(abc.ABC):
         dir : pathlib.Path
             Local directory
         """
-        pass
 
     @abc.abstractmethod
     def download(self, interval):
@@ -200,7 +198,6 @@ class Downloader(abc.ABC):
         dl_path : pathlib.Path
             Path to the downloaded file.
         """
-        pass
 
     @abc.abstractmethod
     def load_local_file(self, interval):
@@ -215,7 +212,6 @@ class Downloader(abc.ABC):
         -------
         data : pandas.DataFrame
         """
-        pass
 
     @staticmethod
     def intervals_yearly(starttime, endtime):

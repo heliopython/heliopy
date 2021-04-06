@@ -19,10 +19,12 @@
 """
 import os
 import sys
-import sphinx_bootstrap_theme
 import unittest.mock as mock
+
 import matplotlib
+
 import heliopy
+
 matplotlib.use('agg')
 sys.path.insert(0, os.path.abspath('../../'))
 

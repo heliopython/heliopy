@@ -1,10 +1,9 @@
 """
 Methods for importing data from the Ulysses spacecraft.
 """
-from collections import OrderedDict
-from datetime import datetime, timedelta
 import pathlib
 import urllib.error
+from collections import OrderedDict
 
 import astropy.units as u
 import pandas as pd

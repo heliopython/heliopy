@@ -1,5 +1,6 @@
-from heliopy.data import util
 from datetime import datetime
+
+from heliopy.data import util
 
 
 def test_monthly_intervals():

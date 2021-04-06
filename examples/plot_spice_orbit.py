@@ -9,11 +9,13 @@ its orbit for the first year.
 """
 
 
-import heliopy.data.spice as spicedata
-import heliopy.spice as spice
 from datetime import datetime, timedelta
+
 import astropy.units as u
 import numpy as np
+
+import heliopy.data.spice as spicedata
+import heliopy.spice as spice
 
 ###############################################################################
 # Load the solar orbiter spice kernel. heliopy will automatically fetch and
@@ -39,8 +41,8 @@ psp.change_units(u.au)
 ###############################################################################
 # Plot the orbit. The orbit is plotted in 3D
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
 from astropy.visualization import quantity_support
+
 quantity_support()
 
 # Generate a set of timestamps to color the orbits by
