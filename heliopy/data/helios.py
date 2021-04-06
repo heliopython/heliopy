@@ -19,7 +19,6 @@ import requests
 
 from heliopy import config
 from heliopy.data import util
-from heliopy.data import cdasrest
 
 data_dir = config['download_dir']
 use_hdf = config['use_hdf']
@@ -1090,27 +1089,3 @@ def mag_ness(probe, starttime, endtime):
     """
     dl = _NessDownloader(probe)
     return dl.load(starttime, endtime)
-
-
-def _docstring(identifier, extra):
-    return cdasrest._docstring(identifier, 'M', extra)
-
-
-def _helios(starttime, endtime, identifier, units=None,
-            warn_missing_units=True):
-    """
-    Generic method for downloading Helios data from CDAWeb.
-    """
-    dl = cdasrest.CDASDwonloader('helios', identifier, 'helios', units=units,
-                                 warn_missing_units=warn_missing_units)
-    return dl.load(starttime, endtime)
-
-
-def merged(probe, starttime, endtime):
-    identifier = f'HELIOS{probe}_40SEC_MAG-PLASMA'
-    return _helios(starttime, endtime, identifier,
-                   warn_missing_units=False)
-
-
-merged.__doc__ = _docstring(
-    'HELIOS1_40SEC_MAG-PLASMA', 'merged magnetic field and plasma data.')

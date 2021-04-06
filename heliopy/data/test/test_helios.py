@@ -15,18 +15,6 @@ pytestmark = pytest.mark.data
 probe = '1'
 
 
-def test_merged():
-    starttime = datetime(1976, 1, 10, 0, 0, 0)
-    endtime = datetime(1976, 1, 10, 23, 59, 59)
-    df = helios.merged(probe, starttime, endtime)
-    check_data_output(df)
-
-    starttime = datetime(2000, 1, 1, 0, 0, 0)
-    endtime = datetime(2000, 1, 2, 0, 0, 0)
-    with pytest.raises(RuntimeError):
-        helios.merged(probe, starttime, endtime)
-
-
 def test_corefit():
     starttime = datetime(1976, 1, 10, 0, 0, 0)
     endtime = datetime(1976, 1, 10, 23, 59, 59)
