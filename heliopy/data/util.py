@@ -4,30 +4,31 @@ Utility functions for data downloading.
 **Note**: these methods are liable to change at any time.
 """
 import abc
+import collections as coll
 import datetime as dt
-import dateutil.relativedelta as reldelt
 import io
-import os
 import logging
+import os
 import pathlib as path
-import requests
 import re
 import shutil
 import sys
 import urllib.error as urlerror
 import urllib.request as urlreq
-import astropy.units as u
-import sunpy.time
-import sunpy.timeseries as ts
 import warnings
-import collections as coll
-import cdflib
 
+import astropy.units as u
+import cdflib
+import dateutil.relativedelta as reldelt
 import numpy as np
 import pandas as pd
-import heliopy.data.helper as helper
+import requests
+import sunpy.time
+import sunpy.timeseries as ts
 
+import heliopy.data.helper as helper
 from heliopy import config
+
 use_hdf = config['use_hdf']
 data_dir = path.Path(config['download_dir'])
 logger = logging.getLogger(__name__)

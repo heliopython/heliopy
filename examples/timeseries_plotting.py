@@ -10,12 +10,13 @@ http://docs.sunpy.org/en/stable/guide/data_types/timeseries.html
 For more information on AstroPy Units, see
 http://docs.astropy.org/en/stable/units/
 """
-
 ###############################################################################
 # Import modules
-import heliopy.data.ulysses as ulysses
-import matplotlib.pyplot as plt
 from datetime import datetime
+
+import matplotlib.pyplot as plt
+
+import heliopy.data.ulysses as ulysses
 
 ###############################################################################
 # Set up support for plotting data with units

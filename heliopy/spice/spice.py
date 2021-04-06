@@ -1,16 +1,14 @@
 import pathlib
 
-import numpy as np
-import spiceypy
-from spiceypy.utils import support_types as spiceytypes
+import astropy.coordinates as astrocoords
 import astropy.time as time
 import astropy.units as u
-import astropy.coordinates as astrocoords
-
+import numpy as np
+import spiceypy
 import sunpy
 import sunpy.coordinates as suncoords
 import sunpy.sun.constants
-
+from spiceypy.utils import support_types as spiceytypes
 
 # Mapping from SPICE frame name to (frame, frame kwargs)
 spice_astropy_frame_mapping = {

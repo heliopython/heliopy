@@ -5,12 +5,14 @@ For more info about the sunspot number data, visit
 http://www.sidc.be/silso/datafiles.
 """
 
-import requests
 import datetime
-import pandas
 import os
 
+import pandas
+import requests
+
 from heliopy import config
+
 data_dir = config['download_dir']
 download_dir = os.path.join(data_dir, 'sunspot')
 

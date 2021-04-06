@@ -1,7 +1,9 @@
 from datetime import datetime
+
 import pytest
 
 from heliopy import config
+
 from .util import check_data_output
 
 cluster = pytest.importorskip('heliopy.data.cluster')

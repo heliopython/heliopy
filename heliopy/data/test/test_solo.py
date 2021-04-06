@@ -1,4 +1,5 @@
 from datetime import datetime
+
 import pytest
 
 from heliopy.data import solo

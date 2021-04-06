@@ -1,15 +1,15 @@
 """
 Methods for importing data from Solar Orbiter.
 """
+import pathlib
 import urllib
 import urllib.parse
-import pathlib
 import warnings
 
 import requests
-from heliopy.data import util
-from heliopy.data import helper
 from sunpy import time
+
+from heliopy.data import helper, util
 
 
 class _SoloDownloader(util.Downloader):

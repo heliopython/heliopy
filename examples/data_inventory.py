@@ -8,6 +8,7 @@ much data is stored locally. It can be run using
 '''
 
 from heliopy.data import helper as heliohelper
+
 heliohelper.listdata()
 
 ###############################################################################

@@ -1,17 +1,15 @@
 import datetime
 
-from astropy.time import Time
 import astropy.units as u
-from astropy.utils.exceptions import ErfaWarning
-from astropy.coordinates import Latitude
 import numpy as np
-import sunpy.coordinates.sun
-
 import pytest
+import sunpy.coordinates.sun
+from astropy.coordinates import Latitude
+from astropy.time import Time
+from astropy.utils.exceptions import ErfaWarning
 
-
-import heliopy.spice as spice
 import heliopy.data.spice as spicedata
+import heliopy.spice as spice
 
 
 @pytest.fixture
