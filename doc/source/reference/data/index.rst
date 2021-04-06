@@ -26,7 +26,6 @@ data:
    :maxdepth: 1
 
    spice
-   sunspot
 
 a module with helper functions that apply generally to all data is available:
 
