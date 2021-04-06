@@ -11,20 +11,8 @@ own sub-module:
 .. toctree::
    :maxdepth: 1
 
-   ace
-   artemis
-   cassini
-   cluster
-   dscovr
    helios
-   imp
-   messenger
    mms
-   omni
-   psp
-   stereo
-   ulysses
-   wind
 
 Each mission does not have a complete set of data import methods, but the goal
 of HelioPy is to be as complete as possible. If you want to import a data set
@@ -53,7 +41,6 @@ cdas and util modules:
 .. toctree::
    :maxdepth: 1
 
-   cdas
    util
 
 

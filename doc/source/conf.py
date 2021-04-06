@@ -60,10 +60,10 @@ extensions = [
 intersphinx_mapping = {
     'matplotlib': ('https://matplotlib.org', None),
     'python': ('https://docs.python.org/3', None),
-    'numpy': ('https://docs.scipy.org/doc/numpy', None),
-    'scipy': ('https://docs.scipy.org/doc/scipy/reference/', None),
-    'pandas': ('https://pandas.pydata.org/pandas-docs/stable/', None),
-    'astropy': ('http://docs.astropy.org/en/stable', None),
+    'numpy': ('https://numpy.org/doc/stable', None),
+    'scipy': ('https://docs.scipy.org/doc/scipy/reference', None),
+    'pandas': ('https://pandas.pydata.org/pandas-docs/stable', None),
+    'astropy': ('https://docs.astropy.org/en/stable', None),
     'sunpy': ('https://docs.sunpy.org/en/stable', None)}
 
 
