@@ -11,7 +11,6 @@ own sub-module:
 .. toctree::
    :maxdepth: 1
 
-   helios
    mms
 
 Each mission does not have a complete set of data import methods, but the goal
