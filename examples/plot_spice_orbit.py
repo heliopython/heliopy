@@ -42,7 +42,6 @@ psp.change_units(u.au)
 # Plot the orbit. The orbit is plotted in 3D
 import matplotlib.pyplot as plt
 from astropy.visualization import quantity_support
-from mpl_toolkits.mplot3d import Axes3D
 
 quantity_support()
 

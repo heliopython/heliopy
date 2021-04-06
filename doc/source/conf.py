@@ -22,7 +22,6 @@ import sys
 import unittest.mock as mock
 
 import matplotlib
-import sphinx_bootstrap_theme
 
 import heliopy
 

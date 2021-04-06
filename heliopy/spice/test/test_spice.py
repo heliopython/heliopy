@@ -6,7 +6,6 @@ import pytest
 import sunpy.coordinates.sun
 from astropy.coordinates import Latitude
 from astropy.time import Time
-from astropy.utils.exceptions import ErfaWarning
 
 import heliopy.data.spice as spicedata
 import heliopy.spice as spice

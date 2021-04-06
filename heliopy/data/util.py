@@ -150,7 +150,6 @@ class Downloader(abc.ABC):
         fnames : list of sunpy.time.TimeRange
             List of intervals
         """
-        pass
 
     def fname(self, interval):
         """
@@ -168,7 +167,6 @@ class Downloader(abc.ABC):
         fname : str
             Filename
         """
-        pass
 
     @abc.abstractmethod
     def local_dir(self, interval):
@@ -185,7 +183,6 @@ class Downloader(abc.ABC):
         dir : pathlib.Path
             Local directory
         """
-        pass
 
     @abc.abstractmethod
     def download(self, interval):
@@ -201,7 +198,6 @@ class Downloader(abc.ABC):
         dl_path : pathlib.Path
             Path to the downloaded file.
         """
-        pass
 
     @abc.abstractmethod
     def load_local_file(self, interval):
@@ -216,7 +212,6 @@ class Downloader(abc.ABC):
         -------
         data : pandas.DataFrame
         """
-        pass
 
     @staticmethod
     def intervals_yearly(starttime, endtime):

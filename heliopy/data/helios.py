@@ -6,7 +6,7 @@ import pathlib
 import urllib.error
 import warnings
 from collections import OrderedDict
-from datetime import date, datetime, time, timedelta
+from datetime import datetime, time, timedelta
 from urllib.error import URLError
 
 import astropy.constants as constants
