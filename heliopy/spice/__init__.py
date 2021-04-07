@@ -24,7 +24,6 @@ from .data import get_kernel
 import heliopy.spice.spice as _spice
 import heliopy.spice.data as _data
 
-get_kernel.__module__ = __name__
 
 for kernel in _data.generic_kernels:
     k = _data.get_kernel(kernel.short_name)

@@ -36,4 +36,4 @@ jobs:
     - name: Build docs
       run: |
         towncrier --yes
-        cd doc && make html SPHINXOPTS='-W -q'
+        cd doc && make html SPHINXOPTS='-W -q --keep-going'

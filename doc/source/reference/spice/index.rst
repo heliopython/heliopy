@@ -5,10 +5,8 @@ SPICE (:mod:`heliopy.spice`)
 
 A module for loading SPICE kernels.
 
-.. automodapi:: heliopy.spice
+.. automodapi:: heliopy.spice.spice
    :no-heading:
-   :no-inheritance-diagram:
 
 .. automodapi:: heliopy.spice.data
   :no-heading:
-  :no-inheritance-diagram:
