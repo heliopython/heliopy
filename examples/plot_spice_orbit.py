@@ -14,14 +14,13 @@ from datetime import datetime, timedelta
 import astropy.units as u
 import numpy as np
 
-import heliopy.data.spice as spicedata
 import heliopy.spice as spice
 
 ###############################################################################
 # Load the solar orbiter spice kernel. heliopy will automatically fetch and
 # load the latest kernel
-spicedata.get_kernel('psp')
-spicedata.get_kernel('psp_pred')
+spice.get_kernel('psp')
+spice.get_kernel('psp_pred')
 psp = spice.Trajectory('SPP')
 
 ###############################################################################

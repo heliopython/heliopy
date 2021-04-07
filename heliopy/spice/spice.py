@@ -32,7 +32,7 @@ def furnish(kernel):
 
     See also
     --------
-    heliopy.data.spice.get_kernel : For attempting to automatically download
+    heliopy.spice.data.get_kernel : For attempting to automatically download
                                     kernels based on spacecraft name.
 
     """
