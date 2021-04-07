@@ -18,10 +18,14 @@ supported.
 .. _SPICE: https://naif.jpl.nasa.gov/naif/toolkit.html
 .. _spiceypy: https://spiceypy.readthedocs.io/en/master/
 """
-import heliopy.data.spice as dataspice
-
 from .spice import *
+from .data import get_kernel
 
-for kernel in dataspice.generic_kernels:
-    k = dataspice.get_kernel(kernel.short_name)
-    furnish(k)
+import heliopy.spice.spice as _spice
+import heliopy.spice.data as _data
+
+get_kernel.__module__ = __name__
+
+for kernel in _data.generic_kernels:
+    k = _data.get_kernel(kernel.short_name)
+    _spice.furnish(k)

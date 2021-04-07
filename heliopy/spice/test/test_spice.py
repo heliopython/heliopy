@@ -7,7 +7,7 @@ import sunpy.coordinates.sun
 from astropy.coordinates import Latitude
 from astropy.time import Time
 
-import heliopy.data.spice as spicedata
+import heliopy.spice.data as spicedata
 import heliopy.spice as spice
 
 

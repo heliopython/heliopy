@@ -13,14 +13,6 @@ of HelioPy is to be as complete as possible. If you want to import a data set
 that is not yet supported please open an issue on the bug tracker at
 https://github.com/heliopython/heliopy/issues
 
-There are also modules for downloading SPICE kernels and sunspot number
-data:
-
-.. toctree::
-   :maxdepth: 1
-
-   spice
-
 a module with helper functions that apply generally to all data is available:
 
 .. toctree::

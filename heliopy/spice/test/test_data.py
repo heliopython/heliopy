@@ -3,7 +3,7 @@ import os
 import pytest
 
 from heliopy import spice
-from heliopy.data import spice as spicedata
+from heliopy.spice import data as spicedata
 
 
 @pytest.mark.parametrize('kernel', spicedata.kernel_dict)

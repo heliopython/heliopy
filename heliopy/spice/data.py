@@ -1,9 +1,11 @@
 """
-SPICE
-=====
-Methods for automatically downloading SPICE kernels for various objects.
+SPICE data
+==========
+Tools for automatically downloading SPICE kernels for various objects.
 This is essentially a library of SPICE kernels that are available online, so
-users don't have go go hunting for them. If you know a kernel is out of date,
+you don't have go go hunting for them.
+
+If you know a kernel is out of date,
 and HelioPy should be using a newer kernel please let us know at
 https://github.com/heliopython/heliopy/issues.
 """
@@ -19,6 +21,9 @@ from heliopy import config
 
 data_dir = config['download_dir']
 spice_dir = os.path.join(data_dir, 'spice')
+
+
+__all__ = ['get_kernel']
 
 
 class _Kernel:
@@ -173,9 +178,7 @@ for kernel in generic_kernels + spacecraft_kernels + predicted_kernels:
 
 def get_kernel(name):
     """
-    Get the local location of a kernel.
-
-    If a kernel isn't available locally, it is downloaded.
+    Get the local location of a kernel, or download it.
 
     Parameters
     ----------
