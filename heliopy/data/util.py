@@ -97,7 +97,7 @@ def cdf_units(cdf_, manual_units=None, length=None):
 
     Parameters
     ----------
-    cdf_ : cdflib.CDF
+    cdf_ : cdflib.cdfread.CDF
         Opened cdf file
     manual_units : ~collections.OrderedDict
         Manually defined units to be attached to the data that will be
@@ -222,7 +222,7 @@ def cdf2df(cdf, index_key, dtimeindex=True, badvalues=None,
 
     Parameters
     ----------
-    cdf : cdf
+    cdf : cdflib.cdfread.CDF
         Opened CDF file.
     index_key : str
         The CDF key to use as the index in the output DataFrame.

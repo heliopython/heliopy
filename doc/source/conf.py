@@ -31,6 +31,8 @@ sys.path.insert(0, os.path.abspath('../../'))
 html_favicon = '../../artwork/favicon.ico'
 html_sidebars = {'**': ['docsidebar.html']}
 
+nitpicky = True
+
 # Pretend these modules exits so readthedocs builds
 MOCK_MODULES = []
 for mod_name in MOCK_MODULES:
@@ -64,7 +66,8 @@ intersphinx_mapping = {
     'scipy': ('https://docs.scipy.org/doc/scipy/reference', None),
     'pandas': ('https://pandas.pydata.org/pandas-docs/stable', None),
     'astropy': ('https://docs.astropy.org/en/stable', None),
-    'sunpy': ('https://docs.sunpy.org/en/stable', None)}
+    'sunpy': ('https://docs.sunpy.org/en/stable', None),
+    'cdflib': ('https://cdflib.readthedocs.io/en/latest/', None)}
 
 
 sphinx_gallery_conf = {

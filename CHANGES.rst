@@ -181,7 +181,7 @@ with SPICE. The following new objects have been added:
 
 In addition, `heliopy.spice` no longer automatically loads commonly needed
 files on import. This means if you want to use `heliopy.spice`, it is highly
-recommended to run `heliopy.spice.setup_spice()` first.
+recommended to run ``heliopy.spice.setup_spice()`` first.
 
 The existing code has been changed to use the new classes, with the following
 breaking changes:
@@ -198,7 +198,7 @@ Features
   allows for easy access of both a body name and id code, validating that either a name
   or id code are valid on creation.
 
-- :class:`~heliopy.spice.Trajctory` now stores the ``.target`` and ``.observing``
+- :class:`~heliopy.spice.Trajectory` now stores the ``.target`` and ``.observing``
   body atributes as :class:`~heliopy.spice.Body` objects. To get the name or id,
   use ``.id`` or ``.name``. (`#868 <https://github.com/heliopython/heliopy/pull/868>`__)
 - Added the ``abcorr`` argument to `heliopy.spice.Trajectory.generate_positions()`
@@ -280,7 +280,7 @@ Backwards Incompatible Changes
   `heliopy.data.ulysses.swics_abundances` (`#747 <https://github.com/heliopython/heliopy/pull/747>`__),
   `heliopy.data.ulysses.fgm_hires` (`#748 <https://github.com/heliopython/heliopy/pull/748>`__),
   `heliopy.data.ulysses.swoops_ions` (`#761 <https://github.com/heliopython/heliopy/pull/761>`__),
-  `heliopy.data.omni.low` (`#765 <https://github.com/heliopython/heliopy/pull/765>`__),
+  ``heliopy.data.omni.low`` (`#765 <https://github.com/heliopython/heliopy/pull/765>`__),
   `heliopy.data.imp.merged` (`#771 <https://github.com/heliopython/heliopy/pull/771>`__)
 - The times stored in the ``time`` property of :class:`heliopy.spice.Trajectory`
   are now always parsed by `astropy.time.Time` before being stored, and are
@@ -385,7 +385,7 @@ Removed features
 ----------------
 
 - The deprecated `heliopy.data.wind.swe_h3` and
-  `heliopy.data.wind.threedp_sfpd` have been removed.
+  ``heliopy.data.wind.threedp_sfpd`` have been removed.
 
 
 Version 0.6.7
@@ -394,7 +394,7 @@ Version 0.6.7
 Deprecations
 ------------
 
-- `heliopy.data.wind.swe_h3` and `heliopy.data.wind.threedp_sfpd`
+- `heliopy.data.wind.swe_h3` and ``heliopy.data.wind.threedp_sfpd``
   are deprecated and will be removed in version 0.7.0. This is because they
   currently use pandas MultiIndex structures, which are not the recommended
   way to store 2-or-more dimensional data. In the future they are likely to be
@@ -486,7 +486,7 @@ Bug fixes
 Backwards incompatible changes
 ------------------------------
 
-- `heliopy.data.mms.fgm_survey` has been removed in favour of the more
+- ``heliopy.data.mms.fgm_survey`` has been removed in favour of the more
   general `heliopy.data.mms.fgm`. To download survey mode FGM data use
   the new method and set the ``mode`` keyword argument to ``srvy``.
 
@@ -502,7 +502,7 @@ New features
 Bug fixes
 ---------
 
-- Fixed `heliopy.data.mms.fgm_survey` data loading. :issue:`601`
+- Fixed ``heliopy.data.mms.fgm_survey`` data loading. :issue:`601`
 
 Version 0.6.1
 =============
@@ -532,7 +532,7 @@ New features
 - Added a new `.data.util.cdf_units` function that can extract the UNIT
   attribute from CDF files.
 - Low resolution OMNI data import has been added in
-  `.data.omni.low` function.
+  ``.data.omni.low`` function.
 - Magnetic Field data from DSCOVR Spacecraft
   can now be imported using the `.data.dscovr.mag_h0` function.
 
@@ -605,7 +605,7 @@ Fixed bugs
 - `.spice.Trajectory.generate_positions` can now generate
   positions at a resolution of one second instead of one day. :issue:`405`
 - A duplicate "z gsm" column header in the data returned by
-  `.data.imp.mag15s` has been corrected. :issue:`396`
+  `heliopy.data.imp.mag15s` has been corrected. :issue:`396`
 
 Version 0.5.0
 =============
@@ -689,7 +689,7 @@ New features
 - Convert examples gallery to automatically generate plots
 - Added `heliopy.data.helper.listdata` method for easily viewing the
   amount of data HelioPy is storing locally.
-- Added `heliopy.data.wind.threedp_sfpd` method for importing
+- Added ``heliopy.data.wind.threedp_sfpd`` method for importing
   WIND 3DP sfpd data.
 
 Version 0.1.3
