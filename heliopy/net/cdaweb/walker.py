@@ -1,19 +1,7 @@
 from sunpy.net.attr import AttrAnd, AttrOr, AttrWalker, SimpleAttr
 from sunpy.net.attrs import Time
 
-
-__all__ = ['Dataset']
-
-
-class Dataset(SimpleAttr):
-    """
-    The CDAWeb dataset to download.
-
-    To find valid CDAWeb datasets, use the search functionality on this page:
-    https://cdaweb.gsfc.nasa.gov/index.html . After searching for a specific
-    instrument, the dataset IDs will be in bold.
-    """
-
+from heliopy.net.attrs import Dataset
 
 walker = AttrWalker()
 

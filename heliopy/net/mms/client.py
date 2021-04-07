@@ -1,3 +1,24 @@
+"""
+MMS client
+~~~~~~~~~~
+The MMS client indexes the MMS Science Data Center.
+
+Searching using this client requires the both the `~heliopy.net.attrs.Time`
+and `~heliopy.net.attrs.Source` (specifically ``Source('MMS')``) to be
+specified. In addition, any of these attributes can be specified to narrow
+the search:
+
+- `~heliopy.net.attrs.Probe`
+- `~heliopy.net.attrs.Instrument`
+- `~heliopy.net.attrs.DataRate`
+- `~heliopy.net.attrs.Level`
+- `~heliopy.net.attrs.Version`
+
+For descriptions of valid values for these attributes, see
+https://lasp.colorado.edu/mms/sdc/public/about/how-to/
+"""
+
+
 import pathlib
 
 import requests
@@ -6,9 +27,9 @@ import astropy.table
 from astropy.time import Time
 from sunpy.net.base_client import BaseClient, QueryResponseTable
 from sunpy.net.attr import and_
-import sunpy.net.attrs as sunpy_attrs
 
-from heliopy.net.mms.attrs import walker
+from heliopy.net.mms.walker import walker
+import heliopy.net.attrs as a
 
 __all__ = ['MMSClient']
 
@@ -16,8 +37,6 @@ __all__ = ['MMSClient']
 class MMSClient(BaseClient):
     """
     MMS client.
-
-    See https://lasp.colorado.edu/mms/sdc/public/about/how-to/.
     """
     _mms_url = 'https://lasp.colorado.edu/mms/sdc/public'
     _query_url = f'{_mms_url}/files/api/v1/file_names/science'
@@ -56,6 +75,29 @@ class MMSClient(BaseClient):
 
     @classmethod
     def _can_handle_query(cls, *query):
-        required = {sunpy_attrs.Time, sunpy_attrs.Source}
+        required = {a.Time, a.Source}
         query_attrs = {type(x) for x in query}
         return query_attrs >= required
+
+    @classmethod
+    def register_values(cls):
+        adict = {a.Instrument: [('afg', ''),
+                                ('aspoc', ''),
+                                ('dfg', ''),
+                                ('dsp', ''),
+                                ('edi', ''),
+                                ('edp', ''),
+                                ('fields', ''),
+                                ('scm', ''),
+                                ('sdp', '')],
+                 a.Source: [('MMS', 'Magnetospheric Multiscale Mission')],
+                 a.Provider: [('MMS SDC', 'MMS Science Data Center')],
+                 a.Level: [('l1a', ''),
+                           ('l1b', ''),
+                           ('l2', ''),
+                           ('ql', '')],
+                 a.Probe: [('1', 'MMS1'),
+                           ('2', 'MMS2'),
+                           ('3', 'MMS3'),
+                           ('4', 'MMS4')]}
+        return adict

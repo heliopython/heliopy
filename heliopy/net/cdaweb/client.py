@@ -6,9 +6,9 @@ import astropy.table
 from astropy.time import Time
 from sunpy.net.base_client import BaseClient, QueryResponseTable
 from sunpy.net.attr import and_
-import sunpy.net.attrs as sunpy_attrs
 
-from heliopy.net.cdaweb.attrs import Dataset, walker
+import heliopy.net.attrs as a
+from heliopy.net.cdaweb.walker import walker
 
 __all__ = ['SPDFClient']
 
@@ -73,6 +73,6 @@ class SPDFClient(BaseClient):
 
     @classmethod
     def _can_handle_query(cls, *query):
-        required = {Dataset, sunpy_attrs.Time}
+        required = {a.Dataset, a.Time}
         query_attrs = {type(x) for x in query}
         return required == query_attrs
