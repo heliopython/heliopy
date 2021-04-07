@@ -1,34 +1,8 @@
 import astropy.units as u
 from sunpy.net.attr import AttrAnd, AttrOr, AttrWalker, SimpleAttr
-from sunpy.net.attrs import Time, Instrument, Level, Source
+from sunpy.net.attrs import Source, Time, Instrument, Level, Provider
 
-
-__all__ = ['Probe', 'DataRate', 'Version']
-
-
-class Probe(SimpleAttr):
-    """
-    Probe number or name.
-    """
-    def __init__(self, probe):
-        probe = int(probe)
-        allowed_probes = list(range(1, 5))
-        if probe not in allowed_probes:
-            raise ValueError(f"Probe must be in {allowed_probes}")
-        super.__init__(self, probe)
-
-
-class DataRate(SimpleAttr):
-    """
-    Data rate.
-    """
-
-
-class Version(SimpleAttr):
-    """
-    Data version.
-    """
-
+from heliopy.net.attrs import Probe, DataRate, Version
 
 walker = AttrWalker()
 
@@ -62,7 +36,8 @@ def _(wlk, time_attr, param_dict):
 
 @walker.add_applier(Probe)
 def _(wlk, attr, param_dict):
-    param_dict['sc_id'] = f'mms{attr.value}'
+    probe_num = int(attr.value)
+    param_dict['sc_id'] = f'mms{probe_num}'
 
 
 @walker.add_applier(Instrument)
