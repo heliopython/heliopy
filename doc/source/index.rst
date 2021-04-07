@@ -24,6 +24,7 @@ Module documentation
 .. toctree::
    :maxdepth: 1
 
+   reference/net/index
    reference/data/index
    reference/spice/index
    reference/models/index

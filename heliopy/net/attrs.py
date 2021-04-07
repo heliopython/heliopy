@@ -12,6 +12,10 @@ __all__ = ['Probe',
            'Provider',
            'Dataset']
 
+# Trick the docs into thinking these attrs are defined in here.
+for _a in (Source, Time, Instrument, Level, Provider):
+    _a.__module__ = __name__
+
 
 class Dataset(SimpleAttr):
     """
