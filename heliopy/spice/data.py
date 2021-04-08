@@ -10,10 +10,9 @@ and HelioPy should be using a newer kernel please let us know at
 https://github.com/heliopython/heliopy/issues.
 """
 import os
-import urllib.error
 import warnings
-from urllib.request import urlretrieve
 
+import parfive
 import requests
 
 import heliopy.data.util as util
@@ -21,7 +20,7 @@ from heliopy import config
 
 data_dir = config['download_dir']
 spice_dir = os.path.join(data_dir, 'spice')
-
+os.makedirs(spice_dir, exist_ok=True)
 
 __all__ = ['get_kernel']
 
@@ -82,8 +81,8 @@ generic_kernels = [_Kernel('Leap Second Kernel', 'lsk',
                    ]
 
 spacecraft_kernels = [_Kernel('Cassini', 'cassini',
-                              ['https://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/spk/171215R_SCPSEops_97288_17258.bsp',
-                               'https://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/spk/aareadme.txt']),
+                              'https://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/spk/171215R_SCPSEops_97288_17258.bsp',
+                              'https://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/spk/aareadme.txt'),
                       _Kernel('Helios 1', 'helios1',
                               ['https://naif.jpl.nasa.gov/pub/naif/HELIOS/kernels/spk/100528R_helios1_74345_81272.bsp',
                                'https://naif.jpl.nasa.gov/pub/naif/HELIOS/kernels/spk/160707AP_helios1_81272_86074.bsp'
@@ -201,19 +200,19 @@ def get_kernel(name):
                 name, kernel_dict.keys()))
     kernel = kernel_dict[name]
     kernels = []
+
+    dl = parfive.Downloader(max_conn=1)
     for url in kernel.urls:
         fname = url[url.rfind("/") + 1:]
         local_loc = os.path.join(spice_dir, fname)
-        if not os.path.exists(spice_dir):
-            os.makedirs(spice_dir, exist_ok=True)
         if not os.path.exists(local_loc):
-            print('Downloading {}'.format(url))
-            try:
-                urlretrieve(url, local_loc, reporthook=util._reporthook)
-            except urllib.error.HTTPError as err:
-                warnings.warn('Failed to download {}'.format(url))
-        kernels.append(spice.Kernel(local_loc))
-    return kernels
+            dl.enqueue_file(url, filename=local_loc)
+        kernels.append(local_loc)
+
+    result = dl.download()
+    if len(result.errors):
+        warnings.warn(f'Some kernels failed to download:\n{result.errors}')
+    return [spice.Kernel(k) for k in kernels]
 
 
 # End of main code, now create tables for spice kernels
