@@ -19,7 +19,7 @@ def test_kernel_urls(kernel_name):
 
 def test_kernel_download():
     # Test download
-    kernel = spicedata.get_kernel(helios1)[0]
+    kernel = spicedata.get_kernel('helios1')[0]
 
     # Check that kernel is valid
     if isinstance(kernel, spice.SPKKernel):
