@@ -408,21 +408,6 @@ def _load_local(file_path, filetype=None):
         return f
 
 
-def _reporthook(blocknum, blocksize, totalsize):
-    readsofar = blocknum * blocksize
-    if totalsize > 0:
-        percent = min(100, readsofar * 1e2 / totalsize)
-        s = "\r%5.1f%% %*d / %d" % (
-            percent, len(str(totalsize)), readsofar, totalsize)
-        sys.stderr.write(s)
-        # Near the end
-        if readsofar >= totalsize:
-            sys.stderr.write("\n")
-    # Total size is unknown
-    else:
-        sys.stderr.write("\rRead %d" % (readsofar,))
-
-
 def _checkdir(directory):
     """
     Checks if directory exists, if not creates directory.
