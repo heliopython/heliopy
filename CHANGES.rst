@@ -1,3 +1,19 @@
+HelioPy 0.15.4 (2021-07-10)
+===========================
+
+Features
+--------
+
+- Added support for loading Voyager merged datasets in `heliopy.data.voyager.`. (`#992 <https://github.com/heliopython/heliopy/pull/992>`__)
+
+
+Bug Fixes
+---------
+
+- Fixed downloading PSP/FIELDS data. (`#988 <https://github.com/heliopython/heliopy/pull/988>`__)
+- Updated the PSP SPICE kernels to their latest versions. (`#989 <https://github.com/heliopython/heliopy/pull/989>`__)
+
+
 HelioPy 0.15.3 (2021-03-29)
 ===========================
 
