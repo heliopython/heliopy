@@ -28,3 +28,14 @@ voyager1_merged.__doc__ = _docstring(
     'VOYAGER1_COHO1HR_MERGED_MAG_PLASMA',
     'Voyager 1 merged hourly magnetic field, plasma, proton fluxes, '
     'and ephemeris data')
+
+
+def voyager2_merged(starttime, endtime):
+    identifier = 'VOYAGER2_COHO1HR_MERGED_MAG_PLASMA'
+    return _voyager(starttime, endtime, identifier, 2)
+
+
+voyager2_merged.__doc__ = _docstring(
+    'VOYAGER2_COHO1HR_MERGED_MAG_PLASMA',
+    'Voyager 2 merged hourly magnetic field, plasma, proton fluxes, '
+    'and ephemeris data')
