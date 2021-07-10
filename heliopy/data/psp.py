@@ -96,7 +96,7 @@ class _FIELDSmag_RTN_1min_Downloader(_FIELDSDownloader):
 
     def fname(self, interval):
         datestr = interval.start.strftime('%Y%m%d')
-        return f'psp_fld_l2_mag_rtn_1min_{datestr}_v01.cdf'
+        return f'psp_fld_l2_mag_rtn_1min_{datestr}_v02.cdf'
 
 
 class _FIELDSmag_RTN_4_Per_Cycle_Downloader(_FIELDSDownloader):
@@ -109,7 +109,7 @@ class _FIELDSmag_RTN_4_Per_Cycle_Downloader(_FIELDSDownloader):
 
     def fname(self, interval):
         datestr = interval.start.strftime('%Y%m%d')
-        return f'psp_fld_l2_mag_rtn_4_sa_per_cyc_{datestr}_v01.cdf'
+        return f'psp_fld_l2_mag_rtn_4_sa_per_cyc_{datestr}_v02.cdf'
 
 
 class _FIELDSmag_RTN_Downloader(_FIELDSDownloader):
@@ -137,7 +137,7 @@ class _FIELDSmag_RTN_Downloader(_FIELDSDownloader):
 
     def fname(self, interval):
         datestr = interval.start.strftime('%Y%m%d%H')
-        return f'psp_fld_l2_mag_rtn_{datestr}_v01.cdf'
+        return f'psp_fld_l2_mag_rtn_{datestr}_v02.cdf'
 
 
 def fields_mag_rtn_1min(starttime, endtime):
