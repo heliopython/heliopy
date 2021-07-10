@@ -788,8 +788,8 @@ def cdf2df(cdf, index_key, dtimeindex=True, badvalues=None,
         except IndexError:
             pass
         index = pd.DatetimeIndex(pd.to_datetime(index_df), name='Time')
-    df = pd.DataFrame(index=index)
-    npoints = df.shape[0]
+    data_dict = {}
+    npoints = len(index)
 
     var_list = _get_cdf_vars(cdf)
     keys = {}
@@ -832,7 +832,7 @@ def cdf2df(cdf, index_key, dtimeindex=True, badvalues=None,
             for i, subkey in enumerate(df_key):
                 data = vars[cdf_key][...][:, i]
                 data = _fillval_nan(data, fillval)
-                df[subkey] = data
+                data_dict[subkey] = data
         else:
             # If ndims is 1, we just have a single column of data
             # If ndims is 2, have multiple columns of data under same key
@@ -841,14 +841,14 @@ def cdf2df(cdf, index_key, dtimeindex=True, badvalues=None,
             if ndims == 1:
                 data = vars[cdf_key][...]
                 data = _fillval_nan(data, fillval)
-                df[df_key] = data
+                data_dict[df_key] = data
             elif ndims == 2:
                 for i in range(key_shape[1]):
                     data = vars[cdf_key][...][:, i]
                     data = _fillval_nan(data, fillval)
-                    df[f'{df_key}_{i}'] = data
+                    data_dict[f'{df_key}_{i}'] = data
 
-    return df
+    return pd.DataFrame(index=index, data=data_dict)
 
 
 def _get_cdf_vars(cdf):
