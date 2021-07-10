@@ -12,7 +12,7 @@ def _docstring(identifier, description):
 def _wind(starttime, endtime, identifier, units=None,
           intervals='monthly'):
     """
-    Generic method for downloading ACE data.
+    Generic method for downloading WIND data.
     """
     dl = cdasrest.CDASDwonloader('wi', identifier, 'wind', units=units)
     # Override intervals
