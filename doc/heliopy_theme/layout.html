@@ -32,9 +32,7 @@
 <meta property="og:image" content="{{ pathto(theme_base_url + '/_static/' + theme_opengraph_image, 1) }}" />
 <meta property="og:description" content="{{ description() }}" />
 <meta property="og:site_name" content="{{ docstitle|striptags|e }}" />
-{% if not version_slug in to_be_indexed  %}
 <meta name="robots" content="noindex, nofollow">
-{% endif %}
 {%- endblock %}
 
 {%- block footer %}
