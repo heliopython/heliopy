@@ -9,21 +9,3 @@ physics.
   HelioPy is currently hibernating. Bugs will be fixed, but no new functionality
   will be added. For more information see
   https://www.davidstansby.com/2020/12/04/heliopy-udpate.html.
-
-.. toctree::
-   :maxdepth: 2
-
-   auto_examples/index
-   guide/index
-   community/index
-   development/index
-
-Module documentation
-====================
-
-.. toctree::
-   :maxdepth: 1
-
-   reference/data/index
-   reference/spice/index
-   reference/models/index
