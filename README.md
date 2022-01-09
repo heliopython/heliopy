@@ -1,4 +1,4 @@
-![HelioPy](https://github.com/heliopython/heliopy/raw/master/artwork/logo_rectangle.png "HelioPy")
+![HelioPy](https://github.com/heliopython/heliopy/raw/main/artwork/logo_rectangle.png "HelioPy")
 
 *heliopy is in hibernation*
 
