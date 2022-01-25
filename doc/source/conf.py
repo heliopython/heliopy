@@ -20,19 +20,11 @@
 import os
 import sys
 import sphinx_bootstrap_theme
-import unittest.mock as mock
-import matplotlib
 import heliopy
-matplotlib.use('agg')
 sys.path.insert(0, os.path.abspath('../../'))
 
 html_favicon = '../../artwork/favicon.ico'
 html_sidebars = {'**': ['docsidebar.html']}
-
-# Pretend these modules exits so readthedocs builds
-MOCK_MODULES = []
-for mod_name in MOCK_MODULES:
-    sys.modules[mod_name] = mock.Mock()
 
 # -- General configuration ------------------------------------------------
 
@@ -45,36 +37,8 @@ for mod_name in MOCK_MODULES:
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
-    'sphinx.ext.doctest',
     'sphinx.ext.coverage',
-    'sphinx.ext.mathjax',
-    'sphinx.ext.napoleon',
-    'sphinx.ext.intersphinx',
-    'sphinx_automodapi.automodapi',
-    'sphinx_issues'
 ]
-
-intersphinx_mapping = {
-    'matplotlib': ('https://matplotlib.org', None),
-    'python': ('https://docs.python.org/3', None),
-    'numpy': ('https://docs.scipy.org/doc/numpy', None),
-    'scipy': ('https://docs.scipy.org/doc/scipy/reference/', None),
-    'pandas': ('https://pandas.pydata.org/pandas-docs/stable/', None),
-    'astropy': ('http://docs.astropy.org/en/stable', None),
-    'sunpy': ('https://docs.sunpy.org/en/stable', None)}
-
-
-sphinx_gallery_conf = {
-    'default_thumb_file': os.path.abspath(os.path.join('..', '..', 'artwork', 'logo_circle.png')),
-    'examples_dirs': '../../examples',
-    'gallery_dirs': 'auto_examples',
-    'backreferences_dir': 'gen_modules/backreferences',
-    'doc_module': ('sphinx_gallery', 'heliopy'),
-    'min_reported_time': 0,
-    'abort_on_example_error': False,
-}
-
-issues_github_path = 'heliopython/heliopy'
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
