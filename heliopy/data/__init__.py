@@ -1,3 +1,3 @@
-"""
-Contains methods for automatically downloading and importing data into python.
-"""
+from heliopy import raise_import_error
+
+raise_import_error()

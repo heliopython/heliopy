@@ -3,9 +3,11 @@ heliopy
 
 Open source python tools for space physics
 """
-from heliopy.util.config import load_config
-from ._version import get_versions
+__version__ = '1.0.0'
 
-config = load_config()
-__version__ = get_versions()['version']
-del get_versions
+
+def raise_import_error():
+    raise ImportError(
+        'HelioPy is no longer maintained or supported.\n'
+        'Most functionality is now available elsewhere.\n'
+        'See https://heliopy.readthedocs.io/en/stable/ for more info.')
