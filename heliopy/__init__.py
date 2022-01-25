@@ -10,4 +10,6 @@ def raise_import_error():
     raise ImportError(
         'HelioPy is no longer maintained or supported.\n'
         'Most functionality is now available elsewhere.\n'
-        'See https://heliopy.readthedocs.io/en/stable/ for more info.')
+        'See https://github.com/heliopython/heliopy/blob/main/README.md '
+        'for more info.\n\n'
+        'Downgrade to heliopy<1 to continue using the legacy code.')
